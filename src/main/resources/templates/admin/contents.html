@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/nav :: nav"/>
+    <div>
+        <ul class="nav nav-tabs">
+            <li class='active'><a href="#tabmenu_01" data-toggle="tab">일일</a></li>
+            <li><a href="#tabmenu_02" data-toggle="tab">주간</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="tabmenu_01">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>컨텐츠 분류</th>
+                        <th>컨텐츠 이름</th>
+                        <th>컨텐츠 레벨</th>
+                        <th>실링</th>
+                        <th>명파</th>
+                        <th>돌파석</th>
+                        <th>파괴석</th>
+                        <th>수호석</th>
+                        <th>1레벨 보석</th>
+                        <th>골드</th>
+                        <th>수정</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="content : ${dayContents}">
+                        <td th:text="${content.id}"></td>
+                        <td th:text="${content.dayContentCategory}"></td>
+                        <td th:text="${content.name}"></td>
+                        <td th:text="${content.level}"></td>
+                        <td th:text="${content.shilling}"></td>
+                        <td th:text="${content.honorShard}"></td>
+                        <td th:text="${content.leapStone}"></td>
+                        <td th:text="${content.destructionStone}"></td>
+                        <td th:text="${content.guardianStone}"></td>
+                        <td th:text="${content.jewelry}"></td>
+                        <td th:text="${content.gold}"></td>
+                        <td><a th:href="'javascript:update('+${content.id}+')'" class="btn btn-primary">수정</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="add-data-frame" style="display: none">
+                    <h2>Add Data</h2>
+                    <input type="text" id="dayContentCategory" placeholder="컨텐츠 분류"><br>
+                    <input type="text" id="name" placeholder="컨텐츠 이름"><br>
+                    <input type="text" id="level" placeholder="컨텐츠 레벨"><br>
+                    <input type="text" id="shilling" placeholder="실링"><br>
+                    <input type="text" id="honorShard" placeholder="명파"><br>
+                    <input type="text" id="leapStone" placeholder="돌파석"><br>
+                    <input type="text" id="destructionStone" placeholder="파괴석"><br>
+                    <input type="text" id="guardianStone" placeholder="수호석"><br>
+                    <input type="text" id="jewelry" placeholder="1레벨 보석"><br>
+                    <input type="text" id="gold" placeholder="골드"><br>
+                    <button onclick="addData()">Add</button>
+                </div>
+                <button th:onclick="toggleAddData()" class="btn btn-info">일일 컨텐츠 추가</button>
+            </div>
+            <div class="tab-pane fade" id="tabmenu_02"><p>탭메뉴2 내용</p></div>
+        </div>
+
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+<script>
+    function update(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "contents/update/" + id);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function toggleAddData() {
+        var addDataframe = document.querySelector('.add-data-frame');
+        addDataframe.style.display = addDataframe.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addData() {
+        var dayContentCategory = document.getElementById('dayContentCategory').value;
+        var name = document.getElementById('name').value;
+        var level = document.getElementById('level').value;
+        var shilling = document.getElementById('shilling').value;
+        var honorShard = document.getElementById('honorShard').value;
+        var leapStone = document.getElementById('leapStone').value;
+        var destructionStone = document.getElementById('destructionStone').value;
+        var guardianStone = document.getElementById('guardianStone').value;
+        var jewelry = document.getElementById('jewelry').value;
+        var gold = document.getElementById('gold').value;
+
+
+        toggleAddData(); // Hide the add data frame
+    }
+</script>
+</html>
