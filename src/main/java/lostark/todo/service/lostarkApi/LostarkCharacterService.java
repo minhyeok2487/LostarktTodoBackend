@@ -3,12 +3,15 @@ package lostark.todo.service.lostarkApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import lostark.todo.service.MemberService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +29,13 @@ public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
     private final MemberService memberService;
+    private final CharacterRepository characterRepository;
 
-    // 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져와서 저장
-    public Member characterInfo(String username, String characterName) throws Exception {
+    /**
+     * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져와서 저장
+     * select은 디폴트 false
+    */
+    public Member characterInfoAndSave(String username, String characterName) throws Exception {
         Member member = memberService.findUser(username);
 
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
@@ -44,4 +51,5 @@ public class LostarkCharacterService {
         }
         return member;
     }
+
 }

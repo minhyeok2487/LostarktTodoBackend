@@ -1,10 +1,10 @@
 package lostark.todo.domain.character;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lostark.todo.controller.dtos.CharacterSaveDto;
 import lostark.todo.domain.member.Member;
 import org.json.simple.JSONObject;
 
@@ -37,6 +37,12 @@ public class Character {
     @JsonBackReference //순환참조 방지
     private Member member;
 
+    private boolean selected; //true면 출력할 캐릭(디폴트 false)
+
+    private int chaos; //일일숙제 카오스던전 돌았는지 체크(0, 1, 2)
+
+    private int chaosGauge; //카오스던전 휴식게이지
+
     //JSONObject로 만드는 생성자
     public Character(JSONObject jsonObject) {
         characterName = jsonObject.get("CharacterName").toString();
@@ -44,5 +50,20 @@ public class Character {
         characterClassName = jsonObject.get("CharacterClassName").toString();
         serverName = jsonObject.get("ServerName").toString();
         itemLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",",""));
+        selected = false;
+    }
+
+    public Character changeSelected() {
+        if (this.selected == true) {
+            this.selected = false;
+        } else {
+            this.selected = true;
+        }
+        return this;
+    }
+
+    public void update(CharacterSaveDto characterSaveDto) {
+        this.chaos = characterSaveDto.getChaos();
+        this.chaosGauge = characterSaveDto.getChaosGauge();
     }
 }

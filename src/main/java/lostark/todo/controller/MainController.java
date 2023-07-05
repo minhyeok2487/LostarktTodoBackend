@@ -15,4 +15,9 @@ public class MainController {
         model.addAttribute("member", new Member());
         return "main";
     }
+
+    @GetMapping("/todo")
+    public String todo() {
+        return "todo/todoMain.html";
+    }
 }

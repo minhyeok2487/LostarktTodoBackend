@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.member.Member;
+import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
@@ -22,8 +23,8 @@ public class InitDb {
 
     @PostConstruct
     public void init() {
-        initService.dbMemberInit();
-        initService.dbContentInit();
+//        initService.dbMemberInit();
+//        initService.dbContentInit();
     }
 
     @Transactional
@@ -34,6 +35,7 @@ public class InitDb {
         private final MemberService memberService;
         private final LostarkCharacterService lostarkCharacterService;
         private final ContentService contentService;
+        private final CharacterService characterService;
 
         public void dbMemberInit() {
             //회원가입
@@ -45,9 +47,18 @@ public class InitDb {
 
             //캐릭터 추가
             try {
-                lostarkCharacterService.characterInfo(username, "마볼링");
+                lostarkCharacterService.characterInfoAndSave(username, "마볼링");
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            }
+            List<String> characterList = new ArrayList<>();
+            characterList.add("마볼링");
+            characterList.add("카카오볼링");
+            characterList.add("가을볼링");
+            characterList.add("데이터볼링");
+            characterList.add("볼링치는개발자");
+            for (String s : characterList) {
+                characterService.findCharacterByName(s).setSelected(true);
             }
 
         }
