@@ -43,6 +43,10 @@ public class Character {
 
     private int chaosGauge; //카오스던전 휴식게이지
 
+    private int guardian; //일일숙제 가디언토벌 돌았는지 체크(0, 1, 2)
+
+    private int guardianGauge; //가디언토벌 휴식게이지
+
     //JSONObject로 만드는 생성자
     public Character(JSONObject jsonObject) {
         characterName = jsonObject.get("CharacterName").toString();
@@ -65,5 +69,7 @@ public class Character {
     public void update(CharacterSaveDto characterSaveDto) {
         this.chaos = characterSaveDto.getChaos();
         this.chaosGauge = characterSaveDto.getChaosGauge();
+        this.guardian = characterSaveDto.getGuardian();
+        this.guardianGauge = characterSaveDto.getGuardianGauge();
     }
 }

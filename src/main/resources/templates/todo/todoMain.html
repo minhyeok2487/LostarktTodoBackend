@@ -14,6 +14,7 @@
                         <th>캐릭터 클래스</th>
                         <th>아이템 레벨</th>
                         <th>카오스 던전</th>
+                        <th>가디언 토벌</th>
                         <th>저장</th>
                     </tr>
                 </thead>
@@ -44,6 +45,7 @@
                 html += `<td>${c.characterName}</td>`;
                 html += `<td>${c.characterClassName}</td>`;
                 html += `<td>${c.itemLevel}</td>`;
+
                 html += '<td>';
                 if(c.chaos == 0) {
                     html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
@@ -58,6 +60,22 @@
                     html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
                 }
                 html += `<input type="number" value="${c.chaosGauge}"></td>`;
+
+                html += '<td>';
+                if(c.guardian == 0) {
+                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
+                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
+                }
+                if(c.guardian == 1) {
+                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
+                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
+                }
+                if(c.guardian == 2) {
+                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
+                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
+                }
+                html += `<input type="number" value="${c.guardianGauge}"></td>`;
+
                 html += `<td><input type="button" onclick="saveInfo(this);" value="SAVE"></td>`;
                 html += '</tr>';
                 number++;
@@ -90,6 +108,18 @@
 
         var numberInput = cells[4].getElementsByTagName("input")[2];
         rowData.chaosGauge = parseInt(numberInput.value);
+
+        var guardianCheckboxes = cells[5].getElementsByTagName("input");
+        rowData.guardian = 0;
+        if(checkboxes[0].checked) {
+            guardianCheckboxes.guardian++;
+        }
+        if(checkboxes[1].checked) {
+            guardianCheckboxes.guardian++;
+        }
+
+        var guardianInput = cells[5].getElementsByTagName("input")[2];
+        rowData.guardianGauge = parseInt(guardianInput.value);
 
         return rowData;
     }

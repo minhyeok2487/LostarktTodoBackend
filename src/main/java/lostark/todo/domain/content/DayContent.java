@@ -52,7 +52,7 @@ public class DayContent extends Content{
         this.destructionStone = dayContentDto.getDestructionStone();
         this.guardianStone = dayContentDto.getGuardianStone();
         this.jewelry = dayContentDto.getJewelry();
-        this. gold = dayContentDto.getGold();
+        this.gold = dayContentDto.getGold();
         return this;
     }
 }
