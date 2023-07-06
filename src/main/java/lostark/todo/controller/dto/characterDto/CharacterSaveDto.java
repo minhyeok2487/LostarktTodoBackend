@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto;
+package lostark.todo.controller.dto.characterDto;
 
 import lombok.Data;
 

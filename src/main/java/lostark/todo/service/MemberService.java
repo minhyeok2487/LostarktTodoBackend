@@ -21,11 +21,7 @@ public class MemberService {
     }
 
 
-    public Member findUser(Long userId) throws Exception {
-        return memberRepository.findById(userId).orElseThrow(() -> new Exception("존재하지않습니다"));
-    }
-
-    public Member findUser(String username) throws Exception {
-        return memberRepository.findByUsername(username).orElseThrow(() -> new Exception("존재하지않습니다"));
+    public Member findMemberSelected(String username) {
+        return memberRepository.findByUsernameSelected(username);
     }
 }

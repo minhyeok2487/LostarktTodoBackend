@@ -1,5 +1,9 @@
 package lostark.todo.service;
 
+import lostark.todo.domain.character.Character;
+import lostark.todo.domain.member.Member;
+import lostark.todo.domain.member.MemberRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberServiceTest {
 
     @Autowired
-    MemberService memberService;
+    MemberRepository memberRepository;
 
 //    @Test
 //    void addCharactersTest() {
@@ -37,4 +41,16 @@ class MemberServiceTest {
 //        }
 //
 //    }
+
+    @Test
+    void findMemberTest() {
+        String username = "qwe2487";
+
+        Member member = memberRepository.findByUsernameSelected(username);
+
+        for (Character character : member.getCharacters()) {
+            System.out.println("character.getCharacterName() = " + character.getCharacterName());
+        }
+
+    }
 }

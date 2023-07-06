@@ -28,15 +28,13 @@ import java.util.List;
 public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
-    private final MemberService memberService;
-    private final CharacterRepository characterRepository;
-
+    private final MemberRepository memberRepository;
     /**
      * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져와서 저장
      * select은 디폴트 false
     */
     public Member characterInfoAndSave(String username, String characterName) throws Exception {
-        Member member = memberService.findUser(username);
+        Member member = memberRepository.findByUsername(username);
 
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";

@@ -2,8 +2,8 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.CharacterReturnDto;
-import lostark.todo.controller.dto.CharacterSaveDto;
+import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
+import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.DayContent;
@@ -20,14 +20,7 @@ import java.util.List;
 @Transactional
 public class CharacterService {
 
-    private final MemberService memberService;
     private final CharacterRepository characterRepository;
-    public List<Character> characterListByUsernameAndSelect(String username) throws Exception{
-        Member member = memberService.findUser(username);
-        List<Character> characterList = characterRepository.findByMember_IdAndSelectedOrderByItemLevelDesc(member.getId(), true);
-        return characterList;
-    }
-
 
     public Character findCharacterByName(String characterName) {
         return characterRepository.findByCharacterName(characterName);
@@ -54,7 +47,7 @@ public class CharacterService {
                 price = calChaos(destruction, guardian, leapStone, dayContent, price);
             }
         }
-        log.info(characterReturnDto.getCharacterName());
+        price += dayContent.getGold();
         characterReturnDto.setChaosName(dayContent.getName());
         characterReturnDto.setChaosProfit(price);
         return characterReturnDto;

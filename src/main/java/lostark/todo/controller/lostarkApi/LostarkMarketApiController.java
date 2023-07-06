@@ -21,8 +21,8 @@ public class LostarkMarketApiController {
 
     @GetMapping("/{categoryCode}")
     public ResponseEntity getMarketCategoryCode(@PathVariable int categoryCode, HttpServletRequest request) throws Exception {
-        Long memberId = Long.parseLong(request.getHeader("memberId"));
-        List<Market> marketList = marketService.getMarketData(categoryCode, memberId);
+        String username = request.getHeader("username");
+        List<Market> marketList = marketService.getMarketData(categoryCode, username);
         return new ResponseEntity(marketList, HttpStatus.OK);
     }
 

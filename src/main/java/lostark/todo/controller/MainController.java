@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
 
     @GetMapping("/")
-    public String main(Model model) {
-        model.addAttribute("member", new Member());
+    public String main() {
         return "main";
     }
 
+    // 숙제 관리 화면
     @GetMapping("/todo")
     public String todo() {
-        return "todo/todoMain.html";
+        return "todo/todoMain";
     }
 }

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domain.member.MemberRepository;
 import lostark.todo.service.MemberService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,12 +25,12 @@ import java.util.List;
 public class LostarkMarketService {
 
     private final LostarkApiService lostarkApiService;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final MarketRepository marketRepository;
 
 
-    public List<Market> getMarketData(int categoryCode, Long memberId) throws Exception {
-        Member member = memberService.findUser(memberId);
+    public List<Market> getMarketData(int categoryCode, String username) throws Exception {
+        Member member = memberRepository.findByUsername(username);
 
         int pageNo = 0;
         JSONObject jsonObject = getMarketDataPaging(categoryCode, member, pageNo);
