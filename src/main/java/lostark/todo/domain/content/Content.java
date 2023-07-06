@@ -19,6 +19,6 @@ public abstract class Content {
 
     private String name;
 
-    private int level; //컨텐츠 레벨
+    private double level; //컨텐츠 레벨
 
 }

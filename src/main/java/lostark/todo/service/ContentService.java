@@ -1,7 +1,7 @@
 package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.dtos.DayContentDto;
+import lostark.todo.controller.dto.DayContentDto;
 import lostark.todo.domain.content.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,5 +42,9 @@ public class ContentService {
         DayContent dayContent = findDayContentById(dayContentDto.getId());
         DayContent updated = dayContent.update(dayContentDto);
         return updated;
+    }
+
+    public DayContent getDayContentByLevel(double level) {
+        return (DayContent) contentRepository.findByLevelLessThanEqualOrderByLevelDesc(level).get(0);
     }
 }

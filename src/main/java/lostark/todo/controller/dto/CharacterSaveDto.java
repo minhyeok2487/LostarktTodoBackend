@@ -1,12 +1,6 @@
-package lostark.todo.controller.dtos;
+package lostark.todo.controller.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
-import lostark.todo.domain.member.Member;
-
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Data
 public class CharacterSaveDto {

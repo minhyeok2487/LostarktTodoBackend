@@ -1,6 +1,7 @@
 package lostark.todo.service;
 
 import lostark.todo.domain.content.Content;
+import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.DayContent;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ContentServiceTest {
 
     @Autowired ContentService contentService;
+    @Autowired
+    ContentRepository contentRepository;
 
     @Test
     public void saveDayContentTest() {
@@ -26,5 +31,13 @@ class ContentServiceTest {
 
         DayContent content = contentService.findDayContentById(savedDayContent.getId());
         Assertions.assertThat(savedDayContent).isEqualTo(content);
+    }
+
+    @Test
+    public void getDayContentByLevelTest() {
+        double level = 1618.5;
+        //Content content = contentRepository.findByLevelLessThanEqualOrderByLevelDesc(level);
+
+        //System.out.println("contentList[0] = " + content);
     }
 }

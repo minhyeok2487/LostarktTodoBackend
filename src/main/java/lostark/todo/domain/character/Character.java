@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lostark.todo.controller.dtos.CharacterSaveDto;
+import lostark.todo.controller.dto.CharacterSaveDto;
 import lostark.todo.domain.member.Member;
 import org.json.simple.JSONObject;
 

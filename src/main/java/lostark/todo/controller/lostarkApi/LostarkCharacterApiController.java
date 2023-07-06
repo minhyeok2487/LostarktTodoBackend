@@ -2,7 +2,7 @@ package lostark.todo.controller.lostarkApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtos.MemberFindDto;
+import lostark.todo.controller.dto.MemberFindDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;

@@ -2,7 +2,7 @@ package lostark.todo.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtos.DayContentDto;
+import lostark.todo.controller.dto.DayContentDto;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.Content;
 import lostark.todo.domain.content.DayContent;

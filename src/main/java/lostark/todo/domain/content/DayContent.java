@@ -1,8 +1,7 @@
 package lostark.todo.domain.content;
 
-import lombok.Data;
 import lombok.Getter;
-import lostark.todo.controller.dtos.DayContentDto;
+import lostark.todo.controller.dto.DayContentDto;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
