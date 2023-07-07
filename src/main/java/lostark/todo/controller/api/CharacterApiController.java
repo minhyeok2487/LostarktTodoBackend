@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.market.Market;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
@@ -31,11 +31,30 @@ public class CharacterApiController {
     private final ContentService contentService;
     private final MemberService memberService;
 
+    private static List<String> makeDayContentResourceNames() {
+        List<String> dayContentResource = new ArrayList<>();
+        dayContentResource.add("정제된 파괴강석");
+        dayContentResource.add("정제된 수호강석");
+        dayContentResource.add("찬란한 명예의 돌파석");
+
+        dayContentResource.add("파괴강석");
+        dayContentResource.add("수호강석");
+        dayContentResource.add("경이로운 명예의 돌파석");
+
+        dayContentResource.add("파괴석 결정");
+        dayContentResource.add("수호석 결정");
+        dayContentResource.add("위대한 명예의 돌파석");
+        return dayContentResource;
+    }
+
     @GetMapping("/character/selectedList")
     public ResponseEntity characterList(HttpServletRequest request) {
         try {
             // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
             List<Character> characterList = memberService.findMemberSelected(request.getHeader("username")).getCharacters();
+
+            // 거래소 데이터 가져옴(Map)
+            Map<String , MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
 
             List<CharacterReturnDto> characterReturnDtoList = new ArrayList<>(); //출력할 리스트
 
@@ -47,7 +66,7 @@ public class CharacterApiController {
                 Map<Category, DayContent> contentMap = contentService.getDayContentByLevel(characterReturnDto.getItemLevel());
 
                 // 계산
-                calculateDayContent(characterReturnDto, contentMap);
+                calculateDayContent(characterReturnDto, contentMap, contentResource);
 
                 characterReturnDtoList.add(characterReturnDto);
                 System.out.println("characterReturnDto = " + characterReturnDto.toString());
@@ -58,58 +77,40 @@ public class CharacterApiController {
         }
     }
 
-    private void calculateDayContent(CharacterReturnDto characterReturnDto, Map<Category, DayContent> contentMap) {
-        Market destruction = getMarketData(characterReturnDto.getItemLevel(), "파괴석");
-        Market guardian = getMarketData(characterReturnDto.getItemLevel(), "수호석");
-        Market leapStone = getMarketData(characterReturnDto.getItemLevel(), "돌파석");
+    @PatchMapping("/character")
+    public ResponseEntity characterSave(CharacterSaveDto characterSaveDto) {
+        Character character = characterService.saveCharacter(characterSaveDto);
+        return new ResponseEntity<>(character, HttpStatus.OK);
+    }
+
+    private void calculateDayContent(CharacterReturnDto characterReturnDto,
+                                     Map<Category, DayContent> contentMap,
+                                     Map<String , MarketContentResourceDto> contentResource) {
+        MarketContentResourceDto destruction = null;
+        MarketContentResourceDto guardian = null;
+        MarketContentResourceDto leapStone = null;
+        if (characterReturnDto.getItemLevel() >= 1415) {
+            destruction = contentResource.get("파괴석 결정");
+            guardian = contentResource.get("수호석 결정");
+            leapStone = contentResource.get("위대한 명예의 돌파석");
+        }
+        if (characterReturnDto.getItemLevel() >= 1540) {
+            destruction = contentResource.get("파괴강석");
+            guardian = contentResource.get("수호강석");
+            leapStone = contentResource.get("경이로운 명예의 돌파석");
+        }
+        if (characterReturnDto.getItemLevel() >= 1580) {
+            destruction = contentResource.get("정제된 파괴강석");
+            guardian = contentResource.get("정제된 수호강석");
+            leapStone = contentResource.get("찬란한 명예의 돌파석");
+        }
 
         calculateChaos(characterReturnDto, destruction, guardian, contentMap.get(Category.카오스던전));
         calculateGuardian(characterReturnDto, destruction, guardian, leapStone, contentMap.get(Category.가디언토벌));
     }
 
 
-    @PatchMapping("/character/save")
-    public ResponseEntity characterSave(CharacterSaveDto characterSaveDto) {
-        Character character = characterService.saveCharacter(characterSaveDto);
-        return new ResponseEntity<>(character, HttpStatus.OK);
-    }
-
-    private Market getMarketData(double level, String categoryName) {
-        if (level > 1580) {
-            if (categoryName.equals("파괴석")) {
-                return marketService.getMarketByName("정제된 파괴강석");
-            }
-            if (categoryName.equals("수호석")) {
-                return marketService.getMarketByName("정제된 수호강석");
-            }
-            if (categoryName.equals("돌파석")) {
-                return marketService.getMarketByName("찬란한 명예의 돌파석");
-            }
-        } else if (level >= 1490 && level < 1580) {
-            if (categoryName.equals("파괴석")) {
-                return marketService.getMarketByName("파괴강석");
-            }
-            if (categoryName.equals("수호석")) {
-                return marketService.getMarketByName("수호강석");
-            }
-            if (categoryName.equals("돌파석")) {
-                return marketService.getMarketByName("경이로운 명예의 돌파석");
-            }
-        } else {
-            if (categoryName.equals("파괴석")) {
-                return marketService.getMarketByName("파괴석 결정");
-            }
-            if (categoryName.equals("수호석")) {
-                return marketService.getMarketByName("수호석 결정");
-            }
-            if (categoryName.equals("돌파석")) {
-                return marketService.getMarketByName("위대한 명예의 돌파석");
-            }
-        }
-        return null;
-    }
-
-    public void calculateChaos(CharacterReturnDto characterReturnDto, Market destruction, Market guardian, DayContent dayContent) {
+    public void calculateChaos(CharacterReturnDto characterReturnDto, MarketContentResourceDto destruction, MarketContentResourceDto guardian, DayContent dayContent) {
         double price = 0;
         if (characterReturnDto.getChaosGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
@@ -132,7 +133,11 @@ public class CharacterApiController {
         characterReturnDto.setChaosProfit(price);
     }
 
-    private void calculateGuardian(CharacterReturnDto characterReturnDto, Market destruction, Market guardian, Market leapStone, DayContent dayContent) {
+    private void calculateGuardian(CharacterReturnDto characterReturnDto,
+                                   MarketContentResourceDto destruction,
+                                   MarketContentResourceDto guardian,
+                                   MarketContentResourceDto leapStone,
+                                   DayContent dayContent) {
         double price = 0;
         if (characterReturnDto.getGuardianGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
@@ -157,8 +162,8 @@ public class CharacterApiController {
         characterReturnDto.setGuardianProfit(price);
     }
 
-    private double calculateBundle(Market data, double count, double price) {
-        price += (data.getRecentPrice() * count) / data.getBundleCount();
+    private double calculateBundle(MarketContentResourceDto dto, double count, double price) {
+        price += (dto.getRecentPrice() * count) / dto.getBundleCount();
         return Math.round(price * 100.0) / 100.0;
     }
 }

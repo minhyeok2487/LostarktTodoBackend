@@ -11,8 +11,12 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     List<Content> findByLevelGreaterThanEqual(double level);
 
-    @Query("select c from DayContent c where c.level <= :level and c.dayContentCategory = :contentCategory order by c.level desc")
-    List<DayContent> findDayContentByLevel(@Param("level") double level, @Param("contentCategory") Category category);
+    @Query("select c from DayContent c " +
+            "where c.level <= :level " +
+            "and c.dayContentCategory = :contentCategory " +
+            "order by c.level desc")
+    List<DayContent> findDayContentByLevel(
+            @Param("level") double level, @Param("contentCategory") Category category);
 
     DayContent findTop1ByLevelLessThanEqualOrderByLevelDesc(double level);
 
