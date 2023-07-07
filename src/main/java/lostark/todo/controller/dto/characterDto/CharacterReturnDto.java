@@ -2,6 +2,10 @@ package lostark.todo.controller.dto.characterDto;
 
 import lombok.Data;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.content.Category;
+import lostark.todo.domain.content.DayContent;
+
+import java.util.Map;
 
 @Data
 public class CharacterReturnDto {
@@ -45,4 +49,5 @@ public class CharacterReturnDto {
         this.chaosName = chaosName;
         this.chaosProfit = chaosProfit;
     }
+
 }

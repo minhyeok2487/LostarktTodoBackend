@@ -6,7 +6,9 @@ import lostark.todo.domain.content.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +46,13 @@ public class ContentService {
         return updated;
     }
 
-    public DayContent getDayContentByLevel(double level) {
-        return (DayContent) contentRepository.findByLevelLessThanEqualOrderByLevelDesc(level).get(0);
+    public Map<Category, DayContent> getDayContentByLevel(double level) {
+        DayContent chaosContent = contentRepository.findDayContentByLevel(level, Category.카오스던전).get(0);
+        DayContent guardianContent = contentRepository.findDayContentByLevel(level, Category.가디언토벌).get(0);
+
+        Map<Category, DayContent> dayContentMap = new HashMap<>();
+        dayContentMap.put(Category.카오스던전, chaosContent);
+        dayContentMap.put(Category.가디언토벌, guardianContent);
+        return dayContentMap;
     }
 }

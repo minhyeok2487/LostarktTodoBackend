@@ -1,5 +1,6 @@
 package lostark.todo.service;
 
+import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.Content;
 import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.DayContent;
@@ -16,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
 class ContentServiceTest {
 
     @Autowired ContentService contentService;
@@ -36,8 +36,8 @@ class ContentServiceTest {
     @Test
     public void getDayContentByLevelTest() {
         double level = 1618.5;
-        //Content content = contentRepository.findByLevelLessThanEqualOrderByLevelDesc(level);
-
-        //System.out.println("contentList[0] = " + content);
+        List<DayContent> content = contentRepository.findDayContentByLevel(level, Category.카오스던전);
+        System.out.println("content = " + content.toString());
     }
+
 }
