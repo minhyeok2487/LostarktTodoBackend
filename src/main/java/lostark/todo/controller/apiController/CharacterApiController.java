@@ -1,4 +1,4 @@
-package lostark.todo.controller.api;
+package lostark.todo.controller.apiController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.lostarkApi.LostarkMemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,30 +25,25 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/character")
 public class CharacterApiController {
 
+    /**
+     * 캐릭터 관련 RestApi
+     */
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
     private final MemberService memberService;
+    private final LostarkMemberService lostarkMemberService;
 
-    private static List<String> makeDayContentResourceNames() {
-        List<String> dayContentResource = new ArrayList<>();
-        dayContentResource.add("정제된 파괴강석");
-        dayContentResource.add("정제된 수호강석");
-        dayContentResource.add("찬란한 명예의 돌파석");
-
-        dayContentResource.add("파괴강석");
-        dayContentResource.add("수호강석");
-        dayContentResource.add("경이로운 명예의 돌파석");
-
-        dayContentResource.add("파괴석 결정");
-        dayContentResource.add("수호석 결정");
-        dayContentResource.add("위대한 명예의 돌파석");
-        return dayContentResource;
-    }
-
-    @GetMapping("/character/selectedList")
+    /**
+     * header : username
+     * 회원에 등록된 캐릭터리스트 중 selected = true 리스트 가져옴
+     * Market DB에서 일일컨텐츠 수익 계산에 필요한 데이터 가져옴
+     * 휴식게이지를 참고하여 일일컨텐츠 수익 계산
+     */
+    @GetMapping("/selectedList")
     public ResponseEntity characterList(HttpServletRequest request) {
         try {
             // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
@@ -62,14 +58,10 @@ public class CharacterApiController {
                 // character 엔티티로 dto 객체 생성
                 CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
 
-                // 객체 레벨에 맞는 일일 컨텐츠 가져옴
+                // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
                 Map<Category, DayContent> contentMap = contentService.getDayContentByLevel(characterReturnDto.getItemLevel());
-
-                // 계산
                 calculateDayContent(characterReturnDto, contentMap, contentResource);
-
                 characterReturnDtoList.add(characterReturnDto);
-                System.out.println("characterReturnDto = " + characterReturnDto.toString());
             }
             return new ResponseEntity<>(characterReturnDtoList, HttpStatus.OK);
         } catch (Exception e) {
@@ -77,7 +69,10 @@ public class CharacterApiController {
         }
     }
 
-    @PatchMapping("/character")
+    /**
+     * 캐릭터 데이터 수정
+     */
+    @PatchMapping()
     public ResponseEntity characterSave(CharacterSaveDto characterSaveDto) {
         Character character = characterService.saveCharacter(characterSaveDto);
         return new ResponseEntity<>(character, HttpStatus.OK);
@@ -104,31 +99,40 @@ public class CharacterApiController {
             guardian = contentResource.get("정제된 수호강석");
             leapStone = contentResource.get("찬란한 명예의 돌파석");
         }
-
-        calculateChaos(characterReturnDto, destruction, guardian, contentMap.get(Category.카오스던전));
+        MarketContentResourceDto jewelry = contentResource.get("1레벨");
+        calculateChaos(characterReturnDto, destruction, guardian, jewelry, contentMap.get(Category.카오스던전));
         calculateGuardian(characterReturnDto, destruction, guardian, leapStone, contentMap.get(Category.가디언토벌));
     }
 
 
-    public void calculateChaos(CharacterReturnDto characterReturnDto, MarketContentResourceDto destruction, MarketContentResourceDto guardian, DayContent dayContent) {
+    public void calculateChaos(CharacterReturnDto characterReturnDto,
+                               MarketContentResourceDto destruction,
+                               MarketContentResourceDto guardian,
+                               MarketContentResourceDto jewelry,
+                               DayContent dayContent) {
         double price = 0;
         if (characterReturnDto.getChaosGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
+                price = calculateBundle(jewelry, dayContent.getJewelry(), price);
+                price += dayContent.getGold();
             }
         } else if (characterReturnDto.getChaosGauge() < 40 && characterReturnDto.getChaosGauge() >= 20) {
             for (int i = 0; i < 3; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
+                price = calculateBundle(jewelry, dayContent.getJewelry(), price);
+                price += dayContent.getGold();
             }
         } else {
             for (int i = 0; i < 2; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
+                price = calculateBundle(jewelry, dayContent.getJewelry(), price);
+                price += dayContent.getGold();
             }
         }
-        price += dayContent.getGold();
         characterReturnDto.setChaosName(dayContent.getName());
         characterReturnDto.setChaosProfit(price);
     }
@@ -160,6 +164,23 @@ public class CharacterApiController {
         }
         characterReturnDto.setGuardianName(dayContent.getName());
         characterReturnDto.setGuardianProfit(price);
+    }
+
+    private static List<String> makeDayContentResourceNames() {
+        List<String> dayContentResource = new ArrayList<>();
+        dayContentResource.add("정제된 파괴강석");
+        dayContentResource.add("정제된 수호강석");
+        dayContentResource.add("찬란한 명예의 돌파석");
+
+        dayContentResource.add("파괴강석");
+        dayContentResource.add("수호강석");
+        dayContentResource.add("경이로운 명예의 돌파석");
+
+        dayContentResource.add("파괴석 결정");
+        dayContentResource.add("수호석 결정");
+        dayContentResource.add("위대한 명예의 돌파석");
+        dayContentResource.add("1레벨");
+        return dayContentResource;
     }
 
     private double calculateBundle(MarketContentResourceDto dto, double count, double price) {

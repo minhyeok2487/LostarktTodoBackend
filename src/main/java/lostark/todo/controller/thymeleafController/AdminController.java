@@ -1,4 +1,4 @@
-package lostark.todo.controller;
+package lostark.todo.controller.thymeleafController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

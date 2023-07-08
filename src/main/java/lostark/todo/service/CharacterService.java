@@ -31,4 +31,14 @@ public class CharacterService {
         character.update(characterSaveDto);
         return character;
     }
+
+    public void changeAll() {
+        for (Character character : characterRepository.findAll()) {
+            if(character.getItemLevel() >= 1415) {
+                character.setSelected(true);
+            } else {
+                character.setSelected(false);
+            }
+        }
+    }
 }

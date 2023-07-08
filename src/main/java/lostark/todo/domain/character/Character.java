@@ -54,7 +54,7 @@ public class Character {
         characterClassName = jsonObject.get("CharacterClassName").toString();
         serverName = jsonObject.get("ServerName").toString();
         itemLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",",""));
-        selected = false;
+        selected = true;
     }
 
     public Character changeSelected() {

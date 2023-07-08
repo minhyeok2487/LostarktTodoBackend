@@ -30,9 +30,12 @@
 <script>
     // 임시 id
     var testUsername = "qwe2487";
-    $.ajax( "character/list/"+testUsername,
+    $.ajax( "character/selectedList/",
         {
             method: 'get',
+            header: {
+                "username" : testUsername
+            },
             data : {},
             dataType: 'json'
         })
@@ -127,7 +130,7 @@
 
     function saveInfo(button) {
         var data = makeSaveData(button);
-        $.ajax( "character/save",
+        $.ajax( "character",
             {
                 method: 'patch',
                 data : data,

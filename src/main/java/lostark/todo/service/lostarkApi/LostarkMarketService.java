@@ -2,11 +2,12 @@ package lostark.todo.service.lostarkApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.marketDto.AuctionDto;
+import lostark.todo.controller.dto.marketDto.MarketReturnDto;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
-import lostark.todo.service.MemberService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,12 +26,10 @@ import java.util.List;
 public class LostarkMarketService {
 
     private final LostarkApiService lostarkApiService;
-    private final MemberRepository memberRepository;
     private final MarketRepository marketRepository;
 
-
-    public List<Market> getMarketData(int categoryCode, String username) throws Exception {
-        Member member = memberRepository.findByUsername(username);
+    // 거래소 데이터 가져와서 marketdb에 저장
+    public List<Market> getMarketData(int categoryCode, Member member) throws Exception {
 
         int pageNo = 0;
         JSONObject jsonObject = getMarketDataPaging(categoryCode, member, pageNo);
@@ -63,5 +62,35 @@ public class LostarkMarketService {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(inputStreamReader);
         return jsonObject;
+    }
+
+    //경매장 데이터 가져오기
+    public MarketReturnDto getAuctionItems(AuctionDto auctionDto, Member member) {
+        int categoryCode = auctionDto.getCategoryCode();
+        String itemName = auctionDto.getItemName();
+        try {
+            String link = "https://developer-lostark.game.onstove.com/auctions/items";
+            String parameter = "{"
+                    + "Sort : \"BUY_PRICE\""
+                    + ",CategoryCode : " + categoryCode
+                    + ",ItemTier : 3"
+                    + ",ItemName : \""+ itemName +"\""
+                    + ",PageNo : 1"
+                    + ",SortCondition : \"ASC\""
+                    + "}";
+            InputStreamReader inputStreamReader = lostarkApiService.LostarkPostApi(link, parameter, member.getApiKey());
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(inputStreamReader);
+
+            JSONArray jsonArray = (JSONArray) jsonObject.get("Items");
+            JSONObject item = (JSONObject) jsonArray.get(0);
+
+            Market market = Market.createAuctionItem(item, itemName, categoryCode);
+            Market saved = marketRepository.save(market);
+            MarketReturnDto marketReturnDto = new MarketReturnDto(saved);
+            return marketReturnDto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
