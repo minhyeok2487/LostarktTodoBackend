@@ -1,17 +1,17 @@
 package lostark.todo.controller.dto.characterDto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CharacterSaveDto {
 
-    private long id;
-
     private String characterName;
-
-    private String characterClassName;
-
-    private double itemLevel; //아이템레벨
 
     private int chaos; //일일숙제 카오스던전 돌았는지 체크(0, 1, 2)
 

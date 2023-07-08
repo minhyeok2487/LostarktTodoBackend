@@ -2,148 +2,110 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: header" />
 <body>
-<div class="container">
+<div class="container-lg">
     <div th:replace="fragments/nav :: nav"/>
     <div>
-        <div th:id="character_info">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>캐릭터 이름</th>
-                        <th>캐릭터 클래스</th>
-                        <th>아이템 레벨</th>
-                        <th>카오스 던전</th>
-                        <th>가디언 토벌</th>
-                        <th>저장</th>
-                    </tr>
-                </thead>
-                <tbody th:id="character_table">
-
-                </tbody>
-            </table>
+        <h2>일일숙제 다하면 얼마?</h2>
+        <h5 th:text="'총 '+${sum}+' Gold'"></h5>
+    </div>
+    <div class="row row-cols-3">
+        <div class="col" th:each="character : ${characterList}" style="border: 1px solid #bebebf; margin-bottom: 5px;">
+            <div th:name="characterInfo">
+                <span th:name="characterName" th:text="${character.characterName}"></span>
+                <span th:name="characterClassName" th:text="${character.characterClassName}"></span>
+                <span th:name="itemLevel" th:text="'Lv.'+${character.itemLevel}"></span>
+                <input class="btn btn-primary" type="button" th:onclick="saveTodo([[${character.characterName}]])" value="저장">
+            </div>
+            <div th:name="character-dayContent">
+                <div th:name="chaosContent" style="background-color: #bacbe6">
+                    <span style="font-weight: bold;" th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit} "></span><br>
+                    휴식게이지: <input type="number" th:value="${character.chaosGauge}" style="width: 50px">
+                    <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaos>=1}" style="zoom: 1.4">
+                    <input th:name="chaos2" type="checkbox" name="chaosChecked" th:checked="${character.chaos==2}" style="zoom: 1.4">
+                </div>
+                <div th:name="guardianContent" style="background-color: #fff3cd">
+                    <span style="font-weight: bold;" th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit} "></span><br>
+                    휴식게이지: <input type="number" th:value="${character.guardianGauge}" style="width: 50px">
+                    <input th:name="guardian1" type="checkbox" name="guardianChecked" th:checked="${character.guardian>=1}" style="zoom: 1.4">
+                    <input th:name="guardian2" type="checkbox" name="guardianChecked" th:checked="${character.guardian==2}" style="zoom: 1.4">
+                </div>
+            </div>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
 </body>
 <script>
-    // 임시 id
-    var testUsername = "qwe2487";
-    $.ajax( "character/selectedList/",
-        {
-            method: 'get',
-            header: {
-                "username" : testUsername
-            },
-            data : {},
-            dataType: 'json'
-        })
-        .done(function(result) {
-            var html = '';
-            var number = 0;
-            result.forEach(c => {
-                html += '<tr>';
-                html += `<td>${c.id}</td>`;
-                html += `<td>${c.characterName}</td>`;
-                html += `<td>${c.characterClassName}</td>`;
-                html += `<td>${c.itemLevel}</td>`;
+    function makeData(characterName) {
+        var characterInfoElements = document.querySelectorAll('div[name="characterInfo"]');
+        var characterInfoElement;
 
-                html += '<td>';
-                html += `${c.chaosName}, 예상 수익 : ${c.chaosProfit}<br>`;
-                if(c.chaos == 0) {
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
-                }
-                if(c.chaos == 1) {
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
-                }
-                if(c.chaos == 2) {
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
-                }
-                html += `<input type="number" value="${c.chaosGauge}"></td>`;
-
-                html += '<td>';
-                if(c.guardian == 0) {
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
-                }
-                if(c.guardian == 1) {
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked">';
-                }
-                if(c.guardian == 2) {
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
-                    html += '<input type="checkbox" style="zoom:1.5;" name="chaosChecked" checked>';
-                }
-                html += `<input type="number" value="${c.guardianGauge}"></td>`;
-
-                html += `<td><input type="button" onclick="saveInfo(this);" value="SAVE"></td>`;
-                html += '</tr>';
-                number++;
-            });
-            $('#character_table').append(html);
-        })
-        .fail(function(request, status, error) {
-            console.log(error);
-        });
-
-    function makeSaveData(button) {
-        var row = button.parentNode.parentNode;
-        var cells = row.getElementsByTagName("td");
-
-        var rowData = {};
-
-        rowData.id = parseInt(cells[0].innerHTML);
-        rowData.characterName = cells[1].innerHTML;
-        rowData.characterClassName = cells[2].innerHTML;
-        rowData.itemLevel = parseFloat(cells[3].innerHTML);
-
-        var checkboxes = cells[4].getElementsByTagName("input");
-        rowData.chaos = 0;
-        if(checkboxes[0].checked) {
-            rowData.chaos++;
-        }
-        if(checkboxes[1].checked) {
-            rowData.chaos++;
+        // 캐릭터명을 비교하여 일치하는 요소를 찾음
+        for (var i = 0; i < characterInfoElements.length; i++) {
+            var nameElement = characterInfoElements[i].querySelector('span[name="characterName"]');
+            if (nameElement.textContent === characterName) {
+                characterInfoElement = characterInfoElements[i];
+                break;
+            }
         }
 
-        var numberInput = cells[4].getElementsByTagName("input")[2];
-        rowData.chaosGauge = parseInt(numberInput.value);
-
-        var guardianCheckboxes = cells[5].getElementsByTagName("input");
-        rowData.guardian = 0;
-        if(checkboxes[0].checked) {
-            guardianCheckboxes.guardian++;
-        }
-        if(checkboxes[1].checked) {
-            guardianCheckboxes.guardian++;
+        if (!characterInfoElement) {
+            console.error('Character not found.');
+            return;
         }
 
-        var guardianInput = cells[5].getElementsByTagName("input")[2];
-        rowData.guardianGauge = parseInt(guardianInput.value);
+        var characterDayContentElement = characterInfoElement.nextElementSibling;
+        var chaosContentElement = characterDayContentElement.querySelector('[name="chaosContent"]');
+        var guardianContentElement = characterDayContentElement.querySelector('[name="guardianContent"]');
 
-        return rowData;
+        var chaos = 0;
+        var chaosGauge = parseInt(chaosContentElement.querySelector('input[type="number"]').value);
+        if (chaosContentElement.querySelector('[name="chaos1"]').checked) {
+            chaos++;
+        }
+        if (chaosContentElement.querySelector('[name="chaos2"]').checked) {
+            chaos++;
+        }
+
+        var guardian = 0;
+        var guardianGauge = parseInt(guardianContentElement.querySelector('input[type="number"]').value);
+        if (guardianContentElement.querySelector('[name="guardian1"]').checked) {
+            guardian++;
+        }
+        if (guardianContentElement.querySelector('[name="guardian2"]').checked) {
+            guardian++;
+        }
+
+        var character = {
+            characterName: characterName,
+            chaos: chaos,
+            chaosGauge: chaosGauge,
+            guardian: guardian,
+            guardianGauge: guardianGauge
+        };
+
+        console.log(character);
+        return JSON.stringify(character);
     }
 
-    function saveInfo(button) {
-        var data = makeSaveData(button);
-        $.ajax( "character",
+
+
+    function saveTodo(characterName) {
+        var url = window.location.href.split('/');
+        var username = url[url.length - 1];
+        var data = makeData(characterName);
+        $.ajax("/api/character",
             {
                 method: 'patch',
-                data : data,
+                contentType: 'application/json',
+                data: data,
                 dataType: 'json'
             })
-            .done(function(result) {
+            .done(function (result) {
                 console.log(result);
             })
-            .fail(function(request, status, error) {
+            .fail(function (request, status, error) {
                 console.log(error);
             });
     }
-
-
 </script>
 </html>

@@ -27,18 +27,9 @@ public class CharacterService {
     }
 
     public Character saveCharacter(CharacterSaveDto characterSaveDto) {
-        Character character = characterRepository.findById(characterSaveDto.getId()).orElseThrow();
+        Character character = characterRepository.findByCharacterName(characterSaveDto.getCharacterName());
         character.update(characterSaveDto);
         return character;
     }
 
-    public void changeAll() {
-        for (Character character : characterRepository.findAll()) {
-            if(character.getItemLevel() >= 1415) {
-                character.setSelected(true);
-            } else {
-                character.setSelected(false);
-            }
-        }
-    }
 }

@@ -35,7 +35,6 @@ public class CharacterApiController {
     private final MarketService marketService;
     private final ContentService contentService;
     private final MemberService memberService;
-    private final LostarkMemberService lostarkMemberService;
 
     /**
      * header : username
@@ -52,17 +51,9 @@ public class CharacterApiController {
             // 거래소 데이터 가져옴(Map)
             Map<String , MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
 
-            List<CharacterReturnDto> characterReturnDtoList = new ArrayList<>(); //출력할 리스트
+            // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
+            List<CharacterReturnDto> characterReturnDtoList = contentService.calculateDayContent(characterList, contentResource);
 
-            for (Character character : characterList) {
-                // character 엔티티로 dto 객체 생성
-                CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
-
-                // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
-                Map<Category, DayContent> contentMap = contentService.getDayContentByLevel(characterReturnDto.getItemLevel());
-                calculateDayContent(characterReturnDto, contentMap, contentResource);
-                characterReturnDtoList.add(characterReturnDto);
-            }
             return new ResponseEntity<>(characterReturnDtoList, HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -73,98 +64,14 @@ public class CharacterApiController {
      * 캐릭터 데이터 수정
      */
     @PatchMapping()
-    public ResponseEntity characterSave(CharacterSaveDto characterSaveDto) {
+    public ResponseEntity characterSave(@RequestBody CharacterSaveDto characterSaveDto) {
+        System.out.println("characterSaveDto.getCharacterName() = " + characterSaveDto.getCharacterName());
         Character character = characterService.saveCharacter(characterSaveDto);
-        return new ResponseEntity<>(character, HttpStatus.OK);
+        Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
+        CharacterReturnDto result = contentService.calculateDayContentOne(character, contentResource);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    private void calculateDayContent(CharacterReturnDto characterReturnDto,
-                                     Map<Category, DayContent> contentMap,
-                                     Map<String , MarketContentResourceDto> contentResource) {
-        MarketContentResourceDto destruction = null;
-        MarketContentResourceDto guardian = null;
-        MarketContentResourceDto leapStone = null;
-        if (characterReturnDto.getItemLevel() >= 1415) {
-            destruction = contentResource.get("파괴석 결정");
-            guardian = contentResource.get("수호석 결정");
-            leapStone = contentResource.get("위대한 명예의 돌파석");
-        }
-        if (characterReturnDto.getItemLevel() >= 1540) {
-            destruction = contentResource.get("파괴강석");
-            guardian = contentResource.get("수호강석");
-            leapStone = contentResource.get("경이로운 명예의 돌파석");
-        }
-        if (characterReturnDto.getItemLevel() >= 1580) {
-            destruction = contentResource.get("정제된 파괴강석");
-            guardian = contentResource.get("정제된 수호강석");
-            leapStone = contentResource.get("찬란한 명예의 돌파석");
-        }
-        MarketContentResourceDto jewelry = contentResource.get("1레벨");
-        calculateChaos(characterReturnDto, destruction, guardian, jewelry, contentMap.get(Category.카오스던전));
-        calculateGuardian(characterReturnDto, destruction, guardian, leapStone, contentMap.get(Category.가디언토벌));
-    }
-
-
-    public void calculateChaos(CharacterReturnDto characterReturnDto,
-                               MarketContentResourceDto destruction,
-                               MarketContentResourceDto guardian,
-                               MarketContentResourceDto jewelry,
-                               DayContent dayContent) {
-        double price = 0;
-        if (characterReturnDto.getChaosGauge() >= 40) {
-            for (int i = 0; i < 4; i++) {
-                price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
-                price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
-                price = calculateBundle(jewelry, dayContent.getJewelry(), price);
-                price += dayContent.getGold();
-            }
-        } else if (characterReturnDto.getChaosGauge() < 40 && characterReturnDto.getChaosGauge() >= 20) {
-            for (int i = 0; i < 3; i++) {
-                price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
-                price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
-                price = calculateBundle(jewelry, dayContent.getJewelry(), price);
-                price += dayContent.getGold();
-            }
-        } else {
-            for (int i = 0; i < 2; i++) {
-                price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
-                price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
-                price = calculateBundle(jewelry, dayContent.getJewelry(), price);
-                price += dayContent.getGold();
-            }
-        }
-        characterReturnDto.setChaosName(dayContent.getName());
-        characterReturnDto.setChaosProfit(price);
-    }
-
-    private void calculateGuardian(CharacterReturnDto characterReturnDto,
-                                   MarketContentResourceDto destruction,
-                                   MarketContentResourceDto guardian,
-                                   MarketContentResourceDto leapStone,
-                                   DayContent dayContent) {
-        double price = 0;
-        if (characterReturnDto.getGuardianGauge() >= 40) {
-            for (int i = 0; i < 4; i++) {
-                price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
-                price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
-                price = calculateBundle(leapStone, dayContent.getLeapStone(), price);
-            }
-        } else if (characterReturnDto.getGuardianGauge() < 40 && characterReturnDto.getGuardianGauge() >= 20) {
-            for (int i = 0; i < 3; i++) {
-                price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
-                price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
-                price = calculateBundle(leapStone, dayContent.getLeapStone(), price);
-            }
-        } else {
-            for (int i = 0; i < 2; i++) {
-                price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
-                price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
-                price = calculateBundle(leapStone, dayContent.getLeapStone(), price);
-            }
-        }
-        characterReturnDto.setGuardianName(dayContent.getName());
-        characterReturnDto.setGuardianProfit(price);
-    }
 
     private static List<String> makeDayContentResourceNames() {
         List<String> dayContentResource = new ArrayList<>();
@@ -183,8 +90,5 @@ public class CharacterApiController {
         return dayContentResource;
     }
 
-    private double calculateBundle(MarketContentResourceDto dto, double count, double price) {
-        price += (dto.getRecentPrice() * count) / dto.getBundleCount();
-        return Math.round(price * 100.0) / 100.0;
-    }
+
 }
