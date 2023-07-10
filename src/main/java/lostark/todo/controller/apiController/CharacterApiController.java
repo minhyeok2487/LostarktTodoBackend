@@ -4,23 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
-import lostark.todo.service.lostarkApi.LostarkMemberService;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,16 +48,35 @@ public class CharacterApiController {
             List<Character> characterList = memberService.findMemberSelected(request.getHeader("username")).getCharacters();
 
             // 거래소 데이터 가져옴(Map)
-            Map<String , MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
+            List<String> dayContentResource = marketService.dayContentResource();
+            Map<String , MarketContentResourceDto> contentResource = marketService.getContentResource(dayContentResource);
 
             // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
             List<CharacterReturnDto> characterReturnDtoList = contentService.calculateDayContent(characterList, contentResource);
 
-            return new ResponseEntity<>(characterReturnDtoList, HttpStatus.OK);
+            // Profit 순서대로 정렬하기
+            JSONArray sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
+
+            // Profit 합 구하기
+            double sum = 0;
+            for (CharacterReturnDto returnDto : characterReturnDtoList) {
+                sum += returnDto.getChaosProfit();
+                sum += returnDto.getGuardianProfit();
+            }
+            sum = Math.round(sum * 100.0) / 100.0;
+
+            // 결과 출력
+            JSONObject resultObject = new JSONObject();
+            resultObject.put("characters", characterReturnDtoList);
+            resultObject.put("sumDayContentProfit", sum);
+            resultObject.put("sortDayContentProfit", sortedDayContentProfit);
+
+            return new ResponseEntity<>(resultObject, HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * 캐릭터 데이터 수정

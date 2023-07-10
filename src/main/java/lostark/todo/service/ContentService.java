@@ -3,16 +3,16 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dto.DayContentDto;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
+import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -179,5 +179,29 @@ public class ContentService {
         return Math.round(price * 100.0) / 100.0;
     }
 
+    public JSONArray sortDayContentProfit(List<CharacterReturnDto> characterReturnDtoList) {
+        Map<DayContentProfitDto, Double> result = new HashMap<>();
+        for (CharacterReturnDto returnDto : characterReturnDtoList) {
+            DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), Category.가디언토벌, returnDto.getGuardianName());
+            double guardianProfit = returnDto.getGuardianProfit();
+            result.put(guardian, guardianProfit);
+
+            DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), Category.카오스던전,returnDto.getChaosName());
+            double chaosProfit = returnDto.getChaosProfit();
+            result.put(chaos, chaosProfit);
+        }
+        List<DayContentProfitDto> listKeySet = new ArrayList<>(result.keySet());
+        JSONArray jsonArray = new JSONArray();
+        Collections.sort(listKeySet, (value1, value2) -> (result.get(value2).compareTo(result.get(value1))));
+        for(DayContentProfitDto key : listKeySet) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("characterName", key.getCharacterName());
+            jsonObject.put("category", key.getCategory());
+            jsonObject.put("contentName", key.getContentName());
+            jsonObject.put("profit", result.get(key));
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
+    }
 
 }

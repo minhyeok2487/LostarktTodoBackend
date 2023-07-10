@@ -7,6 +7,7 @@ import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,5 +41,22 @@ public class MarketService {
 
     public Market getMarketByName(String name) {
         return marketRepository.findByName(name);
+    }
+
+    public List<String> dayContentResource() {
+        List<String> dayContentResource = new ArrayList<>();
+        dayContentResource.add("정제된 파괴강석");
+        dayContentResource.add("정제된 수호강석");
+        dayContentResource.add("찬란한 명예의 돌파석");
+
+        dayContentResource.add("파괴강석");
+        dayContentResource.add("수호강석");
+        dayContentResource.add("경이로운 명예의 돌파석");
+
+        dayContentResource.add("파괴석 결정");
+        dayContentResource.add("수호석 결정");
+        dayContentResource.add("위대한 명예의 돌파석");
+        dayContentResource.add("1레벨");
+        return dayContentResource;
     }
 }

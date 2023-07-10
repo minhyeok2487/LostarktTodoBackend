@@ -2,33 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: header" />
 <body>
-<div class="container-lg">
-    <div th:replace="fragments/nav :: nav"/>
-    <div>
-        <h2>일일숙제 다하면 얼마?</h2>
-        <h5 th:text="'총 '+${sum}+' Gold'"></h5>
-    </div>
-    <div class="row row-cols-3">
-        <div class="col" th:each="character : ${characterList}" style="border: 1px solid #bebebf; margin-bottom: 5px;">
-            <div th:name="characterInfo">
-                <span th:name="characterName" th:text="${character.characterName}"></span>
-                <span th:name="characterClassName" th:text="${character.characterClassName}"></span>
-                <span th:name="itemLevel" th:text="'Lv.'+${character.itemLevel}"></span>
-                <input class="btn btn-primary" type="button" th:onclick="saveTodo([[${character.characterName}]])" value="저장">
+<div th:replace="fragments/nav :: nav"/>
+<div class="row row-cols-2" style="margin-left: 15px;">
+    <div class="col-md-9" style="margin-right: 15px;">
+        <div style="margin-bottom: 10px;">
+            <h2>숙제 체크</h2>
+        </div>
+        <div class="row row-cols-3">
+            <div class="col-md-4" th:each="character : ${characters}" style="margin-bottom: 15px;">
+                <div th:name="characterInfo" style="background-color: #bacbe6">
+                    <span th:name="characterName" th:text="${character.characterName}"></span>
+                    <span th:name="characterClassName" th:text="${character.characterClassName}"></span>
+                    <span th:name="itemLevel" th:text="'Lv.'+${character.itemLevel}"></span>
+                    <input class="btn btn-primary" type="button" th:onclick="saveTodo([[${character.characterName}]])" value="저장">
+                </div>
+                <div th:name="character-dayContent">
+                    <div th:name="chaosContent" style="background-color: #bacbe6">
+                        <span style="font-weight: bold;" th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit} "></span><br>
+                        휴식게이지: <input type="number" th:value="${character.chaosGauge}" style="width: 50px">
+                        <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaos>=1}" style="zoom: 1.4">
+                        <input th:name="chaos2" type="checkbox" name="chaosChecked" th:checked="${character.chaos==2}" style="zoom: 1.4">
+                    </div>
+                    <div th:name="guardianContent" style="background-color: #fff3cd">
+                        <span style="font-weight: bold;" th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit} "></span><br>
+                        휴식게이지: <input type="number" th:value="${character.guardianGauge}" style="width: 50px">
+                        <input th:name="guardian1" type="checkbox" name="guardianChecked" th:checked="${character.guardian>=1}" style="zoom: 1.4">
+                        <input th:name="guardian2" type="checkbox" name="guardianChecked" th:checked="${character.guardian==2}" style="zoom: 1.4">
+                    </div>
+                </div>
             </div>
-            <div th:name="character-dayContent">
-                <div th:name="chaosContent" style="background-color: #bacbe6">
-                    <span style="font-weight: bold;" th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit} "></span><br>
-                    휴식게이지: <input type="number" th:value="${character.chaosGauge}" style="width: 50px">
-                    <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaos>=1}" style="zoom: 1.4">
-                    <input th:name="chaos2" type="checkbox" name="chaosChecked" th:checked="${character.chaos==2}" style="zoom: 1.4">
-                </div>
-                <div th:name="guardianContent" style="background-color: #fff3cd">
-                    <span style="font-weight: bold;" th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit} "></span><br>
-                    휴식게이지: <input type="number" th:value="${character.guardianGauge}" style="width: 50px">
-                    <input th:name="guardian1" type="checkbox" name="guardianChecked" th:checked="${character.guardian>=1}" style="zoom: 1.4">
-                    <input th:name="guardian2" type="checkbox" name="guardianChecked" th:checked="${character.guardian==2}" style="zoom: 1.4">
-                </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div>
+            <h2>숙제 수익</h2>
+            <h5 th:text="'총 '+${sumDayContentProfit}+' Gold'"></h5>
+            <div th:each="profit : ${sortDayContentProfit}" style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; padding: 5px;">
+                <span th:text="${profit.characterName}+' / '+${profit.category}"></span><br>
+                <spanp th:text="${profit.contentName}+':'+${profit.profit}+' gold'"></spanp>
             </div>
         </div>
     </div>
