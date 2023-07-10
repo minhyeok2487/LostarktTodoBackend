@@ -95,13 +95,14 @@ public class Character {
         this.itemLevel = itemMaxLevel;
     }
 
-    public void calculateChaos(int subtract) {
-        this.chaosGauge = subtract;
-        this.chaos--;
+    public void calculateChaos(int result) {
+        this.chaosGauge = result;
+        this.chaos = 0;
     }
 
-    public void calculateGuardian(int subtract) {
-        this.guardianGauge = subtract;
-        this.guardian--;
+    public void calculateGuardian(int result) {
+        this.guardianGauge = result;
+        this.guardian = 0;
+
     }
 }
