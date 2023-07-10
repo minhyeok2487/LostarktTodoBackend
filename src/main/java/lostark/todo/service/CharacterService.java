@@ -4,15 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.controller.dto.contentDto.DayContentCountDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
-import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.market.Market;
-import lostark.todo.domain.member.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -32,4 +28,10 @@ public class CharacterService {
         return character;
     }
 
+    public CharacterReturnDto changeContent(DayContentCountDto dto) {
+        Character character = characterRepository.findByCharacterName(dto.getCharacterName());
+        character.changeCount(dto.getCategory());
+        CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
+        return characterReturnDto;
+    }
 }

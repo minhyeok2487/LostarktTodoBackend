@@ -2,8 +2,10 @@ package lostark.todo.controller.apiController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.DayContentDto;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.controller.dto.contentDto.DayContentCountDto;
 import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
@@ -87,6 +89,15 @@ public class CharacterApiController {
         Character character = characterService.saveCharacter(characterSaveDto);
         Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
         CharacterReturnDto result = contentService.calculateDayContentOne(character, contentResource);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * 일일컨텐츠 체크 수정
+     */
+    @PatchMapping("/dayContent")
+    public ResponseEntity characterCheck(@RequestBody DayContentCountDto dto) {
+        CharacterReturnDto result = characterService.changeContent(dto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

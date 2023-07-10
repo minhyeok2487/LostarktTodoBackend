@@ -68,13 +68,13 @@ class ContentServiceTest {
             // 순서 구하기
             Map<DayContentProfitDto, Double> result = new HashMap<>();
             for (CharacterReturnDto returnDto : characterReturnDtoList) {
-                DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), Category.가디언토벌, returnDto.getGuardianName());
-                double guardianProfit = returnDto.getGuardianProfit();
-                result.put(guardian, guardianProfit);
-
-                DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), Category.카오스던전,returnDto.getChaosName());
-                double chaosProfit = returnDto.getChaosProfit();
-                result.put(chaos, chaosProfit);
+//                DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), Category.가디언토벌, returnDto.getGuardianName());
+//                double guardianProfit = returnDto.getGuardianProfit();
+//                result.put(guardian, guardianProfit);
+//
+//                DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), Category.카오스던전,returnDto.getChaosName());
+//                double chaosProfit = returnDto.getChaosProfit();
+//                result.put(chaos, chaosProfit);
             }
             List<DayContentProfitDto> listKeySet = new ArrayList<>(result.keySet());
             JSONArray jsonArray = new JSONArray();

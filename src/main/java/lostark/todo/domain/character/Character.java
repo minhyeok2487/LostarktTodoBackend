@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.domain.content.Category;
 import lostark.todo.domain.member.Member;
 import org.json.simple.JSONObject;
 
@@ -71,5 +72,22 @@ public class Character {
         this.chaosGauge = characterSaveDto.getChaosGauge();
         this.guardian = characterSaveDto.getGuardian();
         this.guardianGauge = characterSaveDto.getGuardianGauge();
+    }
+
+    public void changeCount(Category category) {
+        if (category.equals(Category.카오스던전)) {
+            if(this.chaos == 2) {
+                this.chaos = 0;
+            } else if(this.chaos == 0) {
+                this.chaos = 2;
+            }
+        }
+        if (category.equals(Category.가디언토벌)) {
+            if(this.guardian == 2) {
+                this.guardian = 0;
+            } else if(this.guardian == 0) {
+                this.guardian = 2;
+            }
+        }
     }
 }

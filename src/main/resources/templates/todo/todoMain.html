@@ -10,7 +10,7 @@
         </div>
         <div class="row row-cols-3">
             <div class="col-md-4" th:each="character : ${characters}" style="margin-bottom: 15px;">
-                <div th:name="characterInfo" style="background-color: #bacbe6">
+                <div th:name="characterInfo" style="box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
                     <span th:name="characterName" th:text="${character.characterName}"></span>
                     <span th:name="characterClassName" th:text="${character.characterClassName}"></span>
                     <span th:name="itemLevel" th:text="'Lv.'+${character.itemLevel}"></span>
@@ -18,13 +18,15 @@
                 </div>
                 <div th:name="character-dayContent">
                     <div th:name="chaosContent" style="background-color: #bacbe6">
-                        <span style="font-weight: bold;" th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit} "></span><br>
+                        <span style="font-weight: bold;" th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit}"
+                              th:styleappend="${character.chaos == 2 ? 'text-decoration:line-through; color: #dddddd;' : ''}"></span><br>
                         휴식게이지: <input type="number" th:value="${character.chaosGauge}" style="width: 50px">
                         <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaos>=1}" style="zoom: 1.4">
                         <input th:name="chaos2" type="checkbox" name="chaosChecked" th:checked="${character.chaos==2}" style="zoom: 1.4">
                     </div>
                     <div th:name="guardianContent" style="background-color: #fff3cd">
-                        <span style="font-weight: bold;" th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit} "></span><br>
+                        <span style="font-weight: bold;" th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit}"
+                              th:styleappend="${character.guardian == 2 ? 'text-decoration:line-through; color: #dddddd;' : ''}"></span><br>
                         휴식게이지: <input type="number" th:value="${character.guardianGauge}" style="width: 50px">
                         <input th:name="guardian1" type="checkbox" name="guardianChecked" th:checked="${character.guardian>=1}" style="zoom: 1.4">
                         <input th:name="guardian2" type="checkbox" name="guardianChecked" th:checked="${character.guardian==2}" style="zoom: 1.4">
@@ -36,8 +38,10 @@
     <div class="col-md-2">
         <div>
             <h2>숙제 수익</h2>
-            <h5 th:text="'총 '+${sumDayContentProfit}+' Gold'"></h5>
-            <div th:each="profit : ${sortDayContentProfit}" style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; padding: 5px;">
+            <h5 th:text="'총 예상 '+${sumDayContentProfit}+' Gold'"></h5>
+            <div th:each="profit : ${sortDayContentProfit}" th:name="profit-list"
+                 style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; padding: 5px; cursor: pointer;"
+                 th:styleappend="${profit.checked == 2 ? 'text-decoration:line-through; color: #dddddd;' : ''}" th:onclick="changeProfit([[${profit.characterName}]], [[${profit.category}]])">
                 <span th:text="${profit.characterName}+' / '+${profit.category}"></span><br>
                 <spanp th:text="${profit.contentName}+':'+${profit.profit}+' gold'"></spanp>
             </div>
@@ -46,6 +50,41 @@
 </div> <!-- /container -->
 </body>
 <script>
+
+    var profitList = document.querySelectorAll('div[name="profit-list"]');
+
+    profitList.forEach(function(content) {
+        content.addEventListener('mousedown', function() {
+            content.style.transform = 'scale(0.95)';
+        });
+
+        content.addEventListener('mouseup', function() {
+            content.style.transform = 'scale(1)';
+        });
+    });
+
+
+    function changeProfit(characterName, category) {
+        console.log(characterName, category);
+        var data = {
+            characterName : characterName,
+            category : category
+        }
+        $.ajax("/api/character/dayContent",
+            {
+                method: 'patch',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                dataType: 'json'
+            })
+            .done(function (result) {
+                location.reload();
+            })
+            .fail(function (request, status, error) {
+                console.log(error);
+            });
+    }
+
     function makeData(characterName) {
         var characterInfoElements = document.querySelectorAll('div[name="characterInfo"]');
         var characterInfoElement;
@@ -112,7 +151,7 @@
                 dataType: 'json'
             })
             .done(function (result) {
-                console.log(result);
+                location.reload();
             })
             .fail(function (request, status, error) {
                 console.log(error);

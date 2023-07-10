@@ -182,11 +182,11 @@ public class ContentService {
     public JSONArray sortDayContentProfit(List<CharacterReturnDto> characterReturnDtoList) {
         Map<DayContentProfitDto, Double> result = new HashMap<>();
         for (CharacterReturnDto returnDto : characterReturnDtoList) {
-            DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), Category.가디언토벌, returnDto.getGuardianName());
+            DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), Category.가디언토벌, returnDto.getGuardianName(), returnDto.getGuardian());
             double guardianProfit = returnDto.getGuardianProfit();
             result.put(guardian, guardianProfit);
 
-            DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), Category.카오스던전,returnDto.getChaosName());
+            DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), Category.카오스던전,returnDto.getChaosName(), returnDto.getChaos());
             double chaosProfit = returnDto.getChaosProfit();
             result.put(chaos, chaosProfit);
         }
@@ -198,6 +198,7 @@ public class ContentService {
             jsonObject.put("characterName", key.getCharacterName());
             jsonObject.put("category", key.getCategory());
             jsonObject.put("contentName", key.getContentName());
+            jsonObject.put("checked", key.getChecked());
             jsonObject.put("profit", result.get(key));
             jsonArray.add(jsonObject);
         }
