@@ -71,6 +71,16 @@
         content.addEventListener('mouseup', function () {
             content.style.transform = 'scale(1)';
         });
+
+        content.addEventListener('mouseover', function () {
+            var before = content.style.color;
+            content.style.color = 'gray';
+            content.addEventListener('mouseout', function () {
+                content.style.color = before;
+            });
+        });
+
+
     });
 
 

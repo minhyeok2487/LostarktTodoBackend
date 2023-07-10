@@ -1,6 +1,7 @@
 package lostark.todo.domain.character;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,8 +13,7 @@ import org.json.simple.JSONObject;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Table(name = "characters")
 public class Character {
@@ -93,5 +93,15 @@ public class Character {
 
     public void changeItemLevel(double itemMaxLevel) {
         this.itemLevel = itemMaxLevel;
+    }
+
+    public void calculateChaos(int subtract) {
+        this.chaosGauge = subtract;
+        this.chaos--;
+    }
+
+    public void calculateGuardian(int subtract) {
+        this.guardianGauge = subtract;
+        this.guardian--;
     }
 }
