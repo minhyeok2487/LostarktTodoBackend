@@ -90,4 +90,8 @@ public class Character {
             }
         }
     }
+
+    public void changeItemLevel(double itemMaxLevel) {
+        this.itemLevel = itemMaxLevel;
+    }
 }

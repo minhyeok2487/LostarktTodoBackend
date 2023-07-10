@@ -24,4 +24,5 @@ public class MemberService {
     public Member findMemberSelected(String username) {
         return memberRepository.findByUsernameSelected(username);
     }
+
 }
