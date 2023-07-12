@@ -3,7 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
-import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
@@ -18,19 +18,19 @@ public class CharacterService {
 
     private final CharacterRepository characterRepository;
 
-    public Character findCharacterByName(String characterName) {
-        return characterRepository.findByCharacterName(characterName);
-    }
-
-    public Character saveCharacter(CharacterSaveDto characterSaveDto) {
-        Character character = characterRepository.findByCharacterName(characterSaveDto.getCharacterName());
-        character.update(characterSaveDto);
+    /**
+     * 동일한 캐릭터 이름의 데이터 수정
+     * @return
+     */
+    public Character updateCharacter(CharacterRequestDto characterRequestDto) {
+        Character character = characterRepository.findByCharacterName(characterRequestDto.getCharacterName());
+        character.getCharacterContent().update(characterRequestDto);
         return character;
     }
 
     public CharacterReturnDto changeContent(DayContentCountDto dto) {
         Character character = characterRepository.findByCharacterName(dto.getCharacterName());
-        character.changeCount(dto.getCategory());
+        character.getCharacterContent().changeCount(dto.getCategory());
         CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
         return characterReturnDto;
     }

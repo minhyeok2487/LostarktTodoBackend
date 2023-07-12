@@ -2,14 +2,11 @@ package lostark.todo.controller.apiController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.DayContentDto;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
-import lostark.todo.controller.dto.characterDto.CharacterSaveDto;
+import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
-import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.Category;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
@@ -84,9 +81,9 @@ public class CharacterApiController {
      * 캐릭터 데이터 수정
      */
     @PatchMapping()
-    public ResponseEntity characterSave(@RequestBody CharacterSaveDto characterSaveDto) {
-        System.out.println("characterSaveDto.getCharacterName() = " + characterSaveDto.getCharacterName());
-        Character character = characterService.saveCharacter(characterSaveDto);
+    public ResponseEntity characterSave(@RequestBody CharacterRequestDto characterRequestDto) {
+        System.out.println("characterSaveDto.getCharacterName() = " + characterRequestDto.getCharacterName());
+        Character character = characterService.updateCharacter(characterRequestDto);
         Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
         CharacterReturnDto result = contentService.calculateDayContentOne(character, contentResource);
         return new ResponseEntity<>(result, HttpStatus.OK);

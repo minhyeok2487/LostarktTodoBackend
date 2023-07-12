@@ -17,22 +17,22 @@ public class SchedulerService {
     /**
      * 매일 오전 6시 일일 숙제 초기화
      */
-    @Scheduled(cron = "0 0 6 * * ?") // 매일 오전 6시에 실행
+    @Scheduled(cron = "0 6 6 * * ?") // 매일 오전 6시에 실행
     public void calculateDayContentGauge() {
         // 휴식게이지 계산
         for (Character character : characterRepository.findAll()) {
             int chaosResult = getChaosResult(character);
-            character.calculateChaos(chaosResult);
+            character.getCharacterContent().calculateChaos(chaosResult);
 
             int guardianResult = getGuardianResult(character);
-            character.calculateGuardian(guardianResult);
+            character.getCharacterContent().calculateGuardian(guardianResult);
         }
     }
 
     private int getGuardianResult(Character character) {
         int guardianResult = 0;
-        int guardian = character.getGuardian();
-        int guardianGauge = character.getGuardianGauge();
+        int guardian = character.getCharacterContent().getGuardianCheck();
+        int guardianGauge = character.getCharacterContent().getGuardianGauge();
         if(guardian == 0) {
             guardianResult = add(guardianGauge, 20);
         }
@@ -47,8 +47,8 @@ public class SchedulerService {
 
     private int getChaosResult(Character character) {
         int chaosResult = 0;
-        int chaos = character.getChaos();
-        int chaosGauge = character.getChaosGauge();
+        int chaos = character.getCharacterContent().getChaosCheck();
+        int chaosGauge = character.getCharacterContent().getChaosGauge();
         if(chaos == 0) {
             chaosResult = add(chaosGauge, 20);
         }

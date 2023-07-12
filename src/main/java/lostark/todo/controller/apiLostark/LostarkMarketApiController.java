@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/lostarkApi/market")
+@RequestMapping("/api/lostark/market")
 public class LostarkMarketApiController {
 
     private final LostarkMarketService marketService;

@@ -39,10 +39,10 @@ public class CharacterReturnDto {
         this.characterClassName = character.getCharacterClassName();
         this.characterName = character.getCharacterName();
         this.itemLevel = character.getItemLevel();
-        this.chaos = character.getChaos();
-        this.chaosGauge = character.getChaosGauge();
-        this.guardian = character.getGuardian();
-        this.guardianGauge = character.getGuardianGauge();
+        this.chaos = character.getCharacterContent().getChaosCheck();
+        this.chaosGauge = character.getCharacterContent().getChaosGauge();
+        this.guardian = character.getCharacterContent().getGuardianCheck();
+        this.guardianGauge = character.getCharacterContent().getGuardianGauge();
     }
 
     public void calculateChaos(String chaosName, double chaosProfit) {

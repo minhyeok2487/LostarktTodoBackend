@@ -23,7 +23,7 @@
                     <div th:name="chaosContent" style="background-color: #bacbe6">
                         <span style="font-weight: bold;"
                               th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit}"
-                              th:styleappend="${character.chaos == 2 ? 'text-decoration:line-through; color: #dddddd;' : ''}"></span><br>
+                              th:styleappend="${character.chaos == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}"></span><br>
                         휴식게이지: <input type="number" th:value="${character.chaosGauge}" style="width: 50px">
                         <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaos>=1}"
                                style="zoom: 1.4">
@@ -33,7 +33,7 @@
                     <div th:name="guardianContent" style="background-color: #fff3cd">
                         <span style="font-weight: bold;"
                               th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit}"
-                              th:styleappend="${character.guardian == 2 ? 'text-decoration:line-through; color: #dddddd;' : ''}"></span><br>
+                              th:styleappend="${character.guardian == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}"></span><br>
                         휴식게이지: <input type="number" th:value="${character.guardianGauge}" style="width: 50px">
                         <input th:name="guardian1" type="checkbox" name="guardianChecked"
                                th:checked="${character.guardian>=1}" style="zoom: 1.4">
@@ -50,11 +50,16 @@
             <h5 th:text="'총 예상 '+${sumDayContentProfit}+' Gold'"></h5>
             <div th:each="profit : ${sortDayContentProfit}" th:name="profit-list"
                  style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; padding: 5px; cursor: pointer;"
-                 th:styleappend="${profit.checked == 2 ? 'text-decoration:line-through; color: #dddddd;' : ''}"
+                 th:styleappend="|${profit.checked == 2 ? 'text-decoration: line-through; color: #dddddd; box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;' : ''}
+                 ${profit.category == '카오스던전' ? 'background-color: #bacbe6;' : ''}
+                 ${profit.category == '가디언토벌' ? 'background-color: #fff3cd;' : ''}|"
                  th:onclick="changeProfit([[${profit.characterName}]], [[${profit.category}]])">
-                <span th:text="${profit.characterName}+' / '+${profit.category}"></span><br>
-                <spanp th:text="${profit.contentName}+':'+${profit.profit}+' gold'"></spanp>
+                <span th:text="${profit.characterName} + ' / ' + ${profit.category}"></span><br>
+                <span th:text="${profit.contentName} + ':' + ${profit.profit} + ' gold'"></span>
             </div>
+
+
+
         </div>
     </div>
 </div> <!-- /container -->

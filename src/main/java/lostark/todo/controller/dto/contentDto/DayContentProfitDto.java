@@ -8,7 +8,7 @@ import lostark.todo.domain.content.Category;
 @AllArgsConstructor
 public class DayContentProfitDto {
     String characterName;
-    Category category;
+    String category;
     String contentName;
     int checked;
 }
