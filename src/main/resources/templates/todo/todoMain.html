@@ -23,22 +23,22 @@
                     <div th:name="chaosContent" style="background-color: #bacbe6">
                         <span style="font-weight: bold;"
                               th:text="'카오스던전:'+${character.chaosName} +', 예상수익:'+${character.chaosProfit}"
-                              th:styleappend="${character.chaos == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}"></span><br>
+                              th:styleappend="${character.chaosCheck == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}"></span><br>
                         휴식게이지: <input type="number" th:value="${character.chaosGauge}" style="width: 50px">
-                        <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaos>=1}"
+                        <input th:name="chaos1" type="checkbox" name="chaosChecked" th:checked="${character.chaosCheck>=1}"
                                style="zoom: 1.4">
-                        <input th:name="chaos2" type="checkbox" name="chaosChecked" th:checked="${character.chaos==2}"
+                        <input th:name="chaos2" type="checkbox" name="chaosChecked" th:checked="${character.chaosCheck==2}"
                                style="zoom: 1.4">
                     </div>
                     <div th:name="guardianContent" style="background-color: #fff3cd">
                         <span style="font-weight: bold;"
                               th:text="'가디언토벌:'+${character.guardianName} +', 예상수익:'+${character.guardianProfit}"
-                              th:styleappend="${character.guardian == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}"></span><br>
+                              th:styleappend="${character.guardianCheck == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}"></span><br>
                         휴식게이지: <input type="number" th:value="${character.guardianGauge}" style="width: 50px">
                         <input th:name="guardian1" type="checkbox" name="guardianChecked"
-                               th:checked="${character.guardian>=1}" style="zoom: 1.4">
+                               th:checked="${character.guardianCheck>=1}" style="zoom: 1.4">
                         <input th:name="guardian2" type="checkbox" name="guardianChecked"
-                               th:checked="${character.guardian==2}" style="zoom: 1.4">
+                               th:checked="${character.guardianCheck==2}" style="zoom: 1.4">
                     </div>
                 </div>
             </div>

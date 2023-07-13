@@ -30,13 +30,15 @@ class CharacterServiceTest {
         characterRequestDto.setGuardianGauge(100);
         characterRequestDto.setChaos(1);
         characterRequestDto.setChaosGauge(100);
-        Character character = characterRepository.findByCharacterName(characterRequestDto.getCharacterName());
+        Character character = characterRepository.findByCharacterName(characterRequestDto.getCharacterName())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
         character.getCharacterContent().update(characterRequestDto);
 
         em.flush();
         em.clear();
 
-        Character updatedCharacter = characterRepository.findByCharacterName(characterRequestDto.getCharacterName());
+        Character updatedCharacter = characterRepository.findByCharacterName(characterRequestDto.getCharacterName())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
         assertThat(updatedCharacter.getCharacterContent().getChaosGauge()).isEqualTo(1000);
 
     }

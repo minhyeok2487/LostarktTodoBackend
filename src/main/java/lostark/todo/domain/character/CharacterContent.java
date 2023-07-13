@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
+import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
 import lostark.todo.domain.content.Category;
 
 import javax.persistence.Embeddable;
@@ -117,5 +118,10 @@ public class CharacterContent {
     public void calculateGuardian(int result) {
         this.guardianGauge = result;
         this.guardianCheck = 0;
+    }
+
+    public void changeSelected(DayContentSelectedDto dto) {
+        this.chaosSelected = dto.isChaosSelected();
+        this.guardianSelected = dto.isGuardianSelected();
     }
 }

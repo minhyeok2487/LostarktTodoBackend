@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
+import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
+import lostark.todo.controller.dto.characterDto.DayContentSelectedReturnDto;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
@@ -96,6 +98,19 @@ public class CharacterApiController {
     public ResponseEntity characterCheck(@RequestBody DayContentCountDto dto) {
         CharacterReturnDto result = characterService.changeContent(dto);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * 일일컨텐츠 셀렉트 출력과 변경
+     */
+    @GetMapping("/dayContent/selected/{characterName}")
+    public ResponseEntity dayContentSelected(@PathVariable String characterName) {
+        return new ResponseEntity<>(characterService.readSelected(characterName), HttpStatus.OK);
+    }
+
+    @PatchMapping("/dayContent/selected/{characterName}")
+    public ResponseEntity changeDayContentSelected(@RequestBody DayContentSelectedDto dto, @PathVariable String characterName) {
+        return new ResponseEntity<>(characterService.updateSelected(dto, characterName), HttpStatus.OK);
     }
 
 
