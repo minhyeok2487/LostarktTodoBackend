@@ -38,23 +38,23 @@ public class CharacterApiController {
 
     /**
      * header : username
-     * 회원에 등록된 캐릭터리스트 중 selected = true 리스트 가져옴
+     * 회원에 등록된 캐릭터리스트 가져옴
      * Market DB에서 일일컨텐츠 수익 계산에 필요한 데이터 가져옴
      * 휴식게이지를 참고하여 일일컨텐츠 수익 계산
      */
-    @GetMapping("/selectedList")
-    public ResponseEntity characterList(HttpServletRequest request) {
+    @GetMapping("/{username}")
+    public ResponseEntity characterList(@PathVariable String username) {
         try {
             // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
-            List<Character> characterList = memberService.findMemberSelected(request.getHeader("username")).getCharacters();
+            List<Character> characterList = memberService.readCharacterList(username);
 
             // 거래소 데이터 가져옴(Map)
-            List<String> dayContentResource = marketService.dayContentResource();
-            Map<String , MarketContentResourceDto> contentResource = marketService.getContentResource(dayContentResource);
+            Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());
 
-            // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
+            // ItemLevel이 1415이상인 캐릭터는 레벨에 맞는 일일 컨텐츠 가져온후 계산
             List<CharacterReturnDto> characterReturnDtoList = contentService.calculateDayContent(characterList, contentResource);
 
+            // 일일숙제 선택된 캐릭터들
             // Profit 순서대로 정렬하기
             JSONArray sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
 
@@ -86,17 +86,19 @@ public class CharacterApiController {
     public ResponseEntity characterSave(@RequestBody CharacterRequestDto characterRequestDto) {
         System.out.println("characterSaveDto.getCharacterName() = " + characterRequestDto.getCharacterName());
         Character character = characterService.updateCharacter(characterRequestDto);
-        Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(makeDayContentResourceNames());
+        Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());
         CharacterReturnDto result = contentService.calculateDayContentOne(character, contentResource);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
-     * 일일컨텐츠 체크 수정
+     * 일일컨텐츠 체크 변경
+     * 1수보다 작으면 -> 2수
+     * 2수 -> 0수
      */
     @PatchMapping("/dayContent")
     public ResponseEntity characterCheck(@RequestBody DayContentCountDto dto) {
-        CharacterReturnDto result = characterService.changeContent(dto);
+        CharacterReturnDto result = characterService.updateDayContentCheck(dto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -111,24 +113,6 @@ public class CharacterApiController {
     @PatchMapping("/dayContent/selected/{characterName}")
     public ResponseEntity changeDayContentSelected(@RequestBody DayContentSelectedDto dto, @PathVariable String characterName) {
         return new ResponseEntity<>(characterService.updateSelected(dto, characterName), HttpStatus.OK);
-    }
-
-
-    private static List<String> makeDayContentResourceNames() {
-        List<String> dayContentResource = new ArrayList<>();
-        dayContentResource.add("정제된 파괴강석");
-        dayContentResource.add("정제된 수호강석");
-        dayContentResource.add("찬란한 명예의 돌파석");
-
-        dayContentResource.add("파괴강석");
-        dayContentResource.add("수호강석");
-        dayContentResource.add("경이로운 명예의 돌파석");
-
-        dayContentResource.add("파괴석 결정");
-        dayContentResource.add("수호석 결정");
-        dayContentResource.add("위대한 명예의 돌파석");
-        dayContentResource.add("1레벨");
-        return dayContentResource;
     }
 
 

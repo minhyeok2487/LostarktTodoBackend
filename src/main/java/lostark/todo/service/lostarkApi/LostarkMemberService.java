@@ -32,7 +32,8 @@ public class LostarkMemberService {
     */
     public Member characterInfoAndSave(String username, String characterName)  {
         try {
-            Member member = memberRepository.findByUsername(username);
+            Member member = memberRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException(username+"은(는) 없는 회원 입니다."));
 
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
@@ -54,7 +55,8 @@ public class LostarkMemberService {
 
     public MemberResponseDto characterPatch(String username) {
         try {
-            Member member = memberRepository.findByUsername(username);
+            Member member = memberRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException(username+"은(는) 없는 회원 입니다."));
             List<Character> characters = member.getCharacters();
             System.out.println("characters.get(0).getCharacterName() = " + characters.get(0).getCharacterName());
 

@@ -49,6 +49,24 @@ public class ContentService {
         return updated;
     }
 
+    public List<CharacterReturnDto> calculateDayContent(
+            List<Character> characterList, Map<String, MarketContentResourceDto> contentResource) {
+        List<CharacterReturnDto> characterReturnDtoList = new ArrayList<>(); //출력할 리스트
+
+        for (Character character : characterList) {
+            // character 엔티티로 dto 객체 생성
+            CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
+
+            // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산(1415 이상)
+            if (character.getItemLevel() >= 1415) {
+                Map<Category, DayContent> contentMap = getDayContentByLevel(characterReturnDto.getItemLevel());
+                calculateDayContent(characterReturnDto, contentMap, contentResource);
+            }
+            characterReturnDtoList.add(characterReturnDto);
+        }
+        return characterReturnDtoList;
+    }
+
     public Map<Category, DayContent> getDayContentByLevel(double level) {
         DayContent chaosContent = contentRepository.findDayContentByLevel(level, Category.카오스던전).get(0);
         DayContent guardianContent = contentRepository.findDayContentByLevel(level, Category.가디언토벌).get(0);
@@ -67,22 +85,6 @@ public class ContentService {
         Map<Category, DayContent> contentMap = getDayContentByLevel(characterReturnDto.getItemLevel());
         CharacterReturnDto returnDto = calculateDayContent(characterReturnDto, contentMap, contentResource);
         return returnDto;
-    }
-
-    public List<CharacterReturnDto> calculateDayContent(
-            List<Character> characterList, Map<String, MarketContentResourceDto> contentResource) {
-        List<CharacterReturnDto> characterReturnDtoList = new ArrayList<>(); //출력할 리스트
-
-        for (Character character : characterList) {
-            // character 엔티티로 dto 객체 생성
-            CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
-
-            // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
-            Map<Category, DayContent> contentMap = getDayContentByLevel(characterReturnDto.getItemLevel());
-            calculateDayContent(characterReturnDto, contentMap, contentResource);
-            characterReturnDtoList.add(characterReturnDto);
-        }
-        return characterReturnDtoList;
     }
 
     private CharacterReturnDto calculateDayContent(CharacterReturnDto characterReturnDto,
@@ -182,13 +184,17 @@ public class ContentService {
     public JSONArray sortDayContentProfit(List<CharacterReturnDto> characterReturnDtoList) {
         Map<DayContentProfitDto, Double> result = new HashMap<>();
         for (CharacterReturnDto returnDto : characterReturnDtoList) {
-            DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), "가디언토벌", returnDto.getGuardianName(), returnDto.getGuardianCheck());
-            double guardianProfit = returnDto.getGuardianProfit();
-            result.put(guardian, guardianProfit);
+            if (returnDto.isChaosSelected()) {
+                DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), "카오스던전",returnDto.getChaosName(), returnDto.getChaosCheck());
+                double chaosProfit = returnDto.getChaosProfit();
+                result.put(chaos, chaosProfit);
+            }
 
-            DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), "카오스던전",returnDto.getChaosName(), returnDto.getChaosCheck());
-            double chaosProfit = returnDto.getChaosProfit();
-            result.put(chaos, chaosProfit);
+            if (returnDto.isGuardianSelected()) {
+                DayContentProfitDto guardian = new DayContentProfitDto(returnDto.getCharacterName(), "가디언토벌", returnDto.getGuardianName(), returnDto.getGuardianCheck());
+                double guardianProfit = returnDto.getGuardianProfit();
+                result.put(guardian, guardianProfit);
+            }
         }
         List<DayContentProfitDto> listKeySet = new ArrayList<>(result.keySet());
         JSONArray jsonArray = new JSONArray();

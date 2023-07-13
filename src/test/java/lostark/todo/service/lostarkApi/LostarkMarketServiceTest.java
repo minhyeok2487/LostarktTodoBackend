@@ -22,7 +22,9 @@ class LostarkMarketServiceTest {
     @Test
     void getAuctionItemsTest() {
         AuctionDto auctionDto = new AuctionDto("1레벨", 210000);
-        Member member = memberRepository.findByUsername("qwe2487");
+        String username = "qwe2487";
+        Member member = memberRepository.findByUsername("qwe2487")
+                .orElseThrow(() -> new IllegalArgumentException(username+"은(는) 없는 회원 입니다."));
         MarketReturnDto auctionItems = lostarkMarketService.getAuctionItems(auctionDto, member);
         System.out.println("auctionItems = " + auctionItems);
     }

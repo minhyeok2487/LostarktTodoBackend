@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @EntityGraph(attributePaths = {"characters"})
-    Member findByUsername(String username);
+    Optional<Member> findByUsername(String username);
 
     @Query(value = "SELECT DISTINCT m FROM Member m JOIN FETCH m.characters c WHERE c.selected = true ORDER BY c.itemLevel DESC")
     Member findByUsernameSelected(String username);

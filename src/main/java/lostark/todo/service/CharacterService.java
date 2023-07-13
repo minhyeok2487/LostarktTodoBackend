@@ -32,7 +32,7 @@ public class CharacterService {
         return character;
     }
 
-    public CharacterReturnDto changeContent(DayContentCountDto dto) {
+    public CharacterReturnDto updateDayContentCheck(DayContentCountDto dto) {
         Character character = characterRepository.findByCharacterName(dto.getCharacterName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
         character.getCharacterContent().changeCount(dto.getCategory());

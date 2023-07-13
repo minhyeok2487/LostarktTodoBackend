@@ -18,6 +18,8 @@ public class CharacterReturnDto {
 
     private double itemLevel; //아이템레벨
 
+    private boolean selected;
+
     private boolean chaosSelected;
 
     private String chaosName;
@@ -43,6 +45,7 @@ public class CharacterReturnDto {
         this.characterClassName = character.getCharacterClassName();
         this.characterName = character.getCharacterName();
         this.itemLevel = character.getItemLevel();
+        this.selected = character.isSelected();
         this.chaosSelected = character.getCharacterContent().isChaosSelected();
         this.chaosCheck = character.getCharacterContent().getChaosCheck();
         this.chaosGauge = character.getCharacterContent().getChaosGauge();

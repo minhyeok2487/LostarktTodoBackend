@@ -25,4 +25,9 @@ public class MemberService {
         return memberRepository.findByUsernameSelected(username);
     }
 
+    public List<Character> readCharacterList(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원 입니다."))
+                .getCharacters();
+    }
 }
