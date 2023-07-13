@@ -25,13 +25,20 @@
                         ${character.chaosSelected ? ''  : 'background-color: #cccccc; text-decoration:line-through;'}|">
                         카오스던전 : <span th:name="chaosName" th:id="${character.characterName}+'_chaosName'" th:text="${character.chaosName}"></span>
                         [예상수익 : <span th:name="chaosProfit" th:id="${character.characterName}+'_chaosProfit'" th:text="${character.chaosProfit}"></span>]
+                        <input class="btn btn-sm" type="button"
+                               th:onclick="updateDayContentSelected([[${character.characterName}]], [[!${character.chaosSelected}]], [[${character.guardianSelected}]])"
+                               th:value="${character.chaosSelected} ? '닫기' : '열기'"
+                               th:classappend="${character.chaosSelected} ? 'btn-outline-dark' : 'btn-info'">
                         <div th:if="${character.chaosSelected}">
                             휴식게이지: <input type="number" th:name="chaosGauge" th:id="${character.characterName}+'_chaosGauge'"
-                                          th:value="${character.chaosGauge}" style="width: 50px">
+                                          th:value="${character.chaosGauge}" style="width: 50px" min="0" max="100" step="10">
                             <input th:name="chaosChecked" th:id="${character.characterName}+'_chaos1'" type="checkbox" th:checked="${character.chaosCheck>=1}"
                                    style="zoom: 1.6">
                             <input th:name="chaosChecked" th:id="${character.characterName}+'_chaos2'" type="checkbox" th:checked="${character.chaosCheck==2}"
                                    style="zoom: 1.6">
+                        </div>
+                        <div th:if="!${character.chaosSelected}">
+                            <input type="hidden" th:name="chaosGauge" th:id="${character.characterName}+'_chaosGauge'" th:value="${character.chaosGauge}">
                         </div>
                     </div>
                     <div th:name="guardianContent" style="background-color: #fff3cd; font-weight: bold;"
@@ -39,13 +46,20 @@
                          ${character.guardianSelected ? ''  : 'background-color: #cccccc; text-decoration:line-through;'}|">
                         가디언토벌 : <span th:name="guardianName" th:id="${character.characterName}+'_guardianName'" th:text="${character.guardianName}"></span>
                         [예상수익 : <span th:name="guardianProfit" th:id="${character.characterName}+'_guardianProfit'" th:text="${character.guardianProfit}"></span>]
+                        <input class="btn btn-sm" type="button"
+                               th:onclick="updateDayContentSelected([[${character.characterName}]], [[${character.chaosSelected}]], [[!${character.guardianSelected}]])"
+                               th:value="${character.guardianSelected} ? '닫기' : '열기'"
+                               th:classappend="${character.guardianSelected} ? 'btn-outline-dark' : 'btn-warning'">
                         <div th:if="${character.guardianSelected}">
                             휴식게이지: <input type="number" th:name="guardianGauge" th:id="${character.characterName}+'_guardianGauge'"
-                                          th:value="${character.guardianGauge}" style="width: 50px">
+                                          th:value="${character.guardianGauge}" style="width: 50px" min="0" max="100" step="10">
                             <input th:name="guardianChecked" th:id="${character.characterName}+'_guardian1'" type="checkbox"
                                    th:checked="${character.guardianCheck>=1}" style="zoom: 1.6">
-                            <input th:name="guardianChecked" th:id="${character.characterName}+'_guardian1'" type="checkbox"
+                            <input th:name="guardianChecked" th:id="${character.characterName}+'_guardian2'" type="checkbox"
                                    th:checked="${character.guardianCheck==2}" style="zoom: 1.6">
+                        </div>
+                        <div th:if="!${character.guardianSelected}">
+                            <input type="hidden" th:name="guardianGauge" th:id="${character.characterName}+'_guardianGauge'" th:value="${character.guardianGauge}">
                         </div>
                     </div>
                 </div>
@@ -54,7 +68,7 @@
     </div>
     <div class="col-md-2">
         <div>
-            <h2>숙제 수익</h2>
+            <h2>일일 숙제 수익</h2>
             <h5 th:text="'총 예상 '+${sumDayContentProfit}+' Gold'"></h5>
             <div th:each="profit : ${sortDayContentProfit}" th:name="profit-list"
                  style="box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; padding: 5px; cursor: pointer;"
@@ -93,6 +107,25 @@
 
     });
 
+    function updateDayContentSelected(characterName, chaosSelected, guardianSelected) {
+        var data = {
+            chaosSelected : chaosSelected,
+            guardianSelected : guardianSelected
+        }
+        $.ajax("/api/character/dayContent/selected/"+characterName,
+            {
+                method: 'patch',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                dataType: 'json'
+            })
+            .done(function (result) {
+                location.reload();
+            })
+            .fail(function (request, status, error) {
+                location.reload();
+            });
+    }
 
     function changeProfit(characterName, category) {
         console.log(characterName, category);
@@ -137,22 +170,26 @@
         var chaosContentElement = characterDayContentElement.querySelector('[name="chaosContent"]');
         var guardianContentElement = characterDayContentElement.querySelector('[name="guardianContent"]');
 
+
         var chaos = 0;
-        var chaosGauge = parseInt(chaosContentElement.querySelector('input[type="number"]').value);
-        if (chaosContentElement.querySelector('[name="chaos1"]').checked) {
-            chaos++;
+        if(chaosContentElement.querySelector('input[type="number"]') == null) {
+            var chaosGauge = parseInt(chaosContentElement.querySelector('input[type="hidden"]').value);
+        } else {
+            var chaosGauge = parseInt(chaosContentElement.querySelector('input[type="number"]').value);
         }
-        if (chaosContentElement.querySelector('[name="chaos2"]').checked) {
-            chaos++;
+        if (chaosContentElement.querySelector('[name="chaosChecked"]:checked')) {
+            chaos = chaosContentElement.querySelectorAll('[name="chaosChecked"]:checked').length;
         }
 
         var guardian = 0;
-        var guardianGauge = parseInt(guardianContentElement.querySelector('input[type="number"]').value);
-        if (guardianContentElement.querySelector('[name="guardian1"]').checked) {
-            guardian++;
+        if(guardianContentElement.querySelector('input[type="number"]') == null) {
+            var guardianGauge = parseInt(guardianContentElement.querySelector('input[type="hidden"]').value);
+        } else {
+            var guardianGauge = parseInt(guardianContentElement.querySelector('input[type="number"]').value);
+
         }
-        if (guardianContentElement.querySelector('[name="guardian2"]').checked) {
-            guardian++;
+        if (guardianContentElement.querySelector('[name="guardianChecked"]:checked')) {
+            guardian = guardianContentElement.querySelectorAll('[name="guardianChecked"]:checked').length;
         }
 
         var character = {
@@ -167,6 +204,7 @@
         return JSON.stringify(character);
     }
 
+
     function saveTodo(characterName) {
         var data = makeData(characterName);
         $.ajax("/api/character",
@@ -179,8 +217,8 @@
             .done(function (result) {
                 location.reload();
             })
-            .fail(function (request, status, error) {
-                console.log(error);
+            .fail(function (error) {
+                alert(error.responseJSON.message);
             });
     }
 
@@ -198,7 +236,7 @@
                 location.reload();
             })
             .fail(function (request, status, error) {
-                console.log(error);
+                alert(error.responseJSON.message);
             });
     }
 </script>

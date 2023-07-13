@@ -79,14 +79,14 @@ public class CharacterContent {
      */
     public void updateGauge(CharacterRequestDto characterRequestDto) {
         int chaosGauge = characterRequestDto.getChaosGauge();
-        if(chaosGauge % 10 == 0 && chaosGauge <= 100 && chaosGauge > 0) {
+        if(chaosGauge % 10 == 0 && chaosGauge <= 100 && chaosGauge >= 0) {
             this.chaosGauge = chaosGauge;
         } else {
             throw new IllegalArgumentException("카오스던전 휴식게이지 범위 초과(0~100, 10단위)");
         }
 
         int guardianGauge = characterRequestDto.getGuardianGauge();
-        if(guardianGauge % 10 == 0 && guardianGauge <= 100 && guardianGauge > 0) {
+        if(guardianGauge % 10 == 0 && guardianGauge <= 100 && guardianGauge >= 0) {
             this.guardianGauge = guardianGauge;
         } else {
             throw new IllegalArgumentException("카오스던전 휴식게이지 범위 초과(0~100, 10단위)");

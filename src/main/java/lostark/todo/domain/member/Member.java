@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import org.json.simple.JSONObject;
@@ -16,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseTimeEntity {
 
     /**
      * 회원 목록 테이블

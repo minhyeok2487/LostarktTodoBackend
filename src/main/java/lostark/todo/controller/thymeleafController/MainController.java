@@ -62,6 +62,7 @@ public class MainController {
                 double profit = (double) jsonObject.get("profit");
                 sum += profit;
             }
+            sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
             model.addAttribute("characters", characterReturnDtoList);
@@ -73,22 +74,5 @@ public class MainController {
             throw new RuntimeException(e);
         }
 
-    }
-
-    private static List<String> makeDayContentResourceNames() {
-        List<String> dayContentResource = new ArrayList<>();
-        dayContentResource.add("정제된 파괴강석");
-        dayContentResource.add("정제된 수호강석");
-        dayContentResource.add("찬란한 명예의 돌파석");
-
-        dayContentResource.add("파괴강석");
-        dayContentResource.add("수호강석");
-        dayContentResource.add("경이로운 명예의 돌파석");
-
-        dayContentResource.add("파괴석 결정");
-        dayContentResource.add("수호석 결정");
-        dayContentResource.add("위대한 명예의 돌파석");
-        dayContentResource.add("1레벨");
-        return dayContentResource;
     }
 }

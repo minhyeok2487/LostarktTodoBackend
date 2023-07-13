@@ -65,6 +65,7 @@ public class CharacterApiController {
                 double profit = (double) jsonObject.get("profit");
                 sum += profit;
             }
+            sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
             JSONObject resultObject = new JSONObject();
