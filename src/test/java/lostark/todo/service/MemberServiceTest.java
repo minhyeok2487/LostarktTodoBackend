@@ -42,15 +42,15 @@ class MemberServiceTest {
 //
 //    }
 
-    @Test
-    void findMemberTest() {
-        String username = "qwe2487";
-
-        Member member = memberRepository.findByUsernameSelected(username);
-
-        for (Character character : member.getCharacters()) {
-            System.out.println("character.getCharacterName() = " + character.getCharacterName());
-        }
-
-    }
+//    @Test
+//    void findMemberTest() {
+//        String username = "qwe2487";
+//
+//        Member member = memberRepository.findByUsernameSelected(username);
+//
+//        for (Character character : member.getCharacters()) {
+//            System.out.println("character.getCharacterName() = " + character.getCharacterName());
+//        }
+//
+//    }
 }

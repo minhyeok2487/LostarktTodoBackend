@@ -60,11 +60,11 @@ public class CharacterApiController {
 
             // Profit 합 구하기
             double sum = 0;
-            for (CharacterReturnDto returnDto : characterReturnDtoList) {
-                sum += returnDto.getChaosProfit();
-                sum += returnDto.getGuardianProfit();
+            for (Object o : sortedDayContentProfit) {
+                JSONObject jsonObject = (JSONObject) o;
+                double profit = (double) jsonObject.get("profit");
+                sum += profit;
             }
-            sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
             JSONObject resultObject = new JSONObject();

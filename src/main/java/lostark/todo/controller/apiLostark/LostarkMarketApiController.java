@@ -27,7 +27,7 @@ public class LostarkMarketApiController {
     @GetMapping("/{categoryCode}")
     public ResponseEntity getMarketCategoryCode(@PathVariable int categoryCode, HttpServletRequest request) throws Exception {
         String username = request.getHeader("username");
-        Member member = memberService.findMemberSelected(username);
+        Member member = memberService.findMember(username);
         List<Market> marketList = marketService.getMarketData(categoryCode, member);
         return new ResponseEntity(marketList, HttpStatus.OK);
     }
@@ -35,7 +35,7 @@ public class LostarkMarketApiController {
     @PostMapping("/auction")
     public ResponseEntity getAuction(HttpServletRequest request, @RequestBody AuctionDto auctionDto) {
         String username = request.getHeader("username");
-        Member member = memberService.findMemberSelected(username);
+        Member member = memberService.findMember(username);
         System.out.println("auctionDto = " + auctionDto);
         MarketReturnDto auctionItems = marketService.getAuctionItems(auctionDto, member);
         return new ResponseEntity(auctionItems, HttpStatus.OK);

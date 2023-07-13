@@ -48,8 +48,7 @@ class ContentServiceTest {
     public void todoTest() {
         String username = "qwe2487";
         try {
-            // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
-            List<Character> characterList = memberService.findMemberSelected(username).getCharacters();
+            List<Character> characterList = memberService.findMember(username).getCharacters();
 
             // 거래소 데이터 가져옴(Map)
             List<String> dayContentResource = marketService.dayContentResource();

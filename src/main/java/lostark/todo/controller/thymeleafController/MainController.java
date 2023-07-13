@@ -42,26 +42,26 @@ public class MainController {
     @GetMapping("/todo/{username}")
     public String todo(@PathVariable String username, Model model) {
         try {
-            // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
-            List<Character> characterList = memberService.findMemberSelected(username).getCharacters();
+            // 캐릭터 리스트 가져옴
+            List<Character> characterList = memberService.readCharacterList(username);
 
             // 거래소 데이터 가져옴(Map)
-            List<String> dayContentResource = marketService.dayContentResource();
-            Map<String , MarketContentResourceDto> contentResource = marketService.getContentResource(dayContentResource);
+            Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());
 
-            // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
+            // ItemLevel이 1415이상인 캐릭터는 레벨에 맞는 일일 컨텐츠 가져온후 계산
             List<CharacterReturnDto> characterReturnDtoList = contentService.calculateDayContent(characterList, contentResource);
 
+            // 일일숙제 선택된 캐릭터들
             // Profit 순서대로 정렬하기
             JSONArray sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
 
             // Profit 합 구하기
             double sum = 0;
-            for (CharacterReturnDto returnDto : characterReturnDtoList) {
-                sum += returnDto.getChaosProfit();
-                sum += returnDto.getGuardianProfit();
+            for (Object o : sortedDayContentProfit) {
+                JSONObject jsonObject = (JSONObject) o;
+                double profit = (double) jsonObject.get("profit");
+                sum += profit;
             }
-            sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
             model.addAttribute("characters", characterReturnDtoList);
