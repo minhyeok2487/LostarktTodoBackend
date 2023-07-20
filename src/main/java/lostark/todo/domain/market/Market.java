@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Market {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "market_id")
     private long id;
 
