@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +15,6 @@ import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,69 +36,50 @@ public class LostarkCharacterService {
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
-            // 1415이상만 필터링
-            JSONArray filteredArray = new JSONArray();
-            for (Object obj : jsonArray) {
-                JSONObject jsonObject = (JSONObject) obj;
-                double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
-                if (itemMaxLevel >= 1415D) {
-                    filteredArray.add(jsonObject);
-                }
-            }
+            JSONArray filteredArray = filterLevel(jsonArray);
             return filteredArray;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Member characterInfoAndSave(String username, String characterName)  {
+    public JSONArray characterInfoPatch(String apiKey, String characterName) {
         try {
-            Member member = memberRepository.findByUsername(username)
-                    .orElseThrow(() -> new IllegalArgumentException(username+"은(는) 없는 회원 입니다."));
-
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, member.getApiKey());
+            InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-            for (Object o : jsonArray) {
-                JSONObject jsonObject = (JSONObject) o;
-                if (Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",","")) >= 1415D) {
-                    Character character = new Character(jsonObject);
-                    member.addCharacter(character);
-                }
-            }
-            return member;
+            JSONArray filteredArray = filterLevel(jsonArray);
+            return filteredArray;
+//            for (Object o : jsonArray) {
+//                JSONObject jsonObject = (JSONObject) o;
+//                for (Character character : characters) {
+//                    if(character.getCharacterName().equals(jsonObject.get("CharacterName").toString())) {
+//                        character.changeItemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",","")));
+//                        break;
+//                    }
+//                }
+//            }
+//            MemberResponseDto responseDto = new MemberResponseDto(member);
+//            return responseDto;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public MemberResponseDto characterPatch(String username) {
-        try {
-            Member member = memberRepository.findByUsername(username)
-                    .orElseThrow(() -> new IllegalArgumentException(username+"은(는) 없는 회원 입니다."));
-            List<Character> characters = member.getCharacters();
-            System.out.println("characters.get(0).getCharacterName() = " + characters.get(0).getCharacterName());
-
-            String encodeCharacterName = URLEncoder.encode(characters.get(0).getCharacterName(), StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, member.getApiKey());
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-            for (Object o : jsonArray) {
-                JSONObject jsonObject = (JSONObject) o;
-                for (Character character : characters) {
-                    if(character.getCharacterName().equals(jsonObject.get("CharacterName").toString())) {
-                        character.changeItemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",","")));
-                        break;
-                    }
-                }
+    // 1415이상만 필터링 메소드
+    private JSONArray filterLevel(JSONArray jsonArray) {
+        JSONArray filteredArray = new JSONArray();
+        for (Object obj : jsonArray) {
+            JSONObject jsonObject = (JSONObject) obj;
+            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+            if (itemMaxLevel >= 1415D) {
+                filteredArray.add(jsonObject);
             }
-            MemberResponseDto responseDto = new MemberResponseDto(member);
-            return responseDto;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+        return filteredArray;
     }
+
+
 }

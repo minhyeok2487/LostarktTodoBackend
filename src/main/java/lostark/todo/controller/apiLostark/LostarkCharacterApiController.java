@@ -5,18 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -42,11 +39,15 @@ public class LostarkCharacterApiController {
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
-    @PatchMapping("")
-    public ResponseEntity characterPatch(HttpServletRequest request) {
-        String username = request.getHeader("username");
-        MemberResponseDto responseDto = lostarkCharacterService.characterPatch(username);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    /**
+     * 기존 캐릭터 정보 갱신
+     */
+    @PatchMapping("/{characterName}")
+    public ResponseEntity characterInfoPatch(@RequestBody MemberRequestDto memberRequestDto, @PathVariable String characterName) {
+        Member member = memberService.findMember(memberRequestDto.getUsername());
+        JSONArray characterList = lostarkCharacterService.characterInfo(member.getApiKey(), characterName);
+        characterService.updateCharacterList(characterList);
+        return new ResponseEntity<>(characterList, HttpStatus.OK);
     }
 
 

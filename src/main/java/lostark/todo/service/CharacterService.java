@@ -7,6 +7,7 @@ import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
 import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
 import lostark.todo.controller.dto.characterDto.DayContentSelectedReturnDto;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.member.Member;
@@ -51,14 +52,14 @@ public class CharacterService {
      */
     public CharacterReturnDto updateSelected(DayContentSelectedDto dto, String characterName) {
         Character character = characterRepository.findByCharacterName(characterName)
-                .orElseThrow(() -> new IllegalArgumentException(characterName+"은(는) 존재하지 않는 캐릭터입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(characterName + "은(는) 존재하지 않는 캐릭터입니다."));
         character.getCharacterContent().changeSelected(dto);
         return new CharacterReturnDto(character);
     }
 
     public DayContentSelectedReturnDto readSelected(String characterName) {
         Character character = characterRepository.findByCharacterName(characterName)
-                .orElseThrow(() -> new IllegalArgumentException(characterName+"은(는) 존재하지 않는 캐릭터입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(characterName + "은(는) 존재하지 않는 캐릭터입니다."));
         return new DayContentSelectedReturnDto(character);
     }
 
@@ -72,5 +73,14 @@ public class CharacterService {
             returnDtos.add(dto);
         }
         return returnDtos;
+    }
+
+    public void updateCharacterList(JSONArray characterList) {
+        for (Object o : characterList) {
+            JSONObject jsonObject = (JSONObject) o;
+            String characterName = jsonObject.get("CharacterName").toString();
+            double itemLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+            characterRepository.updateCharacterInfo(characterName, itemLevel);
+        }
     }
 }
