@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query(value = "SELECT DISTINCT m FROM Member m JOIN FETCH m.characters c WHERE m.username = :username ORDER BY c.itemLevel DESC")
-    Optional<Member> findByUsername(@Param("username") String username);
+    Optional<Member> findMemberAndCharacter(@Param("username") String username);
 
+    Optional<Member> findByUsername(@Param("username") String username);
 }

@@ -16,20 +16,43 @@ import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class LostarkMemberService {
+public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
     private final MemberRepository memberRepository;
     /**
-     * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져와서 저장
-     * select은 디폴트 true
-     * 1415이상 캐릭터만 가져옴
-    */
+     * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져옴
+     * 1415이상 캐릭터만 리턴
+     */
+    public JSONArray characterInfo(String apiKey, String characterName) {
+        try {
+            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
+            InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
+
+            // 1415이상만 필터링
+            JSONArray filteredArray = new JSONArray();
+            for (Object obj : jsonArray) {
+                JSONObject jsonObject = (JSONObject) obj;
+                double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+                if (itemMaxLevel >= 1415D) {
+                    filteredArray.add(jsonObject);
+                }
+            }
+            return filteredArray;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Member characterInfoAndSave(String username, String characterName)  {
         try {
             Member member = memberRepository.findByUsername(username)

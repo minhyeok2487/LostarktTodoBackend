@@ -1,12 +1,15 @@
 package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
+import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -16,18 +19,17 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Member signup(Member member) {
-        return memberRepository.save(member);
+    public Member signup(MemberSignupDto signupDto) {
+        return memberRepository.save(new Member(signupDto));
     }
-
 
     public Member findMember(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원 입니다."));
     }
 
-    public List<Character> readCharacterList(String username) {
-        return memberRepository.findByUsername(username)
+    public List<Character> findMemberAndCharacter(String username) {
+        return memberRepository.findMemberAndCharacter(username)
                 .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원 입니다."))
                 .getCharacters();
     }

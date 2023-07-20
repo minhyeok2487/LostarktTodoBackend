@@ -43,7 +43,7 @@ public class MainController {
     public String todo(@PathVariable String username, Model model) {
         try {
             // 캐릭터 리스트 가져옴
-            List<Character> characterList = memberService.readCharacterList(username);
+            List<Character> characterList = memberService.findMemberAndCharacter(username);
 
             // 거래소 데이터 가져옴(Map)
             Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());

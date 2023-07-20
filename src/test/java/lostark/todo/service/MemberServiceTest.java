@@ -1,56 +1,42 @@
 package lostark.todo.service;
 
+import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
+import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
+import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.json.simple.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @SpringBootTest
 @Transactional
 class MemberServiceTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberService memberService;
 
-//    @Test
-//    void addCharactersTest() {
-//        //회원가입
-//        String apiKey = "TestAPI";
-//        Member member = new Member(apiKey);
-//        Member signupMember = userService.signup(member);
-//
-//        //캐릭터 추가
-//        List<Character> characters = new ArrayList<>();
-//        characters.add(new Character("마볼링1", 1618.5));
-//        characters.add(new Character("마볼링2", 1619.5));
-//        characters.add(new Character("마볼링3", 1620.5));
-//        characters.add(new Character("마볼링4", 1621.5));
-//
-//        try {
-//            Member addCharactersMember = userService.addCharacters(signupMember, characters);
-//            Member findMember = userService.findUser(addCharactersMember.getId());
-//
-//            Assertions.assertThat(findMember).isEqualTo(signupMember);
-//            Assertions.assertThat(findMember.getCharacters().size()).isEqualTo(4);
-//            Assertions.assertThat(findMember.getCharacters().get(0).getName()).isEqualTo("마볼링1");
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
+    @Value("Lostark-API-Key")
+    String apiKey;
 
-//    @Test
-//    void findMemberTest() {
-//        String username = "qwe2487";
-//
-//        Member member = memberRepository.findByUsernameSelected(username);
-//
-//        for (Character character : member.getCharacters()) {
-//            System.out.println("character.getCharacterName() = " + character.getCharacterName());
-//        }
-//
-//    }
+    @Test
+    void findMemberTest() {
+        // 회원가입
+        String username = "testUser";
+        String password = "123456";
+        MemberSignupDto memberSignupDto = new MemberSignupDto(username, password, apiKey);
+        Member signupMember = memberService.signup(memberSignupDto);
+        System.out.println("signupMember = " + signupMember.getUsername());
+
+
+        Member findMember = memberService.findMember(username);
+        System.out.println("findMember = " + findMember.getUsername());
+
+    }
 }

@@ -46,7 +46,7 @@ public class CharacterApiController {
     public ResponseEntity characterList(@PathVariable String username) {
         try {
             // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
-            List<Character> characterList = memberService.readCharacterList(username);
+            List<Character> characterList = memberService.findMemberAndCharacter(username);
 
             // 거래소 데이터 가져옴(Map)
             Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());
@@ -81,7 +81,7 @@ public class CharacterApiController {
 
 
     /**
-     * 캐릭터 데이터 수정
+     * 캐릭터 데이터 갱신
      */
     @PatchMapping()
     public ResponseEntity characterSave(@RequestBody CharacterRequestDto characterRequestDto) {

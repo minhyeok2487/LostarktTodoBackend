@@ -1,13 +1,12 @@
 package lostark.todo.domain.member;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
-import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -46,22 +45,19 @@ public class Member extends BaseTimeEntity {
      * 연관 관계 메서드
      */
 
-    // userApiKey 생성자
-    public Member(String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public Member(String apiKey, String username, String password) {
-        this.apiKey = apiKey;
-        this.username = username;
-        this.password = password;
+    // 회원가입 생성자
+    public Member(MemberSignupDto signupDto) {
+        this.apiKey = signupDto.getApiKey();
+        this.username = signupDto.getUsername();
+        this.password = signupDto.getPassword();
         this.role = Role.USER;
     }
 
     // user 엔티티에 character 리스트 저장
-    public void addCharacter(Character character) {
+    public Character addCharacter(Character character) {
         characters.add(character);
         character.setMember(this);
+        return character;
     }
 
 }

@@ -9,8 +9,14 @@ import lostark.todo.controller.dto.characterDto.DayContentSelectedReturnDto;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
+import lostark.todo.domain.member.Member;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -54,5 +60,17 @@ public class CharacterService {
         Character character = characterRepository.findByCharacterName(characterName)
                 .orElseThrow(() -> new IllegalArgumentException(characterName+"은(는) 존재하지 않는 캐릭터입니다."));
         return new DayContentSelectedReturnDto(character);
+    }
+
+    public List<CharacterReturnDto> saveCharacterList(Member member, JSONArray characterList) {
+        List<CharacterReturnDto> returnDtos = new ArrayList<>();
+        for (Object o : characterList) {
+            JSONObject jsonObject = (JSONObject) o;
+            Character character = new Character(jsonObject);
+            Character savedCharacter = member.addCharacter(character); // 데이터 저장
+            CharacterReturnDto dto = new CharacterReturnDto(savedCharacter); // 저장된 데이터 리턴 dto로 변경
+            returnDtos.add(dto);
+        }
+        return returnDtos;
     }
 }
