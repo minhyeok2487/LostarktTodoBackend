@@ -43,7 +43,7 @@ public class Character extends BaseTimeEntity {
     private boolean selected; //true면 출력할 캐릭(디폴트 true)
 
     @Embedded
-    private CharacterContent characterContent;
+    private CharacterDayContent characterDayContent;
 
     //초기 JSONObject로 만드는 생성자
     public Character(JSONObject jsonObject) {
@@ -53,7 +53,7 @@ public class Character extends BaseTimeEntity {
         serverName = jsonObject.get("ServerName").toString();
         itemLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",",""));
         selected = true;
-        characterContent = new CharacterContent(); //기본 생성자 (true, 0, 0, true, 0, 0)
+        characterDayContent = new CharacterDayContent(); //기본 생성자 (true, 0, 0, true, 0, 0)
     }
 
     protected Character() {}

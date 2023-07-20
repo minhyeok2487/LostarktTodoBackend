@@ -22,12 +22,12 @@ public class DayContentSelectedReturnDto {
 
     public DayContentSelectedReturnDto(Character character) {
         this.characterName = character.getCharacterName();
-        this.chaosSelected = character.getCharacterContent().isChaosSelected();
-        this.chaosCheck = character.getCharacterContent().getChaosCheck();
-        this.chaosGauge = character.getCharacterContent().getChaosGauge();
-        this.guardianSelected = character.getCharacterContent().isGuardianSelected();
-        this.guardianCheck = character.getCharacterContent().getGuardianCheck();
-        this.guardianGauge = character.getCharacterContent().getGuardianGauge();
+        this.chaosSelected = character.getCharacterDayContent().isChaosSelected();
+        this.chaosCheck = character.getCharacterDayContent().getChaosCheck();
+        this.chaosGauge = character.getCharacterDayContent().getChaosGauge();
+        this.guardianSelected = character.getCharacterDayContent().isGuardianSelected();
+        this.guardianCheck = character.getCharacterDayContent().getGuardianCheck();
+        this.guardianGauge = character.getCharacterDayContent().getGuardianGauge();
     }
 
 }

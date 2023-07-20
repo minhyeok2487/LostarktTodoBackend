@@ -2,10 +2,6 @@ package lostark.todo.controller.dto.characterDto;
 
 import lombok.Data;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
-
-import java.util.Map;
 
 @Data
 public class CharacterReturnDto {
@@ -46,12 +42,12 @@ public class CharacterReturnDto {
         this.characterName = character.getCharacterName();
         this.itemLevel = character.getItemLevel();
         this.selected = character.isSelected();
-        this.chaosSelected = character.getCharacterContent().isChaosSelected();
-        this.chaosCheck = character.getCharacterContent().getChaosCheck();
-        this.chaosGauge = character.getCharacterContent().getChaosGauge();
-        this.guardianSelected = character.getCharacterContent().isGuardianSelected();
-        this.guardianCheck = character.getCharacterContent().getGuardianCheck();
-        this.guardianGauge = character.getCharacterContent().getGuardianGauge();
+        this.chaosSelected = character.getCharacterDayContent().isChaosSelected();
+        this.chaosCheck = character.getCharacterDayContent().getChaosCheck();
+        this.chaosGauge = character.getCharacterDayContent().getChaosGauge();
+        this.guardianSelected = character.getCharacterDayContent().isGuardianSelected();
+        this.guardianCheck = character.getCharacterDayContent().getGuardianCheck();
+        this.guardianGauge = character.getCharacterDayContent().getGuardianGauge();
     }
 
     public void calculateChaos(String chaosName, double chaosProfit) {

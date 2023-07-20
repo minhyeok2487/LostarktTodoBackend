@@ -2,7 +2,6 @@ package lostark.todo.domain.character;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
 import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
@@ -12,7 +11,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 @AllArgsConstructor
-public class CharacterContent {
+public class CharacterDayContent {
 
     @NotNull
     private boolean chaosSelected;
@@ -35,7 +34,7 @@ public class CharacterContent {
     /**
      * 기본 생성자
      */
-    public CharacterContent() {
+    public CharacterDayContent() {
         this.chaosSelected = true;
         this.chaosCheck = 0;
         this.chaosGauge = 0;

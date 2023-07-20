@@ -32,14 +32,14 @@ public class CharacterService {
     public Character updateCharacter(CharacterRequestDto characterRequestDto) {
         Character character = characterRepository.findByCharacterName(characterRequestDto.getCharacterName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
-        character.getCharacterContent().update(characterRequestDto);
+        character.getCharacterDayContent().update(characterRequestDto);
         return character;
     }
 
     public CharacterReturnDto updateDayContentCheck(DayContentCountDto dto) {
         Character character = characterRepository.findByCharacterName(dto.getCharacterName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
-        character.getCharacterContent().changeCount(dto.getCategory());
+        character.getCharacterDayContent().changeCount(dto.getCategory());
         CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
         return characterReturnDto;
     }
@@ -50,7 +50,7 @@ public class CharacterService {
     public CharacterReturnDto updateSelected(DayContentSelectedDto dto, String characterName) {
         Character character = characterRepository.findByCharacterName(characterName)
                 .orElseThrow(() -> new IllegalArgumentException(characterName + "은(는) 존재하지 않는 캐릭터입니다."));
-        character.getCharacterContent().changeSelected(dto);
+        character.getCharacterDayContent().changeSelected(dto);
         return new CharacterReturnDto(character);
     }
 
