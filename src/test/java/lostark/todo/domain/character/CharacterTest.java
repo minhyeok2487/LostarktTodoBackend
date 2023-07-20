@@ -1,8 +1,6 @@
 package lostark.todo.domain.character;
 
-import lostark.todo.domain.member.Member;
 import lostark.todo.service.lostarkApi.LostarkApiService;
-import org.assertj.core.api.Assertions;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,7 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @Transactional
 class CharacterTest {

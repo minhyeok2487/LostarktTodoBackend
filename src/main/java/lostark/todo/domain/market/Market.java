@@ -1,6 +1,5 @@
 package lostark.todo.domain.market;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,6 +49,7 @@ public class Market {
         this.bundleCount = Integer.parseInt(tempJson.get("BundleCount").toString());
         this.categoryCode = categoryCode;
     }
+
 
     public static Market createAuctionItem(JSONObject item, String itemName, int categoryCode) {
         JSONObject actionInfo = (JSONObject) item.get("AuctionInfo");

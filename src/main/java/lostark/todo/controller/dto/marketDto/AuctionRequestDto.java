@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuctionDto {
+public class AuctionRequestDto {
+
+    private String username;
 
     private String itemName;
 

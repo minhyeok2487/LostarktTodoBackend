@@ -7,7 +7,6 @@ import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
 import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
 import lostark.todo.controller.dto.characterDto.DayContentSelectedReturnDto;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
-import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.member.Member;
@@ -29,8 +28,6 @@ public class CharacterService {
 
     /**
      * 동일한 캐릭터 이름의 데이터 수정
-     *
-     * @return
      */
     public Character updateCharacter(CharacterRequestDto characterRequestDto) {
         Character character = characterRepository.findByCharacterName(characterRequestDto.getCharacterName())

@@ -2,9 +2,12 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.marketDto.AuctionRequestDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
+import lostark.todo.controller.dto.marketDto.MarketReturnDto;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +21,18 @@ import java.util.Map;
 public class MarketService {
 
     private final MarketRepository marketRepository;
+
+    public List<Market> saveMarketList(List<Market> marketList) {
+        List<Market> markets = marketRepository.saveAll(marketList);
+        return markets;
+    }
+
+    public MarketReturnDto saveAuctionItem(JSONObject auctionItem, AuctionRequestDto auctionRequestDto) {
+        Market market = Market.createAuctionItem(auctionItem, auctionRequestDto.getItemName(), auctionRequestDto.getCategoryCode());
+        Market saved = marketRepository.save(market);
+        MarketReturnDto marketReturnDto = new MarketReturnDto(saved);
+        return marketReturnDto;
+    }
 
     public List<Market> getMarketByCategory(int categoryCode) {
         return marketRepository.findByCategoryCodeOrderByCurrentMinPriceDesc(categoryCode);
@@ -59,4 +74,7 @@ public class MarketService {
         dayContentResource.add("1레벨");
         return dayContentResource;
     }
+
+
+
 }

@@ -11,7 +11,7 @@ public class MarketReturnDto {
     private int bundleCount;
 
     public MarketReturnDto(Market saved) {
-        this.itemName = saved.getName();;
+        this.itemName = saved.getName();
         this.recentPrice = saved.getRecentPrice();
         this.bundleCount = saved.getBundleCount();
     }

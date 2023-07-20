@@ -1,5 +1,6 @@
 package lostark.todo.service.lostarkApi;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class LostarkApiService {
      */
 
     //Get mapping
+
     public InputStreamReader LostarkGetApi(String link, String apiKey) {
         try {
             HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET", apiKey);
