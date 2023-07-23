@@ -4,16 +4,6 @@
 <body>
 <div class="container">
     <div th:replace="fragments/nav :: nav"/>
-    <div>
-        <form role="form" th:action="@{/member/signup}" th:object="${member}" method="post">
-            <div class="form-group">
-                <label for="userApiKey">API Key</label>
-                <input type="text" class="form-control" id="userApiKey" th:field="*{apiKey}"
-                       placeholder="userApikey를 입력하세요">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
     <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
 </body>

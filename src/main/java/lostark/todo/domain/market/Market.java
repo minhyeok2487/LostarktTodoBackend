@@ -67,9 +67,10 @@ public class Market extends BaseTimeEntity {
         return market;
     }
 
-    public void changeData(Market news) {
+    public Market changeData(Market news) {
         this.yDayAvgPrice = news.getYDayAvgPrice();
         this.currentMinPrice = news.getCurrentMinPrice();
         this.recentPrice = news.getRecentPrice();
+        return this;
     }
 }

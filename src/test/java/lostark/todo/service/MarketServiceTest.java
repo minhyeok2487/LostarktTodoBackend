@@ -31,7 +31,7 @@ class MarketServiceTest {
         String username = "qwe2487";
         Member member = memberService.findMember(username);
         List<Market> marketList = lostarkMarketService.getMarketData(categoryCode, member.getApiKey());
-        List<Market> markets = marketService.saveMarketList(marketList, categoryCode);
+        List<Market> markets = marketService.saveMarketItemList(marketList, categoryCode);
         for (Market market : markets) {
             System.out.print("market.getName() = " + market.getName() +" / ");
             System.out.println("market.getCurrentMinPrice() = " + market.getCurrentMinPrice());

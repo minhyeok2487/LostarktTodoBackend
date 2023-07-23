@@ -2,7 +2,6 @@ package lostark.todo.service.lostarkApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.member.MemberRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
-    private final MemberRepository memberRepository;
     /**
      * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져옴
      * 1415이상 캐릭터만 리턴
@@ -34,7 +32,8 @@ public class LostarkCharacterService {
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
             JSONArray filteredArray = filterLevel(jsonArray);
-            return filteredArray;
+            JSONArray result = getCharacterImage(filteredArray, apiKey);
+            return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,5 +52,25 @@ public class LostarkCharacterService {
         return filteredArray;
     }
 
+    // 캐릭터 imageUrl 가져오기
+    private JSONArray getCharacterImage(JSONArray jsonArray, String apiKey) {
+        JSONArray result = new JSONArray();
+        for (Object obj : jsonArray) {
+            try {
+                JSONObject jsonObject = (JSONObject) obj;
+                String characterName = jsonObject.get("CharacterName").toString();
+                String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+                String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
+                InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, apiKey);
+                JSONParser parser = new JSONParser();
+                JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
 
+                jsonObject.put("CharacterImage", profile.get("CharacterImage").toString());
+                result.add(jsonObject);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
 }

@@ -28,10 +28,10 @@ public class MarketService {
 
     /**
      * 거래소 데이터 저장 메소드
-     * 기존에 데이터가 있으면 가격 교체
+     * 기존 데이터가 있으면 가격 교체
      * 없으면 그냥 저장
      */
-    public List<Market> saveMarketList(List<Market> marketList, int categoryCode) {
+    public List<Market> saveMarketItemList(List<Market> marketList, int categoryCode) {
         List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
 
         if (oldList.isEmpty()) {
@@ -49,12 +49,23 @@ public class MarketService {
         }
     }
 
+    /**
+     * 경매장 데이터 저장 메소드
+     * 기존 데이터가 있으면 가격 교체
+     * 없으면 그냥 저장
+     */
     public MarketReturnDto saveAuctionItem(JSONObject auctionItem, AuctionRequestDto auctionRequestDto) {
-        Market market = Market.createAuctionItem(auctionItem, auctionRequestDto.getItemName(), auctionRequestDto.getCategoryCode());
-        Market saved = marketRepository.save(market);
-        MarketReturnDto marketReturnDto = new MarketReturnDto(saved);
-        return marketReturnDto;
+        String itemName = auctionRequestDto.getItemName();
+        int categoryCode = auctionRequestDto.getCategoryCode();
+
+        Market oldItem = marketRepository.findByName(itemName).orElse(null);
+        Market market = Market.createAuctionItem(auctionItem, itemName, categoryCode);
+
+        Market result = (oldItem == null) ? marketRepository.save(market) : oldItem.changeData(market);
+
+        return new MarketReturnDto(result);
     }
+
 
 
     public Map<String, MarketContentResourceDto> getContentResource(List<String> names) {

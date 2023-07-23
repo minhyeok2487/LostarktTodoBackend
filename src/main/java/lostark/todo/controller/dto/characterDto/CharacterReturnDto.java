@@ -10,6 +10,8 @@ public class CharacterReturnDto {
 
     private String characterClassName;
 
+    private String characterImage;
+
     private String characterName;
 
     private double itemLevel; //아이템레벨
@@ -39,6 +41,7 @@ public class CharacterReturnDto {
     public CharacterReturnDto(Character character) {
         this.id = character.getId();
         this.characterClassName = character.getCharacterClassName();
+        this.characterImage = character.getCharacterImage();
         this.characterName = character.getCharacterName();
         this.itemLevel = character.getItemLevel();
         this.selected = character.isSelected();
