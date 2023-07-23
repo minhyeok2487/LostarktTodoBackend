@@ -29,6 +29,7 @@ public class SchedulerService {
         }
     }
 
+
     private int getGuardianResult(Character character) {
         int guardianResult = 0;
         int guardian = character.getCharacterDayContent().getGuardianCheck();

@@ -33,7 +33,7 @@ public class LostarkMarketApiController {
     public ResponseEntity getMarketCategoryCode(@RequestBody MemberRequestDto requestDto, @PathVariable int categoryCode)  {
         Member member = memberService.findMember(requestDto.getUsername());
         List<Market> marketList = lostarkMarketService.getMarketData(categoryCode, member.getApiKey());
-        List<Market> markets = marketService.saveMarketList(marketList);
+        List<Market> markets = marketService.saveMarketList(marketList, categoryCode);
         return new ResponseEntity(markets, HttpStatus.OK);
     }
 

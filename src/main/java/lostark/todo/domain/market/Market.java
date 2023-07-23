@@ -3,6 +3,7 @@ package lostark.todo.domain.market;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lostark.todo.domain.BaseTimeEntity;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Market {
+public class Market extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,5 +65,11 @@ public class Market {
         market.bundleCount = 1;
         market.categoryCode = categoryCode;
         return market;
+    }
+
+    public void changeData(Market news) {
+        this.yDayAvgPrice = news.getYDayAvgPrice();
+        this.currentMinPrice = news.getCurrentMinPrice();
+        this.recentPrice = news.getRecentPrice();
     }
 }

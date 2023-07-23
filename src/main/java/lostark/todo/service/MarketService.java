@@ -9,22 +9,44 @@ import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class MarketService {
 
     private final MarketRepository marketRepository;
 
-    public List<Market> saveMarketList(List<Market> marketList) {
-        List<Market> markets = marketRepository.saveAll(marketList);
-        return markets;
+    /**
+     * 거래소 데이터 저장 메소드
+     * 기존에 데이터가 있으면 가격 교체
+     * 없으면 그냥 저장
+     */
+    public List<Market> saveMarketList(List<Market> marketList, int categoryCode) {
+        List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
+
+        if (oldList.isEmpty()) {
+            return marketRepository.saveAll(marketList);
+        } else {
+            oldList.forEach(old -> {
+                List<Market> matchingNews = marketList.stream()
+                        .filter(news -> old.getName().equals(news.getName()))
+                        .collect(Collectors.toList());
+                if (!matchingNews.isEmpty()) {
+                    old.changeData(matchingNews.get(0));
+                }
+            });
+            return marketList;
+        }
     }
 
     public MarketReturnDto saveAuctionItem(JSONObject auctionItem, AuctionRequestDto auctionRequestDto) {
@@ -34,13 +56,6 @@ public class MarketService {
         return marketReturnDto;
     }
 
-    public List<Market> getMarketByCategory(int categoryCode) {
-        return marketRepository.findByCategoryCodeOrderByCurrentMinPriceDesc(categoryCode);
-    }
-
-    public List<Market> getMarketByNames(List<String> names) {
-        return marketRepository.findByNameIn(names);
-    }
 
     public Map<String, MarketContentResourceDto> getContentResource(List<String> names) {
         List<Market> marketByNames = marketRepository.findByNameIn(names);
@@ -52,10 +67,6 @@ public class MarketService {
             contentResourceDtoHashMap.put(name, new MarketContentResourceDto(recentPrice, bundleCount));
         }
         return contentResourceDtoHashMap;
-    }
-
-    public Market getMarketByName(String name) {
-        return marketRepository.findByName(name);
     }
 
     public List<String> dayContentResource() {
