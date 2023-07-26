@@ -84,7 +84,7 @@ public class CharacterService {
     /**
      * 로스트아크 api로 불러온 캐릭터 리스트 DB 갱신
      */
-    public String  updateCharacterList(JSONArray characterList) {
+    public String updateCharacterList(JSONArray characterList) {
         int number = 0;
         String message = "";
         for (Object o : characterList) {

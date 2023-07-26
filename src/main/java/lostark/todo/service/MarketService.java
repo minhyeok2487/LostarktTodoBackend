@@ -31,11 +31,12 @@ public class MarketService {
      * 기존 데이터가 있으면 가격 교체
      * 없으면 그냥 저장
      */
-    public List<Market> saveMarketItemList(List<Market> marketList, int categoryCode) {
+    public String saveMarketItemList(List<Market> marketList, int categoryCode) {
         List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
 
         if (oldList.isEmpty()) {
-            return marketRepository.saveAll(marketList);
+            List<Market> markets = marketRepository.saveAll(marketList);
+            return "총 " + markets.size() +"개 저장 완료";
         } else {
             oldList.forEach(old -> {
                 List<Market> matchingNews = marketList.stream()
@@ -45,7 +46,7 @@ public class MarketService {
                     old.changeData(matchingNews.get(0));
                 }
             });
-            return marketList;
+            return "총 " + oldList.size() +"개 업데이트 완료";
         }
     }
 
@@ -54,7 +55,7 @@ public class MarketService {
      * 기존 데이터가 있으면 가격 교체
      * 없으면 그냥 저장
      */
-    public MarketReturnDto saveAuctionItem(JSONObject auctionItem, AuctionRequestDto auctionRequestDto) {
+    public String  saveAuctionItem(JSONObject auctionItem, AuctionRequestDto auctionRequestDto) {
         String itemName = auctionRequestDto.getItemName();
         int categoryCode = auctionRequestDto.getCategoryCode();
 
@@ -63,7 +64,7 @@ public class MarketService {
 
         Market result = (oldItem == null) ? marketRepository.save(market) : oldItem.changeData(market);
 
-        return new MarketReturnDto(result);
+        return itemName + "저장 및 업데이트 완료";
     }
 
 

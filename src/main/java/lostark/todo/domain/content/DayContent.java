@@ -1,7 +1,6 @@
 package lostark.todo.domain.content;
 
 import lombok.Getter;
-import lostark.todo.controller.dto.DayContentDto;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -28,30 +27,6 @@ public class DayContent extends Content{
 
     private double gold; //평균 골드
 
-    //생성 메서드
-    public static DayContent createChaos(double shilling, double honorShard, double leapStone,
-                                  double destructionStone, double guardianStone,
-                                  double jewelry, double gold) {
-        DayContent chaosContent = new DayContent();
-        chaosContent.dayContentCategory = Category.카오스던전;
-        chaosContent.shilling = shilling;
-        chaosContent.honorShard = honorShard;
-        chaosContent.leapStone = leapStone;
-        chaosContent.destructionStone = destructionStone;
-        chaosContent.guardianStone = guardianStone;
-        chaosContent.jewelry = jewelry;
-        chaosContent.gold = gold;
-        return chaosContent;
-    }
-
-    public DayContent update(DayContentDto dayContentDto) {
-        this.shilling = dayContentDto.getShilling();
-        this.honorShard = dayContentDto.getHonorShard();
-        this.leapStone = dayContentDto.getLeapStone();
-        this.destructionStone = dayContentDto.getDestructionStone();
-        this.guardianStone = dayContentDto.getGuardianStone();
-        this.jewelry = dayContentDto.getJewelry();
-        this.gold = dayContentDto.getGold();
-        return this;
+    protected DayContent() {
     }
 }

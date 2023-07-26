@@ -37,6 +37,8 @@ public class LostarkCharacterApiController {
         } else {
             return new ResponseEntity<>(characterService.updateCharacterList(characterList), HttpStatus.OK);
         }
+
+
     }
 
 
