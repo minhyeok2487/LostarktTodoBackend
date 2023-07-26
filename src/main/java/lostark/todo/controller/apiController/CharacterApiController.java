@@ -20,7 +20,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/character")
-@Api(tags = {"캐릭터 관련 REST API"})
+@Api(tags = {"캐릭터 REST API"})
 public class CharacterApiController {
 
     private final CharacterService characterService;

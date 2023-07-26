@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/lostark/market")
-@Api(tags = {"로스트아크 API와 거래소, 경매장 관련 REST API"})
+@Api(tags = {"로스트아크 연동 거래소, 경매장 REST API"})
 public class LostarkMarketApiController {
 
     private final MemberService memberService;

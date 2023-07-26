@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/lostark/character")
-@Api(tags = {"로스트아크 API와 캐릭터 관련 REST API"})
+@Api(tags = {"로스트아크 연동 캐릭터 REST API"})
 public class LostarkCharacterApiController {
 
     private final LostarkCharacterService lostarkCharacterService;

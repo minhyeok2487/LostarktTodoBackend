@@ -27,7 +27,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
-@Api(tags = {"회원 관련 REST API"})
+@Api(tags = {"회원 REST API"})
 public class MemberApiController {
 
     private final MarketService marketService;
