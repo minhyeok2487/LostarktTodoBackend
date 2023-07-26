@@ -1,12 +1,11 @@
 package lostark.todo.controller.apiController;
 
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
-import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
-import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
-import lostark.todo.controller.dto.characterDto.DayContentSelectedReturnDto;
+import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dto.contentDto.DayContentCountDto;
+import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.CharacterService;
@@ -26,24 +25,18 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/character")
+@Api(tags = {"캐릭터 관련 REST API"})
 public class CharacterApiController {
 
-    /**
-     * 캐릭터 관련 RestApi
-     */
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
     private final MemberService memberService;
 
-    /**
-     * header : username
-     * 회원에 등록된 캐릭터리스트 가져옴
-     * Market DB에서 일일컨텐츠 수익 계산에 필요한 데이터 가져옴
-     * 휴식게이지를 참고하여 일일컨텐츠 수익 계산
-     */
+    @ApiOperation(value = "회원에 등록된 캐릭터리스트 가져옴",
+            notes="휴식게이지를 참고하여 일일컨텐츠 수익 계산하여 함께 리턴")
     @GetMapping("/{username}")
-    public ResponseEntity characterList(@PathVariable String username) {
+    public ResponseEntity characterList(@ApiParam(value = "유저 네임", required = true) @PathVariable String username) {
         try {
             // header : username으로 연결된 캐릭터리스트 중 선택할 리스트 가져옴
             List<Character> characterList = memberService.findMemberAndCharacter(username);
@@ -56,24 +49,22 @@ public class CharacterApiController {
 
             // 일일숙제 선택된 캐릭터들
             // Profit 순서대로 정렬하기
-            JSONArray sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
+            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
 
             // Profit 합 구하기
             double sum = 0;
-            for (Object o : sortedDayContentProfit) {
-                JSONObject jsonObject = (JSONObject) o;
-                double profit = (double) jsonObject.get("profit");
-                sum += profit;
+            for (SortedDayContentProfitDto dto : sortedDayContentProfit) {
+                sum += dto.getProfit();
             }
             sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
-            JSONObject resultObject = new JSONObject();
-            resultObject.put("characters", characterReturnDtoList);
-            resultObject.put("sumDayContentProfit", sum);
-            resultObject.put("sortDayContentProfit", sortedDayContentProfit);
+            CharactersReturnDto charactersReturnDto = new CharactersReturnDto();
+            charactersReturnDto.setCharacters(characterReturnDtoList);
+            charactersReturnDto.setSumDayContentProfit(sum);
+            charactersReturnDto.setSortedDayContentProfitDtoList(sortedDayContentProfit);
 
-            return new ResponseEntity<>(resultObject, HttpStatus.OK);
+            return new ResponseEntity<>(charactersReturnDto, HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

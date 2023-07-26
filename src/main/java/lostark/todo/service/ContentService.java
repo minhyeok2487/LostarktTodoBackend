@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dto.DayContentDto;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
+import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.*;
@@ -181,7 +182,7 @@ public class ContentService {
         return Math.round(price * 100.0) / 100.0;
     }
 
-    public JSONArray sortDayContentProfit(List<CharacterReturnDto> characterReturnDtoList) {
+    public List<SortedDayContentProfitDto> sortDayContentProfit(List<CharacterReturnDto> characterReturnDtoList) {
         Map<DayContentProfitDto, Double> result = new HashMap<>();
         for (CharacterReturnDto returnDto : characterReturnDtoList) {
             if (returnDto.isChaosSelected()) {
@@ -197,18 +198,18 @@ public class ContentService {
             }
         }
         List<DayContentProfitDto> listKeySet = new ArrayList<>(result.keySet());
-        JSONArray jsonArray = new JSONArray();
         Collections.sort(listKeySet, (value1, value2) -> (result.get(value2).compareTo(result.get(value1))));
+        List<SortedDayContentProfitDto> dtoList = new ArrayList<>();
         for(DayContentProfitDto key : listKeySet) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("characterName", key.getCharacterName());
-            jsonObject.put("category", key.getCategory());
-            jsonObject.put("contentName", key.getContentName());
-            jsonObject.put("checked", key.getChecked());
-            jsonObject.put("profit", result.get(key));
-            jsonArray.add(jsonObject);
+            SortedDayContentProfitDto dto = new SortedDayContentProfitDto();
+            dto.setCharacterName(key.getCharacterName());
+            dto.setCategory(key.getCategory());
+            dto.setContentName(key.getContentName());
+            dto.setChecked(key.getChecked());
+            dto.setProfit(result.get(key));
+            dtoList.add(dto);
         }
-        return jsonArray;
+        return dtoList;
     }
 
 }

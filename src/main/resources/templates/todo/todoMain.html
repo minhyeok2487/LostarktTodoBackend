@@ -4,7 +4,6 @@
 <style>
     .character-info {
         position: relative;
-        width: 400px;
         height: 170px;
         overflow: hidden;
         border-top-left-radius: 10px;
@@ -13,8 +12,13 @@
         cursor: pointer;
     }
 
+    .character-img {
+        position: absolute;
+        top: -90px;
+        left: -33px;
+    }
+
     .character-content-box {
-        width: 400px;
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;
         font-size: large;
@@ -42,29 +46,24 @@
         padding-top: 20px;
     }
 
-    .character-img {
-        position: absolute;
-        top: -90px;
-        left: -25px;
-    }
+
+
 
 
 </style>
 <body>
 <div th:replace="fragments/nav :: nav"/>
+<div style="margin-bottom: 10px;">
+    <h2>숙제 체크</h2>
+    <!--            <input class="btn btn-info" type="button" th:onclick="updateCharacters()" value="캐릭터 정보 갱신">-->
+</div>
 <div class="row row-cols-2" style="margin-left: 15px;">
     <div class="col-md-9">
-        <div style="margin-bottom: 10px;">
-            <h2>숙제 체크</h2>
-            <!--            <input class="btn btn-info" type="button" th:onclick="updateCharacters()" value="캐릭터 정보 갱신">-->
-        </div>
-        <div class="row row-cols-4">
-            <div class="col-md-3" th:name="characterInfo" th:each="character : ${characters}">
-                <div class="character-info" th:onclick="saveTodo([[${character.characterName}]])">
-                    <div class="character-img-box">
-                        <img th:styleappend="${character.characterClassName == '기상술사' || character.characterClassName == '도화가' ? 'top: -180px' : ''}"
-                             class="character-img" th:src="${character.characterImage}">
-                    </div>
+        <div class="row justify-content-between">
+            <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2" name="characterInfo" th:id="${character.characterName}" th:each="character : ${characters}">
+                <div class="character-info" th:onclick="saveCharacterTodo([[${character.characterName}]])">
+                    <img th:styleappend="${character.characterClassName == '기상술사' || character.characterClassName == '도화가' ? 'top: -180px' : ''}"
+                         class="character-img" th:src="${character.characterImage}">
                     <div class="character-info-box">
                         <p th:name="characterClassName" th:text="${character.characterClassName}"></p>
                         <h5 th:name="characterName" th:text="${character.characterName}"></h5>
@@ -74,44 +73,31 @@
                 <div class="character-content-box" th:name="character-dayContent">
                     <div class="chaos-content" th:name="chaosContent"
                          th:styleappend="|${character.chaosCheck == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}
-                        ${character.chaosSelected ? ''  : 'background-color: #cccccc; text-decoration:line-through; height: 40px;'}|"
-                    th:onclick="updateDayContentSelected([[${character.characterName}]], [[!${character.chaosSelected}]], [[${character.guardianSelected}]])">
-                        카오스던전 : <span th:name="chaosName" th:id="${character.characterName}+'_chaosName'"
-                                      th:text="${character.chaosName}"></span>
-                        [예상수익 : <span th:name="chaosProfit" th:id="${character.characterName}+'_chaosProfit'"
-                                      th:text="${character.chaosProfit}"></span>]
+                        ${character.chaosSelected ? ''  : 'background-color: #cccccc; text-decoration:line-through; height: 40px;'}|">
+                        카오스던전 : <span th:name="chaosName" th:text="${character.chaosName}"></span>
+                        [예상수익 : <span th:name="chaosProfit" th:text="${character.chaosProfit}"></span>]
                         <div th:if="${character.chaosSelected}">
-                            휴식게이지: <input type="number" th:name="chaosGauge"
-                                          th:id="${character.characterName}+'_chaosGauge'"
-                                          th:value="${character.chaosGauge}" style="width: 50px" min="0" max="100"
-                                          step="10">
+                            휴식게이지: <input type="number" th:name="chaosGauge" th:value="${character.chaosGauge}"
+                                          style="width: 50px" min="0" max="100" step="10" readonly>
                             <input class="btn btn-info" th:name="chaosChecked" type="button" th:value="${character.chaosCheck}+'수'"
                             th:onclick="changeChaosCount(${character.characterName})">
                         </div>
                         <div th:if="!${character.chaosSelected}">
-                            <input type="hidden" th:name="chaosGauge" th:id="${character.characterName}+'_chaosGauge'"
-                                   th:value="${character.chaosGauge}">
+                            <input type="hidden" th:name="chaosGauge" th:value="${character.chaosGauge}">
                         </div>
                     </div>
                     <div class="guardian-content" th:name="guardianContent"
                          th:styleappend="|${character.guardianCheck == 2 ? 'text-decoration:line-through; color: #dddddd; background-color: #808080;' : ''}
-                         ${character.guardianSelected ? ''  : 'background-color: #cccccc; text-decoration:line-through; height: 40px;'}|"
-                         th:onclick="updateDayContentSelected([[${character.characterName}]], [[${character.chaosSelected}]], [[!${character.guardianSelected}]])">
-                        가디언토벌 : <span th:name="guardianName" th:id="${character.characterName}+'_guardianName'"
-                                      th:text="${character.guardianName}"></span>
-                        [예상수익 : <span th:name="guardianProfit" th:id="${character.characterName}+'_guardianProfit'"
-                                      th:text="${character.guardianProfit}"></span>]
+                         ${character.guardianSelected ? ''  : 'background-color: #cccccc; text-decoration:line-through; height: 40px;'}|">
+                        가디언토벌 : <span th:name="guardianName" th:text="${character.guardianName}"></span>
+                        [예상수익 : <span th:name="guardianProfit" th:text="${character.guardianProfit}"></span>]
                         <div th:if="${character.guardianSelected}">
-                            휴식게이지: <input type="number" th:name="guardianGauge"
-                                          th:id="${character.characterName}+'_guardianGauge'"
-                                          th:value="${character.guardianGauge}" style="width: 50px" min="0" max="100"
-                                          step="10">
+                            휴식게이지: <input type="number" th:name="guardianGauge" th:value="${character.guardianGauge}"
+                                          style="width: 50px" min="0" max="100" step="10" readonly>
                             <input class="btn btn-info" th:name="guardianChecked" type="button" th:value="${character.guardianCheck}+'수'">
                         </div>
                         <div th:if="!${character.guardianSelected}">
-                            <input type="hidden" th:name="guardianGauge"
-                                   th:id="${character.characterName}+'_guardianGauge'"
-                                   th:value="${character.guardianGauge}">
+                            <input type="hidden" th:name="guardianGauge" th:value="${character.guardianGauge}">
                         </div>
                     </div>
                 </div>
@@ -155,9 +141,9 @@
                 content.style.color = before;
             });
         });
-
-
     });
+
+
 
     function updateDayContentSelected(characterName, chaosSelected, guardianSelected) {
         var data = {
@@ -172,7 +158,14 @@
                 dataType: 'json'
             })
             .done(function (result) {
-                location.reload();
+                var chaos = "#"+result.characterName+"_chaosContent";
+                var chaosContent = $(chaos);
+                console.log(result.chaosSelected);
+                if (result.chaosSelected) {
+                    chaosContent.removeClass('content-none');
+                } else {
+                    chaosContent.addClass('content-none');
+                }
             })
             .fail(function (request, status, error) {
                 location.reload();
@@ -193,7 +186,7 @@
                 dataType: 'json'
             })
             .done(function (result) {
-                location.reload();
+                console.log(result.data);
             })
             .fail(function (request, status, error) {
                 console.log(error);
@@ -201,26 +194,9 @@
     }
 
     function makeData(characterName) {
-        var characterInfoElements = document.querySelectorAll('div[name="characterInfo"]');
-        var characterInfoElement;
-
-        for (var i = 0; i < characterInfoElements.length; i++) {
-            var nameElement = characterInfoElements[i].querySelector('h5[name="characterName"]');
-            if (nameElement.textContent === characterName) {
-                characterInfoElement = characterInfoElements[i];
-                break;
-            }
-        }
-
-        if (!characterInfoElement) {
-            console.error('Character not found.');
-            return;
-        }
-
-        var characterDayContentElement = characterInfoElement.children[1];
+        var characterDayContentElement = $('#'+characterName)[0].children[1];
         var chaosContentElement = characterDayContentElement.querySelector('[name="chaosContent"]');
         var guardianContentElement = characterDayContentElement.querySelector('[name="guardianContent"]');
-
 
         var chaos = 0;
         if (chaosContentElement.querySelector('input[type="number"]') == null) {
@@ -250,14 +226,12 @@
             guardian: guardian,
             guardianGauge: guardianGauge
         };
-
-        console.log(character);
         return JSON.stringify(character);
     }
 
 
 
-    function saveTodo(characterName) {
+    function saveCharacterTodo(characterName) {
         var data = makeData(characterName);
         $.ajax("/api/character",
             {
@@ -290,10 +264,6 @@
             .fail(function (request, status, error) {
                 alert(error.responseJSON.message);
             });
-    }
-
-    function changeChaosCount(characterName) {
-
     }
 </script>
 </html>

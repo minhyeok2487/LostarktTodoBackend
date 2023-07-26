@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
 import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
+import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
@@ -53,7 +54,7 @@ public class MainController {
 
             // 일일숙제 선택된 캐릭터들
             // Profit 순서대로 정렬하기
-            JSONArray sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
+            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
 
             // Profit 합 구하기
             double sum = 0;
