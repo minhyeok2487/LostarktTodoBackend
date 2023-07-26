@@ -34,6 +34,8 @@ public class LostarkCharacterService {
             JSONArray filteredArray = filterLevel(jsonArray);
             JSONArray result = getCharacterImage(filteredArray, apiKey);
             return result;
+        } catch (NullPointerException e) {
+            throw new RuntimeException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

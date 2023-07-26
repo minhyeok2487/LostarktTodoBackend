@@ -29,7 +29,7 @@ public class CharacterService {
      */
     public Character findCharacter(String characterName) {
         return characterRepository.findByCharacterName(characterName)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캐릭터입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(characterName+" 은(는) 존재하지 않는 캐릭터입니다."));
     }
 
     /**
@@ -66,26 +66,36 @@ public class CharacterService {
 
     /**
      * 로스트아크 api로 불러온 캐릭터 리스트 DB 저장
-     * 이미 있으면...
      */
-    public List<CharacterResponseDto> saveCharacterList(Member member, JSONArray characterList) {
-        List<CharacterResponseDto> returnDtos = new ArrayList<>();
+    public String saveCharacterList(Member member, JSONArray characterList) {
+        int number = 0;
+        String message = "";
         for (Object o : characterList) {
             JSONObject jsonObject = (JSONObject) o;
             Character character = new Character(jsonObject);
-            Character savedCharacter = member.addCharacter(character); // 데이터 저장
-            CharacterResponseDto dto = new CharacterResponseDto(savedCharacter); // 저장된 데이터 리턴 dto로 변경
-            returnDtos.add(dto);
+            member.addCharacter(character); // 데이터 저장
+            number++;
+            message += character.getCharacterName() + " ";
         }
-        return returnDtos;
+        String result = "총 " + number +"개 저장 완료\n" + message;
+        return result;
     }
 
-    public void updateCharacterList(JSONArray characterList) {
+    /**
+     * 로스트아크 api로 불러온 캐릭터 리스트 DB 갱신
+     */
+    public String  updateCharacterList(JSONArray characterList) {
+        int number = 0;
+        String message = "";
         for (Object o : characterList) {
             JSONObject jsonObject = (JSONObject) o;
             String characterName = jsonObject.get("CharacterName").toString();
             double itemLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
             characterRepository.updateCharacterInfo(characterName, itemLevel);
+            number++;
+            message += characterName + " ";
         }
+        String result = "총 " + number +"개 업데이트 완료\n" + message;
+        return result;
     }
 }

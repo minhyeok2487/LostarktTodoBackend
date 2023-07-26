@@ -3,7 +3,6 @@ package lostark.todo.domain.character;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 import org.json.simple.JSONObject;

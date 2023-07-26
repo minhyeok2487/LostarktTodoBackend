@@ -17,13 +17,8 @@ public class ExControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResult> illegalArgumentExceptionHandler(IllegalArgumentException e) {
-        ErrorResult errorResult = new ErrorResult(HttpStatus.BAD_REQUEST, e.getMessage());
-        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResult> sqlExceptionHandler(SQLException e) {
+    public ResponseEntity<ErrorResult> ExceptionHandler(RuntimeException e) {
+        log.error(e.getMessage());
         ErrorResult errorResult = new ErrorResult(HttpStatus.BAD_REQUEST, e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
