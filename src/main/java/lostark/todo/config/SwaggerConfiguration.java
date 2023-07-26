@@ -23,10 +23,8 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket api() {
-        String groupName = "1.0버전";
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
-                .groupName(groupName)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo"))
