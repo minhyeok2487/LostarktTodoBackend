@@ -3,8 +3,7 @@ package lostark.todo.domain.character;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lostark.todo.controller.dto.characterDto.CharacterRequestDto;
-import lostark.todo.controller.dto.characterDto.DayContentSelectedDto;
+import lostark.todo.controller.dto.characterDto.CharacterDayContentResponseDto;
 import lostark.todo.domain.content.Category;
 
 import javax.persistence.Embeddable;
@@ -46,24 +45,24 @@ public class CharacterDayContent {
     /**
      * CharacterContent 값 변경 메소드
      */
-    public void update(CharacterRequestDto characterRequestDto) {
-        updateChecked(characterRequestDto);
-        updateGauge(characterRequestDto);
+    public void update(CharacterDayContentResponseDto characterDayContentResponseDto) {
+        updateChecked(characterDayContentResponseDto);
+        updateGauge(characterDayContentResponseDto);
     }
 
     /**
      * 체크 값 변경 메소드
      * 0, 1, 2 만 가능
      */
-    public void updateChecked(CharacterRequestDto characterRequestDto) {
-        int chaos = characterRequestDto.getChaos();
+    public void updateChecked(CharacterDayContentResponseDto characterDayContentResponseDto) {
+        int chaos = characterDayContentResponseDto.getChaos();
         if (chaos > 2 || chaos < 0) {
             throw new IllegalArgumentException("카오스던전 체크 범위 초과(0~2)");
         } else {
             this.chaosCheck = chaos;
         }
 
-        int guardian = characterRequestDto.getGuardian();
+        int guardian = characterDayContentResponseDto.getGuardian();
         if (guardian > 2 || guardian < 0) {
             throw new IllegalArgumentException("가디언토벌 체크 범위 초과(0~2)");
         } else {
@@ -76,15 +75,15 @@ public class CharacterDayContent {
      * 휴식게이지 값 변경 메소드
      * 0~100, 10단위로만 가능
      */
-    public void updateGauge(CharacterRequestDto characterRequestDto) {
-        int chaosGauge = characterRequestDto.getChaosGauge();
+    public void updateGauge(CharacterDayContentResponseDto characterDayContentResponseDto) {
+        int chaosGauge = characterDayContentResponseDto.getChaosGauge();
         if(chaosGauge % 10 == 0 && chaosGauge <= 100 && chaosGauge >= 0) {
             this.chaosGauge = chaosGauge;
         } else {
             throw new IllegalArgumentException("카오스던전 휴식게이지 범위 초과(0~100, 10단위)");
         }
 
-        int guardianGauge = characterRequestDto.getGuardianGauge();
+        int guardianGauge = characterDayContentResponseDto.getGuardianGauge();
         if(guardianGauge % 10 == 0 && guardianGauge <= 100 && guardianGauge >= 0) {
             this.guardianGauge = guardianGauge;
         } else {
@@ -119,8 +118,13 @@ public class CharacterDayContent {
         this.guardianCheck = 0;
     }
 
-    public void changeSelected(DayContentSelectedDto dto) {
-        this.chaosSelected = dto.isChaosSelected();
-        this.guardianSelected = dto.isGuardianSelected();
+    public void changeSelected(Category category) {
+        if (category.equals(Category.카오스던전)) {
+            this.chaosSelected = !this.isChaosSelected();
+        }
+
+        if (category.equals(Category.가디언토벌)) {
+            this.guardianSelected = !this.isGuardianSelected();
+        }
     }
 }

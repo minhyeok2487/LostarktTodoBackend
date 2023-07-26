@@ -2,14 +2,12 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dto.DayContentDto;
-import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,24 +48,27 @@ public class ContentService {
         return updated;
     }
 
-    public List<CharacterReturnDto> calculateDayContent(
+    public List<CharacterResponseDto> calculateDayContent(
             List<Character> characterList, Map<String, MarketContentResourceDto> contentResource) {
-        List<CharacterReturnDto> characterReturnDtoList = new ArrayList<>(); //출력할 리스트
+        List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>(); //출력할 리스트
 
         for (Character character : characterList) {
             // character 엔티티로 dto 객체 생성
-            CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
+            CharacterResponseDto characterResponseDto = new CharacterResponseDto(character);
 
             // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산(1415 이상)
             if (character.getItemLevel() >= 1415) {
-                Map<Category, DayContent> contentMap = getDayContentByLevel(characterReturnDto.getItemLevel());
-                calculateDayContent(characterReturnDto, contentMap, contentResource);
+                Map<Category, DayContent> contentMap = getDayContentByLevel(characterResponseDto.getItemLevel());
+                calculateDayContent(characterResponseDto, contentMap, contentResource);
             }
-            characterReturnDtoList.add(characterReturnDto);
+            characterResponseDtoList.add(characterResponseDto);
         }
-        return characterReturnDtoList;
+        return characterResponseDtoList;
     }
 
+    /**
+     * 일일컨텐츠 이름 저장
+     */
     public Map<Category, DayContent> getDayContentByLevel(double level) {
         DayContent chaosContent = contentRepository.findDayContentByLevel(level, Category.카오스던전).get(0);
         DayContent guardianContent = contentRepository.findDayContentByLevel(level, Category.가디언토벌).get(0);
@@ -78,58 +79,61 @@ public class ContentService {
         return dayContentMap;
     }
 
-    public CharacterReturnDto calculateDayContentOne(Character character, Map<String, MarketContentResourceDto> contentResource) {
+    /**
+     * 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
+     */
+    public CharacterResponseDto calculateDayContentOne(Character character, Map<String, MarketContentResourceDto> contentResource) {
         // character 엔티티로 dto 객체 생성
-        CharacterReturnDto characterReturnDto = new CharacterReturnDto(character);
+        CharacterResponseDto characterResponseDto = new CharacterResponseDto(character);
 
         // 객체 레벨에 맞는 일일 컨텐츠 가져온후 계산
-        Map<Category, DayContent> contentMap = getDayContentByLevel(characterReturnDto.getItemLevel());
-        CharacterReturnDto returnDto = calculateDayContent(characterReturnDto, contentMap, contentResource);
+        Map<Category, DayContent> contentMap = getDayContentByLevel(characterResponseDto.getItemLevel());
+        CharacterResponseDto returnDto = calculateDayContent(characterResponseDto, contentMap, contentResource);
         return returnDto;
     }
 
-    private CharacterReturnDto calculateDayContent(CharacterReturnDto characterReturnDto,
-                                                   Map<Category, DayContent> contentMap,
-                                                   Map<String , MarketContentResourceDto> contentResource) {
+    private CharacterResponseDto calculateDayContent(CharacterResponseDto characterResponseDto,
+                                                     Map<Category, DayContent> contentMap,
+                                                     Map<String , MarketContentResourceDto> contentResource) {
         MarketContentResourceDto destruction = null;
         MarketContentResourceDto guardian = null;
         MarketContentResourceDto leapStone = null;
-        if (characterReturnDto.getItemLevel() >= 1415) {
+        if (characterResponseDto.getItemLevel() >= 1415) {
             destruction = contentResource.get("파괴석 결정");
             guardian = contentResource.get("수호석 결정");
             leapStone = contentResource.get("위대한 명예의 돌파석");
         }
-        if (characterReturnDto.getItemLevel() >= 1540) {
+        if (characterResponseDto.getItemLevel() >= 1540) {
             destruction = contentResource.get("파괴강석");
             guardian = contentResource.get("수호강석");
             leapStone = contentResource.get("경이로운 명예의 돌파석");
         }
-        if (characterReturnDto.getItemLevel() >= 1580) {
+        if (characterResponseDto.getItemLevel() >= 1580) {
             destruction = contentResource.get("정제된 파괴강석");
             guardian = contentResource.get("정제된 수호강석");
             leapStone = contentResource.get("찬란한 명예의 돌파석");
         }
         MarketContentResourceDto jewelry = contentResource.get("1레벨");
-        calculateChaos(characterReturnDto, destruction, guardian, jewelry, contentMap.get(Category.카오스던전));
-        calculateGuardian(characterReturnDto, destruction, guardian, leapStone, contentMap.get(Category.가디언토벌));
-        return characterReturnDto;
+        calculateChaos(characterResponseDto, destruction, guardian, jewelry, contentMap.get(Category.카오스던전));
+        calculateGuardian(characterResponseDto, destruction, guardian, leapStone, contentMap.get(Category.가디언토벌));
+        return characterResponseDto;
     }
 
 
-    public void calculateChaos(CharacterReturnDto characterReturnDto,
+    public void calculateChaos(CharacterResponseDto characterResponseDto,
                                MarketContentResourceDto destruction,
                                MarketContentResourceDto guardian,
                                MarketContentResourceDto jewelry,
                                DayContent dayContent) {
         double price = 0;
-        if (characterReturnDto.getChaosGauge() >= 40) {
+        if (characterResponseDto.getChaosGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
                 price = calculateBundle(jewelry, dayContent.getJewelry(), price);
                 price += dayContent.getGold();
             }
-        } else if (characterReturnDto.getChaosGauge() < 40 && characterReturnDto.getChaosGauge() >= 20) {
+        } else if (characterResponseDto.getChaosGauge() < 40 && characterResponseDto.getChaosGauge() >= 20) {
             for (int i = 0; i < 3; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
@@ -144,23 +148,23 @@ public class ContentService {
                 price += dayContent.getGold();
             }
         }
-        characterReturnDto.setChaosName(dayContent.getName());
-        characterReturnDto.setChaosProfit(price);
+        characterResponseDto.setChaosName(dayContent.getName());
+        characterResponseDto.setChaosProfit(price);
     }
 
-    private void calculateGuardian(CharacterReturnDto characterReturnDto,
+    private void calculateGuardian(CharacterResponseDto characterResponseDto,
                                    MarketContentResourceDto destruction,
                                    MarketContentResourceDto guardian,
                                    MarketContentResourceDto leapStone,
                                    DayContent dayContent) {
         double price = 0;
-        if (characterReturnDto.getGuardianGauge() >= 40) {
+        if (characterResponseDto.getGuardianGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
                 price = calculateBundle(leapStone, dayContent.getLeapStone(), price);
             }
-        } else if (characterReturnDto.getGuardianGauge() < 40 && characterReturnDto.getGuardianGauge() >= 20) {
+        } else if (characterResponseDto.getGuardianGauge() < 40 && characterResponseDto.getGuardianGauge() >= 20) {
             for (int i = 0; i < 3; i++) {
                 price = calculateBundle(destruction, dayContent.getDestructionStone(), price);
                 price = calculateBundle(guardian, dayContent.getGuardianStone(), price);
@@ -173,8 +177,8 @@ public class ContentService {
                 price = calculateBundle(leapStone, dayContent.getLeapStone(), price);
             }
         }
-        characterReturnDto.setGuardianName(dayContent.getName());
-        characterReturnDto.setGuardianProfit(price);
+        characterResponseDto.setGuardianName(dayContent.getName());
+        characterResponseDto.setGuardianProfit(price);
     }
 
     private double calculateBundle(MarketContentResourceDto dto, double count, double price) {
@@ -182,9 +186,9 @@ public class ContentService {
         return Math.round(price * 100.0) / 100.0;
     }
 
-    public List<SortedDayContentProfitDto> sortDayContentProfit(List<CharacterReturnDto> characterReturnDtoList) {
+    public List<SortedDayContentProfitDto> sortDayContentProfit(List<CharacterResponseDto> characterResponseDtoList) {
         Map<DayContentProfitDto, Double> result = new HashMap<>();
-        for (CharacterReturnDto returnDto : characterReturnDtoList) {
+        for (CharacterResponseDto returnDto : characterResponseDtoList) {
             if (returnDto.isChaosSelected()) {
                 DayContentProfitDto chaos = new DayContentProfitDto(returnDto.getCharacterName(), "카오스던전",returnDto.getChaosName(), returnDto.getChaosCheck());
                 double chaosProfit = returnDto.getChaosProfit();

@@ -2,25 +2,20 @@ package lostark.todo.controller.thymeleafController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterReturnDto;
-import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.Category;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,11 +45,11 @@ public class MainController {
             Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());
 
             // ItemLevel이 1415이상인 캐릭터는 레벨에 맞는 일일 컨텐츠 가져온후 계산
-            List<CharacterReturnDto> characterReturnDtoList = contentService.calculateDayContent(characterList, contentResource);
+            List<CharacterResponseDto> characterResponseDtoList = contentService.calculateDayContent(characterList, contentResource);
 
             // 일일숙제 선택된 캐릭터들
             // Profit 순서대로 정렬하기
-            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterReturnDtoList);
+            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterResponseDtoList);
 
             // Profit 합 구하기
             double sum = 0;
@@ -66,7 +61,7 @@ public class MainController {
             sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
-            model.addAttribute("characters", characterReturnDtoList);
+            model.addAttribute("characters", characterResponseDtoList);
             model.addAttribute("sumDayContentProfit", sum);
             model.addAttribute("sortDayContentProfit", sortedDayContentProfit);
 

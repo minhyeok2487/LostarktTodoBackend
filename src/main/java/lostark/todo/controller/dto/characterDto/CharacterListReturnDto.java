@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class CharactersReturnDto {
+public class CharacterListReturnDto {
 
     @ApiModelProperty(example = "기본 캐릭터 리스트")
-    List<CharacterReturnDto> characters = new ArrayList<>();
+    List<CharacterResponseDto> characters = new ArrayList<>();
 
     @ApiModelProperty(example = "일일 컨텐츠 수익 합")
     Double sumDayContentProfit;
