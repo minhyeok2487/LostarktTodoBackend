@@ -67,19 +67,19 @@ public class CharacterService {
     /**
      * 로스트아크 api로 불러온 캐릭터 리스트 DB 저장
      */
-    public String saveCharacterList(Member member, JSONArray characterList) {
-        int number = 0;
-        String message = "";
-        for (Object o : characterList) {
-            JSONObject jsonObject = (JSONObject) o;
-            Character character = new Character(jsonObject);
-            member.addCharacter(character); // 데이터 저장
-            number++;
-            message += character.getCharacterName() + " ";
-        }
-        String result = "총 " + number +"개 저장 완료\n" + message;
-        return result;
-    }
+//    public String saveCharacterList(Member member, JSONArray characterList) {
+//        int number = 0;
+//        String message = "";
+//        for (Object o : characterList) {
+//            JSONObject jsonObject = (JSONObject) o;
+//            Character character = new Character(jsonObject);
+//            member.addCharacter(character); // 데이터 저장
+//            number++;
+//            message += character.getCharacterName() + " ";
+//        }
+//        String result = "총 " + number +"개 저장 완료\n" + message;
+//        return result;
+//    }
 
     /**
      * 로스트아크 api로 불러온 캐릭터 리스트 DB 갱신

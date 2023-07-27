@@ -2,6 +2,8 @@ package lostark.todo.service.lostarkApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.CharacterDayContent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -11,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,17 +27,50 @@ public class LostarkCharacterService {
      * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져옴
      * 1415이상 캐릭터만 리턴
      */
-    public JSONArray characterInfo(String apiKey, String characterName) {
+    public JSONArray getCharacter(String apiKey, String characterName) {
         try {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, apiKey);
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
             JSONArray filteredArray = filterLevel(jsonArray);
             JSONArray result = getCharacterImage(filteredArray, apiKey);
             return result;
+        } catch (NullPointerException e) {
+            throw new RuntimeException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Character> getCharacterList(String apiKey, String characterName) {
+        try {
+            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
+
+            JSONArray filteredArray = filterLevel(jsonArray);
+            JSONArray imageList = getCharacterImage(filteredArray, apiKey);
+            List<Character> characterList = new ArrayList<>();
+            for (Object o : imageList) {
+                JSONObject jsonObject = (JSONObject) o;
+                Character character = Character.builder()
+                        .characterName(jsonObject.get("CharacterName").toString())
+                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+                        .characterClassName(jsonObject.get("CharacterClassName").toString())
+                        .serverName(jsonObject.get("ServerName").toString())
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .selected(true)
+                        .characterImage(jsonObject.get("CharacterImage").toString())
+                        .characterDayContent(new CharacterDayContent())
+                        .build();
+                characterList.add(character);
+            }
+            return characterList;
         } catch (NullPointerException e) {
             throw new RuntimeException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
         } catch (Exception e) {
@@ -63,7 +100,7 @@ public class LostarkCharacterService {
                 String characterName = jsonObject.get("CharacterName").toString();
                 String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
                 String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
-                InputStreamReader inputStreamReader = apiService.LostarkGetApi(link, apiKey);
+                InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
                 JSONParser parser = new JSONParser();
                 JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
 

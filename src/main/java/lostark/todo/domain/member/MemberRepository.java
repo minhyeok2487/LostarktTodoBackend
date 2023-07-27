@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
+    Boolean existsByUsername(String username);
+
     @Query(value = "SELECT DISTINCT m FROM Member m JOIN FETCH m.characters c WHERE m.username = :username ORDER BY c.itemLevel DESC")
     Optional<Member> findMemberAndCharacter(@Param("username") String username);
 

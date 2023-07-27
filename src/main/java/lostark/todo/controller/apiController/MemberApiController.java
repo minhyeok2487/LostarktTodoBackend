@@ -9,19 +9,25 @@ import lostark.todo.controller.dto.characterDto.CharacterListReturnDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
+import lostark.todo.security.SecurityService;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.json.simple.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -33,13 +39,31 @@ public class MemberApiController {
     private final MarketService marketService;
     private final ContentService contentService;
     private final MemberService memberService;
+    private final SecurityService securityService;
+    private final LostarkCharacterService lostarkCharacterService;
+    private final CharacterService characterService;
 
-    @ApiOperation(value = "회원 가입", notes="미완성")
+
+    @ApiOperation(value = "회원 가입",
+            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장")
     @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody MemberSignupDto signupDto) {
-        Member signupMember = memberService.signup(signupDto);
-        return new ResponseEntity(signupMember, HttpStatus.CREATED);
+    public ResponseEntity signupMember(@RequestBody @Valid MemberSignupDto memberSignupDto) {
+        // 대표캐릭터 검색을 통한 로스트아크 api 검증
+        List<Character> characterList = lostarkCharacterService.getCharacterList(memberSignupDto.getApiKey(), memberSignupDto.getCharacterName());
+
+        // 회원가입
+        Member signupMember = memberService.signup(memberSignupDto, characterList);
+
+        // 결과 출력
+        MemberResponseDto responseDto = MemberResponseDto.builder()
+                .id(signupMember.getId())
+                .username(signupMember.getUsername())
+                .characters(signupMember.getCharacters()
+                        .stream().map(o -> o.getCharacterName()).collect(Collectors.toList()))
+                .build();
+        return new ResponseEntity(responseDto, HttpStatus.CREATED);
     }
+
 
 
 

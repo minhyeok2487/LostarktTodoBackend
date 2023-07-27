@@ -1,9 +1,6 @@
 package lostark.todo.domain.member;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lostark.todo.controller.dto.memberDto.MemberSignupDto;
+import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
@@ -12,10 +9,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Getter
-@Setter
+
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class Member extends BaseTimeEntity {
 
     /**
@@ -41,17 +40,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Character> characters = new ArrayList<>();
 
+
     /**
      * 연관 관계 메서드
      */
-
-    // 회원가입 생성자
-    public Member(MemberSignupDto signupDto) {
-        this.apiKey = signupDto.getApiKey();
-        this.username = signupDto.getUsername();
-        this.password = signupDto.getPassword();
-        this.role = Role.USER;
-    }
 
     // user 엔티티에 character 리스트 저장
     public Character addCharacter(Character character) {

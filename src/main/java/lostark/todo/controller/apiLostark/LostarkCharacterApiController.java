@@ -26,20 +26,20 @@ public class LostarkCharacterApiController {
     private final MemberService memberService;
     private final CharacterService characterService;
 
-    @ApiOperation(value = "로스트아크 api로부터 캐릭터 정보 불러와서 DB에 저장",
-            notes="기존에 있는 캐릭터라면 갱신", response = String.class)
-    @PostMapping("/{characterName}")
-    public ResponseEntity characterSave(@RequestBody MemberRequestDto memberRequestDto, @PathVariable String characterName) {
-        Member member = memberService.findMember(memberRequestDto.getUsername());
-        JSONArray characterList = lostarkCharacterService.characterInfo(member.getApiKey(), characterName);
-        if (member.getCharacters().size() == 0) {
-            return new ResponseEntity<>(characterService.saveCharacterList(member, characterList), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(characterService.updateCharacterList(characterList), HttpStatus.OK);
-        }
-
-
-    }
+//    @ApiOperation(value = "로스트아크 api로부터 캐릭터 정보 불러와서 DB에 저장",
+//            notes="기존에 있는 캐릭터라면 갱신", response = String.class)
+//    @PostMapping("/{characterName}")
+//    public ResponseEntity characterSave(@RequestBody MemberRequestDto memberRequestDto, @PathVariable String characterName) {
+//        Member member = memberService.findMember(memberRequestDto.getUsername());
+//        JSONArray characterList = lostarkCharacterService.getCharacter(member.getApiKey(), characterName);
+//        if (member.getCharacters().size() == 0) {
+//            return new ResponseEntity<>(characterService.saveCharacterList(member, characterList), HttpStatus.CREATED);
+//        } else {
+//            return new ResponseEntity<>(characterService.updateCharacterList(characterList), HttpStatus.OK);
+//        }
+//
+//
+//    }
 
 
 }

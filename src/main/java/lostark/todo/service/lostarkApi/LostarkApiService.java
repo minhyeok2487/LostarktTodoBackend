@@ -1,6 +1,8 @@
 package lostark.todo.service.lostarkApi;
 
-import org.springframework.stereotype.Repository;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,10 +19,8 @@ public class LostarkApiService {
     /**
      * 로스트아크 api 틀(Get, Post)
      */
-
     //Get mapping
-
-    public InputStreamReader LostarkGetApi(String link, String apiKey) {
+    public InputStreamReader lostarkGetApi(String link, String apiKey) {
         try {
             HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET", apiKey);
             return getInputStreamReader(httpURLConnection);
@@ -30,7 +30,7 @@ public class LostarkApiService {
     }
 
     //Post mapping
-    public InputStreamReader LostarkPostApi(String link, String parameter, String apiKey) {
+    public InputStreamReader lostarkPostApi(String link, String parameter, String apiKey) {
         try {
             HttpURLConnection httpURLConnection = getHttpURLConnection(link, "POST", apiKey);
 
@@ -63,7 +63,7 @@ public class LostarkApiService {
         if(result == 200) {
             inputStream = httpURLConnection.getInputStream();
         } else {
-            inputStream = httpURLConnection.getErrorStream();
+            throw new RuntimeException("올바르지 않은 로스트아크 apiKey 입니다");
         }
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         return inputStreamReader;

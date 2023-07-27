@@ -52,7 +52,7 @@ public class LostarkMarketService {
                     + "  \"PageNo\": "+ pageNo +",\n"
                     + "  \"SortCondition\": \"DESC\"\n"
                     + "}";
-            InputStreamReader inputStreamReader = lostarkApiService.LostarkPostApi(link, parameter, apiKey);
+            InputStreamReader inputStreamReader = lostarkApiService.lostarkPostApi(link, parameter, apiKey);
             JSONParser parser = new JSONParser();
             return (JSONObject) parser.parse(inputStreamReader);
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class LostarkMarketService {
                     + ",PageNo : 1"
                     + ",SortCondition : \"ASC\""
                     + "}";
-            InputStreamReader inputStreamReader = lostarkApiService.LostarkPostApi(link, parameter, apiKey);
+            InputStreamReader inputStreamReader = lostarkApiService.lostarkPostApi(link, parameter, apiKey);
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(inputStreamReader);
 
