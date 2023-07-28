@@ -1,0 +1,64 @@
+package lostark.todo.controller.v1.thymeleafController;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lostark.todo.service.v1.CharacterService;
+import lostark.todo.service.v1.ContentService;
+import lostark.todo.service.v1.MarketService;
+import lostark.todo.service.v1.MemberService;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+@Slf4j
+@RequiredArgsConstructor
+public class MainController {
+
+    private final CharacterService characterService;
+    private final MarketService marketService;
+    private final ContentService contentService;
+    private final MemberService memberService;
+
+    @GetMapping("/")
+    public String main() {
+        return "main";
+    }
+
+    // 숙제 관리 화면
+//    @GetMapping("/todo/{username}")
+//    public String todo(@PathVariable String username, Model model) {
+//        try {
+//            // 캐릭터 리스트 가져옴
+//            List<Character> characterList = memberService.findMemberAndCharacter(username);
+//
+//            // 거래소 데이터 가져옴(Map)
+//            Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(marketService.dayContentResource());
+//
+//            // ItemLevel이 1415이상인 캐릭터는 레벨에 맞는 일일 컨텐츠 가져온후 계산
+//            List<CharacterResponseDto> characterResponseDtoList = contentService.calculateDayContent(characterList, contentResource);
+//
+//            // 일일숙제 선택된 캐릭터들
+//            // Profit 순서대로 정렬하기
+//            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterResponseDtoList);
+//
+//            // Profit 합 구하기
+//            double sum = 0;
+//            for (Object o : sortedDayContentProfit) {
+//                JSONObject jsonObject = (JSONObject) o;
+//                double profit = (double) jsonObject.get("profit");
+//                sum += profit;
+//            }
+//            sum = Math.round(sum * 100.0) / 100.0;
+//
+//            // 결과 출력
+//            model.addAttribute("characters", characterResponseDtoList);
+//            model.addAttribute("sumDayContentProfit", sum);
+//            model.addAttribute("sortDayContentProfit", sortedDayContentProfit);
+//
+//            return "todo/todoMain";
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+}

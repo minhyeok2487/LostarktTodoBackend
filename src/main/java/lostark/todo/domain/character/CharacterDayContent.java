@@ -3,7 +3,7 @@ package lostark.todo.domain.character;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lostark.todo.controller.dto.characterDto.CharacterDayContentResponseDto;
+import lostark.todo.controller.v1.dto.characterDto.CharacterDayContentResponseDto;
 import lostark.todo.domain.content.Category;
 
 import javax.persistence.Embeddable;

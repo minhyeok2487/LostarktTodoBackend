@@ -8,6 +8,7 @@ import lostark.todo.domain.character.Character;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -38,12 +39,8 @@ public class Member extends BaseTimeEntity {
     private Role role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Character> characters = new ArrayList<>();
+    private List<Character> characters;
 
-
-    /**
-     * 연관 관계 메서드
-     */
 
     // user 엔티티에 character 리스트 저장
     public Character addCharacter(Character character) {

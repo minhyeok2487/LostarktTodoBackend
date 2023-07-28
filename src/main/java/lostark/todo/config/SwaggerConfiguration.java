@@ -17,18 +17,34 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
-    /**
-     * 가장 기본적인 구조
-     * https등 추가적인 기능을 하려면 문서참고
-     */
+    private String version;
+    private String title;
+
     @Bean
     public Docket api() {
+        version = "V1";
+        title = "로스트아크 숙제 체크 API " + version;
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
-                .apiInfo(apiInfo())
+                .groupName(version)
+                .apiInfo(apiInfo(title, version))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo"))
-                .paths(PathSelectors.ant("/api/**"))
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.v1"))
+                .paths(PathSelectors.ant("/api/v1/**"))
+                .build();
+    }
+
+    @Bean
+    public Docket apiV2() {
+        version = "V2";
+        title = "로스트아크 숙제 체크 API " + version;
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(title, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.v2"))
+                .paths(PathSelectors.ant("/api/v2/**"))
                 .build();
     }
 
@@ -38,11 +54,11 @@ public class SwaggerConfiguration {
                 .operationsSorter(OperationsSorter.METHOD).build();
     }
 
-    private ApiInfo apiInfo() {
+    private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
-                .title("로스트아크 숙제 체크 사이트 REST API")
+                .title(title)
                 .description("설명 부분")
-                .version("1.0.0")
+                .version(version)
                 .build();
     }
 }

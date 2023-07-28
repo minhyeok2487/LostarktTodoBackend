@@ -48,9 +48,6 @@ public class Character extends BaseTimeEntity {
     @JsonBackReference //순환참조 방지
     private Member member;
 
-    @Column(nullable = false)
-    private boolean selected; //true면 출력할 캐릭(디폴트 true)
-
     @Embedded
     private CharacterDayContent characterDayContent;
 
