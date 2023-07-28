@@ -1,11 +1,10 @@
-package lostark.todo.controller.v1.dto.characterDto;
+package lostark.todo.controller.v2.dto.characterDto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.DayContent;
 
 @Data
@@ -27,9 +26,6 @@ public class CharacterResponseDtoV2 {
 
     @ApiModelProperty(notes = "캐릭터 아이템 레벨")
     private double itemLevel;
-
-    @ApiModelProperty(notes = "캐릭터 선택, false 라면 숙제 안할 캐릭, true / false")
-    private boolean selected;
 
     @ApiModelProperty(notes = "카오스던전 숙제 할 캐릭인지 선택, true / false")
     private boolean chaosSelected;

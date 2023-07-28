@@ -2,7 +2,6 @@ package lostark.todo.service.v1;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDtoV2;
 import lostark.todo.controller.v1.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.v1.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.v1.dto.marketDto.MarketContentResourceDto;
@@ -20,16 +19,16 @@ public class ContentService {
 
     private final ContentRepository contentRepository;
 
-    public List<CharacterResponseDtoV2> calculateDayContentV2(List<Character> characterList) {
+    public List<CharacterResponseDto> calculateDayContentV2(List<Character> characterList) {
         //출력할 리스트
-        List<CharacterResponseDtoV2> characterResponseDtoList = new ArrayList<>();
+        List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>();
 
         for (Character character : characterList) {
             // 캐릭터 레벨에 따른 일일컨텐츠
             Map<Category, DayContent> contentMap = getDayContentByLevel(character.getItemLevel());
 
             // character 엔티티로 dto 객체 생성
-            CharacterResponseDtoV2 characterResponseDto = CharacterResponseDtoV2.builder()
+            CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
                     .id(character.getId())
                     .characterName(character.getCharacterName())
                     .characterImage(character.getCharacterImage())
@@ -38,11 +37,9 @@ public class ContentService {
                     .chaosSelected(character.getCharacterDayContent().isChaosSelected())
                     .chaosCheck(character.getCharacterDayContent().getChaosCheck())
                     .chaosGauge(character.getCharacterDayContent().getChaosGauge())
-                    .chaosName(contentMap.get(Category.카오스던전))
                     .guardianSelected(character.getCharacterDayContent().isGuardianSelected())
                     .guardianCheck(character.getCharacterDayContent().getGuardianCheck())
                     .guardianGauge(character.getCharacterDayContent().getGuardianGauge())
-                    .guardianName(contentMap.get(Category.가디언토벌))
                     .build();
 
             characterResponseDtoList.add(characterResponseDto);

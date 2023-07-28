@@ -71,39 +71,39 @@ public class MemberApiController {
     @GetMapping("/{username}")
     public ResponseEntity getCharacterList(@PathVariable String username) {
         try {
-            // username 으로 연결된 캐릭터리스트 호출
-            List<Character> characterList = memberService.findMember(username).getCharacters();
-            if(characterList.isEmpty()) {
-                throw new RuntimeException("등록된 캐릭터가 없습니다.");
-            }
+//            // username 으로 연결된 캐릭터리스트 호출
+//            List<Character> characterList = memberService.findMember(username).getCharacters();
+//            if(characterList.isEmpty()) {
+//                throw new RuntimeException("등록된 캐릭터가 없습니다.");
+//            }
+//
+//            // 재련재료 데이터 리스트
+//            List<String> resource = marketService.dayContentResource();
+//
+//            // 거래소 데이터 가져옴(Map)
+//            Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(resource);
+//
+//            // 캐릭터 레벨에 맞는 일일 컨텐츠 호출
+//            List<CharacterResponseDto> characterResponseDtoList = contentService.calculatDayContent(characterList, contentResource);
+//
+//            // 일일숙제 선택된 캐릭터들
+//            // Profit 순서대로 정렬하기
+//            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterResponseDtoList);
+//
+//            // Profit 합 구하기
+//            double sum = 0;
+//            for (SortedDayContentProfitDto dto : sortedDayContentProfit) {
+//                sum += dto.getProfit();
+//            }
+//            sum = Math.round(sum * 100.0) / 100.0;
+//
+//            // 결과 출력
+//            CharacterListReturnDto charactersReturnDto = new CharacterListReturnDto();
+//            charactersReturnDto.setCharacters(characterResponseDtoList);
+//            charactersReturnDto.setSumDayContentProfit(sum);
+//            charactersReturnDto.setSortedDayContentProfitDtoList(sortedDayContentProfit);
 
-            // 재련재료 데이터 리스트
-            List<String> resource = marketService.dayContentResource();
-
-            // 거래소 데이터 가져옴(Map)
-            Map<String, MarketContentResourceDto> contentResource = marketService.getContentResource(resource);
-
-            // 캐릭터 레벨에 맞는 일일 컨텐츠 호출
-            List<CharacterResponseDto> characterResponseDtoList = contentService.calculateDayContent(characterList, contentResource);
-
-            // 일일숙제 선택된 캐릭터들
-            // Profit 순서대로 정렬하기
-            List<SortedDayContentProfitDto> sortedDayContentProfit = contentService.sortDayContentProfit(characterResponseDtoList);
-
-            // Profit 합 구하기
-            double sum = 0;
-            for (SortedDayContentProfitDto dto : sortedDayContentProfit) {
-                sum += dto.getProfit();
-            }
-            sum = Math.round(sum * 100.0) / 100.0;
-
-            // 결과 출력
-            CharacterListReturnDto charactersReturnDto = new CharacterListReturnDto();
-            charactersReturnDto.setCharacters(characterResponseDtoList);
-            charactersReturnDto.setSumDayContentProfit(sum);
-            charactersReturnDto.setSortedDayContentProfitDtoList(sortedDayContentProfit);
-
-            return new ResponseEntity<>(charactersReturnDto, HttpStatus.OK);
+            return new ResponseEntity<>("null", HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
