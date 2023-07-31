@@ -47,5 +47,4 @@ public class CharacterApiControllerV2 {
                 .build();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
 }
