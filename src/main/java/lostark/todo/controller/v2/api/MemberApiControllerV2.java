@@ -4,10 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.v1.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.controller.v1.dto.memberDto.MemberResponseDto;
-import lostark.todo.controller.v2.dto.characterDto.CharacterListReturnDtoV2;
+import lostark.todo.controller.v2.dto.characterDto.CharacterListResponeDtoV2;
+import lostark.todo.controller.v2.dto.characterDto.CharacterDayContentDto;
 import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
 import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
 import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
@@ -62,11 +61,9 @@ public class MemberApiControllerV2 {
     }
 
 
-
-
     @ApiOperation(value = "회원과 등록된 캐릭터 리스트 조회",
             notes="휴식게이지를 참고하여 일일컨텐츠 수익 계산하여 함께 리턴",
-            response = CharacterListReturnDtoV2.class)
+            response = CharacterListResponeDtoV2.class)
     @GetMapping("/{username}")
     public ResponseEntity getCharacterList(@PathVariable String username) {
         try {
@@ -99,7 +96,7 @@ public class MemberApiControllerV2 {
             sum = Math.round(sum * 100.0) / 100.0;
 
             // 결과 출력
-            CharacterListReturnDtoV2 charactersReturnDto = CharacterListReturnDtoV2.builder()
+            CharacterListResponeDtoV2 charactersReturnDto = CharacterListResponeDtoV2.builder()
                     .characters(characterResponseDtoList)
                     .sumDayContentProfit(sum)
                     .sortedDayContentProfitDtoList(sortedDayContentProfit)
@@ -108,5 +105,12 @@ public class MemberApiControllerV2 {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterDayContentDto.class)
+    @PatchMapping("/{username}")
+    public ResponseEntity updateCharacters(@PathVariable String username,
+                                           @RequestBody List<CharacterDayContentDto> characterDayContentDtoList) {
+        return new ResponseEntity<>(memberService.updateCharacterList(username, characterDayContentDtoList), HttpStatus.OK);
     }
 }

@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lostark.todo.controller.v1.dto.characterDto.CharacterDayContentResponseDto;
+import lostark.todo.controller.v2.dto.characterDto.CharacterDayContentDto;
 import lostark.todo.domain.content.Category;
 
 import javax.persistence.Embeddable;
@@ -40,6 +41,31 @@ public class CharacterDayContent {
         this.guardianSelected = true;
         this.guardianCheck = 0;
         this.guardianGauge = 0;
+    }
+
+    /**
+     * V2 일일컨텐츠 업데이트
+     * @param characterDayContentDto
+     */
+    public void updateDayContent(CharacterDayContentDto characterDayContentDto) {
+        this.chaosSelected = characterDayContentDto.isChaosSelected();
+        this.guardianSelected = characterDayContentDto.isGuardianSelected();
+
+        int chaosCheck = characterDayContentDto.getChaosCheck();
+        if (chaosCheck > 2 || chaosCheck < 0) {
+            throw new IllegalArgumentException("카오스던전 체크 범위 초과(0~2)");
+        } else {
+            this.chaosCheck = chaosCheck;
+        }
+
+        int guardianCheck = characterDayContentDto.getGuardianCheck();
+        if (guardianCheck > 2 || guardianCheck < 0) {
+            throw new IllegalArgumentException("가디언토벌 체크 범위 초과(0~2)");
+        } else {
+            this.guardianCheck = guardianCheck;
+        }
+
+
     }
 
     /**
@@ -127,4 +153,6 @@ public class CharacterDayContent {
             this.guardianSelected = !this.isGuardianSelected();
         }
     }
+
+
 }

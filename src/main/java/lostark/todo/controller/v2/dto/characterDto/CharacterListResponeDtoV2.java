@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.v1.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
 
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CharacterListReturnDtoV2 {
+public class CharacterListResponeDtoV2 {
 
     @ApiModelProperty(example = "기본 캐릭터 리스트")
     List<CharacterResponseDtoV2> characters = new ArrayList<>();

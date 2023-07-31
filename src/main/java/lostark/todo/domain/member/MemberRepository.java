@@ -1,6 +1,6 @@
 package lostark.todo.domain.member;
 
-import org.springframework.data.jpa.repository.EntityGraph;
+import lostark.todo.controller.v1.dto.memberDto.MemberRequestDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +13,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Boolean existsByUsername(String username);
 
     @Query(value = "SELECT DISTINCT m FROM Member m JOIN FETCH m.characters c WHERE m.username = :username ORDER BY c.itemLevel DESC")
-    Optional<Member> findMemberAndCharacter(@Param("username") String username);
-
     Optional<Member> findByUsername(@Param("username") String username);
 }
