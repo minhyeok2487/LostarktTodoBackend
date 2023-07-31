@@ -25,33 +25,33 @@ import java.util.List;
 @Api(tags = {"로스트아크 연동 거래소, 경매장 REST API"})
 public class LostarkMarketApiController {
 
-    private final MemberService memberService;
-    private final LostarkMarketService lostarkMarketService;
-    private final MarketService marketService;
-
-    @ApiOperation(value = "로스트아크 api로부터 해당 카테고리 코드의 거래소 데이터를 불러와서 DB에 저장",
-            notes = "기존 데이터가 있으면 갱신", response = String.class)
-    @PostMapping("/{categoryCode}")
-    public ResponseEntity getMarketCategoryCode(@RequestBody MemberRequestDto requestDto, @PathVariable int categoryCode)  {
-        Member member = memberService.findMember(requestDto.getUsername());
-
-        // 데이터 불러오기
-        List<Market> marketList = lostarkMarketService.getMarketData(categoryCode, member.getApiKey());
-
-        // 저장
-        return new ResponseEntity(marketService.saveMarketItemList(marketList, categoryCode), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "로스트아크 api로부터 해당 정보의 경매장 데이터를 불러와서 DB에 저장",
-            notes = "기존 데이터가 있으면 갱신", response = String.class)
-    @PostMapping("/auction")
-    public ResponseEntity getAuction(@RequestBody AuctionRequestDto auctionRequestDto) {
-        Member member = memberService.findMember(auctionRequestDto.getUsername());
-
-        // 데이터 불러오기
-        JSONObject auctionItem = lostarkMarketService.getAuctionItems(auctionRequestDto, member.getApiKey());
-
-        return new ResponseEntity(marketService.saveAuctionItem(auctionItem, auctionRequestDto), HttpStatus.OK);
-    }
+//    private final MemberService memberService;
+//    private final LostarkMarketService lostarkMarketService;
+//    private final MarketService marketService;
+//
+//    @ApiOperation(value = "로스트아크 api로부터 해당 카테고리 코드의 거래소 데이터를 불러와서 DB에 저장",
+//            notes = "기존 데이터가 있으면 갱신", response = String.class)
+//    @PostMapping("/{categoryCode}")
+//    public ResponseEntity getMarketCategoryCode(@RequestBody MemberRequestDto requestDto, @PathVariable int categoryCode)  {
+//        Member member = memberService.findMember(requestDto.getUsername());
+//
+//        // 데이터 불러오기
+//        List<Market> marketList = lostarkMarketService.getMarketData(categoryCode, member.getApiKey());
+//
+//        // 저장
+//        return new ResponseEntity(marketService.saveMarketItemList(marketList, categoryCode), HttpStatus.OK);
+//    }
+//
+//    @ApiOperation(value = "로스트아크 api로부터 해당 정보의 경매장 데이터를 불러와서 DB에 저장",
+//            notes = "기존 데이터가 있으면 갱신", response = String.class)
+//    @PostMapping("/auction")
+//    public ResponseEntity getAuction(@RequestBody AuctionRequestDto auctionRequestDto) {
+//        Member member = memberService.findMember(auctionRequestDto.getUsername());
+//
+//        // 데이터 불러오기
+//        JSONObject auctionItem = lostarkMarketService.getAuctionItems(auctionRequestDto, member.getApiKey());
+//
+//        return new ResponseEntity(marketService.saveAuctionItem(auctionItem, auctionRequestDto), HttpStatus.OK);
+//    }
 
 }
