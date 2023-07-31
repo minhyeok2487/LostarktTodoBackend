@@ -3,14 +3,11 @@ package lostark.todo.service.v2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import lostark.todo.controller.v1.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
 import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterDayContent;
 import lostark.todo.domain.character.CharacterRepository;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.member.Member;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

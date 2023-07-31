@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.v1.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.v1.dto.contentDto.SortedDayContentProfitDto;
+import lostark.todo.controller.v1.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
 import lostark.todo.controller.v2.dto.contentDto.DayContentProfitDtoV2;
 import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
+import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.ContentRepository;
@@ -109,4 +111,5 @@ public class ContentServiceV2 {
         }
         return dtoList;
     }
+
 }
