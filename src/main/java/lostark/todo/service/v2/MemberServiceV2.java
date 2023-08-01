@@ -2,7 +2,8 @@ package lostark.todo.service.v2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v2.dto.characterDto.CharacterDayContentDto;
+import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateDtoV2;
+import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
 import lostark.todo.controller.v2.dto.memberDto.MemberSignupDtoV2;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
@@ -47,32 +48,32 @@ public class MemberServiceV2 {
 
     public Member findMember(String username) {
         return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원이거나 등록된 캐릭터가 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
     }
 
-    public List<CharacterDayContentDto> updateCharacterList(
-            String username, List<CharacterDayContentDto> characterDayContentDtoList) {
-        List<CharacterDayContentDto> resultList = new ArrayList<>();
 
+    public CharacterUpdateListDtoV2 updateCharacterList(String username, CharacterUpdateListDtoV2 characterUpdateListDtoV2) {
         List<Character> characterList = findMember(username).getCharacters();
+
+        CharacterUpdateListDtoV2 resultDtoList = new CharacterUpdateListDtoV2();
         for (Character character : characterList) {
-            for (CharacterDayContentDto characterDayContentDto : characterDayContentDtoList) {
-                if (character.getCharacterName().equals(characterDayContentDto.getCharacterName())) {
-                    character.getCharacterDayContent().updateDayContent(characterDayContentDto);
-                    CharacterDayContentDto result = CharacterDayContentDto.builder()
+            for (CharacterUpdateDtoV2 characterUpdateDtoV2 : characterUpdateListDtoV2.getCharacterUpdateDtoV2List()) {
+                if (character.getCharacterName().equals(characterUpdateDtoV2.getCharacterName())) {
+                    character.getCharacterDayContent().updateDayContent(characterUpdateDtoV2);
+
+                    CharacterUpdateDtoV2 result = CharacterUpdateDtoV2.builder()
                             .characterName(character.getCharacterName())
                             .chaosCheck(character.getCharacterDayContent().getChaosCheck())
                             .chaosSelected(character.getCharacterDayContent().isChaosSelected())
                             .guardianCheck(character.getCharacterDayContent().getGuardianCheck())
                             .guardianSelected(character.getCharacterDayContent().isGuardianSelected())
                             .build();
-                    resultList.add(result);
+
+                    resultDtoList.addCharacter(result);
+                    return resultDtoList;
                 }
             }
         }
-        return resultList;
+        return null;
     }
-
-
-
 }

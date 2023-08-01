@@ -5,8 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.v1.dto.memberDto.MemberResponseDto;
+import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
 import lostark.todo.controller.v2.dto.characterDto.CharacterListResponeDtoV2;
-import lostark.todo.controller.v2.dto.characterDto.CharacterDayContentDto;
 import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
 import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
 import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
@@ -70,7 +70,7 @@ public class MemberApiControllerV2 {
             // username 으로 연결된 캐릭터리스트 호출
             List<Character> characterList = memberService.findMember(username).getCharacters();
             if(characterList.isEmpty()) {
-                throw new RuntimeException("등록된 캐릭터가 없습니다.");
+                throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
             }
 
             // 캐릭터 레벨에 맞는 일일 컨텐츠 호출
@@ -107,10 +107,10 @@ public class MemberApiControllerV2 {
         }
     }
 
-    @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterDayContentDto.class)
+    @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterUpdateListDtoV2.class)
     @PatchMapping("/{username}")
-    public ResponseEntity updateCharacters(@PathVariable String username,
-                                           @RequestBody List<CharacterDayContentDto> characterDayContentDtoList) {
-        return new ResponseEntity<>(memberService.updateCharacterList(username, characterDayContentDtoList), HttpStatus.OK);
+    public ResponseEntity updateCharacters(@RequestBody @Valid CharacterUpdateListDtoV2 characterUpdateListDtoV2,
+                                           @PathVariable String username) {
+        return new ResponseEntity<>(memberService.updateCharacterList(username, characterUpdateListDtoV2), HttpStatus.OK);
     }
 }
