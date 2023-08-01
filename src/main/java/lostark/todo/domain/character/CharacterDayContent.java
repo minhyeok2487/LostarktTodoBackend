@@ -13,22 +13,16 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 public class CharacterDayContent {
 
-    @NotNull
     private boolean chaosSelected;
 
-    @NotNull
     private int chaosCheck; //일일숙제 카오스던전 돌았는지 체크(0, 1, 2)
 
-    @NotNull
     private int chaosGauge; //카오스던전 휴식게이지(0~100)
 
-    @NotNull
     private boolean guardianSelected;
 
-    @NotNull
     private int guardianCheck; //일일숙제 가디언토벌 돌았는지 체크(0, 1, 2)
 
-    @NotNull
     private int guardianGauge; //가디언토벌 휴식게이지(0~100)
 
     /**
@@ -44,28 +38,13 @@ public class CharacterDayContent {
     }
 
     /**
-     * V2 일일컨텐츠 업데이트
-     * @param characterUpdateDtoV2
+     * V2 : 일일컨텐츠 업데이트 메서드
      */
     public void updateDayContent(CharacterUpdateDtoV2 characterUpdateDtoV2) {
         this.chaosSelected = characterUpdateDtoV2.getChaosSelected();
         this.guardianSelected = characterUpdateDtoV2.getGuardianSelected();
-
-        int chaosCheck = characterUpdateDtoV2.getChaosCheck();
-        if (chaosCheck > 2 || chaosCheck < 0) {
-            throw new IllegalArgumentException("카오스던전 체크 범위 초과(0~2)");
-        } else {
-            this.chaosCheck = chaosCheck;
-        }
-
-        int guardianCheck = characterUpdateDtoV2.getGuardianCheck();
-        if (guardianCheck > 2 || guardianCheck < 0) {
-            throw new IllegalArgumentException("가디언토벌 체크 범위 초과(0~2)");
-        } else {
-            this.guardianCheck = guardianCheck;
-        }
-
-
+        this.chaosCheck = characterUpdateDtoV2.getChaosCheck();
+        this.guardianCheck = characterUpdateDtoV2.getGuardianCheck();
     }
 
     /**
