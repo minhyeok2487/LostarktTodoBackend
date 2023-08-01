@@ -16,18 +16,18 @@ public class MemberSignupDtoV2 {
 
     @NotEmpty
     @ApiModelProperty(example = "회원이름")
-    String username;
+    private String username;
 
     @NotEmpty
     @ApiModelProperty(example = "비밀번호")
-    String password;
+    private String password;
 
     @NotEmpty
     @ApiModelProperty(example = "로스트아크 api 키")
-    String apiKey;
+    private String apiKey;
 
     @NotEmpty
     @ApiModelProperty(example = "대표 캐릭터")
-    String characterName;
+    private String characterName;
 
 }
