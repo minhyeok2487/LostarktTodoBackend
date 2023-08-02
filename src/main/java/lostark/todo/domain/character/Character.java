@@ -49,4 +49,17 @@ public class Character extends BaseTimeEntity {
     @Embedded
     private CharacterDayContent characterDayContent;
 
+    @Override
+    public String toString() {
+        return "Character{" +
+                "id=" + id +
+                ", serverName='" + serverName + '\'' +
+                ", characterName='" + characterName + '\'' +
+                ", characterLevel=" + characterLevel +
+                ", characterClassName='" + characterClassName + '\'' +
+                ", characterImage='" + characterImage + '\'' +
+                ", itemLevel=" + itemLevel +
+                ", characterDayContent=" + characterDayContent +
+                '}';
+    }
 }
