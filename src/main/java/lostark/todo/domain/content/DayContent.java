@@ -11,7 +11,7 @@ import javax.persistence.Enumerated;
 public class DayContent extends Content{
 
     @Enumerated(EnumType.STRING)
-    private Category dayContentCategory; // 가디언 토벌, 카오스 던전 분류
+    private Category contentCategory; // 가디언 토벌, 카오스 던전 분류
 
     private double shilling; //실링
 

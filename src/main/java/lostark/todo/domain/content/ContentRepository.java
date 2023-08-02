@@ -17,7 +17,7 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
      */
     @Query("select c from DayContent c " +
             "where c.level <= :level " +
-            "and c.dayContentCategory = :contentCategory " +
+            "and c.contentCategory = :contentCategory " +
             "order by c.level desc")
     List<DayContent> findDayContentByLevel(@Param("level") double level, @Param("contentCategory") Category category);
 

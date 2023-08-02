@@ -25,6 +25,10 @@ public class CharacterServiceV2 {
 
     private final CharacterRepository characterRepository;
 
+    public List<Character> findAll() {
+        return characterRepository.findAll();
+    }
+
     /**
      * 캐릭터 조회
      */
@@ -151,4 +155,6 @@ public class CharacterServiceV2 {
         price += (dto.getRecentPrice() * count) / dto.getBundleCount();
         return Math.round(price * 100.0) / 100.0;
     }
+
+
 }

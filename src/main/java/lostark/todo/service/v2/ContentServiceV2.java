@@ -11,6 +11,7 @@ import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
 import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
+import lostark.todo.domain.content.Content;
 import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.DayContent;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ import java.util.*;
 public class ContentServiceV2 {
 
     private final ContentRepository contentRepository;
+
+    public List<Content> findAll() {
+        return contentRepository.findAll();
+    }
 
     public List<CharacterResponseDtoV2> getCharacterListWithDayContent(List<Character> characterList) {
         //출력할 리스트
@@ -111,5 +116,6 @@ public class ContentServiceV2 {
         }
         return dtoList;
     }
+
 
 }
