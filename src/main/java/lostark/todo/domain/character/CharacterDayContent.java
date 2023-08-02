@@ -2,6 +2,7 @@ package lostark.todo.domain.character;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lostark.todo.controller.v1.dto.characterDto.CharacterDayContentResponseDto;
 import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateDtoV2;
@@ -9,7 +10,7 @@ import lostark.todo.domain.content.Category;
 
 import javax.persistence.Embeddable;
 @Embeddable
-@Getter
+@Data
 @AllArgsConstructor
 public class CharacterDayContent {
 

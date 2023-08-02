@@ -70,10 +70,9 @@ public class MemberServiceV2 {
                             .build();
 
                     resultDtoList.addCharacter(result);
-                    return resultDtoList;
                 }
             }
         }
-        return null;
+        return resultDtoList;
     }
 }
