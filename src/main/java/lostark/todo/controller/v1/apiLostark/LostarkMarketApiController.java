@@ -1,22 +1,9 @@
 package lostark.todo.controller.v1.apiLostark;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v1.dto.marketDto.AuctionRequestDto;
-import lostark.todo.controller.v1.dto.memberDto.MemberRequestDto;
-import lostark.todo.domain.market.Market;
-import lostark.todo.domain.member.Member;
-import lostark.todo.service.v1.MarketService;
-import lostark.todo.service.v1.MemberService;
-import lostark.todo.service.v1.lostarkApi.LostarkMarketService;
-import org.json.simple.JSONObject;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

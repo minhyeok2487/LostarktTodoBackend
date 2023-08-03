@@ -2,9 +2,10 @@ package lostark.todo.service.v2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateDtoV2;
-import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
-import lostark.todo.controller.v2.dto.memberDto.MemberSignupDtoV2;
+import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
+import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
+import lostark.todo.controller.dto.memberDto.MemberSignupDto;
+import lostark.todo.controller.dto.memberDto.MemberloginDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -27,7 +28,10 @@ public class MemberServiceV2 {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public Member signup(MemberSignupDtoV2 signupDto, List<Character> characterList) {
+    /**
+     * 회원가입
+     */
+    public Member createMember(MemberSignupDto signupDto, List<Character> characterList) {
         if (memberRepository.existsByUsername(signupDto.getUsername())) {
             String errorMessage = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
             log.warn(errorMessage);
@@ -51,17 +55,27 @@ public class MemberServiceV2 {
                 .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
     }
 
+    public Member login(MemberloginDto memberloginDto) {
+        String username = memberloginDto.getUsername();
+        Member member = findMember(username);
+        if (passwordEncoder.matches(memberloginDto.getPassword(), member.getPassword())) {
+            return member;
+        } else {
+            throw new IllegalArgumentException("패스워드가 틀립니다.");
+        }
+    }
 
-    public CharacterUpdateListDtoV2 updateCharacterList(String username, CharacterUpdateListDtoV2 characterUpdateListDtoV2) {
+
+    public CharacterUpdateListDto updateCharacterList(String username, CharacterUpdateListDto characterUpdateListDto) {
         List<Character> characterList = findMember(username).getCharacters();
 
-        CharacterUpdateListDtoV2 resultDtoList = new CharacterUpdateListDtoV2();
+        CharacterUpdateListDto resultDtoList = new CharacterUpdateListDto();
         for (Character character : characterList) {
-            for (CharacterUpdateDtoV2 characterUpdateDtoV2 : characterUpdateListDtoV2.getCharacterUpdateDtoV2List()) {
-                if (character.getCharacterName().equals(characterUpdateDtoV2.getCharacterName())) {
-                    character.getCharacterDayContent().updateDayContent(characterUpdateDtoV2);
+            for (CharacterUpdateDto characterUpdateDto : characterUpdateListDto.getCharacterUpdateDtoList()) {
+                if (character.getCharacterName().equals(characterUpdateDto.getCharacterName())) {
+                    character.getCharacterDayContent().updateDayContent(characterUpdateDto);
 
-                    CharacterUpdateDtoV2 result = CharacterUpdateDtoV2.builder()
+                    CharacterUpdateDto result = CharacterUpdateDto.builder()
                             .characterName(character.getCharacterName())
                             .chaosCheck(character.getCharacterDayContent().getChaosCheck())
                             .chaosSelected(character.getCharacterDayContent().isChaosSelected())
@@ -75,4 +89,6 @@ public class MemberServiceV2 {
         }
         return resultDtoList;
     }
+
+
 }

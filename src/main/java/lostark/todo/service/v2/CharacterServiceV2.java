@@ -3,8 +3,8 @@ package lostark.todo.service.v2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
-import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterDayContent;
 import lostark.todo.domain.character.CharacterRepository;
@@ -62,38 +62,38 @@ public class CharacterServiceV2 {
      * 수익 계산
      */
     public void calculateProfit(
-            List<CharacterResponseDtoV2> characterResponseDtoList,
-            Map<String, MarketContentResourceDtoV2> contentResource) {
-        MarketContentResourceDtoV2 destruction = null;
-        MarketContentResourceDtoV2 guardian = null;
-        MarketContentResourceDtoV2 leapStone = null;
-        for (CharacterResponseDtoV2 characterResponseDtoV2 : characterResponseDtoList) {
-            if (characterResponseDtoV2.getItemLevel() >= 1415) {
+            List<CharacterResponseDto> characterResponseDtoList,
+            Map<String, MarketContentResourceDto> contentResource) {
+        MarketContentResourceDto destruction = null;
+        MarketContentResourceDto guardian = null;
+        MarketContentResourceDto leapStone = null;
+        for (CharacterResponseDto characterResponseDto : characterResponseDtoList) {
+            if (characterResponseDto.getItemLevel() >= 1415) {
                 destruction = contentResource.get("파괴석 결정");
                 guardian = contentResource.get("수호석 결정");
                 leapStone = contentResource.get("위대한 명예의 돌파석");
             }
-            if (characterResponseDtoV2.getItemLevel() >= 1540) {
+            if (characterResponseDto.getItemLevel() >= 1540) {
                 destruction = contentResource.get("파괴강석");
                 guardian = contentResource.get("수호강석");
                 leapStone = contentResource.get("경이로운 명예의 돌파석");
             }
-            if (characterResponseDtoV2.getItemLevel() >= 1580) {
+            if (characterResponseDto.getItemLevel() >= 1580) {
                 destruction = contentResource.get("정제된 파괴강석");
                 guardian = contentResource.get("정제된 수호강석");
                 leapStone = contentResource.get("찬란한 명예의 돌파석");
             }
-            MarketContentResourceDtoV2 jewelry = contentResource.get("1레벨");
-            calculateChaos(characterResponseDtoV2, destruction, guardian, jewelry);
-            calculateGuardian(characterResponseDtoV2, destruction, guardian, leapStone);
+            MarketContentResourceDto jewelry = contentResource.get("1레벨");
+            calculateChaos(characterResponseDto, destruction, guardian, jewelry);
+            calculateGuardian(characterResponseDto, destruction, guardian, leapStone);
         }
 
     }
 
-    public void calculateChaos(CharacterResponseDtoV2 characterResponseDto,
-                               MarketContentResourceDtoV2 destruction,
-                               MarketContentResourceDtoV2 guardian,
-                               MarketContentResourceDtoV2 jewelry) {
+    public void calculateChaos(CharacterResponseDto characterResponseDto,
+                               MarketContentResourceDto destruction,
+                               MarketContentResourceDto guardian,
+                               MarketContentResourceDto jewelry) {
         double price = 0;
         if (characterResponseDto.getChaosGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
@@ -120,10 +120,10 @@ public class CharacterServiceV2 {
         characterResponseDto.setChaosProfit(price);
     }
 
-    private void calculateGuardian(CharacterResponseDtoV2 characterResponseDto,
-                                   MarketContentResourceDtoV2 destruction,
-                                   MarketContentResourceDtoV2 guardian,
-                                   MarketContentResourceDtoV2 leapStone) {
+    private void calculateGuardian(CharacterResponseDto characterResponseDto,
+                                   MarketContentResourceDto destruction,
+                                   MarketContentResourceDto guardian,
+                                   MarketContentResourceDto leapStone) {
         double price = 0;
         if (characterResponseDto.getGuardianGauge() >= 40) {
             for (int i = 0; i < 4; i++) {
@@ -151,7 +151,7 @@ public class CharacterServiceV2 {
     /**
      * 번들(묶음) 계산
      */
-    private double calculateBundle(MarketContentResourceDtoV2 dto, double count, double price) {
+    private double calculateBundle(MarketContentResourceDto dto, double count, double price) {
         price += (dto.getRecentPrice() * count) / dto.getBundleCount();
         return Math.round(price * 100.0) / 100.0;
     }

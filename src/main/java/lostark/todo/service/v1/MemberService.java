@@ -2,7 +2,7 @@ package lostark.todo.service.v1;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v1.dto.memberDto.MemberSignupDto;
+import lostark.todo.controller.v1.dto.memberDto.MemberSignupDtoV1;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -24,7 +24,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public Member signup(MemberSignupDto signupDto, List<Character> characterList) {
+    public Member signup(MemberSignupDtoV1 signupDto, List<Character> characterList) {
         if(memberRepository.existsByUsername(signupDto.getUsername())) {
             String errorMessage = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
             log.warn(errorMessage);
