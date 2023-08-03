@@ -26,5 +26,6 @@ public class MemberResponseDto {
     @ApiModelProperty(example = "캐릭터 리스트")
     private List<String> characters;
 
+    private String token;
 
 }

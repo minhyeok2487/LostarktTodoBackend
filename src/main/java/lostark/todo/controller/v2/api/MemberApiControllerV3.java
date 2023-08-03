@@ -4,33 +4,32 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v1.dto.memberDto.MemberResponseDto;
-import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
 import lostark.todo.controller.v2.dto.characterDto.CharacterListResponeDtoV2;
 import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
+import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
 import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
 import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
-import lostark.todo.controller.v2.dto.memberDto.MemberloginDtoV2;
-import lostark.todo.controller.v2.dto.memberDto.MemberSignupDtoV2;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
-import lostark.todo.config.TokenProvider;
-import lostark.todo.service.v2.*;
+import lostark.todo.service.v2.CharacterServiceV2;
+import lostark.todo.service.v2.ContentServiceV2;
+import lostark.todo.service.v2.MarketServiceV2;
+import lostark.todo.service.v2.MemberServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v2/member")
-@Api(tags = {"회원 REST API"})
-public class MemberApiControllerV2 {
+@RequestMapping("/api/v3/member")
+@Api(tags = {"회원, 캐릭터 API"})
+public class MemberApiControllerV3 {
 
     private final CharacterServiceV2 characterService;
     private final MarketServiceV2 marketService;
@@ -41,8 +40,8 @@ public class MemberApiControllerV2 {
     @ApiOperation(value = "회원과 등록된 캐릭터 리스트 조회",
             notes="휴식게이지를 참고하여 일일컨텐츠 수익 계산하여 함께 리턴",
             response = CharacterListResponeDtoV2.class)
-    @GetMapping("/{username}")
-    public ResponseEntity getCharacterList(@PathVariable String username) {
+    @GetMapping("/characterList")
+    public ResponseEntity getCharacterList(@AuthenticationPrincipal String username) {
         try {
             // username 으로 연결된 캐릭터리스트 호출
             List<Character> characterList = memberService.findMember(username).getCharacters();

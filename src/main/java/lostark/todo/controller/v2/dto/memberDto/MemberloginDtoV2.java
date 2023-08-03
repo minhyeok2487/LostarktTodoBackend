@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberSignupDtoV2 {
+public class MemberloginDtoV2 {
 
     @NotEmpty
     @ApiModelProperty(example = "회원이름")
@@ -20,13 +20,5 @@ public class MemberSignupDtoV2 {
 
     @ApiModelProperty(example = "비밀번호")
     private String password;
-
-    @NotEmpty
-    @ApiModelProperty(example = "로스트아크 api 키")
-    private String apiKey;
-
-    @NotEmpty
-    @ApiModelProperty(example = "대표 캐릭터")
-    private String characterName;
 
 }

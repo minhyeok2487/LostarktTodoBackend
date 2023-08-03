@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateDtoV2;
 import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
 import lostark.todo.controller.v2.dto.memberDto.MemberSignupDtoV2;
+import lostark.todo.controller.v2.dto.memberDto.MemberloginDtoV2;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -27,7 +28,10 @@ public class MemberServiceV2 {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public Member signup(MemberSignupDtoV2 signupDto, List<Character> characterList) {
+    /**
+     * 회원가입
+     */
+    public Member createMember(MemberSignupDtoV2 signupDto, List<Character> characterList) {
         if (memberRepository.existsByUsername(signupDto.getUsername())) {
             String errorMessage = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
             log.warn(errorMessage);
@@ -49,6 +53,16 @@ public class MemberServiceV2 {
     public Member findMember(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
+    }
+
+    public Member login(MemberloginDtoV2 memberloginDtoV2) {
+        String username = memberloginDtoV2.getUsername();
+        Member member = findMember(username);
+        if (passwordEncoder.matches(memberloginDtoV2.getPassword(), member.getPassword())) {
+            return member;
+        } else {
+            throw new IllegalArgumentException("패스워드가 틀립니다.");
+        }
     }
 
 
@@ -75,4 +89,6 @@ public class MemberServiceV2 {
         }
         return resultDtoList;
     }
+
+
 }
