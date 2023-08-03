@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class updateCharacterListTest {
-    private String username = "qwe2487";
+    private String username = "test";
     private Member member = new Member();
     private CharacterUpdateDto 마볼링 = new CharacterUpdateDto();
     private CharacterUpdateDto 카카오볼링 = new CharacterUpdateDto();
