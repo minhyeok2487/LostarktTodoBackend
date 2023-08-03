@@ -1,9 +1,9 @@
-package lostark.todo.service.v2;
+package lostark.todo.service.v1;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.v1.dto.marketDto.AuctionRequestDtoV1;
-import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
+import lostark.todo.controller.v1.dto.marketDto.MarketContentResourceDtoV1;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
 import org.json.simple.JSONObject;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class MarketServiceV2 {
+public class MarketServiceV1 {
 
     private final MarketRepository marketRepository;
 
@@ -66,14 +66,12 @@ public class MarketServiceV2 {
     }
 
 
-    /**
-     * 거래소 데이터 호출
-     */
-    public Map<String, MarketContentResourceDto> getContentResource(List<String> names) {
+
+    public Map<String, MarketContentResourceDtoV1> getContentResource(List<String> names) {
         List<Market> marketByNames = marketRepository.findByNameIn(names);
-        Map<String , MarketContentResourceDto> contentResourceDtoHashMap = new HashMap<>();
+        Map<String , MarketContentResourceDtoV1> contentResourceDtoHashMap = new HashMap<>();
         for (Market marketByName : marketByNames) {
-            MarketContentResourceDto dto = MarketContentResourceDto.builder()
+            MarketContentResourceDtoV1 dto = MarketContentResourceDtoV1.builder()
                     .recentPrice(marketByName.getRecentPrice())
                     .bundleCount(marketByName.getBundleCount())
                     .build();

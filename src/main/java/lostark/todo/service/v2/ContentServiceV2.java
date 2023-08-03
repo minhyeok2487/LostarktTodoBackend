@@ -1,14 +1,9 @@
 package lostark.todo.service.v2;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.v1.dto.contentDto.DayContentProfitDto;
-import lostark.todo.controller.v1.dto.contentDto.SortedDayContentProfitDto;
-import lostark.todo.controller.v1.dto.marketDto.MarketContentResourceDto;
-import lostark.todo.controller.v2.dto.characterDto.CharacterResponseDtoV2;
-import lostark.todo.controller.v2.dto.contentDto.DayContentProfitDtoV2;
-import lostark.todo.controller.v2.dto.contentDto.SortedDayContentProfitDtoV2;
-import lostark.todo.controller.v2.dto.marketDto.MarketContentResourceDtoV2;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
+import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.Content;
@@ -30,16 +25,16 @@ public class ContentServiceV2 {
         return contentRepository.findAll();
     }
 
-    public List<CharacterResponseDtoV2> getCharacterListWithDayContent(List<Character> characterList) {
+    public List<CharacterResponseDto> getCharacterListWithDayContent(List<Character> characterList) {
         //출력할 리스트
-        List<CharacterResponseDtoV2> characterResponseDtoList = new ArrayList<>();
+        List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>();
 
         for (Character character : characterList) {
             // 캐릭터 레벨에 따른 일일컨텐츠
             Map<Category, DayContent> contentMap = getDayContentByLevel(character.getItemLevel());
 
             // character 엔티티로 dto 객체 생성
-            CharacterResponseDtoV2 characterResponseDto = CharacterResponseDtoV2.builder()
+            CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
                     .id(character.getId())
                     .characterName(character.getCharacterName())
                     .characterImage(character.getCharacterImage())
@@ -76,11 +71,11 @@ public class ContentServiceV2 {
     /**
      * 수익순으로 내림차순 정렬 메소드
      */
-    public List<SortedDayContentProfitDtoV2> sortDayContentProfit(List<CharacterResponseDtoV2> characterResponseDtoList) {
-        Map<DayContentProfitDtoV2, Double> result = new HashMap<>();
-        for (CharacterResponseDtoV2 returnDto : characterResponseDtoList) {
+    public List<SortedDayContentProfitDto> sortDayContentProfit(List<CharacterResponseDto> characterResponseDtoList) {
+        Map<DayContentProfitDto, Double> result = new HashMap<>();
+        for (CharacterResponseDto returnDto : characterResponseDtoList) {
             if (returnDto.isChaosSelected()) {
-                DayContentProfitDtoV2 chaos = DayContentProfitDtoV2.builder()
+                DayContentProfitDto chaos = DayContentProfitDto.builder()
                         .contentName(returnDto.getChaosName().getName())
                         .category("카오스던전")
                         .checked(returnDto.getChaosCheck())
@@ -91,7 +86,7 @@ public class ContentServiceV2 {
             }
 
             if (returnDto.isGuardianSelected()) {
-                DayContentProfitDtoV2 guardian = DayContentProfitDtoV2.builder()
+                DayContentProfitDto guardian = DayContentProfitDto.builder()
                         .contentName(returnDto.getGuardianName().getName())
                         .category("가디언토벌")
                         .checked(returnDto.getGuardianCheck())
@@ -101,11 +96,11 @@ public class ContentServiceV2 {
                 result.put(guardian, guardianProfit);
             }
         }
-        List<DayContentProfitDtoV2> listKeySet = new ArrayList<>(result.keySet());
+        List<DayContentProfitDto> listKeySet = new ArrayList<>(result.keySet());
         Collections.sort(listKeySet, (value1, value2) -> (result.get(value2).compareTo(result.get(value1))));
-        List<SortedDayContentProfitDtoV2> dtoList = new ArrayList<>();
-        for(DayContentProfitDtoV2 key : listKeySet) {
-            SortedDayContentProfitDtoV2 dto = SortedDayContentProfitDtoV2.builder()
+        List<SortedDayContentProfitDto> dtoList = new ArrayList<>();
+        for(DayContentProfitDto key : listKeySet) {
+            SortedDayContentProfitDto dto = SortedDayContentProfitDto.builder()
                     .characterName(key.getCharacterName())
                     .category(key.getCategory())
                     .contentName(key.getContentName())

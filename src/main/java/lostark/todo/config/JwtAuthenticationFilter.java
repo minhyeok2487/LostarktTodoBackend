@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(securityContext);
             }
         } catch (Exception e) {
-            log.error("인증 에러 = {}", e);
+            log.error("인증 에러 = {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }
@@ -62,8 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
-        } else {
-            throw new IllegalArgumentException("Authorization Token Error");
         }
+        return null;
     }
 }

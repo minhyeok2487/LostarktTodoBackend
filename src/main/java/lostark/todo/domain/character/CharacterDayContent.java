@@ -1,11 +1,9 @@
 package lostark.todo.domain.character;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lostark.todo.controller.v1.dto.characterDto.CharacterDayContentResponseDto;
-import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateDtoV2;
+import lostark.todo.controller.v1.dto.characterDto.CharacterDayContentResponseDtoV1;
+import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.domain.content.Category;
 
 import javax.persistence.Embeddable;
@@ -41,34 +39,34 @@ public class CharacterDayContent {
     /**
      * V2 : 일일컨텐츠 업데이트 메서드
      */
-    public void updateDayContent(CharacterUpdateDtoV2 characterUpdateDtoV2) {
-        this.chaosSelected = characterUpdateDtoV2.getChaosSelected();
-        this.guardianSelected = characterUpdateDtoV2.getGuardianSelected();
-        this.chaosCheck = characterUpdateDtoV2.getChaosCheck();
-        this.guardianCheck = characterUpdateDtoV2.getGuardianCheck();
+    public void updateDayContent(CharacterUpdateDto characterUpdateDto) {
+        this.chaosSelected = characterUpdateDto.getChaosSelected();
+        this.guardianSelected = characterUpdateDto.getGuardianSelected();
+        this.chaosCheck = characterUpdateDto.getChaosCheck();
+        this.guardianCheck = characterUpdateDto.getGuardianCheck();
     }
 
     /**
      * CharacterContent 값 변경 메소드
      */
-    public void update(CharacterDayContentResponseDto characterDayContentResponseDto) {
-        updateChecked(characterDayContentResponseDto);
-        updateGauge(characterDayContentResponseDto);
+    public void update(CharacterDayContentResponseDtoV1 characterDayContentResponseDtoV1) {
+        updateChecked(characterDayContentResponseDtoV1);
+        updateGauge(characterDayContentResponseDtoV1);
     }
 
     /**
      * 체크 값 변경 메소드
      * 0, 1, 2 만 가능
      */
-    public void updateChecked(CharacterDayContentResponseDto characterDayContentResponseDto) {
-        int chaos = characterDayContentResponseDto.getChaos();
+    public void updateChecked(CharacterDayContentResponseDtoV1 characterDayContentResponseDtoV1) {
+        int chaos = characterDayContentResponseDtoV1.getChaos();
         if (chaos > 2 || chaos < 0) {
             throw new IllegalArgumentException("카오스던전 체크 범위 초과(0~2)");
         } else {
             this.chaosCheck = chaos;
         }
 
-        int guardian = characterDayContentResponseDto.getGuardian();
+        int guardian = characterDayContentResponseDtoV1.getGuardian();
         if (guardian > 2 || guardian < 0) {
             throw new IllegalArgumentException("가디언토벌 체크 범위 초과(0~2)");
         } else {
@@ -81,15 +79,15 @@ public class CharacterDayContent {
      * 휴식게이지 값 변경 메소드
      * 0~100, 10단위로만 가능
      */
-    public void updateGauge(CharacterDayContentResponseDto characterDayContentResponseDto) {
-        int chaosGauge = characterDayContentResponseDto.getChaosGauge();
+    public void updateGauge(CharacterDayContentResponseDtoV1 characterDayContentResponseDtoV1) {
+        int chaosGauge = characterDayContentResponseDtoV1.getChaosGauge();
         if(chaosGauge % 10 == 0 && chaosGauge <= 100 && chaosGauge >= 0) {
             this.chaosGauge = chaosGauge;
         } else {
             throw new IllegalArgumentException("카오스던전 휴식게이지 범위 초과(0~100, 10단위)");
         }
 
-        int guardianGauge = characterDayContentResponseDto.getGuardianGauge();
+        int guardianGauge = characterDayContentResponseDtoV1.getGuardianGauge();
         if(guardianGauge % 10 == 0 && guardianGauge <= 100 && guardianGauge >= 0) {
             this.guardianGauge = guardianGauge;
         } else {

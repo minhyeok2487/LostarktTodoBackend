@@ -1,7 +1,7 @@
 package lostark.todo.service.v2.memberServiceV2;
 
-import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateDtoV2;
-import lostark.todo.controller.v2.dto.characterDto.CharacterUpdateListDtoV2;
+import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
+import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.v2.CharacterServiceV2;
@@ -26,9 +26,9 @@ import static org.assertj.core.api.Assertions.*;
 class updateCharacterListTest {
     private String username = "qwe2487";
     private Member member = new Member();
-    private CharacterUpdateDtoV2 마볼링 = new CharacterUpdateDtoV2();
-    private CharacterUpdateDtoV2 카카오볼링 = new CharacterUpdateDtoV2();
-    private CharacterUpdateDtoV2 서예볼링 = new CharacterUpdateDtoV2();
+    private CharacterUpdateDto 마볼링 = new CharacterUpdateDto();
+    private CharacterUpdateDto 카카오볼링 = new CharacterUpdateDto();
+    private CharacterUpdateDto 서예볼링 = new CharacterUpdateDto();
 
     @Autowired
     MemberServiceV2 memberService;
@@ -44,7 +44,7 @@ class updateCharacterListTest {
     void init() {
         member = memberService.findMember(username);
         for (Character character : member.getCharacters()) {
-            CharacterUpdateDtoV2 data = CharacterUpdateDtoV2.builder()
+            CharacterUpdateDto data = CharacterUpdateDto.builder()
                     .characterName(character.getCharacterName())
                     .chaosSelected(character.getCharacterDayContent().isChaosSelected())
                     .chaosCheck(character.getCharacterDayContent().getChaosCheck())
@@ -69,10 +69,10 @@ class updateCharacterListTest {
         /**
          * Given
          */
-        CharacterUpdateListDtoV2 characterUpdateDtoV2List = new CharacterUpdateListDtoV2();
+        CharacterUpdateListDto characterUpdateDtoV2List = new CharacterUpdateListDto();
 
         // 변경할 데이터
-        CharacterUpdateDtoV2 update = 마볼링;
+        CharacterUpdateDto update = 마볼링;
         update.setChaosSelected(!마볼링.getChaosSelected());
         update.setGuardianCheck(2);
 
@@ -83,15 +83,15 @@ class updateCharacterListTest {
         characterUpdateDtoV2List.addCharacter(update);
         characterUpdateDtoV2List.addCharacter(카카오볼링);
         characterUpdateDtoV2List.addCharacter(서예볼링);
-        CharacterUpdateListDtoV2 updateList = memberService.updateCharacterList(username, characterUpdateDtoV2List);
+        CharacterUpdateListDto updateList = memberService.updateCharacterList(username, characterUpdateDtoV2List);
 
         /**
          * Then
          */
-        assertThat(updateList.getCharacterUpdateDtoV2List().size()).isEqualTo(3);
+        assertThat(updateList.getCharacterUpdateDtoList().size()).isEqualTo(3);
 
         Character character = characterService.findCharacter("마볼링");
-        CharacterUpdateDtoV2 after = CharacterUpdateDtoV2.builder()
+        CharacterUpdateDto after = CharacterUpdateDto.builder()
                 .characterName(character.getCharacterName())
                 .chaosSelected(character.getCharacterDayContent().isChaosSelected())
                 .chaosCheck(character.getCharacterDayContent().getChaosCheck())
@@ -110,7 +110,7 @@ class updateCharacterListTest {
          * Given
          * null, 범위 초과등의 Exception용 데이터
          */
-        CharacterUpdateDtoV2 testData1 = CharacterUpdateDtoV2.builder()
+        CharacterUpdateDto testData1 = CharacterUpdateDto.builder()
                 .characterName(마볼링.getCharacterName())
                 .chaosCheck(3)
                 .guardianCheck(-1)
@@ -122,15 +122,15 @@ class updateCharacterListTest {
          * When
          * Valid 검증
          */
-        Set<ConstraintViolation<CharacterUpdateDtoV2>> validation = validator.validate(testData1);
+        Set<ConstraintViolation<CharacterUpdateDto>> validation = validator.validate(testData1);
 
         /**
          * Then
          */
-        Iterator<ConstraintViolation<CharacterUpdateDtoV2>> iterator = validation.iterator();
+        Iterator<ConstraintViolation<CharacterUpdateDto>> iterator = validation.iterator();
         List<String> messages = new ArrayList<>();
         while (iterator.hasNext()) {
-            ConstraintViolation<CharacterUpdateDtoV2> next = iterator.next();
+            ConstraintViolation<CharacterUpdateDto> next = iterator.next();
             messages.add(next.getMessage());
             System.out.println("message = " + next.getMessage());
         }

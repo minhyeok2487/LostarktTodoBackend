@@ -48,7 +48,7 @@ public class SwaggerConfiguration {
     @Bean
     public Docket api() {
         version = "통합";
-        title = "로스트아크 숙제 체크 API " + version;
+        title = "로스트아크 숙제 체크 API";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
@@ -57,6 +57,7 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo(title, version))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller"))
+                .paths(PathSelectors.ant("/api/**"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));
