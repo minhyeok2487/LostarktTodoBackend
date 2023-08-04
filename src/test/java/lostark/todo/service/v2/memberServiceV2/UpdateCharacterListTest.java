@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class updateCharacterListTest {
+class UpdateCharacterListTest {
     private String username = "test";
     private Member member = new Member();
     private CharacterUpdateDto 마볼링 = new CharacterUpdateDto();
