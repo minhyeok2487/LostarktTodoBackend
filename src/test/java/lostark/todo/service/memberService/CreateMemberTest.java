@@ -1,11 +1,11 @@
-package lostark.todo.service.v2.memberServiceV2;
+package lostark.todo.service.memberService;
 
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.v2.LostarkCharacterServiceV2;
-import lostark.todo.service.v2.MemberServiceV2;
+import lostark.todo.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +34,7 @@ class CreateMemberTest {
     LostarkCharacterServiceV2 lostarkCharacterService;
 
     @Autowired
-    MemberServiceV2 memberService;
+    MemberService memberService;
 
     @Autowired
     Validator validator;
@@ -88,9 +88,11 @@ class CreateMemberTest {
         memberSignupDto.setUsername("test");
 
         // then
-        assertThrows(IllegalArgumentException.class, () -> {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             memberService.createMember(memberSignupDto, characterList);
         });
+        assertThat(exception.getMessage()).isEqualTo("test 이미 존재하는 username 입니다.");
+
     }
 
     @Test
@@ -100,9 +102,10 @@ class CreateMemberTest {
         List<Character> characterList = new ArrayList<>();
 
         // then
-        assertThrows(IllegalArgumentException.class, () -> {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             memberService.createMember(memberSignupDto, characterList);
         });
+        assertThat(exception.getMessage()).isEqualTo("등록된 캐릭터가 없습니다.");
     }
 
     @Test

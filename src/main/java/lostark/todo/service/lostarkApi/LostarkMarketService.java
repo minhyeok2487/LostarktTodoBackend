@@ -36,7 +36,17 @@ public class LostarkMarketService {
             JSONArray resultJsonArray = (JSONArray) data.get("Items");
             for(int i = 0; i < resultJsonArray.size(); i++) {
                 JSONObject tempJson = (JSONObject) resultJsonArray.get(i);
-                Market market = new Market(tempJson, categoryCode);
+                Market market = Market.builder()
+                        .lostarkMarketId(Long.parseLong(tempJson.get("Id").toString()))
+                        .yDayAvgPrice(Double.parseDouble(tempJson.get("YDayAvgPrice").toString()))
+                        .currentMinPrice(Integer.parseInt(tempJson.get("CurrentMinPrice").toString()))
+                        .grade(tempJson.get("Grade").toString())
+                        .recentPrice(Integer.parseInt(tempJson.get("RecentPrice").toString()))
+                        .icon(tempJson.get("Icon").toString())
+                        .name(tempJson.get("Name").toString())
+                        .bundleCount(Integer.parseInt(tempJson.get("BundleCount").toString()))
+                        .categoryCode(categoryCode)
+                        .build();
                 result.add(market);
             }
         }
@@ -56,7 +66,7 @@ public class LostarkMarketService {
             JSONParser parser = new JSONParser();
             return (JSONObject) parser.parse(inputStreamReader);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("올바르지 않은 categoryCode");
         }
     }
 
