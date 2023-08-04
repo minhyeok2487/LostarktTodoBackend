@@ -13,15 +13,6 @@ public class ErrorResponse {
     private String exceptionName;
     private String errorMessage;
 
-    public static ErrorResponse of(int errorCode, String exceptionName, BindingResult bindingResult) {
-        // Convert BindingResult errors to a single string message
-        String errorMessage = bindingResult.getAllErrors().stream()
-                .map(error -> error.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-
-        return new ErrorResponse(errorCode, exceptionName, errorMessage);
-    }
-
     public static ErrorResponse of(int errorCode, String exceptionName, String errorMessage) {
         return new ErrorResponse(errorCode, exceptionName, errorMessage);
     }

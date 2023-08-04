@@ -1,6 +1,5 @@
 package lostark.todo.service.v2.memberServiceV2;
 
-import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class createMemberTest {
+class CreateMemberTest {
 
     @Autowired
     LostarkCharacterServiceV2 lostarkCharacterService;
@@ -107,7 +106,7 @@ class createMemberTest {
     }
 
     @Test
-    @DisplayName("createMember 테스트 실패: @Valid NotEmpty")
+    @DisplayName("createMember 테스트 실패: @Valid Error")
     void createMemberNotEmpty() {
         // when
         memberSignupDto.setUsername("");
