@@ -27,16 +27,16 @@ public class LostarkCharacterServiceV2 {
     private final LostarkApiService apiService;
 
 
-    public List<Character> getCharacterList(MemberSignupDto signupDtoV2) {
+    public List<Character> getCharacterList(MemberSignupDto signupDto) {
         try {
-            String encodeCharacterName = URLEncoder.encode(signupDtoV2.getCharacterName(), StandardCharsets.UTF_8);
+            String encodeCharacterName = URLEncoder.encode(signupDto.getCharacterName(), StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, signupDtoV2.getApiKey());
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, signupDto.getApiKey());
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
             JSONArray filteredArray = filterLevel(jsonArray);
-            JSONArray imageList = getCharacterImage(filteredArray, signupDtoV2.getApiKey());
+            JSONArray imageList = getCharacterImage(filteredArray, signupDto.getApiKey());
             List<Character> characterList = new ArrayList<>();
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
@@ -53,7 +53,7 @@ public class LostarkCharacterServiceV2 {
             }
             return characterList;
         } catch (NullPointerException e) {
-            throw new RuntimeException(signupDtoV2.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
+            throw new RuntimeException(signupDto.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

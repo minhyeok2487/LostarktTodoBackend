@@ -131,13 +131,14 @@ class updateCharacterListTest {
         List<String> messages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConstraintViolation<CharacterUpdateDto> next = iterator.next();
-            messages.add(next.getMessage());
-            System.out.println("message = " + next.getMessage());
+            String message = next.getPropertyPath() + " (은)는 " + next.getMessage();
+            messages.add(message);
+            System.out.println("message = " + message);
         }
 
         Assertions.assertThat(messages).contains(
-                "chaosCheck: 0~2 사이여야 합니다.",
-                "chaosSelected: null일 수 없습니다.",
-                "guardianCheck: 0~1 사이여야 합니다.");
+                "guardianCheck (은)는 0 이상이어야 합니다",
+                "chaosCheck (은)는 2 이하여야 합니다",
+                "chaosSelected (은)는 널이어서는 안됩니다");
     }
 }

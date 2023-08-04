@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
-import lostark.todo.controller.dto.memberDto.MemberloginDto;
+import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -29,13 +29,26 @@ public class MemberServiceV2 {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
+     * 회원 찾기(캐릭터 리스트와 함께0
+     */
+    public Member findMember(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
+    }
+
+    /**
      * 회원가입
      */
     public Member createMember(MemberSignupDto signupDto, List<Character> characterList) {
         if (memberRepository.existsByUsername(signupDto.getUsername())) {
-            String errorMessage = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
-            log.warn(errorMessage);
-            throw new RuntimeException(errorMessage);
+            String message = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
+            log.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        if (characterList.isEmpty()) {
+            String message = "등록된 캐릭터가 없습니다.";
+            log.error(message);
+            throw new IllegalArgumentException(message);
         }
 
         Member member = Member.builder()
@@ -50,12 +63,10 @@ public class MemberServiceV2 {
         return memberRepository.save(member);
     }
 
-    public Member findMember(String username) {
-        return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
-    }
-
-    public Member login(MemberloginDto memberloginDto) {
+    /**
+     * 로그인
+     */
+    public Member login(MemberLoginDto memberloginDto) {
         String username = memberloginDto.getUsername();
         Member member = findMember(username);
         if (passwordEncoder.matches(memberloginDto.getPassword(), member.getPassword())) {
@@ -65,7 +76,9 @@ public class MemberServiceV2 {
         }
     }
 
-
+    /**
+     * 캐릭터 리스트 업데이트
+     */
     public CharacterUpdateListDto updateCharacterList(String username, CharacterUpdateListDto characterUpdateListDto) {
         List<Character> characterList = findMember(username).getCharacters();
 

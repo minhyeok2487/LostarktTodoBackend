@@ -5,9 +5,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.controller.v1.dto.memberDto.MemberResponseDtoV1;
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
-import lostark.todo.controller.dto.memberDto.MemberloginDto;
+import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.v2.*;
@@ -22,6 +23,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 인증 (로그인, 회원가입) API
+ */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -35,7 +39,7 @@ public class AuthController {
 
     @ApiOperation(value = "회원 가입",
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
-            response = MemberResponseDtoV1.class)
+            response = MemberResponseDto.class)
     @PostMapping("/signup")
     public ResponseEntity signupMember(@RequestBody @Valid MemberSignupDto memberSignupDto) {
         // 대표캐릭터와 연동된 캐릭터(api 검증)
@@ -58,20 +62,14 @@ public class AuthController {
     }
 
     @ApiOperation(value = "로그인",
-            notes="JWT", response = MemberResponseDtoV1.class)
+            notes="JWT", response = MemberResponseDto.class)
     @PostMapping("/login")
-    public ResponseEntity loginMember(@RequestBody @Valid MemberloginDto memberloginDto) {
+    public ResponseEntity loginMember(@RequestBody @Valid MemberLoginDto memberloginDto) {
         Member member = memberService.login(memberloginDto);
         String token = tokenProvider.createToken(member);
 
-        MemberResponseDtoV1 responseDto = MemberResponseDtoV1.builder()
-                .id(member.getId())
+        MemberResponseDto responseDto = MemberResponseDto.builder()
                 .username(member.getUsername())
-                .characters(member.getCharacters().stream().map(
-                                character -> character.getCharacterName()
-                                        + " / " + character.getCharacterClassName()
-                                        + " / Lv." + character.getItemLevel())
-                        .collect(Collectors.toList()))
                 .token(token)
                 .build();
         return new ResponseEntity(responseDto, HttpStatus.OK);
