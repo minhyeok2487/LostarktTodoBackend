@@ -1,17 +1,16 @@
 package lostark.todo.domain.market;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 
-@Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class Market extends BaseTimeEntity {
 
     @Id
@@ -36,20 +35,6 @@ public class Market extends BaseTimeEntity {
     private int bundleCount;
 
     private int categoryCode;
-
-    // Lostark Market Api로 불러온 JSONObject Constructor
-    // 카테고리 코드도 있어야함
-    public Market(JSONObject tempJson, int categoryCode) {
-        this.lostarkMarketId = Long.parseLong(tempJson.get("Id").toString());
-        this.yDayAvgPrice = Double.parseDouble(tempJson.get("YDayAvgPrice").toString());
-        this.currentMinPrice = Integer.parseInt(tempJson.get("CurrentMinPrice").toString());
-        this.grade = tempJson.get("Grade").toString();
-        this.recentPrice = Integer.parseInt(tempJson.get("RecentPrice").toString());
-        this.icon = tempJson.get("Icon").toString();
-        this.name = tempJson.get("Name").toString();
-        this.bundleCount = Integer.parseInt(tempJson.get("BundleCount").toString());
-        this.categoryCode = categoryCode;
-    }
 
 
     public static Market createAuctionItem(JSONObject item, String itemName, int categoryCode) {

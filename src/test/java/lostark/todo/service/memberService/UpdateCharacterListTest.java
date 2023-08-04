@@ -1,11 +1,11 @@
-package lostark.todo.service.v2.memberServiceV2;
+package lostark.todo.service.memberService;
 
 import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.v2.CharacterServiceV2;
-import lostark.todo.service.v2.MemberServiceV2;
+import lostark.todo.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class UpdateCharacterListTest {
     private CharacterUpdateDto 서예볼링 = new CharacterUpdateDto();
 
     @Autowired
-    MemberServiceV2 memberService;
+    MemberService memberService;
 
     @Autowired
     CharacterServiceV2 characterService;

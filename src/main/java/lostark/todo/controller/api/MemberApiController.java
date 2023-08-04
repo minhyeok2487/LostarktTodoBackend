@@ -12,8 +12,8 @@ import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.v2.CharacterServiceV2;
 import lostark.todo.service.v2.ContentServiceV2;
-import lostark.todo.service.v2.MarketServiceV2;
-import lostark.todo.service.v2.MemberServiceV2;
+import lostark.todo.service.MarketService;
+import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,9 +31,9 @@ import java.util.Map;
 public class MemberApiController {
 
     private final CharacterServiceV2 characterService;
-    private final MarketServiceV2 marketService;
+    private final MarketService marketService;
     private final ContentServiceV2 contentService;
-    private final MemberServiceV2 memberService;
+    private final MemberService memberService;
 
 
     @ApiOperation(value = "회원과 등록된 캐릭터 리스트 조회",

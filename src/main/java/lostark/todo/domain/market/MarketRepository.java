@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface MarketRepository extends JpaRepository<Market, Long> {
 
+    int countByCategoryCode(int categoryCode);
+
     List<Market> findByNameIn(List<String> names);
 
     List<Market> findByCategoryCode(int categoryCode);

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/character")
-@Api(tags = {"캐릭터 REST API"})
+@Api(tags = {"캐릭터 API"})
 public class CharacterApiController {
 
     private final CharacterServiceV2 characterService;

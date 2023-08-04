@@ -1,4 +1,4 @@
-package lostark.todo.service.v2;
+package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class MemberServiceV2 {
+public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

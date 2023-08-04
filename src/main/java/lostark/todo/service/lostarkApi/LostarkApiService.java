@@ -59,10 +59,11 @@ public class LostarkApiService {
         InputStream inputStream;
         if(result == 200) {
             inputStream = httpURLConnection.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            return inputStreamReader;
         } else {
             throw new RuntimeException("올바르지 않은 로스트아크 apiKey 입니다");
         }
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        return inputStreamReader;
+
     }
 }

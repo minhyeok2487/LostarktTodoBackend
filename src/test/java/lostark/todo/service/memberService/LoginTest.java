@@ -1,19 +1,15 @@
-package lostark.todo.service.v2.memberServiceV2;
+package lostark.todo.service.memberService;
 
 import groovy.util.logging.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
-import lostark.todo.controller.dto.memberDto.MemberSignupDto;
-import lostark.todo.domain.Role;
-import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.v2.LostarkCharacterServiceV2;
-import lostark.todo.service.v2.MemberServiceV2;
+import lostark.todo.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-@Slf4j
 class LoginTest {
 
     @Autowired
     LostarkCharacterServiceV2 lostarkCharacterService;
 
     @Autowired
-    MemberServiceV2 memberService;
+    MemberService memberService;
 
     @Autowired
     Validator validator;
@@ -75,9 +70,11 @@ class LoginTest {
         memberLoginDto.setPassword("111");
 
         // then
-        assertThrows(IllegalArgumentException.class, () -> {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             memberService.login(memberLoginDto);
         });
+
+        assertThat(exception.getMessage()).isEqualTo("패스워드가 틀립니다.");
     }
 
     @Test

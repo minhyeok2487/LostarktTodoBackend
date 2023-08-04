@@ -1,4 +1,4 @@
-package lostark.todo.service.v2;
+package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,31 +20,52 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class MarketServiceV2 {
+public class MarketService {
 
     private final MarketRepository marketRepository;
 
     /**
-     * 거래소 데이터 저장 메소드
-     * 기존 데이터가 있으면 가격 교체
-     * 없으면 그냥 저장
+     * 해당 카테고리 데이터가
+     * DB에 이미 있는지 확인
      */
-    public String saveMarketItemList(List<Market> marketList, int categoryCode) {
-        List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
+    public boolean checkMarketItemList(int categoryCode) {
+        if (categoryCode != 0) {
+            return true;
+        }
+        return false;
+    }
 
-        if (oldList.isEmpty()) {
-            List<Market> markets = marketRepository.saveAll(marketList);
-            return "총 " + markets.size() +"개 저장 완료";
-        } else {
-            oldList.forEach(old -> {
-                List<Market> matchingNews = marketList.stream()
-                        .filter(news -> old.getName().equals(news.getName()))
-                        .collect(Collectors.toList());
-                if (!matchingNews.isEmpty()) {
-                    old.changeData(matchingNews.get(0));
-                }
-            });
-            return "총 " + oldList.size() +"개 업데이트 완료";
+    /**
+     * 거래소 데이터 저장 메소드
+     */
+    public List<Market> createMarketItemList(List<Market> marketList) {
+        exception(marketList);
+        return marketRepository.saveAll(marketList);
+    }
+
+    /**
+     * 거래소 데이터 업데이트 메소드
+     */
+    public List<Market> updateMarketItemList(List<Market> marketList, int categoryCode) {
+        exception(marketList);
+        List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
+        oldList.forEach(old -> {
+            List<Market> matchingNews = marketList.stream()
+                    .filter(news -> old.getName().equals(news.getName()))
+                    .collect(Collectors.toList());
+            if (!matchingNews.isEmpty()) {
+                old.changeData(matchingNews.get(0));
+            }
+        });
+        return oldList;
+    }
+
+    private static void exception(List<Market> marketList) {
+        if (marketList.isEmpty()) {
+            throw new IllegalArgumentException("marketList is Empty");
+        }
+        if (marketList == null) {
+            throw new NullPointerException("marketList is Null");
         }
     }
 

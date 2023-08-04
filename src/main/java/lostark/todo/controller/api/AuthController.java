@@ -11,6 +11,7 @@ import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
+import lostark.todo.service.MemberService;
 import lostark.todo.service.v2.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 @Api(tags = {"인증 API"})
 public class AuthController {
 
-    private final MemberServiceV2 memberService;
+    private final MemberService memberService;
     private final LostarkCharacterServiceV2 lostarkCharacterService;
     private final TokenProvider tokenProvider;
 
