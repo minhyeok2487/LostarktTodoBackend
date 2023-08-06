@@ -1,5 +1,6 @@
 package lostark.todo.domain.content;
 
+import lombok.Data;
 import lombok.Getter;
 
 import javax.persistence.Entity;
@@ -7,7 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 @Entity
-@Getter
+@Data
 public class DayContent extends Content{
 
     @Enumerated(EnumType.STRING)

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @Api(tags = {"인증 API"})
-public class AuthController {
+public class AuthApiController {
 
     private final MemberService memberService;
     private final LostarkCharacterServiceV2 lostarkCharacterService;

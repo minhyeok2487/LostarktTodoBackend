@@ -3,9 +3,15 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
+import lostark.todo.domain.market.CategoryCode;
+import lostark.todo.domain.market.Market;
+import lostark.todo.service.lostarkApi.LostarkMarketService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,9 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class SchedulerService {
 
     private final CharacterRepository characterRepository;
+    private final LostarkMarketService lostarkMarketService;
+    private final MarketService marketService;
+
+    @Value("${Lostark-API-Key}")
+    String apiKey;
 
     /**
      * 매일 오전 6시 일일 숙제 초기화
+     * 거래소 데이터 갱신
      */
     @Scheduled(cron = "0 6 6 * * ?") // 매일 오전 6시에 실행
     public void calculateDayContentGauge() {
@@ -27,6 +39,10 @@ public class SchedulerService {
             int guardianResult = getGuardianResult(character);
             character.getCharacterDayContent().calculateGuardian(guardianResult);
         }
+
+        // 거래소데이터 갱신
+        List<Market> marketList = lostarkMarketService.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
+        marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
     }
 
 
@@ -39,9 +55,6 @@ public class SchedulerService {
         }
         if(guardian == 1) {
             guardianResult = subtract(guardianGauge, 10);
-        }
-        if(guardian == 2) {
-            guardianResult = subtract(guardianGauge, 40);
         }
         return guardianResult;
     }
