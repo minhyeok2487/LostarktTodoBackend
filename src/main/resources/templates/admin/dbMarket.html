@@ -3,37 +3,26 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="layouts/default_layout">
 <th:block layout:fragment="content">
-    <div class="text">캐릭터 데이터</div>
+    <div class="text">재련재료 데이터</div>
     <div class="dashboard wrap">
+        <p th:text="|최근 업데이트 ${lastModifiedDate}|"></p>
         <table>
             <thead>
             <tr>
-                <th>Id</th>
-                <th>카테고리</th>
-                <th>분류</th>
-                <th>컨텐츠 이름</th>
-                <th>컨텐츠 레벨</th>
-                <th>실링</th>
-                <th>명예의 파편</th>
-                <th>돌파석</th>
-                <th>파괴석</th>
-                <th>수호석</th>
-                <th>1레벨 보석</th>
+                <th>#</th>
+                <th>이름</th>
+<!--                <th>전일 평균 가격</th>-->
+<!--                <th>최근 판매 가격</th>-->
+                <th>현재 가격</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="content : ${contentList}">
-                <td th:text="${content.id}">id</td>
-                <td th:text="${content.category}">category</td>
-                <td th:text="${content.contentCategory}">dayContentCategory</td>
-                <td th:text="${content.name}">name</td>
-                <td th:text="${content.level}">level</td>
-                <td th:text="${content.shilling}">shilling</td>
-                <td th:text="${content.honorShard}">honorShard</td>
-                <td th:text="${content.leapStone}">leapStone</td>
-                <td th:text="${content.destructionStone}">destructionStone</td>
-                <td th:text="${content.guardianStone}">guardianStone</td>
-                <td th:text="${content.jewelry}">jewelry</td>
+            <tr th:each="Market : ${marketList}">
+                <td><img th:src="${Market.icon}" th:style="'width: 40px;'"></td>
+                <td th:text="${Market.name}">name</td>
+<!--                <td th:text="${Market.yDayAvgPrice}">yDayAvgPrice</td>-->
+<!--                <td th:text="${Market.currentMinPrice}">currentMinPrice</td>-->
+                <td th:text="${Market.recentPrice}">recentPrice</td>
             </tr>
             </tbody>
         </table>

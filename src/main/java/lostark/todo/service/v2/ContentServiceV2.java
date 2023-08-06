@@ -25,6 +25,10 @@ public class ContentServiceV2 {
         return contentRepository.findAll();
     }
 
+    public List<DayContent> findAllDayContent() {
+        return contentRepository.findAllDayContent();
+    }
+
     public List<CharacterResponseDto> getCharacterListWithDayContent(List<Character> characterList) {
         //출력할 리스트
         List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>();

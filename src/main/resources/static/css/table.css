@@ -25,7 +25,7 @@ td:first-child {
     border-left: 1px solid #c6c9cc;
 }
 tr:nth-child(even) td {
-    background: #eaeaed;
+    /*background: #eaeaed;*/
 }
 tr:last-child td:first-child {
     border-bottom-left-radius: 6px;
