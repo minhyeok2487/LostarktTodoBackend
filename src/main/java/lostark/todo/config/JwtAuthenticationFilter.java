@@ -53,7 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             log.error("인증 에러 = {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }
+
         filterChain.doFilter(request, response);
     }
 

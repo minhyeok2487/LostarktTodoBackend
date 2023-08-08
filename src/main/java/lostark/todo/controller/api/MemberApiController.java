@@ -10,7 +10,8 @@ import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.service.v2.CharacterServiceV2;
+import lostark.todo.domain.member.Member;
+import lostark.todo.service.CharacterService;
 import lostark.todo.service.v2.ContentServiceV2;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Api(tags = {"회원 API"})
 public class MemberApiController {
 
-    private final CharacterServiceV2 characterService;
+    private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentServiceV2 contentService;
     private final MemberService memberService;
@@ -78,7 +79,7 @@ public class MemberApiController {
                     .build();
             return new ResponseEntity<>(charactersReturnDto, HttpStatus.OK);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 

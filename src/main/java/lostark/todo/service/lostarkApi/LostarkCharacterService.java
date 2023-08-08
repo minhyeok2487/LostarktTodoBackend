@@ -2,8 +2,10 @@ package lostark.todo.service.lostarkApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterDayContent;
+import lostark.todo.service.lostarkApi.LostarkApiService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,38 +25,20 @@ import java.util.List;
 public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
-    /**
-     * 캐릭터 이름으로 같은 계정 캐릭터 데이터 가져옴
-     * 1415이상 캐릭터만 리턴
-     */
-    public JSONArray getCharacter(String apiKey, String characterName) {
+
+
+    public List<Character> getCharacterList(MemberSignupDto signupDto) {
         try {
-            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String encodeCharacterName = URLEncoder.encode(signupDto.getCharacterName(), StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, signupDto.getApiKey());
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
             JSONArray filteredArray = filterLevel(jsonArray);
-            JSONArray result = getCharacterImage(filteredArray, apiKey);
-            return result;
-        } catch (NullPointerException e) {
-            throw new RuntimeException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    public List<Character> getCharacterList(String apiKey, String characterName) {
-        try {
-            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
-            JSONArray filteredArray = filterLevel(jsonArray);
-            JSONArray imageList = getCharacterImage(filteredArray, apiKey);
+            JSONArray imageList = getCharacterImage(filteredArray, signupDto.getApiKey());
             List<Character> characterList = new ArrayList<>();
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
@@ -71,9 +55,9 @@ public class LostarkCharacterService {
             }
             return characterList;
         } catch (NullPointerException e) {
-            throw new RuntimeException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
+            throw new RuntimeException(signupDto.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -86,6 +70,9 @@ public class LostarkCharacterService {
             if (itemMaxLevel >= 1415D) {
                 filteredArray.add(jsonObject);
             }
+        }
+        if (filteredArray.isEmpty()) {
+            throw new RuntimeException("아이템 레벨 1415 이상 캐릭터가 없습니다.");
         }
         return filteredArray;
     }
