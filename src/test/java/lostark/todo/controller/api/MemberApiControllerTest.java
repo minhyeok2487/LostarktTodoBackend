@@ -221,7 +221,7 @@ class MemberApiControllerTest {
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST); // 403 에러
-        Assertions.assertThat(responseEntity.getBody().getErrorMessage()).contains(
+        Assertions.assertThat(responseEntity.getBody().getErrorMessage()).containsOnly(
                 "[characterUpdateDtoList[0].chaosCheck](은)는 2 이하여야 합니다 입력된 값: [21]",
                 "[characterUpdateDtoList[0].chaosSelected](은)는 널이어서는 안됩니다 입력된 값: [null]");
     }
