@@ -21,6 +21,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -42,6 +43,9 @@ class MemberApiControllerTest {
 
     @Autowired
     TokenProvider tokenProvider;
+
+    @Autowired
+    CharacterService characterService;
 
     @Autowired
     MemberService memberService;
@@ -112,13 +116,14 @@ class MemberApiControllerTest {
     @DisplayName("캐릭터 리스트 업데이트 성공")
     void updateCharacterList() {
         //given
+        String characterName = "마볼링";
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "application/json");
         headers.set("Authorization", "Bearer " + token);
 
         List<CharacterUpdateDto> characterUpdateDtoList = new ArrayList<>();
         CharacterUpdateDto characterUpdateDto = CharacterUpdateDto.builder()
-                .characterName("마볼링")
+                .characterName(characterName)
                 .chaosCheck(2)
                 .chaosSelected(false)
                 .guardianCheck(0)
@@ -139,19 +144,16 @@ class MemberApiControllerTest {
 
 
         //then
-        List<Character> characters = memberService.findMember(username).getCharacters();
+        Character after = characterService.findCharacter(characterName);
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         CharacterUpdateDto updateDto = responseEntity.getBody().getCharacterUpdateDtoList().get(0);
 
-        for (Character character : characters) {
-            if (character.getCharacterName().equals(characterUpdateDto.getCharacterName())) {
-                Assertions.assertThat(updateDto.getChaosCheck()).isEqualTo(character.getCharacterDayContent().getChaosCheck());
-                Assertions.assertThat(updateDto.getChaosSelected()).isEqualTo(character.getCharacterDayContent().isChaosSelected());
-                Assertions.assertThat(updateDto.getGuardianCheck()).isEqualTo(character.getCharacterDayContent().getGuardianCheck());
-                Assertions.assertThat(updateDto.getChaosSelected()).isEqualTo(character.getCharacterDayContent().isChaosSelected());
-            }
-        }
+
+        Assertions.assertThat(updateDto.getChaosCheck()).isEqualTo(after.getCharacterDayContent().getChaosCheck());
+        Assertions.assertThat(updateDto.getChaosSelected()).isEqualTo(after.getCharacterDayContent().isChaosSelected());
+        Assertions.assertThat(updateDto.getGuardianCheck()).isEqualTo(after.getCharacterDayContent().getGuardianCheck());
+        Assertions.assertThat(updateDto.getChaosSelected()).isEqualTo(after.getCharacterDayContent().isChaosSelected());
     }
 
     @Test
