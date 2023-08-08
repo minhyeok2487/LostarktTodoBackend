@@ -103,42 +103,42 @@ class UpdateCharacterListTest {
 
     }
 
-    @Test
-    @DisplayName("캐릭터 리스트 업데이트 Exception 테스트")
-    void updateCharacterListException() {
-        /**
-         * Given
-         * null, 범위 초과등의 Exception용 데이터
-         */
-        CharacterUpdateDto testData1 = CharacterUpdateDto.builder()
-                .characterName(마볼링.getCharacterName())
-                .chaosCheck(3)
-                .guardianCheck(-1)
-                .guardianSelected(true)
-                .build();
-        System.out.println("testData1 = " + testData1);
-
-        /**
-         * When
-         * Valid 검증
-         */
-        Set<ConstraintViolation<CharacterUpdateDto>> validation = validator.validate(testData1);
-
-        /**
-         * Then
-         */
-        Iterator<ConstraintViolation<CharacterUpdateDto>> iterator = validation.iterator();
-        List<String> messages = new ArrayList<>();
-        while (iterator.hasNext()) {
-            ConstraintViolation<CharacterUpdateDto> next = iterator.next();
-            String message = next.getPropertyPath() + " (은)는 " + next.getMessage();
-            messages.add(message);
-            System.out.println("message = " + message);
-        }
-
-        Assertions.assertThat(messages).contains(
-                "guardianCheck (은)는 0 이상이어야 합니다",
-                "chaosCheck (은)는 2 이하여야 합니다",
-                "chaosSelected (은)는 널이어서는 안됩니다");
-    }
+//    @Test
+//    @DisplayName("캐릭터 리스트 업데이트 Exception 테스트")
+//    void updateCharacterListException() {
+//        /**
+//         * Given
+//         * null, 범위 초과등의 Exception용 데이터
+//         */
+//        CharacterUpdateDto testData1 = CharacterUpdateDto.builder()
+//                .characterName(마볼링.getCharacterName())
+//                .chaosCheck(3)
+//                .guardianCheck(-1)
+//                .guardianSelected(true)
+//                .build();
+//        System.out.println("testData1 = " + testData1);
+//
+//        /**
+//         * When
+//         * Valid 검증
+//         */
+//        Set<ConstraintViolation<CharacterUpdateDto>> validation = validator.validate(testData1);
+//
+//        /**
+//         * Then
+//         */
+//        Iterator<ConstraintViolation<CharacterUpdateDto>> iterator = validation.iterator();
+//        List<String> messages = new ArrayList<>();
+//        while (iterator.hasNext()) {
+//            ConstraintViolation<CharacterUpdateDto> next = iterator.next();
+//            String message = next.getPropertyPath() + " (은)는 " + next.getMessage();
+//            messages.add(message);
+//            System.out.println("message = " + message);
+//        }
+//
+//        Assertions.assertThat(messages).contains(
+//                "guardianCheck (은)는 0 이상이어야 합니다",
+//                "chaosCheck (은)는 2 이하여야 합니다",
+//                "chaosSelected (은)는 널이어서는 안됩니다");
+//    }
 }

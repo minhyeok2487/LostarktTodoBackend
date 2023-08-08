@@ -4,10 +4,7 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.v1.dto.characterDto.CharacterResponseDtoV1;
 import lostark.todo.domain.character.Character;
-import lostark.todo.service.v1.ContentServiceV1;
-import lostark.todo.service.v1.MarketServiceV1;
 import lostark.todo.service.v2.CharacterServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class CharacterApiController {
 
     private final CharacterServiceV2 characterService;
-    private final MarketServiceV1 marketServiceV1;
-    private final ContentServiceV1 contentServiceV1;
+    //private final MarketServiceV1 marketServiceV1;
+    //private final ContentServiceV1 contentServiceV1;
 
-    @ApiOperation(value = "캐릭터 데이터 조회", response = CharacterResponseDtoV1.class)
+    @ApiOperation(value = "캐릭터 데이터 조회", response = CharacterResponseDto.class)
     @GetMapping("/{characterName}")
     public ResponseEntity findCharacter(@PathVariable String characterName) {
         // 캐릭터 정보 가져옴

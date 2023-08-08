@@ -29,7 +29,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
-     * 회원 찾기(캐릭터 리스트와 함께0
+     * 회원 찾기(캐릭터 리스트와 함께)
      */
     public Member findMember(String username) {
         return memberRepository.findByUsername(username)
@@ -37,9 +37,17 @@ public class MemberService {
     }
 
     /**
+     * 회원 삭제(캐릭터 리스트와 함께)
+     */
+    public int deleteMember(String username) {
+        return memberRepository.deleteByUsername(username);
+    }
+
+    /**
      * 회원가입
      */
     public Member createMember(MemberSignupDto signupDto, List<Character> characterList) {
+        // 중복체크
         if (memberRepository.existsByUsername(signupDto.getUsername())) {
             String message = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
             log.error(message);

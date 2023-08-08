@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-
 public class MarketServiceTest {
 
     @Autowired MemberService memberService;

@@ -13,5 +13,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "SELECT DISTINCT m FROM Member m JOIN FETCH m.characters c WHERE m.username = :username ORDER BY c.itemLevel DESC")
     Optional<Member> findByUsername(@Param("username") String username);
 
-    Optional<Member> findByUsernameAndPassword(String username, String password);
+    int deleteByUsername(String username);
 }

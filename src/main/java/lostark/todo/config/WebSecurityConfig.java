@@ -2,19 +2,23 @@ package lostark.todo.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
 
 /**
  * Spring Security 웹 애플리케이션 보안 구성
  */
 @EnableWebSecurity
+@Configuration
 @Slf4j
 @RequiredArgsConstructor
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -31,7 +35,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui.html",
             "/webjars/**",
             "/api/auth/**",
-            "/auth/**",
             "/**",
             "/css/**", "js/**"
     };
@@ -39,8 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 보안 설정
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // http 시큐리티 빌더
         http.cors() // WebMvcConfig에서 이미 설정했으므로 기본 cors 설정.
                 .and()
@@ -62,5 +65,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          * jwtAuthenticationFilter 실행
          */
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
+        return http.build();
     }
 }

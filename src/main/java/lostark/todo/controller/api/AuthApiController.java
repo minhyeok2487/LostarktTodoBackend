@@ -6,13 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.controller.v1.dto.memberDto.MemberResponseDtoV1;
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.MemberService;
-import lostark.todo.service.v2.*;
+import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 public class AuthApiController {
 
     private final MemberService memberService;
-    private final LostarkCharacterServiceV2 lostarkCharacterService;
+    private final LostarkCharacterService lostarkCharacterService;
     private final TokenProvider tokenProvider;
 
     @ApiOperation(value = "회원 가입",
@@ -50,7 +49,7 @@ public class AuthApiController {
         Member signupMember = memberService.createMember(memberSignupDto, characterList);
 
         // 결과 출력
-        MemberResponseDtoV1 responseDto = MemberResponseDtoV1.builder()
+        MemberResponseDto responseDto = MemberResponseDto.builder()
                 .id(signupMember.getId())
                 .username(signupMember.getUsername())
                 .characters(signupMember.getCharacters().stream().map(

@@ -6,7 +6,6 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
     private List<Character> characters;
 
 
@@ -48,5 +47,4 @@ public class Member extends BaseTimeEntity {
         character.setMember(this);
         return character;
     }
-
 }
