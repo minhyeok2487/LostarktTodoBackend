@@ -15,7 +15,7 @@ public abstract class Content {
     private long id;
 
     @Enumerated(EnumType.STRING)
-    private Category category; // 일일 숙제, 주간 숙제 분류
+    private Category category;
 
     private String name;
 

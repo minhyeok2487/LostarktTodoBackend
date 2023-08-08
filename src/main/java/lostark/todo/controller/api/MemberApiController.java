@@ -10,9 +10,8 @@ import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.v2.ContentServiceV2;
+import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,7 @@ public class MemberApiController {
 
     private final CharacterService characterService;
     private final MarketService marketService;
-    private final ContentServiceV2 contentService;
+    private final ContentService contentService;
     private final MemberService memberService;
 
 

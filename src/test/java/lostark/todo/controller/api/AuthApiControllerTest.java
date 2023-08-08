@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
+@Rollback(value = false)
 class AuthApiControllerTest {
 
     @LocalServerPort

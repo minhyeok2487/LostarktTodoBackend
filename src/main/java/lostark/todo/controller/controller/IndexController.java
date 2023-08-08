@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.market.Market;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.v2.ContentServiceV2;
+import lostark.todo.service.ContentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ import java.util.List;
 public class IndexController {
 
     private final CharacterService characterService;
-    private final ContentServiceV2 contentServiceV2;
+    private final ContentService contentService;
     private final MarketService marketService;
 
     // TestController
@@ -37,7 +37,7 @@ public class IndexController {
 
     @GetMapping("/db/content")
     public String dbContent(Model model) {
-        model.addAttribute("contentList", contentServiceV2.findAllDayContent());
+        model.addAttribute("contentList", contentService.findAllDayContent());
         return "admin/dbContent";
     }
 

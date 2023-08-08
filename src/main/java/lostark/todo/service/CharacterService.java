@@ -37,27 +37,6 @@ public class CharacterService {
                 .orElseThrow(() -> new IllegalArgumentException(characterName+" 은(는) 존재하지 않는 캐릭터입니다."));
     }
 
-
-    /**
-     * 캐릭터 리스트 저장
-     */
-    public void saveCharacterList(Member member, JSONArray characterList) {
-        for (Object o : characterList) {
-            JSONObject jsonObject = (JSONObject) o;
-            Character character = Character.builder()
-                    .member(member)
-                    .characterName(jsonObject.get("CharacterName").toString())
-                    .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-                    .characterClassName(jsonObject.get("CharacterClassName").toString())
-                    .serverName(jsonObject.get("ServerName").toString())
-                    .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
-                    .characterImage(jsonObject.get("CharacterImage").toString())
-                    .characterDayContent(new CharacterDayContent())
-                    .build();
-            characterRepository.save(character);
-        }
-    }
-
     /**
      * 수익 계산
      */
@@ -100,21 +79,18 @@ public class CharacterService {
                 price = calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone(), price);
                 price = calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone(), price);
                 price = calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry(), price);
-                price += characterResponseDto.getChaosName().getGold();
             }
         } else if (characterResponseDto.getChaosGauge() < 40 && characterResponseDto.getChaosGauge() >= 20) {
             for (int i = 0; i < 3; i++) {
                 price = calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone(), price);
                 price = calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone(), price);
                 price = calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry(), price);
-                price += characterResponseDto.getChaosName().getGold();
             }
         } else {
             for (int i = 0; i < 2; i++) {
                 price = calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone(), price);
                 price = calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone(), price);
                 price = calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry(), price);
-                price += characterResponseDto.getChaosName().getGold();
             }
         }
         characterResponseDto.setChaosProfit(price);
@@ -125,24 +101,16 @@ public class CharacterService {
                                    MarketContentResourceDto guardian,
                                    MarketContentResourceDto leapStone) {
         double price = 0;
-        if (characterResponseDto.getGuardianGauge() >= 40) {
-            for (int i = 0; i < 4; i++) {
-                price = calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone(), price);
-                price = calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone(), price);
-            }
-        } else if (characterResponseDto.getGuardianGauge() < 40 && characterResponseDto.getGuardianGauge() >= 20) {
-            for (int i = 0; i < 3; i++) {
-                price = calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone(), price);
-                price = calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone(), price);
-            }
-        } else {
+        if (characterResponseDto.getGuardianGauge() >= 20) {
             for (int i = 0; i < 2; i++) {
                 price = calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone(), price);
                 price = calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone(), price);
                 price = calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone(), price);
             }
+        } else {
+                price = calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone(), price);
+                price = calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone(), price);
+                price = calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone(), price);
         }
         characterResponseDto.setGuardianProfit(price);
     }
@@ -155,6 +123,5 @@ public class CharacterService {
         price += (dto.getRecentPrice() * count) / dto.getBundleCount();
         return Math.round(price * 100.0) / 100.0;
     }
-
 
 }

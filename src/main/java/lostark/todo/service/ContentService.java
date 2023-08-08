@@ -1,4 +1,4 @@
-package lostark.todo.service.v2;
+package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
@@ -17,7 +17,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ContentServiceV2 {
+public class ContentService {
 
     private final ContentRepository contentRepository;
 

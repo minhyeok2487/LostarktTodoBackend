@@ -1,18 +1,18 @@
 package lostark.todo.domain.content;
 
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
-@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class DayContent extends Content{
-
-    @Enumerated(EnumType.STRING)
-    private Category contentCategory; // 가디언 토벌, 카오스 던전 분류
 
     private double shilling; //실링
 
@@ -25,9 +25,4 @@ public class DayContent extends Content{
     private double guardianStone; //수호석
 
     private double jewelry; //1레벨 보석
-
-    private double gold; //평균 골드
-
-    protected DayContent() {
-    }
 }
