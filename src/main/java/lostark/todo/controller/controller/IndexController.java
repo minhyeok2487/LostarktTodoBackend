@@ -2,14 +2,9 @@ package lostark.todo.controller.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
-import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.Content;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.service.MarketService;
-import lostark.todo.service.v2.CharacterServiceV2;
+import lostark.todo.service.CharacterService;
 import lostark.todo.service.v2.ContentServiceV2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +13,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class IndexController {
 
-    private final CharacterServiceV2 characterService;
+    private final CharacterService characterService;
     private final ContentServiceV2 contentServiceV2;
     private final MarketService marketService;
 

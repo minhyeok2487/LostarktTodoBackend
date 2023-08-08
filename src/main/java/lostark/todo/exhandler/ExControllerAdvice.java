@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
+import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class ExControllerAdvice {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class,
-            HttpMessageNotReadableException.class, RuntimeException.class})
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(Exception ex) {
+            HttpMessageNotReadableException.class, RuntimeException.class, Exception.class})
+    public ResponseEntity<ErrorResponse> handlerException(Exception ex) {
         List<String> message = new ArrayList<>();
         message.add(ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), ex.getClass().getSimpleName(), message);

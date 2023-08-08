@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.service.v2.CharacterServiceV2;
+import lostark.todo.service.CharacterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = {"캐릭터 API"})
 public class CharacterApiController {
 
-    private final CharacterServiceV2 characterService;
+    private final CharacterService characterService;
     //private final MarketServiceV1 marketServiceV1;
     //private final ContentServiceV1 contentServiceV1;
 

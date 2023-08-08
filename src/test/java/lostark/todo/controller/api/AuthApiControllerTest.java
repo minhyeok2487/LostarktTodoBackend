@@ -40,9 +40,6 @@ class AuthApiControllerTest {
     MemberService memberService;
 
     @Autowired
-    LostarkCharacterService lostarkCharacterService;
-
-    @Autowired
     TokenProvider tokenProvider;
 
     @Value("${Lostark-API-Test-Key}")

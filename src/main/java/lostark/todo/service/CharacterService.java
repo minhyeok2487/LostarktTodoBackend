@@ -1,4 +1,4 @@
-package lostark.todo.service.v2;
+package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class CharacterServiceV2 {
+public class CharacterService {
 
     private final CharacterRepository characterRepository;
 
