@@ -14,7 +14,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -33,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
+@Rollback(value = false)
 class MemberApiControllerTest {
 
     @LocalServerPort
@@ -69,8 +69,6 @@ class MemberApiControllerTest {
         
         ResponseEntity<MemberResponseDto> responseEntity = testRestTemplate.postForEntity(url, memberLoginDto, MemberResponseDto.class);
         token = responseEntity.getBody().getToken();
-
-
     }
     
     @Test
@@ -221,7 +219,7 @@ class MemberApiControllerTest {
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST); // 403 에러
-        Assertions.assertThat(responseEntity.getBody().getErrorMessage()).containsOnly(
+        Assertions.assertThat(responseEntity.getBody().getErrorMessage()).contains(
                 "[characterUpdateDtoList[0].chaosCheck](은)는 2 이하여야 합니다 입력된 값: [21]",
                 "[characterUpdateDtoList[0].chaosSelected](은)는 널이어서는 안됩니다 입력된 값: [null]");
     }

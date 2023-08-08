@@ -35,7 +35,7 @@ public class LostarkMarketApiController {
 
     @ApiOperation(value = "로스트아크 api로부터 해당 카테고리 코드의 거래소 데이터를 불러와서 DB에 저장",
             notes = "기존 데이터가 있으면 갱신, 관리자만 사용가능", response = MarketListDto.class)
-    @PostMapping("/{categoryCode}")
+    @GetMapping("/{categoryCode}")
     public ResponseEntity getMarketCategoryCode(@AuthenticationPrincipal String username, @PathVariable CategoryCode categoryCode)  {
         Member member = memberService.findMember(username);
         if (member.getRole().equals(Role.ADMIN)) {

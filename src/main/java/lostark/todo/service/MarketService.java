@@ -2,11 +2,9 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.v1.dto.marketDto.AuctionRequestDtoV1;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,24 +68,6 @@ public class MarketService {
     }
 
     /**
-     * 경매장 데이터 저장 메소드
-     * 기존 데이터가 있으면 가격 교체
-     * 없으면 그냥 저장
-     */
-    public String  saveAuctionItem(JSONObject auctionItem, AuctionRequestDtoV1 auctionRequestDtoV1) {
-        String itemName = auctionRequestDtoV1.getItemName();
-        int categoryCode = auctionRequestDtoV1.getCategoryCode();
-
-        Market oldItem = marketRepository.findByName(itemName).orElse(null);
-        Market market = Market.createAuctionItem(auctionItem, itemName, categoryCode);
-
-        Market result = (oldItem == null) ? marketRepository.save(market) : oldItem.changeData(market);
-
-        return itemName + "저장 및 업데이트 완료";
-    }
-
-
-    /**
      * 거래소 데이터 호출
      */
     public List<Market> findByNameIn(List<String> names) {
@@ -123,7 +103,4 @@ public class MarketService {
         dayContentResource.add("1레벨");
         return dayContentResource;
     }
-
-
-
 }
