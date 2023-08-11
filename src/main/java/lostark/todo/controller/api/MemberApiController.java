@@ -76,6 +76,7 @@ public class MemberApiController {
                     .sumDayContentProfit(sum)
                     .sortedDayContentProfitDtoList(sortedDayContentProfit)
                     .build();
+            log.info(charactersReturnDto.getCharacters().get(0).toString());
             return new ResponseEntity<>(charactersReturnDto, HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,10 @@ import java.util.stream.Collectors;
 public class MarketService {
 
     private final MarketRepository marketRepository;
+
+    public List<Market> findAll() {
+        return marketRepository.findAll();
+    }
 
     /**
      * 해당 카테고리 데이터가
@@ -103,4 +109,6 @@ public class MarketService {
         dayContentResource.add("1레벨");
         return dayContentResource;
     }
+
+
 }
