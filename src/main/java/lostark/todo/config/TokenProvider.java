@@ -31,7 +31,7 @@ public class TokenProvider {
                 .setSubject(member.getUsername())
                 .setIssuer("LostarkTodo")
                 .setIssuedAt(new Date())
-                .setExpiration(expiryDate)
+//                .setExpiration(expiryDate) 임시 기한 무제한
                 .compact();
     }
 
