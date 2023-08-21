@@ -35,7 +35,6 @@ public class WebSecurityConfig {
             "/swagger-ui.html",
             "/webjars/**",
             "/api/auth/**",
-            "/.well-known/**",
             "/css/**", "js/**"
     };
 
