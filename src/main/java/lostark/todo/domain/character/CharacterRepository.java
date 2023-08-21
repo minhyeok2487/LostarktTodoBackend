@@ -17,4 +17,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     @Query(value = "update Character c set c.itemLevel = :itemLevel where c.characterName = :characterName")
     int updateCharacterInfo(@Param("characterName") String characterName, @Param("itemLevel") Double itemLevel);
 
+    @Query(value = "select DISTINCT c from Character c JOIN FETCH c.member")
+    List<Character> findAll();
 }

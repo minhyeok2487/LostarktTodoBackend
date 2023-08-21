@@ -31,8 +31,6 @@ public class CharacterDayContent {
      * 일일컨텐츠 업데이트 메서드
      */
     public void updateDayContent(CharacterUpdateDto characterUpdateDto) {
-        this.chaosSelected = characterUpdateDto.getChaosSelected();
-        this.guardianSelected = characterUpdateDto.getGuardianSelected();
         this.chaosCheck = characterUpdateDto.getChaosCheck();
         this.guardianCheck = characterUpdateDto.getGuardianCheck();
     }

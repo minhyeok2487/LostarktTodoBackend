@@ -3,7 +3,6 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
-import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.memberDto.MemberSignupDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.Role;
@@ -87,24 +86,22 @@ public class MemberService {
     /**
      * 캐릭터 리스트 업데이트
      */
-    public CharacterUpdateListDto updateCharacterList(String username, CharacterUpdateListDto characterUpdateListDto) {
+    public List<CharacterUpdateDto> updateCharacterList(String username, List<CharacterUpdateDto> characterUpdateDtoList) {
         List<Character> characterList = findMember(username).getCharacters();
 
-        CharacterUpdateListDto resultDtoList = new CharacterUpdateListDto();
+        List<CharacterUpdateDto> resultDtoList = new ArrayList<>();
         for (Character character : characterList) {
-            for (CharacterUpdateDto characterUpdateDto : characterUpdateListDto.getCharacterUpdateDtoList()) {
+            for (CharacterUpdateDto characterUpdateDto : characterUpdateDtoList) {
                 if (character.getCharacterName().equals(characterUpdateDto.getCharacterName())) {
                     character.getCharacterDayContent().updateDayContent(characterUpdateDto);
 
                     CharacterUpdateDto result = CharacterUpdateDto.builder()
                             .characterName(character.getCharacterName())
                             .chaosCheck(character.getCharacterDayContent().getChaosCheck())
-                            .chaosSelected(character.getCharacterDayContent().isChaosSelected())
                             .guardianCheck(character.getCharacterDayContent().getGuardianCheck())
-                            .guardianSelected(character.getCharacterDayContent().isGuardianSelected())
                             .build();
 
-                    resultDtoList.addCharacter(result);
+                    resultDtoList.add(result);
                 }
             }
         }
@@ -112,4 +109,7 @@ public class MemberService {
     }
 
 
+    public List<Member> findAll() {
+        return memberRepository.findAll();
+    }
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterListResponeDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
@@ -76,6 +77,7 @@ public class MemberApiController {
                     .sumDayContentProfit(sum)
                     .sortedDayContentProfitDtoList(sortedDayContentProfit)
                     .build();
+            log.info(charactersReturnDto.getCharacters().get(0).toString());
             return new ResponseEntity<>(charactersReturnDto, HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -85,7 +87,7 @@ public class MemberApiController {
     @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterUpdateListDto.class)
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacters(@AuthenticationPrincipal String username,
-                                           @RequestBody @Valid CharacterUpdateListDto characterUpdateListDto) {
-        return new ResponseEntity<>(memberService.updateCharacterList(username, characterUpdateListDto), HttpStatus.OK);
+                                           @RequestBody @Valid List<CharacterUpdateDto> characterUpdateDtoList) {
+        return new ResponseEntity<>(memberService.updateCharacterList(username, characterUpdateDtoList), HttpStatus.OK);
     }
 }
