@@ -3,11 +3,9 @@ package lostark.todo.controller.api;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.controller.dto.memberDto.MemberSignupDto;
-import lostark.todo.domain.member.Member;
+import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.exhandler.ErrorResponse;
 import lostark.todo.service.MemberService;
-import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +50,7 @@ class AuthApiControllerTest {
         String username = "testUser";
         String password = "11223344";
         String characterName = "바람불어야지요";
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto memberDto = MemberDto.builder()
                 .username(username)
                 .password(password)
                 .characterName(characterName)
@@ -62,7 +60,7 @@ class AuthApiControllerTest {
         String url = "http://localhost:"+port+"/api/auth/signup";
 
         //when
-        ResponseEntity<MemberResponseDto> responseEntity = testRestTemplate.postForEntity(url, memberSignupDto, MemberResponseDto.class);
+        ResponseEntity<MemberResponseDto> responseEntity = testRestTemplate.postForEntity(url, memberDto, MemberResponseDto.class);
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -80,7 +78,7 @@ class AuthApiControllerTest {
         String username = "test";
         String password = "11223344";
         String characterName = "바람불어야지요";
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto memberDto = MemberDto.builder()
                 .username(username)
                 .password(password)
                 .characterName(characterName)
@@ -90,7 +88,7 @@ class AuthApiControllerTest {
         String url = "http://localhost:"+port+"/api/auth/signup";
 
         //when
-        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberSignupDto, ErrorResponse.class);
+        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberDto, ErrorResponse.class);
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -105,7 +103,7 @@ class AuthApiControllerTest {
         String username = "testUser";
         String password = "11223344";
         String characterName = "cvsdfadsdfqwdqwdxczxc";
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto memberDto = MemberDto.builder()
                 .username(username)
                 .password(password)
                 .characterName(characterName)
@@ -115,7 +113,7 @@ class AuthApiControllerTest {
         String url = "http://localhost:"+port+"/api/auth/signup";
 
         //when
-        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberSignupDto, ErrorResponse.class);
+        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberDto, ErrorResponse.class);
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -130,7 +128,7 @@ class AuthApiControllerTest {
         String username = "testUser";
         String password = "11223344";
         String characterName = "파이썬볼러";
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto memberDto = MemberDto.builder()
                 .username(username)
                 .password(password)
                 .characterName(characterName)
@@ -140,7 +138,7 @@ class AuthApiControllerTest {
         String url = "http://localhost:"+port+"/api/auth/signup";
 
         //when
-        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberSignupDto, ErrorResponse.class);
+        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberDto, ErrorResponse.class);
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -154,7 +152,7 @@ class AuthApiControllerTest {
     void signupMemberValid() {
         //given
         String password = "11223344";
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto memberDto = MemberDto.builder()
                 .password(password)
                 .apiKey(apiKey)
                 .build();
@@ -162,7 +160,7 @@ class AuthApiControllerTest {
         String url = "http://localhost:"+port+"/api/auth/signup";
 
         //when
-        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberSignupDto, ErrorResponse.class);
+        ResponseEntity<ErrorResponse> responseEntity = testRestTemplate.postForEntity(url, memberDto, ErrorResponse.class);
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

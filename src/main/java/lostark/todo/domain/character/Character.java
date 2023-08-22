@@ -62,4 +62,13 @@ public class Character extends BaseTimeEntity {
                 ", characterDayContent=" + characterDayContent +
                 '}';
     }
+
+    /**
+     * 3가지 항목만 업데이트
+     */
+    public void updateCharacter(Character character) {
+        this.characterLevel = character.getCharacterLevel();
+        this.characterImage = character.getCharacterImage();
+        this.itemLevel = character.getItemLevel();
+    }
 }

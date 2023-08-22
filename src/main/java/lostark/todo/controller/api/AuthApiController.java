@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.controller.dto.memberDto.MemberSignupDto;
+import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -41,12 +41,12 @@ public class AuthApiController {
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
             response = MemberResponseDto.class)
     @PostMapping("/signup")
-    public ResponseEntity signupMember(@RequestBody @Valid MemberSignupDto memberSignupDto) {
+    public ResponseEntity signupMember(@RequestBody @Valid MemberDto memberDto) {
         // 대표캐릭터와 연동된 캐릭터(api 검증)
-        List<Character> characterList = lostarkCharacterService.getCharacterList(memberSignupDto);
+        List<Character> characterList = lostarkCharacterService.getCharacterList(memberDto);
 
         // Member 회원가입
-        Member signupMember = memberService.createMember(memberSignupDto, characterList);
+        Member signupMember = memberService.createMember(memberDto, characterList);
 
         // 결과 출력
         MemberResponseDto responseDto = MemberResponseDto.builder()

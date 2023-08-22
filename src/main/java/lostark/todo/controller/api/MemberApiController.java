@@ -10,11 +10,14 @@ import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
+import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,7 +38,7 @@ public class MemberApiController {
     private final MarketService marketService;
     private final ContentService contentService;
     private final MemberService memberService;
-
+    private final LostarkCharacterService lostarkCharacterService;
 
     @ApiOperation(value = "회원과 등록된 캐릭터 리스트 조회",
             notes="휴식게이지를 참고하여 일일컨텐츠 수익 계산하여 함께 리턴",
@@ -84,10 +87,28 @@ public class MemberApiController {
         }
     }
 
-    @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterUpdateListDto.class)
     @PatchMapping("/characterList")
-    public ResponseEntity updateCharacters(@AuthenticationPrincipal String username,
-                                           @RequestBody @Valid List<CharacterUpdateDto> characterUpdateDtoList) {
-        return new ResponseEntity<>(memberService.updateCharacterList(username, characterUpdateDtoList), HttpStatus.OK);
+    public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        MemberDto memberDto = MemberDto.builder()
+                .apiKey(member.getApiKey())
+                .characterName(member.getCharacters().get(0).getCharacterName())
+                .username(username)
+                .build();
+        // 대표캐릭터와 연동된 캐릭터(api 검증)
+        List<Character> characterList = lostarkCharacterService.getCharacterList(memberDto);
+        log.info("characterList.size={}",characterList.size());
+
+        List<CharacterResponseDto> result = memberService.updateCharacterList(username, characterList);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterUpdateListDto.class)
+    @PatchMapping("/todo")
+    public ResponseEntity updateTodo(@AuthenticationPrincipal String username,
+                                           @RequestBody @Valid List<CharacterUpdateDto> characterUpdateDtoList) {
+        return new ResponseEntity<>(memberService.updateTodo(username, characterUpdateDtoList), HttpStatus.OK);
+    }
+
+
 }

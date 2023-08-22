@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberSignupDto {
+public class MemberDto {
 
     @NotEmpty
     @ApiModelProperty(example = "회원이름")

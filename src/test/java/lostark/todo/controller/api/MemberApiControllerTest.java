@@ -2,6 +2,7 @@ package lostark.todo.controller.api;
 
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.characterDto.CharacterListResponeDto;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
@@ -26,6 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,8 +113,8 @@ class MemberApiControllerTest {
     }
 
     @Test
-    @DisplayName("캐릭터 리스트 업데이트 성공")
-    void updateCharacterList() {
+    @DisplayName("캐릭터 Todo 업데이트 성공")
+    void updateTodo() {
         //given
         String characterName = "마볼링";
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -123,9 +125,7 @@ class MemberApiControllerTest {
         CharacterUpdateDto characterUpdateDto = CharacterUpdateDto.builder()
                 .characterName(characterName)
                 .chaosCheck(2)
-                .chaosSelected(false)
                 .guardianCheck(0)
-                .guardianSelected(false)
                 .build();
 
         characterUpdateDtoList.add(characterUpdateDto);
@@ -134,7 +134,7 @@ class MemberApiControllerTest {
                 .characterUpdateDtoList(characterUpdateDtoList)
                 .build();
 
-        String url = "http://localhost:"+port+"/api/member/characterList";
+        String url = "http://localhost:"+port+"/api/member/todo";
 
         //when
         ResponseEntity<CharacterUpdateListDto> responseEntity = testRestTemplate.exchange(url, HttpMethod.PATCH,
@@ -149,14 +149,12 @@ class MemberApiControllerTest {
 
 
         Assertions.assertThat(updateDto.getChaosCheck()).isEqualTo(after.getCharacterDayContent().getChaosCheck());
-        Assertions.assertThat(updateDto.getChaosSelected()).isEqualTo(after.getCharacterDayContent().isChaosSelected());
         Assertions.assertThat(updateDto.getGuardianCheck()).isEqualTo(after.getCharacterDayContent().getGuardianCheck());
-        Assertions.assertThat(updateDto.getChaosSelected()).isEqualTo(after.getCharacterDayContent().isChaosSelected());
     }
 
     @Test
-    @DisplayName("캐릭터 리스트 업데이트 실패 - Token 미인증 (403 에러)")
-    void updateCharacterListTokenError() {
+    @DisplayName("캐릭터 Todo 업데이트 실패 - Token 미인증 (403 에러)")
+    void updateTodoTokenError() {
         //given
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "application/json");
@@ -165,9 +163,7 @@ class MemberApiControllerTest {
         CharacterUpdateDto characterUpdateDto = CharacterUpdateDto.builder()
                 .characterName("마볼링")
                 .chaosCheck(2)
-                .chaosSelected(false)
                 .guardianCheck(0)
-                .guardianSelected(false)
                 .build();
 
         characterUpdateDtoList.add(characterUpdateDto);
@@ -176,7 +172,7 @@ class MemberApiControllerTest {
                 .characterUpdateDtoList(characterUpdateDtoList)
                 .build();
 
-        String url = "http://localhost:"+port+"/api/member/characterList";
+        String url = "http://localhost:"+port+"/api/member/todo";
 
 
         //when
@@ -188,8 +184,8 @@ class MemberApiControllerTest {
     }
 
     @Test
-    @DisplayName("캐릭터 리스트 업데이트 실패 - @Valid Error")
-    void updateCharacterListValidError() {
+    @DisplayName("캐릭터 Todo 업데이트 실패 - @Valid Error")
+    void updateTodoValidError() {
         //given
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "application/json");
@@ -201,7 +197,6 @@ class MemberApiControllerTest {
                 .characterName("마볼링")
                 .chaosCheck(21)
                 .guardianCheck(0)
-                .guardianSelected(false)
                 .build();
 
         characterUpdateDtoList.add(characterUpdateDto);
@@ -210,7 +205,7 @@ class MemberApiControllerTest {
                 .characterUpdateDtoList(characterUpdateDtoList)
                 .build();
 
-        String url = "http://localhost:"+port+"/api/member/characterList";
+        String url = "http://localhost:"+port+"/api/member/todo";
 
 
         //when
@@ -223,4 +218,31 @@ class MemberApiControllerTest {
                 "[characterUpdateDtoList[0].chaosCheck](은)는 2 이하여야 합니다 입력된 값: [21]",
                 "[characterUpdateDtoList[0].chaosSelected](은)는 널이어서는 안됩니다 입력된 값: [null]");
     }
+
+    @Test
+    @DisplayName("캐릭터 리스트 업데이트 성공")
+    void updateCharacterList() {
+        // given
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + token);
+
+        String url = "http://localhost:" + port + "/api/member/characterList";
+
+        // when
+        ResponseEntity<CharacterResponseDto[]> responseEntity = testRestTemplate.exchange(
+                url, HttpMethod.PATCH, new HttpEntity<>(headers), CharacterResponseDto[].class);
+
+        // then
+        CharacterResponseDto[] responseArray = responseEntity.getBody();
+        if (responseArray != null) {
+            List<CharacterResponseDto> responseList = Arrays.asList(responseArray);
+            for (CharacterResponseDto dto : responseList) {
+                System.out.println("CharacterResponseDto: " + dto);
+            }
+        } else {
+            System.out.println("Response array is null.");
+        }
+    }
+
 }

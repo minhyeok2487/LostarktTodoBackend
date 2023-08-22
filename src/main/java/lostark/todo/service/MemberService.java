@@ -2,8 +2,9 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
-import lostark.todo.controller.dto.memberDto.MemberSignupDto;
+import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +47,7 @@ public class MemberService {
     /**
      * 회원가입
      */
-    public Member createMember(MemberSignupDto signupDto, List<Character> characterList) {
+    public Member createMember(MemberDto signupDto, List<Character> characterList) {
         // 중복체크
         if (memberRepository.existsByUsername(signupDto.getUsername())) {
             String message = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
@@ -84,9 +86,9 @@ public class MemberService {
     }
 
     /**
-     * 캐릭터 리스트 업데이트
+     * 캐릭터 Todo 업데이트
      */
-    public List<CharacterUpdateDto> updateCharacterList(String username, List<CharacterUpdateDto> characterUpdateDtoList) {
+    public List<CharacterUpdateDto> updateTodo(String username, List<CharacterUpdateDto> characterUpdateDtoList) {
         List<Character> characterList = findMember(username).getCharacters();
 
         List<CharacterUpdateDto> resultDtoList = new ArrayList<>();
@@ -112,4 +114,90 @@ public class MemberService {
     public List<Member> findAll() {
         return memberRepository.findAll();
     }
+
+    /**
+     * 캐릭터 리스트 업데이트
+     */
+    public List<CharacterResponseDto> updateCharacterList(String username, List<Character> characterList) {
+        Member member = findMember(username);
+        List<Character> beforeCharacterList = member.getCharacters();
+        List<Character> charactersToUpdate = new ArrayList<>();
+        List<Character> charactersToAdd = new ArrayList<>();
+        List<Character> charactersToDelete = new ArrayList<>();
+        List<CharacterResponseDto> resultDtos = new ArrayList<>();
+
+        for (Character updateCharacter : characterList) {
+            updateCharacter.setMember(member);
+            boolean found = false;
+            for (Character beforeCharacter : beforeCharacterList) {
+                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
+                    beforeCharacter.updateCharacter(updateCharacter);
+                    charactersToUpdate.add(beforeCharacter);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                charactersToAdd.add(updateCharacter);
+            }
+        }
+
+        for (Character beforeCharacter : beforeCharacterList) {
+            boolean found = false;
+            for (Character updateCharacter : characterList) {
+                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                charactersToDelete.add(beforeCharacter);
+            }
+        }
+
+        // Apply the changes
+        beforeCharacterList.removeAll(charactersToDelete);
+        beforeCharacterList.addAll(charactersToAdd);
+
+        for (Character characterToUpdate : charactersToUpdate) {
+            resultDtos.add(CharacterResponseDto.builder()
+                    .characterName(characterToUpdate.getCharacterName())
+                    .itemLevel(characterToUpdate.getItemLevel())
+                    .build());
+        }
+
+        return resultDtos;
+    }
+
+//    public List<CharacterResponseDto> updateCharacterList(String username, List<Character> characterList) {
+//        List<Character> beforeCharacterList = findMember(username).getCharacters();
+//        Iterator<Character> updateCharacterList = characterList.iterator();
+//
+//        List<CharacterResponseDto> resultDtos = new ArrayList<>();
+//        while (updateCharacterList.hasNext()) {
+//            boolean check = true;
+//            Character updateCharacter = updateCharacterList.next();
+//            CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
+//                    .characterName(updateCharacter.getCharacterName())
+//                    .itemLevel(updateCharacter.getItemLevel())
+//                    .build();
+//
+//            for (Character character : beforeCharacterList) {
+//                if (character.getCharacterName().equals(updateCharacter.getCharacterName())) {
+//                    character.updateCharacter(updateCharacter);
+//                    check = false;
+//                    break;
+//                }
+//            }
+//
+//            if (check) {
+//                beforeCharacterList.add(updateCharacter);
+//            }
+//
+//            resultDtos.add(characterResponseDto);
+//        }
+//
+//        return resultDtos;
+//    }
+
 }
