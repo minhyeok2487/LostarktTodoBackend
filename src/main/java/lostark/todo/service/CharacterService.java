@@ -3,14 +3,11 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.CharacterDayContent;
 import lostark.todo.domain.character.CharacterRepository;
-import lostark.todo.domain.member.Member;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +32,15 @@ public class CharacterService {
     public Character findCharacter(String characterName) {
         return characterRepository.findByCharacterName(characterName)
                 .orElseThrow(() -> new IllegalArgumentException(characterName+" 은(는) 존재하지 않는 캐릭터입니다."));
+    }
+
+    /**
+     * 휴식게이지 업데이트
+     */
+    public Character updateGauge(CharacterGaugeDto characterGaugeDto) {
+        Character character = findCharacter(characterGaugeDto.getCharacterName());
+        character.getCharacterDayContent().updateGauge(characterGaugeDto);
+        return character;
     }
 
     /**
@@ -74,25 +80,17 @@ public class CharacterService {
                                MarketContentResourceDto guardian,
                                MarketContentResourceDto jewelry) {
         double price = 0;
+        price += calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone());
+        price += calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone());
+        price += calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry());
         if (characterResponseDto.getChaosGauge() >= 40) {
-            for (int i = 0; i < 4; i++) {
-                price = calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone(), price);
-                price = calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry(), price);
-            }
+            price = price*4;
         } else if (characterResponseDto.getChaosGauge() < 40 && characterResponseDto.getChaosGauge() >= 20) {
-            for (int i = 0; i < 3; i++) {
-                price = calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone(), price);
-                price = calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry(), price);
-            }
+            price = price*3;
         } else {
-            for (int i = 0; i < 2; i++) {
-                price = calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone(), price);
-                price = calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry(), price);
-            }
+            price = price*2;
         }
+        price = Math.round(price * 100.0) / 100.0;
         characterResponseDto.setChaosProfit(price);
     }
 
@@ -101,17 +99,14 @@ public class CharacterService {
                                    MarketContentResourceDto guardian,
                                    MarketContentResourceDto leapStone) {
         double price = 0;
+        price += calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone());
+        price += calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone());
+        price += calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone());
+
         if (characterResponseDto.getGuardianGauge() >= 20) {
-            for (int i = 0; i < 2; i++) {
-                price = calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone(), price);
-                price = calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone(), price);
-            }
-        } else {
-                price = calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone(), price);
-                price = calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone(), price);
-                price = calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone(), price);
+            price = price*2;
         }
+        price = Math.round(price * 100.0) / 100.0;
         characterResponseDto.setGuardianProfit(price);
     }
 
@@ -119,9 +114,8 @@ public class CharacterService {
     /**
      * 번들(묶음) 계산
      */
-    private double calculateBundle(MarketContentResourceDto dto, double count, double price) {
-        price += (dto.getRecentPrice() * count) / dto.getBundleCount();
-        return Math.round(price * 100.0) / 100.0;
+    private double calculateBundle(MarketContentResourceDto dto, double count) {
+        return Math.round((dto.getRecentPrice() * count) / dto.getBundleCount() * 100.0) / 100.0;
     }
 
 }

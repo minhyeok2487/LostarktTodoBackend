@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
-import lostark.todo.domain.content.Category;
+import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
+import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
 
 import javax.persistence.Embeddable;
 @Embeddable
@@ -30,9 +30,9 @@ public class CharacterDayContent {
     /**
      * 일일컨텐츠 업데이트 메서드
      */
-    public void updateDayContent(CharacterUpdateDto characterUpdateDto) {
-        this.chaosCheck = characterUpdateDto.getChaosCheck();
-        this.guardianCheck = characterUpdateDto.getGuardianCheck();
+    public void updateDayContent(CharacterCheckDto characterCheckDto) {
+        this.chaosCheck = characterCheckDto.getChaosCheck();
+        this.guardianCheck = characterCheckDto.getGuardianCheck();
     }
 
     public void calculateChaos(int result) {
@@ -45,4 +45,8 @@ public class CharacterDayContent {
         this.guardianCheck = 0;
     }
 
+    public void updateGauge(CharacterGaugeDto characterGaugeDto) {
+        this.chaosGauge = characterGaugeDto.getChaosGauge();
+        this.guardianGauge = characterGaugeDto.getGuardianGauge();
+    }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 
@@ -71,4 +72,5 @@ public class Character extends BaseTimeEntity {
         this.characterImage = character.getCharacterImage();
         this.itemLevel = character.getItemLevel();
     }
+
 }

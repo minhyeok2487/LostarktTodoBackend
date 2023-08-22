@@ -234,4 +234,5 @@ class AuthApiControllerTest {
         Assertions.assertThat(responseEntity.getBody().getErrorMessage()).contains(
                 "[username](은)는 비어 있을 수 없습니다 입력된 값: [null]");
     }
+
 }

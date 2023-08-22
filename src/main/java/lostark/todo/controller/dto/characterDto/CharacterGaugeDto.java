@@ -6,28 +6,31 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CharacterUpdateDto {
+public class CharacterGaugeDto {
 
     @NotEmpty()
     @ApiModelProperty(notes = "캐릭터 이름")
     private String characterName;
 
     @Min(value = 0)
-    @Max(value = 2)
+    @Max(value = 100)
     @NotNull()
-    @ApiModelProperty(notes = "카오스던전 돌았는지 체크, 최소 0, 최대 2")
-    private Integer chaosCheck;
+    @ApiModelProperty(notes = "")
+    private Integer chaosGauge;
 
     @Min(value = 0)
-    @Max(value = 1)
+    @Max(value = 100)
     @NotNull()
-    @ApiModelProperty(notes = "가디언토벌 돌았는지 체크, 최소 0, 최대 1, 1씩 증감")
-    private Integer guardianCheck;
+    @ApiModelProperty(notes = "")
+    private Integer guardianGauge;
 
 }

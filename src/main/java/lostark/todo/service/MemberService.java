@@ -3,7 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
+import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.Role;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,16 +87,16 @@ public class MemberService {
     /**
      * 캐릭터 Todo 업데이트
      */
-    public List<CharacterUpdateDto> updateTodo(String username, List<CharacterUpdateDto> characterUpdateDtoList) {
+    public List<CharacterCheckDto> updateTodo(String username, List<CharacterCheckDto> characterCheckDtoList) {
         List<Character> characterList = findMember(username).getCharacters();
 
-        List<CharacterUpdateDto> resultDtoList = new ArrayList<>();
+        List<CharacterCheckDto> resultDtoList = new ArrayList<>();
         for (Character character : characterList) {
-            for (CharacterUpdateDto characterUpdateDto : characterUpdateDtoList) {
-                if (character.getCharacterName().equals(characterUpdateDto.getCharacterName())) {
-                    character.getCharacterDayContent().updateDayContent(characterUpdateDto);
+            for (CharacterCheckDto characterCheckDto : characterCheckDtoList) {
+                if (character.getCharacterName().equals(characterCheckDto.getCharacterName())) {
+                    character.getCharacterDayContent().updateDayContent(characterCheckDto);
 
-                    CharacterUpdateDto result = CharacterUpdateDto.builder()
+                    CharacterCheckDto result = CharacterCheckDto.builder()
                             .characterName(character.getCharacterName())
                             .chaosCheck(character.getCharacterDayContent().getChaosCheck())
                             .guardianCheck(character.getCharacterDayContent().getGuardianCheck())

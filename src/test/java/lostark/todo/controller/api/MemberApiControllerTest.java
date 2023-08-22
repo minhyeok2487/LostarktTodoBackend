@@ -3,7 +3,7 @@ package lostark.todo.controller.api;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.characterDto.CharacterListResponeDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.dto.characterDto.CharacterUpdateDto;
+import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
@@ -121,17 +121,17 @@ class MemberApiControllerTest {
         headers.add("Content-Type", "application/json");
         headers.set("Authorization", "Bearer " + token);
 
-        List<CharacterUpdateDto> characterUpdateDtoList = new ArrayList<>();
-        CharacterUpdateDto characterUpdateDto = CharacterUpdateDto.builder()
+        List<CharacterCheckDto> characterCheckDtoList = new ArrayList<>();
+        CharacterCheckDto characterCheckDto = CharacterCheckDto.builder()
                 .characterName(characterName)
                 .chaosCheck(2)
                 .guardianCheck(0)
                 .build();
 
-        characterUpdateDtoList.add(characterUpdateDto);
+        characterCheckDtoList.add(characterCheckDto);
 
         CharacterUpdateListDto body = CharacterUpdateListDto.builder()
-                .characterUpdateDtoList(characterUpdateDtoList)
+                .characterCheckDtoList(characterCheckDtoList)
                 .build();
 
         String url = "http://localhost:"+port+"/api/member/todo";
@@ -145,7 +145,7 @@ class MemberApiControllerTest {
         Character after = characterService.findCharacter(characterName);
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        CharacterUpdateDto updateDto = responseEntity.getBody().getCharacterUpdateDtoList().get(0);
+        CharacterCheckDto updateDto = responseEntity.getBody().getCharacterCheckDtoList().get(0);
 
 
         Assertions.assertThat(updateDto.getChaosCheck()).isEqualTo(after.getCharacterDayContent().getChaosCheck());
@@ -159,17 +159,17 @@ class MemberApiControllerTest {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "application/json");
 
-        List<CharacterUpdateDto> characterUpdateDtoList = new ArrayList<>();
-        CharacterUpdateDto characterUpdateDto = CharacterUpdateDto.builder()
+        List<CharacterCheckDto> characterCheckDtoList = new ArrayList<>();
+        CharacterCheckDto characterCheckDto = CharacterCheckDto.builder()
                 .characterName("마볼링")
                 .chaosCheck(2)
                 .guardianCheck(0)
                 .build();
 
-        characterUpdateDtoList.add(characterUpdateDto);
+        characterCheckDtoList.add(characterCheckDto);
 
         CharacterUpdateListDto body = CharacterUpdateListDto.builder()
-                .characterUpdateDtoList(characterUpdateDtoList)
+                .characterCheckDtoList(characterCheckDtoList)
                 .build();
 
         String url = "http://localhost:"+port+"/api/member/todo";
@@ -192,17 +192,17 @@ class MemberApiControllerTest {
         headers.set("Authorization", "Bearer " + token);
 
 
-        List<CharacterUpdateDto> characterUpdateDtoList = new ArrayList<>();
-        CharacterUpdateDto characterUpdateDto = CharacterUpdateDto.builder()
+        List<CharacterCheckDto> characterCheckDtoList = new ArrayList<>();
+        CharacterCheckDto characterCheckDto = CharacterCheckDto.builder()
                 .characterName("마볼링")
                 .chaosCheck(21)
                 .guardianCheck(0)
                 .build();
 
-        characterUpdateDtoList.add(characterUpdateDto);
+        characterCheckDtoList.add(characterCheckDto);
 
         CharacterUpdateListDto body = CharacterUpdateListDto.builder()
-                .characterUpdateDtoList(characterUpdateDtoList)
+                .characterCheckDtoList(characterCheckDtoList)
                 .build();
 
         String url = "http://localhost:"+port+"/api/member/todo";

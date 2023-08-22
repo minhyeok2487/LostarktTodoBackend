@@ -20,9 +20,9 @@ public class CharacterUpdateListDto {
     @Valid
     @NotNull(message = "characterDayContentUpdateDtoList가 null 일 수 없습니다.")
     @ApiModelProperty(notes = "캐릭터 이름과 업데이트 항목 리스트")
-    private List<CharacterUpdateDto> characterUpdateDtoList = new ArrayList<>();
+    private List<CharacterCheckDto> characterCheckDtoList = new ArrayList<>();
 
-    public void addCharacter(CharacterUpdateDto result) {
-        characterUpdateDtoList.add(result);
+    public void addCharacter(CharacterCheckDto result) {
+        characterCheckDtoList.add(result);
     }
 }
