@@ -51,10 +51,10 @@ public class SchedulerService {
         int guardian = character.getCharacterDayContent().getGuardianCheck();
         int guardianGauge = character.getCharacterDayContent().getGuardianGauge();
         if(guardian == 0) {
-            guardianResult = add(guardianGauge, 20);
+            guardianResult = add(guardianGauge, 10);
         }
         if(guardian == 1) {
-            guardianResult = subtract(guardianGauge, 10);
+            guardianResult = subtract(guardianGauge, 0);
         }
         return guardianResult;
     }
