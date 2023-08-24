@@ -10,6 +10,7 @@ import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Data
 @Table(name = "characters")

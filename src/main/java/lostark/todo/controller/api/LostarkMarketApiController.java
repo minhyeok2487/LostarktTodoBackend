@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/lostark/market")
+@RequestMapping("/lostark/market")
 @Api(tags = {"로스트아크 연동 거래소, 경매장 API"})
 public class LostarkMarketApiController {
 

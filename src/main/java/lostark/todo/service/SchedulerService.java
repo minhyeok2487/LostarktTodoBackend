@@ -26,10 +26,18 @@ public class SchedulerService {
     String apiKey;
 
     /**
-     * 매일 오전 6시 일일 숙제 초기화
-     * 거래소 데이터 갱신
+     * 매일 오전 0시 거래소 데이터 갱신
      */
-    @Scheduled(cron = "0 6 6 * * ?") // 매일 오전 6시에 실행
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    public void updateMarketData() {
+        List<Market> marketList = lostarkMarketService.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
+        marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
+    }
+
+    /**
+     * 매일 오전 6시 일일 숙제 초기화
+     */
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
     public void calculateDayContentGauge() {
         // 휴식게이지 계산
         for (Character character : characterRepository.findAll()) {
@@ -39,10 +47,6 @@ public class SchedulerService {
             int guardianResult = getGuardianResult(character);
             character.getCharacterDayContent().calculateGuardian(guardianResult);
         }
-
-        // 거래소데이터 갱신
-        List<Market> marketList = lostarkMarketService.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
-        marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
     }
 
 
@@ -54,7 +58,7 @@ public class SchedulerService {
             guardianResult = add(guardianGauge, 10);
         }
         if(guardian == 1) {
-            guardianResult = subtract(guardianGauge, 0);
+            guardianResult = subtract(guardianGauge, 20);
         }
         return guardianResult;
     }

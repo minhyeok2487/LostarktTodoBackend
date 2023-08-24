@@ -12,7 +12,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     /**
      * 레벨보다 작은 일일 컨텐츠 불러오기
      * @param category (카오스던전, 가디언토벌)
-     * @return
      */
     @Query("select c from DayContent c " +
             "where c.level <= :level " +

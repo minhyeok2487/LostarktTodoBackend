@@ -30,7 +30,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/member")
+@RequestMapping("/member")
 @Api(tags = {"회원 API"})
 public class MemberApiController {
 
@@ -87,6 +87,9 @@ public class MemberApiController {
         }
     }
 
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 업데이트",
+            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 / 캐릭터 추가 및 삭제 ",
+            response = CharacterListResponeDto.class)
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
@@ -97,14 +100,13 @@ public class MemberApiController {
                 .build();
         // 대표캐릭터와 연동된 캐릭터(api 검증)
         List<Character> characterList = lostarkCharacterService.getCharacterList(memberDto);
-        log.info("characterList.size={}",characterList.size());
 
         List<CharacterResponseDto> result = memberService.updateCharacterList(username, characterList);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "회원과 등록된 캐릭터 리스트 업데이트", response = CharacterUpdateListDto.class)
-    @PatchMapping("/todo")
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트의 변경된 Todo항목 저장", response = CharacterCheckDto.class)
+    @PatchMapping("/characterList/todo")
     public ResponseEntity updateTodo(@AuthenticationPrincipal String username,
                                            @RequestBody @Valid List<CharacterCheckDto> characterCheckDtoList) {
         return new ResponseEntity<>(memberService.updateTodo(username, characterCheckDtoList), HttpStatus.OK);

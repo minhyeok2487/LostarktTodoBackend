@@ -30,4 +30,10 @@ public class CharacterCheckDto {
     @ApiModelProperty(notes = "가디언토벌 돌았는지 체크, 최소 0, 최대 1, 1씩 증감")
     private Integer guardianCheck;
 
+    @Min(value = 0)
+    @Max(value = 3)
+    @NotNull()
+    @ApiModelProperty(notes = "에포나의뢰 체크, 최소 0, 최대 3")
+    private Integer eponaCheck;
+
 }

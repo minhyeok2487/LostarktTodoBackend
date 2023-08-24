@@ -168,35 +168,4 @@ public class MemberService {
         return resultDtos;
     }
 
-//    public List<CharacterResponseDto> updateCharacterList(String username, List<Character> characterList) {
-//        List<Character> beforeCharacterList = findMember(username).getCharacters();
-//        Iterator<Character> updateCharacterList = characterList.iterator();
-//
-//        List<CharacterResponseDto> resultDtos = new ArrayList<>();
-//        while (updateCharacterList.hasNext()) {
-//            boolean check = true;
-//            Character updateCharacter = updateCharacterList.next();
-//            CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
-//                    .characterName(updateCharacter.getCharacterName())
-//                    .itemLevel(updateCharacter.getItemLevel())
-//                    .build();
-//
-//            for (Character character : beforeCharacterList) {
-//                if (character.getCharacterName().equals(updateCharacter.getCharacterName())) {
-//                    character.updateCharacter(updateCharacter);
-//                    check = false;
-//                    break;
-//                }
-//            }
-//
-//            if (check) {
-//                beforeCharacterList.add(updateCharacter);
-//            }
-//
-//            resultDtos.add(characterResponseDto);
-//        }
-//
-//        return resultDtos;
-//    }
-
 }

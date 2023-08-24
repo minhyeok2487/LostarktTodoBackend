@@ -24,13 +24,19 @@ public class CharacterGaugeDto {
     @Min(value = 0)
     @Max(value = 100)
     @NotNull()
-    @ApiModelProperty(notes = "")
+    @ApiModelProperty(notes = "카오스던전 휴식게이지")
     private Integer chaosGauge;
 
     @Min(value = 0)
     @Max(value = 100)
     @NotNull()
-    @ApiModelProperty(notes = "")
+    @ApiModelProperty(notes = "가디언토벌 휴식게이지")
     private Integer guardianGauge;
+
+    @Min(value = 0)
+    @Max(value = 100)
+    @NotNull()
+    @ApiModelProperty(notes = "에포나의뢰 휴식게이지")
+    private Integer eponaGauge;
 
 }

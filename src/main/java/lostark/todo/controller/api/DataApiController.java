@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/db")
+@RequestMapping("/db")
 @Api(tags = {"데이터 API"})
 public class DataApiController {
 

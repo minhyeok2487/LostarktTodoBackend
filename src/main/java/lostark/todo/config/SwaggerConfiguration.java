@@ -56,8 +56,8 @@ public class SwaggerConfiguration {
                 .groupName(version)
                 .apiInfo(apiInfo(title, version))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller"))
-                .paths(PathSelectors.ant("/api/**"))
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.api"))
+                .paths(PathSelectors.ant("/**"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));

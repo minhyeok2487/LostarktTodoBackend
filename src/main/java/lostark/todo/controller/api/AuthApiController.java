@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @Api(tags = {"인증 API"})
 public class AuthApiController {
 

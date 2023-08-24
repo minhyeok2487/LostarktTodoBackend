@@ -44,14 +44,14 @@ public class ContentService {
                     .characterImage(character.getCharacterImage())
                     .characterClassName(character.getCharacterClassName())
                     .itemLevel(character.getItemLevel())
-                    .chaosSelected(character.getCharacterDayContent().isChaosSelected())
                     .chaosCheck(character.getCharacterDayContent().getChaosCheck())
                     .chaosGauge(character.getCharacterDayContent().getChaosGauge())
                     .chaosName(contentMap.get(Category.카오스던전))
-                    .guardianSelected(character.getCharacterDayContent().isGuardianSelected())
                     .guardianCheck(character.getCharacterDayContent().getGuardianCheck())
                     .guardianGauge(character.getCharacterDayContent().getGuardianGauge())
                     .guardianName(contentMap.get(Category.가디언토벌))
+                    .eponaCheck(character.getCharacterDayContent().getEponaCheck())
+                    .eponaGauge(character.getCharacterDayContent().getEponaGauge())
                     .build();
 
             characterResponseDtoList.add(characterResponseDto);
@@ -78,7 +78,6 @@ public class ContentService {
     public List<SortedDayContentProfitDto> sortDayContentProfit(List<CharacterResponseDto> characterResponseDtoList) {
         Map<DayContentProfitDto, Double> result = new HashMap<>();
         for (CharacterResponseDto returnDto : characterResponseDtoList) {
-            if (returnDto.isChaosSelected()) {
                 DayContentProfitDto chaos = DayContentProfitDto.builder()
                         .contentName(returnDto.getChaosName().getName())
                         .category("카오스던전")
@@ -87,9 +86,7 @@ public class ContentService {
                         .build();
                 double chaosProfit = returnDto.getChaosProfit();
                 result.put(chaos, chaosProfit);
-            }
 
-            if (returnDto.isGuardianSelected()) {
                 DayContentProfitDto guardian = DayContentProfitDto.builder()
                         .contentName(returnDto.getGuardianName().getName())
                         .category("가디언토벌")
@@ -98,7 +95,7 @@ public class ContentService {
                         .build();
                 double guardianProfit = returnDto.getGuardianProfit();
                 result.put(guardian, guardianProfit);
-            }
+
         }
         List<DayContentProfitDto> listKeySet = new ArrayList<>(result.keySet());
         Collections.sort(listKeySet, (value1, value2) -> (result.get(value2).compareTo(result.get(value1))));

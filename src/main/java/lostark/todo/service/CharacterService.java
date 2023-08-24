@@ -31,7 +31,15 @@ public class CharacterService {
      */
     public Character findCharacter(String characterName) {
         return characterRepository.findByCharacterName(characterName)
-                .orElseThrow(() -> new IllegalArgumentException(characterName+" 은(는) 존재하지 않는 캐릭터입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("characterName = "+characterName+" : 존재하지 않는 캐릭터"));
+    }
+
+    /**
+     * 캐릭터 조회(member와 같이)
+     */
+    public Character findCharacterWithMember(String characterName, String username) {
+        return characterRepository.findCharacterWithMember(characterName, username)
+                .orElseThrow(() -> new IllegalArgumentException("characterName = "+characterName+" / username = " + username + " : 존재하지 않는 캐릭터"));
     }
 
     /**
