@@ -21,4 +21,8 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     @Query("select c from DayContent c")
     List<DayContent> findAllDayContent();
+
+    @Query("SELECT SUM(w.gold) from WeekContent w WHERE w.name = :name AND w.gate <= :gate")
+    int findWeekGold(@Param("name") String name, @Param("gate") int gate);
+
 }

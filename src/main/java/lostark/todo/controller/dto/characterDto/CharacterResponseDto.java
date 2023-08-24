@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.todo.Todo;
 
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -59,4 +62,6 @@ public class CharacterResponseDto {
     @ApiModelProperty(notes = "에포나 의뢰, 최소 0, 최대 100, 10씩 증감")
     private int eponaGauge; //에포나 휴식게이지(0~100)
 
+    @ApiModelProperty(notes = "주간 숙제 체크")
+    private List<TodoResponseDto> todoList;
 }

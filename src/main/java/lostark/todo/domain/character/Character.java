@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domain.todo.Todo;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Data
 @Table(name = "characters")
@@ -50,6 +52,9 @@ public class Character extends BaseTimeEntity {
 
     @Embedded
     private CharacterDayContent characterDayContent;
+
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    private List<Todo> todoList;
 
     @Override
     public String toString() {

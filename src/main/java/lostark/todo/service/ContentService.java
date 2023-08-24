@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
+import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.Content;
-import lostark.todo.domain.content.ContentRepository;
-import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.content.*;
+import lostark.todo.domain.todo.TodoContentName;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,10 @@ public class ContentService {
 
     public List<Content> findAll() {
         return contentRepository.findAll();
+    }
+
+    public WeekContent save(WeekContent weekContent) {
+        return contentRepository.save(weekContent);
     }
 
     public List<DayContent> findAllDayContent() {
@@ -36,6 +40,15 @@ public class ContentService {
         for (Character character : characterList) {
             // 캐릭터 레벨에 따른 일일컨텐츠
             Map<Category, DayContent> contentMap = getDayContentByLevel(character.getItemLevel());
+
+            List<TodoResponseDto> todoResponseDtoList = character.getTodoList().stream()
+                    .map(todo -> TodoResponseDto.builder()
+                            .id(todo.getId())
+                            .check(todo.isChecked())
+                            .gold(todo.getGold())
+                            .contentName(todo.getContentName().getDisplayName())
+                            .build())
+                    .collect(Collectors.toList());
 
             // character 엔티티로 dto 객체 생성
             CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
@@ -52,6 +65,7 @@ public class ContentService {
                     .guardianName(contentMap.get(Category.가디언토벌))
                     .eponaCheck(character.getCharacterDayContent().getEponaCheck())
                     .eponaGauge(character.getCharacterDayContent().getEponaGauge())
+                    .todoList(todoResponseDtoList)
                     .build();
 
             characterResponseDtoList.add(characterResponseDto);
@@ -113,5 +127,7 @@ public class ContentService {
         return dtoList;
     }
 
-
+    public int findWeekGold(TodoContentName contentName) {
+        return contentRepository.findWeekGold(contentName.getDisplayName(), contentName.getGate());
+    }
 }

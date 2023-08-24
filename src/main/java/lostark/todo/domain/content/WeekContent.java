@@ -1,21 +1,21 @@
 package lostark.todo.domain.content;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-public class DayContent extends Content{
+public class WeekContent extends Content{
 
-    private double shilling; //실링
+    private int gate; //관문
 
     private double honorShard; //명파
 
@@ -25,5 +25,5 @@ public class DayContent extends Content{
 
     private double guardianStone; //수호석
 
-    private double jewelry; //1레벨 보석
+    private int gold; //골드
 }
