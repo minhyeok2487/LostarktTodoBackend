@@ -80,15 +80,12 @@ public class MarketService {
         return marketRepository.findByNameIn(names);
     }
 
-    public Map<String, MarketContentResourceDto> getContentResource(List<String> names) {
-        List<Market> marketByNames = findByNameIn(names);
-        Map<String , MarketContentResourceDto> contentResourceDtoHashMap = new HashMap<>();
+    public Map<String, Market> getContentResource() {
+        List<Market> marketByNames = findByNameIn(dayContentResource());
+
+        Map<String , Market> contentResourceDtoHashMap = new HashMap<>();
         for (Market marketByName : marketByNames) {
-            MarketContentResourceDto dto = MarketContentResourceDto.builder()
-                    .recentPrice(marketByName.getRecentPrice())
-                    .bundleCount(marketByName.getBundleCount())
-                    .build();
-            contentResourceDtoHashMap.put(marketByName.getName(), dto);
+            contentResourceDtoHashMap.put(marketByName.getName(), marketByName);
         }
         return contentResourceDtoHashMap;
     }

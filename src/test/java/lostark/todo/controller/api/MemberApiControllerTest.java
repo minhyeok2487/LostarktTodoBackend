@@ -148,8 +148,8 @@ class MemberApiControllerTest {
         CharacterCheckDto updateDto = responseEntity.getBody().getCharacterCheckDtoList().get(0);
 
 
-        Assertions.assertThat(updateDto.getChaosCheck()).isEqualTo(after.getCharacterDayContent().getChaosCheck());
-        Assertions.assertThat(updateDto.getGuardianCheck()).isEqualTo(after.getCharacterDayContent().getGuardianCheck());
+        Assertions.assertThat(updateDto.getChaosCheck()).isEqualTo(after.getDayTodo().getChaosCheck());
+        Assertions.assertThat(updateDto.getGuardianCheck()).isEqualTo(after.getDayTodo().getGuardianCheck());
     }
 
     @Test

@@ -5,13 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -51,7 +49,7 @@ public class Character extends BaseTimeEntity {
     private Member member;
 
     @Embedded
-    private CharacterDayContent characterDayContent;
+    private DayTodo dayTodo;
 
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
     private List<Todo> todoList;
@@ -66,17 +64,22 @@ public class Character extends BaseTimeEntity {
                 ", characterClassName='" + characterClassName + '\'' +
                 ", characterImage='" + characterImage + '\'' +
                 ", itemLevel=" + itemLevel +
-                ", characterDayContent=" + characterDayContent +
+                ", characterDayContent=" + dayTodo +
                 '}';
     }
 
     /**
-     * 3가지 항목만 업데이트
+     * 캐릭터 정보 업데이트
+     *
+     * @return
      */
-    public void updateCharacter(Character character) {
+    public Character updateCharacter(Character character) {
         this.characterLevel = character.getCharacterLevel();
         this.characterImage = character.getCharacterImage();
         this.itemLevel = character.getItemLevel();
+        this.dayTodo.setChaosName(character.getDayTodo().getChaosName());
+        this.dayTodo.setGuardianName(character.getDayTodo().getGuardianName());
+        return this;
     }
 
 }

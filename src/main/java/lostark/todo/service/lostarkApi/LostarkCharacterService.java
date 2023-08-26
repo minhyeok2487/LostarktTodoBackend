@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.CharacterDayContent;
+import lostark.todo.domain.character.DayTodo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,7 +25,6 @@ public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
 
-
     public List<Character> getCharacterList(MemberDto memberDto) {
         try {
             String encodeCharacterName = URLEncoder.encode(memberDto.getCharacterName(), StandardCharsets.UTF_8);
@@ -34,12 +33,14 @@ public class LostarkCharacterService {
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
+            // 1415이상만 필터링
             JSONArray filteredArray = filterLevel(jsonArray);
 
             JSONArray imageList = getCharacterImage(filteredArray, memberDto.getApiKey());
             List<Character> characterList = new ArrayList<>();
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
+
                 Character character = Character.builder()
                         .characterName(jsonObject.get("CharacterName").toString())
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
@@ -47,8 +48,9 @@ public class LostarkCharacterService {
                         .serverName(jsonObject.get("ServerName").toString())
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
                         .characterImage(jsonObject.get("CharacterImage").toString())
-                        .characterDayContent(new CharacterDayContent())
+                        .dayTodo(new DayTodo())
                         .build();
+                character.getDayTodo().createName(character.getItemLevel()); // 일일 숙제 이름 넣기
                 characterList.add(character);
             }
             return characterList;

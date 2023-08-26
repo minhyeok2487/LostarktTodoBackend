@@ -1,15 +1,12 @@
 package lostark.todo.controller.api;
 
 import lostark.todo.config.TokenProvider;
-import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
+import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.dto.characterDto.CharacterUpdateListDto;
-import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.exhandler.ErrorResponse;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.MemberService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +25,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
@@ -75,7 +70,7 @@ class CharacterApiControllerTest {
     @DisplayName("캐릭터 휴식게이지 업데이트 성공")
     void updateCharacter() {
         //given
-        CharacterGaugeDto body = CharacterGaugeDto.builder()
+        CharacterDayTodoDto body = CharacterDayTodoDto.builder()
                 .characterName("마볼링")
                 .chaosGauge(10)
                 .guardianGauge(10)
@@ -101,7 +96,7 @@ class CharacterApiControllerTest {
     @DisplayName("캐릭터 휴식게이지 업데이트 실패 : username에 연결된 캐릭터가 아님")
     void updateCharacterError() {
         //given
-        CharacterGaugeDto body = CharacterGaugeDto.builder()
+        CharacterDayTodoDto body = CharacterDayTodoDto.builder()
                 .characterName("마볼링2222")
                 .chaosGauge(10)
                 .guardianGauge(10)

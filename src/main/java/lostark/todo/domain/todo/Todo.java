@@ -7,9 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.CharacterDayContent;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.member.Member;
 
 import javax.persistence.*;
 
@@ -22,7 +19,7 @@ public class Todo extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "characters_id")
+    @Column(name = "todo_id")
     private long id;
 
     @Column(nullable = false)
@@ -34,7 +31,7 @@ public class Todo extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isChecked;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id")
     @JsonBackReference //순환참조 방지
     private Character character;

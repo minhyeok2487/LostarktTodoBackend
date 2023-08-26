@@ -3,12 +3,13 @@ package lostark.todo.controller.api;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
+import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterTodoDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,26 +32,44 @@ public class CharacterApiController {
     private final TodoService todoService;
     private final ContentService contentService;
 
-    @ApiOperation(value = "캐릭터 휴식 게이지 수정",
-            response = CharacterResponseDto.class)
-    @PatchMapping("/gauge")
-    public ResponseEntity updateCharacterGauge(@AuthenticationPrincipal String username,
-                                          @RequestBody CharacterGaugeDto characterGaugeDto) {
+    @ApiOperation(value = "캐릭터 체크 변경",
+            response = CharacterDayTodoDto.class)
+    @PatchMapping("/check")
+    public ResponseEntity updateEponaCheck(@AuthenticationPrincipal String username,
+                                               @RequestBody CharacterDayTodoDto characterDayTodoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        characterService.findCharacterWithMember(characterGaugeDto.getCharacterName(), username);
+        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
 
-        Character updateCharacter = characterService.updateGauge(characterGaugeDto);
-        CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
-                .characterName(updateCharacter.getCharacterName())
-                .chaosGauge(updateCharacter.getCharacterDayContent().getChaosGauge())
-                .guardianGauge(updateCharacter.getCharacterDayContent().getChaosGauge())
-                .eponaGauge(updateCharacter.getCharacterDayContent().getEponaGauge())
+        DayTodo updated = characterService.updateCheck(character, characterDayTodoDto);
+
+        CharacterDayTodoDto responseDto = CharacterDayTodoDto.builder()
+                .characterName(character.getCharacterName())
+                .eponaCheck(updated.isEponaCheck())
+                .chaosCheck(updated.getChaosCheck())
                 .build();
-        return new ResponseEntity(characterResponseDto, HttpStatus.OK);
+        return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 휴식 주간 숙제 추가",
+    @ApiOperation(value = "캐릭터 휴식 게이지 수정",
+            response = CharacterDayTodoDto.class)
+    @PatchMapping("/gauge")
+    public ResponseEntity updateCharacterGauge(@AuthenticationPrincipal String username,
+                                          @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
+
+        Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto);
+        CharacterDayTodoDto responseDto = CharacterDayTodoDto.builder()
+                .characterName(updateCharacter.getCharacterName())
+                .chaosGauge(updateCharacter.getDayTodo().getChaosGauge())
+                .guardianGauge(updateCharacter.getDayTodo().getChaosGauge())
+                .build();
+        return new ResponseEntity(responseDto, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 숙제 추가",
             response = CharacterResponseDto.class)
     @PostMapping("/week")
     public ResponseEntity addTodo(@AuthenticationPrincipal String username,
@@ -64,7 +85,7 @@ public class CharacterApiController {
         return new ResponseEntity(todo, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 휴식 주간 숙제 check 수정",
+    @ApiOperation(value = "캐릭터 주간 숙제 check 수정",
             response = TodoResponseDto.class)
     @PatchMapping("/week/check")
     public ResponseEntity updateWeekCheck(@AuthenticationPrincipal String username,

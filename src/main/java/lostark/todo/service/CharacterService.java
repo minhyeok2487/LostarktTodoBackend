@@ -3,11 +3,14 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import lostark.todo.controller.dto.characterDto.CharacterGaugeDto;
+import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
-import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
+import lostark.todo.domain.character.DayTodo;
+import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.market.Market;
+import lostark.todo.domain.member.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,10 @@ public class CharacterService {
         return characterRepository.findAll();
     }
 
+    public List<Character> findByMember(Member member) {
+        return characterRepository.findByMember(member);
+    }
+
     /**
      * 캐릭터 조회
      */
@@ -35,7 +42,7 @@ public class CharacterService {
     }
 
     /**
-     * 캐릭터 조회(member와 같이)
+     * 캐릭터 조회(member에 포함된 캐릭터인지 검증)
      */
     public Character findCharacterWithMember(String characterName, String username) {
         return characterRepository.findCharacterWithMember(characterName, username)
@@ -43,11 +50,75 @@ public class CharacterService {
     }
 
     /**
+     * 일일 숙제 예상 골드 계산
+     */
+    public void calculateDayTodo(Character character,
+                                 Map<String, Market> contentResource,
+                                 Map<String, DayContent> dayContent) {
+        Market jewelry = contentResource.get("1레벨");
+        Market destruction;
+        Market guardian;
+        Market leapStone;
+        if (character.getItemLevel() >= 1415 && character.getItemLevel() < 1540) {
+            destruction = contentResource.get("파괴석 결정");
+            guardian = contentResource.get("수호석 결정");
+            leapStone = contentResource.get("위대한 명예의 돌파석");
+        } else if (character.getItemLevel() >= 1540 && character.getItemLevel() < 1580) {
+            destruction = contentResource.get("파괴강석");
+            guardian = contentResource.get("수호강석");
+            leapStone = contentResource.get("경이로운 명예의 돌파석");
+        } else {
+            destruction = contentResource.get("정제된 파괴강석");
+            guardian = contentResource.get("정제된 수호강석");
+            leapStone = contentResource.get("찬란한 명예의 돌파석");
+        }
+
+        DayContent chaosName = dayContent.get(character.getDayTodo().getChaosName());
+        calculateChaos(chaosName, destruction, guardian, jewelry, character);
+
+        DayContent guardianName = dayContent.get(character.getDayTodo().getGuardianName());
+        calculateGuardian(guardianName, destruction, guardian, leapStone, character);
+    }
+
+    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry, Character character) {
+        double price = 0;
+        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += jewelry.getRecentPrice() * dayContent.getJewelry();
+
+        int chaosGauge = character.getDayTodo().getChaosGauge();
+        if (chaosGauge >= 40) {
+            price = price*4;
+        } else if (chaosGauge < 40 && chaosGauge >= 20) {
+            price = price*3;
+        } else {
+            price = price*2;
+        }
+
+        price = Math.round(price * 100.0) / 100.0;
+        character.getDayTodo().setChaosGold(price);
+    }
+
+    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone, Character character) {
+        double price = 0;
+        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
+
+        int guardianGauge = character.getDayTodo().getGuardianGauge();
+        if (guardianGauge >= 20) {
+            price = price*2;
+        }
+
+        price = Math.round(price * 100.0) / 100.0;
+        character.getDayTodo().setGuardianGold(price);
+    }
+
+    /**
      * 휴식게이지 업데이트
      */
-    public Character updateGauge(CharacterGaugeDto characterGaugeDto) {
-        Character character = findCharacter(characterGaugeDto.getCharacterName());
-        character.getCharacterDayContent().updateGauge(characterGaugeDto);
+    public Character updateGauge(Character character, CharacterDayTodoDto characterDayTodoDto) {
+        character.getDayTodo().updateGauge(characterDayTodoDto);
         return character;
     }
 
@@ -56,10 +127,10 @@ public class CharacterService {
      */
     public void calculateProfit(
             List<CharacterResponseDto> characterResponseDtoList,
-            Map<String, MarketContentResourceDto> contentResource) {
-        MarketContentResourceDto destruction = null;
-        MarketContentResourceDto guardian = null;
-        MarketContentResourceDto leapStone = null;
+            Map<String, Market> contentResource) {
+        Market destruction = null;
+        Market guardian = null;
+        Market leapStone = null;
         for (CharacterResponseDto characterResponseDto : characterResponseDtoList) {
             if (characterResponseDto.getItemLevel() >= 1415) {
                 destruction = contentResource.get("파괴석 결정");
@@ -76,54 +147,14 @@ public class CharacterService {
                 guardian = contentResource.get("정제된 수호강석");
                 leapStone = contentResource.get("찬란한 명예의 돌파석");
             }
-            MarketContentResourceDto jewelry = contentResource.get("1레벨");
-            calculateChaos(characterResponseDto, destruction, guardian, jewelry);
-            calculateGuardian(characterResponseDto, destruction, guardian, leapStone);
+            Market jewelry = contentResource.get("1레벨");
+//            calculateChaos(characterResponseDto, destruction, guardian, jewelry);
+//            calculateGuardian(characterResponseDto, destruction, guardian, leapStone);
         }
 
     }
 
-    public void calculateChaos(CharacterResponseDto characterResponseDto,
-                               MarketContentResourceDto destruction,
-                               MarketContentResourceDto guardian,
-                               MarketContentResourceDto jewelry) {
-        double price = 0;
-        price += calculateBundle(destruction, characterResponseDto.getChaosName().getDestructionStone());
-        price += calculateBundle(guardian, characterResponseDto.getChaosName().getGuardianStone());
-        price += calculateBundle(jewelry, characterResponseDto.getChaosName().getJewelry());
-        if (characterResponseDto.getChaosGauge() >= 40) {
-            price = price*4;
-        } else if (characterResponseDto.getChaosGauge() < 40 && characterResponseDto.getChaosGauge() >= 20) {
-            price = price*3;
-        } else {
-            price = price*2;
-        }
-        price = Math.round(price * 100.0) / 100.0;
-        characterResponseDto.setChaosProfit(price);
+    public DayTodo updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
+        return character.getDayTodo().updateCheck(characterDayTodoDto); // 변경
     }
-
-    private void calculateGuardian(CharacterResponseDto characterResponseDto,
-                                   MarketContentResourceDto destruction,
-                                   MarketContentResourceDto guardian,
-                                   MarketContentResourceDto leapStone) {
-        double price = 0;
-        price += calculateBundle(destruction, characterResponseDto.getGuardianName().getDestructionStone());
-        price += calculateBundle(guardian, characterResponseDto.getGuardianName().getGuardianStone());
-        price += calculateBundle(leapStone, characterResponseDto.getGuardianName().getLeapStone());
-
-        if (characterResponseDto.getGuardianGauge() >= 20) {
-            price = price*2;
-        }
-        price = Math.round(price * 100.0) / 100.0;
-        characterResponseDto.setGuardianProfit(price);
-    }
-
-
-    /**
-     * 번들(묶음) 계산
-     */
-    private double calculateBundle(MarketContentResourceDto dto, double count) {
-        return Math.round((dto.getRecentPrice() * count) / dto.getBundleCount() * 100.0) / 100.0;
-    }
-
 }

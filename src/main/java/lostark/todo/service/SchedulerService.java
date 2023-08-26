@@ -42,18 +42,18 @@ public class SchedulerService {
         // 휴식게이지 계산
         for (Character character : characterRepository.findAll()) {
             int chaosResult = getChaosResult(character);
-            character.getCharacterDayContent().calculateChaos(chaosResult);
+            character.getDayTodo().calculateChaos(chaosResult);
 
             int guardianResult = getGuardianResult(character);
-            character.getCharacterDayContent().calculateGuardian(guardianResult);
+            character.getDayTodo().calculateGuardian(guardianResult);
         }
     }
 
 
     private int getGuardianResult(Character character) {
         int guardianResult = 0;
-        int guardian = character.getCharacterDayContent().getGuardianCheck();
-        int guardianGauge = character.getCharacterDayContent().getGuardianGauge();
+        int guardian = character.getDayTodo().getGuardianCheck();
+        int guardianGauge = character.getDayTodo().getGuardianGauge();
         if(guardian == 0) {
             guardianResult = add(guardianGauge, 10);
         }
@@ -65,8 +65,8 @@ public class SchedulerService {
 
     private int getChaosResult(Character character) {
         int chaosResult = 0;
-        int chaos = character.getCharacterDayContent().getChaosCheck();
-        int chaosGauge = character.getCharacterDayContent().getChaosGauge();
+        int chaos = character.getDayTodo().getChaosCheck();
+        int chaosGauge = character.getDayTodo().getChaosGauge();
         if(chaos == 0) {
             chaosResult = add(chaosGauge, 20);
         }

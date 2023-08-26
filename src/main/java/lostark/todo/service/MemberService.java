@@ -94,12 +94,12 @@ public class MemberService {
         for (Character character : characterList) {
             for (CharacterCheckDto characterCheckDto : characterCheckDtoList) {
                 if (character.getCharacterName().equals(characterCheckDto.getCharacterName())) {
-                    character.getCharacterDayContent().updateDayContent(characterCheckDto);
+                    character.getDayTodo().updateDayContent(characterCheckDto);
 
                     CharacterCheckDto result = CharacterCheckDto.builder()
                             .characterName(character.getCharacterName())
-                            .chaosCheck(character.getCharacterDayContent().getChaosCheck())
-                            .guardianCheck(character.getCharacterDayContent().getGuardianCheck())
+                            .chaosCheck(character.getDayTodo().getChaosCheck())
+                            .guardianCheck(character.getDayTodo().getGuardianCheck())
                             .build();
 
                     resultDtoList.add(result);
@@ -117,21 +117,19 @@ public class MemberService {
     /**
      * 캐릭터 리스트 업데이트
      */
-    public List<CharacterResponseDto> updateCharacterList(String username, List<Character> characterList) {
-        Member member = findMember(username);
+    public List<Character> updateCharacterList(Member member, List<Character> characterList) {
         List<Character> beforeCharacterList = member.getCharacters();
         List<Character> charactersToUpdate = new ArrayList<>();
         List<Character> charactersToAdd = new ArrayList<>();
         List<Character> charactersToDelete = new ArrayList<>();
-        List<CharacterResponseDto> resultDtos = new ArrayList<>();
 
         for (Character updateCharacter : characterList) {
             updateCharacter.setMember(member);
             boolean found = false;
             for (Character beforeCharacter : beforeCharacterList) {
                 if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
-                    beforeCharacter.updateCharacter(updateCharacter);
-                    charactersToUpdate.add(beforeCharacter);
+                    Character updated = beforeCharacter.updateCharacter(updateCharacter); // 캐릭터 정보 업데이트
+                    charactersToUpdate.add(updated);
                     found = true;
                     break;
                 }
@@ -154,18 +152,10 @@ public class MemberService {
             }
         }
 
-        // Apply the changes
         beforeCharacterList.removeAll(charactersToDelete);
         beforeCharacterList.addAll(charactersToAdd);
 
-        for (Character characterToUpdate : charactersToUpdate) {
-            resultDtos.add(CharacterResponseDto.builder()
-                    .characterName(characterToUpdate.getCharacterName())
-                    .itemLevel(characterToUpdate.getItemLevel())
-                    .build());
-        }
-
-        return resultDtos;
+        return beforeCharacterList;
     }
 
 }

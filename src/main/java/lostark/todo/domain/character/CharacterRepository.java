@@ -1,5 +1,6 @@
 package lostark.todo.domain.character;
 
+import lostark.todo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,16 +12,12 @@ import java.util.Optional;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {
 
+    @Query(value = "SELECT DISTINCT c FROM Character c LEFT JOIN FETCH c.todoList WHERE c.member = :member ORDER BY c.itemLevel DESC")
+    List<Character> findByMember(@Param("member") Member member);
+
     Optional<Character> findByCharacterName(String characterName);
 
     @Query(value = "select DISTINCT c from Character c JOIN FETCH c.member " +
             "WHERE c.characterName = :characterName AND c.member.username = :username")
     Optional<Character> findCharacterWithMember(@Param("characterName") String characterName, @Param("username") String username);
-
-    @Modifying
-    @Query(value = "update Character c set c.itemLevel = :itemLevel where c.characterName = :characterName")
-    int updateCharacterInfo(@Param("characterName") String characterName, @Param("itemLevel") Double itemLevel);
-
-    @Query(value = "select DISTINCT c from Character c JOIN FETCH c.member")
-    List<Character> findAll();
 }

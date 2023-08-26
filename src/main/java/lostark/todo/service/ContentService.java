@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.contentDto.DayContentProfitDto;
 import lostark.todo.controller.dto.contentDto.SortedDayContentProfitDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.*;
 import lostark.todo.domain.todo.TodoContentName;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,17 @@ public class ContentService {
 
     public List<Content> findAll() {
         return contentRepository.findAll();
+    }
+
+    /**
+     * 일일숙제(카오스던전, 가디언토벌)데이터 호출
+     */
+    public Map<String, DayContent> findDayContent() {
+        Map<String, DayContent> dayContentMap = new HashMap<>();
+        for (DayContent dayContent : contentRepository.findDayContent()) {
+            dayContentMap.put(dayContent.getName(), dayContent);
+        }
+        return dayContentMap;
     }
 
     public WeekContent save(WeekContent weekContent) {
@@ -57,14 +69,13 @@ public class ContentService {
                     .characterImage(character.getCharacterImage())
                     .characterClassName(character.getCharacterClassName())
                     .itemLevel(character.getItemLevel())
-                    .chaosCheck(character.getCharacterDayContent().getChaosCheck())
-                    .chaosGauge(character.getCharacterDayContent().getChaosGauge())
-                    .chaosName(contentMap.get(Category.카오스던전))
-                    .guardianCheck(character.getCharacterDayContent().getGuardianCheck())
-                    .guardianGauge(character.getCharacterDayContent().getGuardianGauge())
-                    .guardianName(contentMap.get(Category.가디언토벌))
-                    .eponaCheck(character.getCharacterDayContent().getEponaCheck())
-                    .eponaGauge(character.getCharacterDayContent().getEponaGauge())
+                    .chaosCheck(character.getDayTodo().getChaosCheck())
+                    .chaosGauge(character.getDayTodo().getChaosGauge())
+//                    .chaosName(contentMap.get(Category.카오스던전))
+                    .guardianCheck(character.getDayTodo().getGuardianCheck())
+                    .guardianGauge(character.getDayTodo().getGuardianGauge())
+//                    .guardianName(contentMap.get(Category.가디언토벌))
+                    .eponaCheck(character.getDayTodo().isEponaCheck())
                     .todoList(todoResponseDtoList)
                     .build();
 
@@ -93,21 +104,21 @@ public class ContentService {
         Map<DayContentProfitDto, Double> result = new HashMap<>();
         for (CharacterResponseDto returnDto : characterResponseDtoList) {
                 DayContentProfitDto chaos = DayContentProfitDto.builder()
-                        .contentName(returnDto.getChaosName().getName())
+//                        .contentName(returnDto.getChaosName().getName())
                         .category("카오스던전")
                         .checked(returnDto.getChaosCheck())
                         .characterName(returnDto.getCharacterName())
                         .build();
-                double chaosProfit = returnDto.getChaosProfit();
+                double chaosProfit = returnDto.getChaosGold();
                 result.put(chaos, chaosProfit);
 
                 DayContentProfitDto guardian = DayContentProfitDto.builder()
-                        .contentName(returnDto.getGuardianName().getName())
+//                        .contentName(returnDto.getGuardianName().getName())
                         .category("가디언토벌")
                         .checked(returnDto.getGuardianCheck())
                         .characterName(returnDto.getCharacterName())
                         .build();
-                double guardianProfit = returnDto.getGuardianProfit();
+                double guardianProfit = returnDto.getGuardianGold();
                 result.put(guardian, guardianProfit);
 
         }
@@ -130,4 +141,6 @@ public class ContentService {
     public int findWeekGold(TodoContentName contentName) {
         return contentRepository.findWeekGold(contentName.getDisplayName(), contentName.getGate());
     }
+
+
 }

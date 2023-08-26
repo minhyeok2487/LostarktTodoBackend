@@ -32,8 +32,8 @@ public class CharacterResponseDto {
     @ApiModelProperty(notes = "캐릭터 아이템 레벨")
     private double itemLevel;
 
-    @ApiModelProperty(notes = "카오스던전 컨텐츠 내용")
-    private DayContent chaosName;
+    @ApiModelProperty(notes = "카오스던전 컨텐츠 이름")
+    private String chaosName;
 
     @ApiModelProperty(notes = "카오스던전 돌았는지 체크, 최소 0, 최대 2")
     private int chaosCheck;
@@ -42,10 +42,10 @@ public class CharacterResponseDto {
     private int chaosGauge;
 
     @ApiModelProperty(notes = "카오스던전 숙제 완료 시 예상 수익")
-    private double chaosProfit;
+    private double chaosGold;
 
     @ApiModelProperty(notes = "가디언토벌 컨텐츠 내용")
-    private DayContent guardianName;
+    private String guardianName;
 
     @ApiModelProperty(notes = "가디언토벌 돌았는지 체크, 최소 0, 최대 1, 1씩 증감")
     private int guardianCheck;
@@ -54,13 +54,11 @@ public class CharacterResponseDto {
     private int guardianGauge;
 
     @ApiModelProperty(notes = "가디언토벌 숙제 완료 시 예상 수익")
-    private double guardianProfit;
+    private double guardianGold;
 
-    @ApiModelProperty(notes = "에포나 의뢰 체크, 최소 0, 최대 3, 1씩 증감")
-    private int eponaCheck; //에포나
+    @ApiModelProperty(notes = "에포나 의뢰 체크")
+    private boolean eponaCheck; //에포나
 
-    @ApiModelProperty(notes = "에포나 의뢰, 최소 0, 최대 100, 10씩 증감")
-    private int eponaGauge; //에포나 휴식게이지(0~100)
 
     @ApiModelProperty(notes = "주간 숙제 체크")
     private List<TodoResponseDto> todoList;
