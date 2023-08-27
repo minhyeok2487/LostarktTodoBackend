@@ -69,6 +69,7 @@ public class CharacterApiController {
         return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
+
     @ApiOperation(value = "캐릭터 주간 숙제 추가",
             response = CharacterResponseDto.class)
     @PostMapping("/week")

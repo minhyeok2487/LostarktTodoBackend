@@ -23,6 +23,7 @@ public class Todo extends BaseTimeEntity {
     private long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TodoContentName contentName;
 
     @Column(nullable = false)
