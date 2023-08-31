@@ -2,7 +2,7 @@
 ## Github
 - [Backend](https://github.com/minhyeok2487/LostarkTodo)
 - [Frontend](https://github.com/minhyeok2487/lostarkTodoReact)
----
+
 ## 프로젝트
 ### 개요
 - 로스트아크 일일, 주간 컨텐츠 체크 및 공유 사이트
@@ -95,7 +95,6 @@
 <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
 </div>
 
----
 ## 문서 정리
 ### Backend 프로젝트 진행 중 성장
 * [JPA N+1 문제](https://repeater2487.tistory.com/129)
