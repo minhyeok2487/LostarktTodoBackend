@@ -1,7 +1,7 @@
 # 로스트아크 숙제 체크 사이트
+## Github
 - [Backend](https://github.com/minhyeok2487/LostarkTodo)
 - [Frontend](https://github.com/minhyeok2487/lostarkTodoReact)
-
 ---
 ## 프로젝트
 ### 개요
@@ -45,7 +45,7 @@
 * 골드 획득 캐릭터 지정
 
 ### 참고 사이트
-* [로스트아크 오픈 API](ttps://developer-lostark.game.onstove.com/getting-started)
+* [로스트아크 오픈 API](https://developer-lostark.game.onstove.com/getting-started)
 * [빈아크](https://ark.bynn.kr/to-do)
 * [클로아(디자인 참고)](https://kloa.gg)
 
