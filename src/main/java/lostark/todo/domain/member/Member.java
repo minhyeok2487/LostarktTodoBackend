@@ -26,7 +26,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private long id;
 
-    @Column(unique = true, nullable = false, length = 1000)
+    @Column(nullable = false, length = 1000)
     private String apiKey;
 
     @Column(unique = true)

@@ -1,12 +1,9 @@
 package lostark.todo.domain.todo;
 
-import lostark.todo.domain.member.Member;
+import lostark.todo.domain.character.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.Optional;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
+    Todo findByCharacterAndContentName(Character character, TodoContentName contentName);
 }

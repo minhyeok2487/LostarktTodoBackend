@@ -25,8 +25,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -102,7 +104,6 @@ public class MemberApiController {
             CharacterResponseDto characterResponseDto = createResponseDto(character);
             characterResponseDtoList.add(characterResponseDto);
         }
-
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 
@@ -124,9 +125,11 @@ public class MemberApiController {
             todoResponseDto.setCheck(todo.isChecked());
             todoResponseDto.setGold(todo.getGold());
             todoResponseDto.setContentName(todo.getContentName().getDisplayName());
+            todoResponseDto.setSort(todo.getContentName().getSort());
             todoResponseDtoList.add(todoResponseDto);
         }
-
+        List<TodoResponseDto> sortedTodoList = todoResponseDtoList.stream()
+                .sorted(Comparator.comparing(TodoResponseDto::getSort)).collect(Collectors.toList());
 
         CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
                 .id(character.getId())
@@ -143,7 +146,7 @@ public class MemberApiController {
                 .guardianName(character.getDayTodo().getGuardianName())
                 .guardianGold(character.getDayTodo().getGuardianGold())
                 .eponaCheck(character.getDayTodo().isEponaCheck())
-                .todoList(todoResponseDtoList)
+                .todoList(sortedTodoList)
                 .build();
         return characterResponseDto;
     }

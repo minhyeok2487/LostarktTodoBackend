@@ -9,15 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TodoResponseDto {
+public class TodoEnumDto {
 
-    private long id;
+    private String name;
 
-    private String contentName;
+    private String displayName;
 
-    private int gold;
+    private String category;
 
-    private boolean check;
-
-    private int sort;
+    private boolean exist;
 }

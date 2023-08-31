@@ -41,6 +41,8 @@ public class SchedulerService {
     public void calculateDayContentGauge() {
         // 휴식게이지 계산
         for (Character character : characterRepository.findAll()) {
+            character.getDayTodo().setEponaCheck(false);
+
             int chaosResult = getChaosResult(character);
             character.getDayTodo().calculateChaos(chaosResult);
 
@@ -65,21 +67,26 @@ public class SchedulerService {
 
     private int getChaosResult(Character character) {
         int chaosResult = 0;
-        int chaos = character.getDayTodo().getChaosCheck();
+        int chaosCheck = character.getDayTodo().getChaosCheck();
         int chaosGauge = character.getDayTodo().getChaosGauge();
-        if(chaos == 0) {
+        if(chaosCheck == 0) {
             chaosResult = add(chaosGauge, 20);
         }
-        if(chaos == 1) {
-            chaosResult = subtract(chaosGauge, 10);
+        if(chaosCheck == 1) {
+            if (chaosGauge >= 20) {
+                chaosResult = subtract(chaosGauge, 10);
+            } else {
+                chaosResult = add(chaosGauge, 10);
+            }
         }
-        if(chaos == 2) {
+        if(chaosCheck == 2) {
             chaosResult = subtract(chaosGauge, 40);
         }
         return chaosResult;
     }
 
-    // 휴식게이지 빼기시 음수가 되면 0을 리턴하는 메서드
+    // 두 숫자 더하기
+    // 단, 음수가 되면 0을 리턴하는 메서드
     public int subtract(int a, int b) {
         int result = a - b;
         if (result < 0) {
@@ -88,7 +95,8 @@ public class SchedulerService {
         return result;
     }
 
-    // 휴식게이지 더하기시 100이 넘으면 100을 리턴하는 메서드
+    // 두 숫자 빼기
+    // 단, 100이 넘으면 100을 리턴하는 메서드
     public int add(int a, int b) {
         int result = a + b;
         if (result > 100) {

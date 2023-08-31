@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {
 
-    @Query(value = "SELECT DISTINCT c FROM Character c LEFT JOIN FETCH c.todoList WHERE c.member = :member ORDER BY c.itemLevel DESC")
+    @Query(value = "SELECT DISTINCT c FROM Character c LEFT JOIN FETCH c.todoList WHERE c.member = :member ORDER BY c.sortNumber ASC")
     List<Character> findByMember(@Param("member") Member member);
 
     Optional<Character> findByCharacterName(String characterName);

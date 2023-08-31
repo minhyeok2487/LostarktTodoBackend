@@ -38,6 +38,7 @@ public class LostarkCharacterService {
 
             JSONArray imageList = getCharacterImage(filteredArray, memberDto.getApiKey());
             List<Character> characterList = new ArrayList<>();
+            int sortNumber = 1;
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
 
@@ -47,6 +48,7 @@ public class LostarkCharacterService {
                         .characterClassName(jsonObject.get("CharacterClassName").toString())
                         .serverName(jsonObject.get("ServerName").toString())
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .sortNumber(sortNumber++)
                         .characterImage(jsonObject.get("CharacterImage").toString())
                         .dayTodo(new DayTodo())
                         .build();

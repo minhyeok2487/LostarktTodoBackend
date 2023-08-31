@@ -138,8 +138,8 @@ public class ContentService {
         return dtoList;
     }
 
-    public int findWeekGold(TodoContentName contentName) {
-        return contentRepository.findWeekGold(contentName.getDisplayName(), contentName.getGate());
+    public int findWeekGold(String displayName, int gate) {
+        return contentRepository.findWeekGold(displayName, gate);
     }
 
 

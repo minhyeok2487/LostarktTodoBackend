@@ -52,7 +52,7 @@ public class CharacterService {
     /**
      * 일일 숙제 예상 골드 계산
      */
-    public void calculateDayTodo(Character character,
+    public Character calculateDayTodo(Character character,
                                  Map<String, Market> contentResource,
                                  Map<String, DayContent> dayContent) {
         Market jewelry = contentResource.get("1레벨");
@@ -78,6 +78,7 @@ public class CharacterService {
 
         DayContent guardianName = dayContent.get(character.getDayTodo().getGuardianName());
         calculateGuardian(guardianName, destruction, guardian, leapStone, character);
+        return character;
     }
 
     private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry, Character character) {

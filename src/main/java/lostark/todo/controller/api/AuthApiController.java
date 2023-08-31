@@ -58,7 +58,7 @@ public class AuthApiController {
                                         + " / Lv." + character.getItemLevel())
                         .collect(Collectors.toList()))
                 .build();
-        return new ResponseEntity(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
     @ApiOperation(value = "로그인",

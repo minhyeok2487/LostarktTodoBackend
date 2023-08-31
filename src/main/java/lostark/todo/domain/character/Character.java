@@ -43,6 +43,8 @@ public class Character extends BaseTimeEntity {
     @Column(nullable = false)
     private double itemLevel; //아이템레벨
 
+    private int sortNumber; //정렬용
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @JsonBackReference //순환참조 방지
