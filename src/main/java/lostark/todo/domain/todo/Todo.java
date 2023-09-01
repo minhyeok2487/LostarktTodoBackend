@@ -1,16 +1,14 @@
 package lostark.todo.domain.todo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -40,5 +38,11 @@ public class Todo extends BaseTimeEntity {
     public Todo updateCheck(boolean check) {
         this.isChecked = !check;
         return this;
+    }
+
+    public void updateContentName(TodoContentName contentName, int gold) {
+        this.contentName = contentName;
+        this.gold = gold;
+        this.isChecked = false;
     }
 }

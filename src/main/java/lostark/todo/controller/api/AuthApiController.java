@@ -72,7 +72,6 @@ public class AuthApiController {
 
         // 결과 출력
         MemberResponseDto responseDto = MemberResponseDto.builder()
-                .id(signupMember.getId())
                 .username(signupMember.getUsername())
                 .characters(signupMember.getCharacters().stream().map(
                                 character -> character.getCharacterName()

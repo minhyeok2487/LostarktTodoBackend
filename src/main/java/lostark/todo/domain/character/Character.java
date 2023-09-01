@@ -1,10 +1,7 @@
 package lostark.todo.domain.character;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
@@ -12,7 +9,9 @@ import lostark.todo.domain.todo.Todo;
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+
+@Getter
+@Setter
 @Table(name = "characters")
 @NoArgsConstructor
 @AllArgsConstructor

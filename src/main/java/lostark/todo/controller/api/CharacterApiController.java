@@ -24,11 +24,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,29 +44,31 @@ public class CharacterApiController {
     private final ContentService contentService;
     private final MarketService marketService;
 
-    @ApiOperation(value = "캐릭터 체크 변경",
+    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트",
             response = CharacterDayTodoDto.class)
     @PatchMapping("/check")
-    public ResponseEntity updateEponaCheck(@AuthenticationPrincipal String username,
-                                               @RequestBody CharacterDayTodoDto characterDayTodoDto) {
+    public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
+                                      @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
 
+        // Check 업데이트
         DayTodo updated = characterService.updateCheck(character, characterDayTodoDto);
 
         CharacterDayTodoDto responseDto = CharacterDayTodoDto.builder()
                 .characterName(character.getCharacterName())
                 .eponaCheck(updated.isEponaCheck())
                 .chaosCheck(updated.getChaosCheck())
+                .guardianCheck(updated.getGuardianCheck())
                 .build();
         return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 휴식 게이지 수정",
+    @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
             response = CharacterResponseDto.class)
     @PatchMapping("/gauge")
-    public ResponseEntity updateCharacterGauge(@AuthenticationPrincipal String username,
+    public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,
                                           @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
@@ -81,7 +85,6 @@ public class CharacterApiController {
 
         // 업데이트된 휴식게이지로 예상 수익 계산
         Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource, dayContent);
-
 
         CharacterResponseDto responseDto = CharacterResponseDto.builder()
                 .characterName(resultCharacter.getCharacterName())
@@ -103,33 +106,30 @@ public class CharacterApiController {
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(characterName, username);
 
-        List<TodoContentName> todoContentNameList = Arrays.asList(TodoContentName.values());
-        List<TodoEnumDto> todoEnumDtoList = new ArrayList<>();
-        for (TodoContentName todoContentName : todoContentNameList) {
-            TodoEnumDto todoEnumDto = TodoEnumDto.builder()
-                    .name(todoContentName.name())
-                    .category(todoContentName.getCategory())
-                    .displayName(todoContentName.getDisplayName())
-                    .exist(false)
-                    .build();
-            todoEnumDtoList.add(todoEnumDto);
-        }
+        // 주간숙제 Enum 리스트 -> Dto로 변환
+        List<TodoEnumDto> todoEnumDtoList = Arrays.stream(TodoContentName.values())
+                .map(todoContentName -> TodoEnumDto.builder()
+                        .name(todoContentName.name())
+                        .category(todoContentName.getCategory())
+                        .displayName(todoContentName.getDisplayName())
+                        .exist(false)
+                        .build())
+                .collect(Collectors.toList());
+
 
         List<Todo> todoList = character.getTodoList();
-        for (TodoEnumDto todoEnumDto : todoEnumDtoList) {
-            for (Todo todo : todoList) {
-                if (todoEnumDto.getName().equals(todo.getContentName().name())) {
-                    todoEnumDto.setExist(true);
-                }
-            }
-        }
+        todoEnumDtoList.forEach(todoEnumDto -> {
+            boolean exists = todoList.stream()
+                    .anyMatch(todo -> todoEnumDto.getName().equals(todo.getContentName().name()));
+            todoEnumDto.setExist(exists);
+        });
 
-        return new ResponseEntity(todoEnumDtoList, HttpStatus.OK);
+        return ResponseEntity.ok(todoEnumDtoList);
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 추가/제거")
     @PostMapping("/week")
-    public ResponseEntity addTodo(@AuthenticationPrincipal String username,
+    public ResponseEntity updateTodo(@AuthenticationPrincipal String username,
                                     @RequestBody CharacterTodoDto characterTodoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리

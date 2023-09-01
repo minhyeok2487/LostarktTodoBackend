@@ -6,7 +6,8 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

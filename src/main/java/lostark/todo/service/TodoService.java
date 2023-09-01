@@ -31,30 +31,30 @@ public class TodoService {
         if(exist != null) {
             todoRepository.delete(exist);
         } else {
-            // 같은 레이드 컨텐츠 일때 Exception 처리
-            List<Todo> todoList = sameCategory(character, characterTodoDto.getContentName());
-            Todo todo = Todo.builder()
-                    .contentName(characterTodoDto.getContentName())
-                    .isChecked(false)
-                    .character(character)
-                    .gold(gold)
-                    .build();
-            todoRepository.save(todo);
+            // 같은 레이드 컨텐츠 일때 컨텐츠 바꾸기
+            List<Todo> todoList = character.getTodoList();
+            for (Todo todo : todoList) {
+                if (todo.getContentName().getCategory().equals(characterTodoDto.getContentName().getCategory())) {
+                    todo.updateContentName(characterTodoDto.getContentName(), gold);
+                    return;
+                }
+            }
+
+            if(character.getTodoList().size() >= 3) {
+                throw new IllegalArgumentException("주간 숙제 관리는 최대 3개까지만 가능합니다");
+            } else {
+                Todo todo = Todo.builder()
+                        .contentName(characterTodoDto.getContentName())
+                        .isChecked(false)
+                        .character(character)
+                        .gold(gold)
+                        .build();
+                todoRepository.save(todo);
+            }
         }
     }
 
     public Todo updateWeekCheck(TodoDto todoDto) {
         return findById(todoDto.getTodoId()).updateCheck(todoDto.isTodoCheck());
-    }
-
-    // 같은 레이드 컨텐츠 일때 Exception 처리
-    public List<Todo> sameCategory(Character character, TodoContentName contentName) {
-        List<Todo> todoList = character.getTodoList();
-        for (Todo todo : todoList) {
-            if (todo.getContentName().getCategory().equals(contentName.getCategory())) {
-                throw new IllegalArgumentException("같은 레이드 컨텐츠 입니다.");
-            }
-        }
-        return todoList;
     }
 }
