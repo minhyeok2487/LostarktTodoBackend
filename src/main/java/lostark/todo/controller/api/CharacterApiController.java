@@ -109,7 +109,6 @@ public class CharacterApiController {
             name = character.getDayTodo().getGuardianName();
         }
         DayContent content = contentService.findContentByName(name);
-        log.info(content.getName());
         return new ResponseEntity(content, HttpStatus.OK);
     }
 

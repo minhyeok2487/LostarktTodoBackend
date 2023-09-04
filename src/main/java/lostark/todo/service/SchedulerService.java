@@ -28,6 +28,7 @@ public class SchedulerService {
     private final LostarkMarketService lostarkMarketService;
     private final MarketService marketService;
     private final ContentService contentService;
+    private final TodoService todoService;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -61,5 +62,16 @@ public class SchedulerService {
             characterService.calculateDayTodo(character, contentResource, dayContent);
         });
         log.info("일일 숙제 초기화 완료");
+    }
+
+    /**
+     * 수요일 오전 6시 주간 숙제 초기화
+     */
+    @Scheduled(cron = "0 0 6 * * 3", zone = "Asia/Seoul")
+    public void resetWeekTodo() {
+        todoService.findAll().forEach(todo -> {
+            todo.setChecked(false);
+        });
+        log.info("주간 숙제 초기화 완료");
     }
 }

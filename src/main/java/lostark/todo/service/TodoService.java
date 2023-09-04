@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -56,5 +57,9 @@ public class TodoService {
 
     public Todo updateWeekCheck(TodoDto todoDto) {
         return findById(todoDto.getTodoId()).updateCheck(todoDto.isTodoCheck());
+    }
+
+    public List<Todo> findAll() {
+        return findAll();
     }
 }
