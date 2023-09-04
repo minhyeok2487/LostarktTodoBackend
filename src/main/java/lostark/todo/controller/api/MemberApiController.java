@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
+import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
@@ -114,6 +115,21 @@ public class MemberApiController {
         return new ResponseEntity<>(memberService.updateTodo(username, characterCheckDtoList), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 순서변경 저장", response = CharacterResponseDto.class)
+    @PatchMapping("/characterList/sorting")
+    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
+                                     @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
+        Member member = memberService.updateSort(username, characterSortDtoList);
+
+        List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            // Character -> CharacterResponseDto 변경
+            CharacterResponseDto characterResponseDto = createResponseDto(character);
+            characterResponseDtoList.add(characterResponseDto);
+        }
+        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+    }
+
 
     // character 엔티티로 CharacterResponseDto 객체 생성
     private CharacterResponseDto createResponseDto(Character character) {
@@ -137,6 +153,7 @@ public class MemberApiController {
                 .characterImage(character.getCharacterImage())
                 .characterClassName(character.getCharacterClassName())
                 .itemLevel(character.getItemLevel())
+                .sortNumber(character.getSortNumber())
                 .chaosCheck(character.getDayTodo().getChaosCheck())
                 .chaosGauge(character.getDayTodo().getChaosGauge())
                 .chaosName(character.getDayTodo().getChaosName())

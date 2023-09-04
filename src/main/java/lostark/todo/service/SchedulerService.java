@@ -1,6 +1,7 @@
 package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
@@ -20,6 +21,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class SchedulerService {
 
     private final CharacterService characterService;
@@ -58,5 +60,6 @@ public class SchedulerService {
             // 반영된 휴식게이지로 일일숙제 예상 수익 계산
             characterService.calculateDayTodo(character, contentResource, dayContent);
         });
+        log.info("일일 숙제 초기화 완료");
     }
 }

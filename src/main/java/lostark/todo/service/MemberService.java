@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
+import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.Role;
@@ -158,4 +159,16 @@ public class MemberService {
         return beforeCharacterList;
     }
 
+    public Member updateSort(String username, List<CharacterSortDto> characterSortDtoList) {
+        Member member = findMember(username);
+        List<Character> beforeCharacterList = member.getCharacters();
+        beforeCharacterList.stream().peek(
+                character -> characterSortDtoList.stream()
+                        .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
+                        .findFirst()
+                        .ifPresent(characterSortDto -> character.setSortNumber(characterSortDto.getSortNumber())))
+                .collect(Collectors.toList());
+
+        return member;
+    }
 }
