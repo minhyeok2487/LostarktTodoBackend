@@ -96,6 +96,23 @@ public class CharacterApiController {
         return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "캐릭터 일일컨텐츠 통계보기")
+    @GetMapping("/day-todo/{characterName}/{category}")
+    public ResponseEntity getDayTodoCheck(@AuthenticationPrincipal String username
+            , @PathVariable("characterName") String characterName, @PathVariable("category") String category) {
+        Character character = characterService.findCharacter(characterName);
+        String name = "";
+        if (category.equals("카오스던전")) {
+            name = character.getDayTodo().getChaosName();
+        }
+        if (category.equals("가디언토벌")) {
+            name = character.getDayTodo().getGuardianName();
+        }
+        DayContent content = contentService.findContentByName(name);
+        log.info(content.getName());
+        return new ResponseEntity(content, HttpStatus.OK);
+    }
+
 
     @ApiOperation(value = "캐릭터 주간 숙제 추가폼",
             response = TodoContentName.class)

@@ -143,4 +143,7 @@ public class ContentService {
     }
 
 
+    public DayContent findContentByName(String name) {
+        return (DayContent) contentRepository.findContentByName(name).orElseThrow(() -> new IllegalArgumentException(name+" - 없는 컨텐츠 입니다."));
+    }
 }

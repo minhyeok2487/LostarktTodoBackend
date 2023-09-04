@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface ContentRepository extends JpaRepository<Content, Long> {
 
@@ -27,4 +28,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     @Query("SELECT d FROM DayContent d")
     List<DayContent> findDayContent();
+
+    Optional<Content> findContentByName(String name);
 }
