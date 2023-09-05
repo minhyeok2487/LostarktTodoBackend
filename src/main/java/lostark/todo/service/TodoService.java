@@ -60,6 +60,6 @@ public class TodoService {
     }
 
     public List<Todo> findAll() {
-        return findAll();
+        return todoRepository.findAll();
     }
 }
