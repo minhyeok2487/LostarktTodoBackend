@@ -36,7 +36,7 @@ public class SchedulerService {
     /**
      * 매일 오전 0시 거래소 데이터 갱신
      */
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void updateMarketData() {
         List<Market> marketList = lostarkMarketService.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
         marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
@@ -45,7 +45,7 @@ public class SchedulerService {
     /**
      * 매일 오전 6시 일일 숙제 초기화
      */
-    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 6 * * ?")
     public void resetDayTodo() {
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.getContentResource();
@@ -67,7 +67,7 @@ public class SchedulerService {
     /**
      * 수요일 오전 6시 주간 숙제 초기화
      */
-    @Scheduled(cron = "0 0 6 * * 3", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 6 * * 3")
     public void resetWeekTodo() {
         todoService.findAll().forEach(todo -> {
             todo.setChecked(false);
