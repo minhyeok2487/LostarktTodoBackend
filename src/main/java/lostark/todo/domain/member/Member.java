@@ -27,11 +27,14 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private long id;
 
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String apiKey;
 
     @Column(unique = true)
     private String username;
+
+    private String authProvider;
+    private String accessKey;
 
     private String password;
 

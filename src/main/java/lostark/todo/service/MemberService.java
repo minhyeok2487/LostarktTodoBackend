@@ -71,6 +71,12 @@ public class MemberService {
 
         return memberRepository.save(member);
     }
+    public Member createCharacter(MemberDto memberDto, List<Character> characterList) {
+        Member member = findMember(memberDto.getUsername());
+        characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
+        member.setApiKey(memberDto.getApiKey());
+        return member;
+    }
 
     /**
      * 로그인
@@ -171,4 +177,6 @@ public class MemberService {
 
         return member;
     }
+
+
 }

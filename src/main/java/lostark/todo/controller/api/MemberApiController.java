@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.DayContent;
@@ -19,6 +20,7 @@ import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,6 +46,46 @@ public class MemberApiController {
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
 
+    @Value("${Lostark-API-Key}")
+    private String apiKey;
+
+    @ApiOperation(value = "캐릭터 추가",
+            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
+            response = MemberResponseDto.class)
+    @PostMapping("/signup")
+    public ResponseEntity signupCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberDto memberDto) {
+        if (memberDto.getApiKey().isEmpty()) {
+            memberDto.setApiKey(apiKey);
+        }
+        // 대표캐릭터와 연동된 캐릭터(api 검증)
+        List<Character> characterList = lostarkCharacterService.getCharacterList(memberDto);
+
+        // 재련재료 데이터 리스트로 거래소 데이터 호출
+        Map<String, Market> contentResource = marketService.getContentResource();
+
+        // 일일 숙제 통계 가져오기
+        Map<String, DayContent> dayContent = contentService.findDayContent();
+
+        for (Character character : characterList) {
+            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+            characterService.calculateDayTodo(character, contentResource, dayContent);
+        }
+
+        // Member 회원가입
+        memberDto.setUsername(username);
+        Member signupMember = memberService.createCharacter(memberDto, characterList);
+
+        // 결과 출력
+        MemberResponseDto responseDto = MemberResponseDto.builder()
+                .username(signupMember.getUsername())
+                .characters(signupMember.getCharacters().stream().map(
+                                character -> character.getCharacterName()
+                                        + " / " + character.getCharacterClassName()
+                                        + " / Lv." + character.getItemLevel())
+                        .collect(Collectors.toList()))
+                .build();
+        return new ResponseEntity(responseDto, HttpStatus.OK);
+    }
 
     @ApiOperation(value = "회원 캐릭터 리스트 조회",
             response = CharacterResponseDto.class)
