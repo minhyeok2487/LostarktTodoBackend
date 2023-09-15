@@ -20,4 +20,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     @Query(value = "select DISTINCT c from Character c JOIN FETCH c.member " +
             "WHERE c.characterName = :characterName AND c.member.username = :username")
     Optional<Character> findCharacterWithMember(@Param("characterName") String characterName, @Param("username") String username);
+
+    void deleteByMember(Member member);
 }

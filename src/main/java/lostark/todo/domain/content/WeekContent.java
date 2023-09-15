@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 @Entity
 public class WeekContent extends Content{
 
+    private String weekCategory; //카테고리 : 발탄, 비아키스
+
     private int gate; //관문
 
     private double honorShard; //명파

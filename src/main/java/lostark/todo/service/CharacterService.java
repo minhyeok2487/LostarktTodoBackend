@@ -158,4 +158,33 @@ public class CharacterService {
     public DayTodo updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
         return character.getDayTodo().updateCheck(characterDayTodoDto); // 변경
     }
+
+    public List<Character> calculateDayTodoV2(List<Character> characterList, Map<String, Market> contentResource) {
+        Market jewelry = contentResource.get("1레벨");
+        Market destruction;
+        Market guardian;
+        Market leapStone;
+        for (Character character : characterList) {
+            if (character.getItemLevel() >= 1415 && character.getItemLevel() < 1540) {
+                destruction = contentResource.get("파괴석 결정");
+                guardian = contentResource.get("수호석 결정");
+                leapStone = contentResource.get("위대한 명예의 돌파석");
+            } else if (character.getItemLevel() >= 1540 && character.getItemLevel() < 1580) {
+                destruction = contentResource.get("파괴강석");
+                guardian = contentResource.get("수호강석");
+                leapStone = contentResource.get("경이로운 명예의 돌파석");
+            } else {
+                destruction = contentResource.get("정제된 파괴강석");
+                guardian = contentResource.get("정제된 수호강석");
+                leapStone = contentResource.get("찬란한 명예의 돌파석");
+            }
+            calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry, character);
+            calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, character);
+        }
+        return characterList;
+    }
+
+    public void deleteCharacter(Member member) {
+        characterRepository.deleteByMember(member);
+    }
 }

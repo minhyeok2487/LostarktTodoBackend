@@ -3,6 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterTodoDto;
+import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.todo.Todo;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -28,24 +28,24 @@ public class TodoService {
     }
 
     public void updateWeek(CharacterTodoDto characterTodoDto, Character character, int gold) {
-        Todo exist = todoRepository.findByCharacterAndContentName(character, characterTodoDto.getContentName());
-        if(exist != null) {
+        Todo exist = todoRepository.findByCharacterAndContentName(character, characterTodoDto.getContentName().getDisplayName());
+        if (exist != null) {
             todoRepository.delete(exist);
         } else {
             // 같은 레이드 컨텐츠 일때 컨텐츠 바꾸기
             List<Todo> todoList = character.getTodoList();
             for (Todo todo : todoList) {
-                if (todo.getContentName().getCategory().equals(characterTodoDto.getContentName().getCategory())) {
-                    todo.updateContentName(characterTodoDto.getContentName(), gold);
+                if (todo.getContentName().equals(characterTodoDto.getContentName().getCategory())) {
+                    todo.updateContentName(characterTodoDto.getContentName().getDisplayName(), gold);
                     return;
                 }
             }
 
-            if(character.getTodoList().size() >= 3) {
+            if (character.getTodoList().size() >= 3) {
                 throw new IllegalArgumentException("주간 숙제 관리는 최대 3개까지만 가능합니다");
             } else {
                 Todo todo = Todo.builder()
-                        .contentName(characterTodoDto.getContentName())
+                        .contentName(characterTodoDto.getContentName().getDisplayName())
                         .isChecked(false)
                         .character(character)
                         .gold(gold)
@@ -62,4 +62,33 @@ public class TodoService {
     public List<Todo> findAll() {
         return todoRepository.findAll();
     }
+
+    public List<Todo> updateWeek_V2(Character character, WeekContentDto weekContentDto) {
+        List<Todo> todoList = character.getTodoList();
+        for (Todo todo : todoList) {
+            if (todo.getName().equals(weekContentDto.getName())) {
+                todoRepository.delete(todo);
+                todoList.remove(todo);
+                return todoList;
+            }
+            if (todo.getWeekCategory().equals(weekContentDto.getWeekCategory())) {
+                Todo updated = todo.updateContent(weekContentDto);
+                todoList.remove(todo);
+                todoList.add(updated);
+                return todoList;
+            }
+        }
+        Todo build = Todo.builder()
+                .contentName(weekContentDto.getName())
+                .name(weekContentDto.getName())
+                .weekCategory(weekContentDto.getWeekCategory())
+                .isChecked(false)
+                .character(character)
+                .gold(weekContentDto.getGold())
+                .build();
+        todoRepository.save(build);
+        todoList.add(build);
+        return todoList;
+    }
+
 }

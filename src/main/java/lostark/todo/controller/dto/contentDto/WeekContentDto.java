@@ -14,8 +14,9 @@ import lostark.todo.domain.content.WeekContent;
 @Data
 @Builder
 public class WeekContentDto {
+    private long id;
 
-    private Category category;
+    private String weekCategory;
 
     private String name;
 
@@ -23,27 +24,7 @@ public class WeekContentDto {
 
     private int gate; //관문
 
-    private double honorShard; //명파
-
-    private double leapStone; //돌파석
-
-    private double destructionStone; //파괴석
-
-    private double guardianStone; //수호석
-
     private int gold; //골드
 
-    public WeekContent toEntity() {
-        return WeekContent.builder()
-                .category(category)
-                .name(name)
-                .level(level)
-                .gate(gate)
-                .honorShard(honorShard)
-                .leapStone(leapStone)
-                .destructionStone(destructionStone)
-                .guardianStone(guardianStone)
-                .gold(gold)
-                .build();
-    }
+    private boolean checked; //선택
 }

@@ -3,8 +3,10 @@ package lostark.todo.service.lostarkApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberDto;
+import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
+import lostark.todo.domain.content.DayContent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,7 +17,10 @@ import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,51 @@ import java.util.List;
 public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
+
+    public List<Character> findCharacterList(MemberDto memberDto, List<DayContent> chaos, List<DayContent> guardian) {
+        try {
+            String encodeCharacterName = URLEncoder.encode(memberDto.getCharacterName(), StandardCharsets.UTF_8);
+            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, memberDto.getApiKey());
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
+
+            // 1415이상만 필터링
+            JSONArray filteredArray = filterLevel(jsonArray);
+
+            JSONArray imageList = getCharacterImage(filteredArray, memberDto.getApiKey());
+            List<Character> characterList = new ArrayList<>();
+            for (Object o : imageList) {
+                JSONObject jsonObject = (JSONObject) o;
+
+                Character character = Character.builder()
+                        .characterName(jsonObject.get("CharacterName").toString())
+                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+                        .characterClassName(jsonObject.get("CharacterClassName").toString())
+                        .serverName(jsonObject.get("ServerName").toString())
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .characterImage(jsonObject.get("CharacterImage").toString())
+                        .dayTodo(new DayTodo())
+                        .build();
+                character.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
+                characterList.add(character);
+            }
+            //레벨순으로 정렬 후 리턴
+            AtomicInteger sortNumber = new AtomicInteger();
+            List<Character> sortedList = characterList.stream()
+                    .sorted(Comparator.comparing(Character::getItemLevel).reversed()).collect(Collectors.toList())
+                    .stream().map(character -> {
+                        character.setSortNumber(sortNumber.getAndIncrement());
+                        return character;
+                    })
+                    .collect(Collectors.toList());
+            return sortedList;
+        } catch (NullPointerException e) {
+            throw new RuntimeException(memberDto.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
     public List<Character> getCharacterList(MemberDto memberDto) {
         try {
@@ -38,24 +88,30 @@ public class LostarkCharacterService {
 
             JSONArray imageList = getCharacterImage(filteredArray, memberDto.getApiKey());
             List<Character> characterList = new ArrayList<>();
-            int sortNumber = 0;
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
-
                 Character character = Character.builder()
                         .characterName(jsonObject.get("CharacterName").toString())
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
                         .characterClassName(jsonObject.get("CharacterClassName").toString())
                         .serverName(jsonObject.get("ServerName").toString())
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
-                        .sortNumber(sortNumber++)
                         .characterImage(jsonObject.get("CharacterImage").toString())
                         .dayTodo(new DayTodo())
                         .build();
                 character.getDayTodo().createName(character.getItemLevel()); // 일일 숙제 이름 넣기
                 characterList.add(character);
             }
-            return characterList;
+            //레벨순으로 정렬 후 리턴
+            AtomicInteger sortNumber = new AtomicInteger();
+            List<Character> sortedList = characterList.stream()
+                    .sorted(Comparator.comparing(Character::getItemLevel).reversed()).collect(Collectors.toList())
+                    .stream().map(character -> {
+                        character.setSortNumber(sortNumber.getAndIncrement());
+                        return character;
+                    })
+                    .collect(Collectors.toList());
+            return sortedList;
         } catch (NullPointerException e) {
             throw new RuntimeException(memberDto.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
         } catch (Exception e) {
@@ -76,6 +132,7 @@ public class LostarkCharacterService {
         if (filteredArray.isEmpty()) {
             throw new RuntimeException("아이템 레벨 1415 이상 캐릭터가 없습니다.");
         }
+
         return filteredArray;
     }
 
@@ -92,7 +149,9 @@ public class LostarkCharacterService {
                 JSONParser parser = new JSONParser();
                 JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
 
-                jsonObject.put("CharacterImage", profile.get("CharacterImage").toString());
+                if (profile.get("CharacterImage") != null) {
+                    jsonObject.put("CharacterImage", profile.get("CharacterImage").toString());
+                }
                 result.add(jsonObject);
             } catch (Exception e) {
                 throw new RuntimeException(e);

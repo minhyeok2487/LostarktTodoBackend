@@ -32,6 +32,8 @@ public class CharacterResponseDto {
     @ApiModelProperty(notes = "캐릭터 아이템 레벨")
     private double itemLevel;
 
+    private String serverName;
+
     private int sortNumber;
 
     @ApiModelProperty(notes = "카오스던전 컨텐츠 이름")

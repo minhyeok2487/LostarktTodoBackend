@@ -178,5 +178,8 @@ public class MemberService {
         return member;
     }
 
-
+    public void deleteMemberCharacters(String username) {
+        Member member = findMember(username);
+        member.setCharacters(null);
+    }
 }

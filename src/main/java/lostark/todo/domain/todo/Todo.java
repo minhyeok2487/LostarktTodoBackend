@@ -2,6 +2,7 @@ package lostark.todo.domain.todo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
 
@@ -21,8 +22,13 @@ public class Todo extends BaseTimeEntity {
     private long id;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TodoContentName contentName;
+    private String contentName;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String weekCategory;
 
     @Column(nullable = false)
     private int gold;
@@ -40,9 +46,16 @@ public class Todo extends BaseTimeEntity {
         return this;
     }
 
-    public void updateContentName(TodoContentName contentName, int gold) {
+    public void updateContentName(String contentName, int gold) {
         this.contentName = contentName;
         this.gold = gold;
         this.isChecked = false;
+    }
+
+    public Todo updateContent(WeekContentDto weekContentDto) {
+        this.name = weekContentDto.getName();
+        this.contentName = weekContentDto.getName();
+        this.gold = weekContentDto.getGold();
+        return this;
     }
 }

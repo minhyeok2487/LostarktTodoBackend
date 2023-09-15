@@ -15,6 +15,8 @@ public class TodoResponseDto {
 
     private String contentName;
 
+    private String name;
+
     private int gold;
 
     private boolean check;

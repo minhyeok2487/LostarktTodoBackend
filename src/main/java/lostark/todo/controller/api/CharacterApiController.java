@@ -6,12 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterTodoDto;
+import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoEnumDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todo.TodoContentName;
@@ -26,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -113,34 +112,92 @@ public class CharacterApiController {
     }
 
 
+//    @ApiOperation(value = "캐릭터 주간 숙제 추가폼",
+//            response = TodoContentName.class)
+//    @GetMapping("/week/{characterName}")
+//    public ResponseEntity todoForm(@AuthenticationPrincipal String username,
+//                                  @PathVariable("characterName") String characterName) {
+//        // 로그인한 아이디에 등록된 캐릭터인지 검증
+//        // 다른 아이디면 자동으로 Exception 처리
+//        Character character = characterService.findCharacterWithMember(characterName, username);
+//
+//        // 주간숙제 Enum 리스트 -> Dto로 변환
+//        List<TodoEnumDto> todoEnumDtoList = Arrays.stream(TodoContentName.values())
+//                .map(todoContentName -> TodoEnumDto.builder()
+//                        .name(todoContentName.name())
+//                        .category(todoContentName.getCategory())
+//                        .displayName(todoContentName.getDisplayName())
+//                        .exist(false)
+//                        .build())
+//                .collect(Collectors.toList());
+//
+//
+//        List<Todo> todoList = character.getTodoList();
+//        todoEnumDtoList.forEach(todoEnumDto -> {
+//            boolean exists = todoList.stream()
+//                    .anyMatch(todo -> todoEnumDto.getName().equals(todo.getContentName().name()));
+//            todoEnumDto.setExist(exists);
+//        });
+//
+//        return ResponseEntity.ok(todoEnumDtoList);
+//    }
+
     @ApiOperation(value = "캐릭터 주간 숙제 추가폼",
             response = TodoContentName.class)
     @GetMapping("/week/{characterName}")
     public ResponseEntity todoForm(@AuthenticationPrincipal String username,
-                                  @PathVariable("characterName") String characterName) {
+                                   @PathVariable("characterName") String characterName) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(characterName, username);
 
-        // 주간숙제 Enum 리스트 -> Dto로 변환
-        List<TodoEnumDto> todoEnumDtoList = Arrays.stream(TodoContentName.values())
-                .map(todoContentName -> TodoEnumDto.builder()
-                        .name(todoContentName.name())
-                        .category(todoContentName.getCategory())
-                        .displayName(todoContentName.getDisplayName())
-                        .exist(false)
-                        .build())
+        // 아이템 레벨보다 작은 컨텐츠 불러옴
+        List<WeekContent> allByWeekContent = contentService.findAllByWeekContentWithItemLevel(character.getItemLevel());
+
+        // 임시 id 71이상
+        List<WeekContent> collect = allByWeekContent.stream()
+                .filter(weekContent -> weekContent.getId() >= 71)
                 .collect(Collectors.toList());
 
+        List<WeekContentDto> result = new ArrayList<>();
+        for (WeekContent weekContent : collect) {
+            WeekContentDto weekContentDto = WeekContentDto.builder()
+                    .weekCategory(weekContent.getWeekCategory())
+                    .level(weekContent.getLevel())
+                    .checked(false)
+                    .gate(weekContent.getGate())
+                    .gold(weekContent.getGold())
+                    .name(weekContent.getName())
+                    .build();
+            for (Todo todo : character.getTodoList()) {
+                if (todo.getName().equals(weekContentDto.getName())) {
+                    weekContentDto.setChecked(true);
+                }
+            }
+            result.add(weekContentDto);
+        }
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
+    @ApiOperation(value = "캐릭터 주간 숙제 추가/제거")
+    @PostMapping("/week/{characterName}")
+    public ResponseEntity updateTodo_V2(@AuthenticationPrincipal String username,
+                                        @PathVariable("characterName") String characterName,
+                                     @RequestBody WeekContentDto weekContentDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacterWithMember(characterName, username);
 
-        List<Todo> todoList = character.getTodoList();
-        todoEnumDtoList.forEach(todoEnumDto -> {
-            boolean exists = todoList.stream()
-                    .anyMatch(todo -> todoEnumDto.getName().equals(todo.getContentName().name()));
-            todoEnumDto.setExist(exists);
-        });
-
-        return ResponseEntity.ok(todoEnumDtoList);
+        List<Todo> todoList = todoService.updateWeek_V2(character, weekContentDto);
+        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
+        for (Todo todo : todoList) {
+            TodoResponseDto todoResponseDto = new TodoResponseDto();
+            todoResponseDto.setId(todo.getId());
+            todoResponseDto.setCheck(todo.isChecked());
+            todoResponseDto.setGold(todo.getGold());
+            todoResponseDto.setName(todo.getName());
+            todoResponseDtoList.add(todoResponseDto);
+        }
+        return new ResponseEntity(todoResponseDtoList, HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 추가/제거")
@@ -152,13 +209,15 @@ public class CharacterApiController {
         Character character = characterService.findCharacterWithMember(characterTodoDto.getCharacterName(), username);
 
         String displayName = characterTodoDto.getContentName().getDisplayName();
-        if (characterTodoDto.getContentName().getCategory().equals("아브렐슈드")) {
+        String category = characterTodoDto.getContentName().getCategory();
+        if (category.equals("아브렐슈드") || category.equals("카멘")) {
             String[] parts = displayName.split("\\s+", 2);
             displayName = parts[0];
         }
 
         int gold = contentService.findWeekGold(displayName, characterTodoDto.getContentName().getGate());
         todoService.updateWeek(characterTodoDto, character, gold);
+
 
         return new ResponseEntity(character, HttpStatus.OK);
     }
@@ -179,4 +238,5 @@ public class CharacterApiController {
                 .build();
         return new ResponseEntity(todoResponseDto, HttpStatus.OK);
     }
+
 }

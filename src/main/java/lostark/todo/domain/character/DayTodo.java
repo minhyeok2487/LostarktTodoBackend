@@ -3,9 +3,14 @@ package lostark.todo.domain.character;
 import lombok.*;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
+import lostark.todo.domain.content.DayContent;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Embeddable
 @Getter
@@ -16,6 +21,14 @@ import javax.validation.constraints.Size;
 public class DayTodo {
 
     private String chaosName;
+
+    @OneToOne
+    @JoinColumn(name = "chaos_id")
+    private DayContent chaos;
+
+    @OneToOne
+    @JoinColumn(name = "guardian_id")
+    private DayContent guardian;
 
     @Size(max = 2)
     private int chaosCheck; //일일숙제 카오스던전 돌았는지 체크(0, 1, 2)
@@ -106,6 +119,11 @@ public class DayTodo {
         }
     }
 
+    public DayTodo createDayContent(List<DayContent> chaos, List<DayContent> guardian, double itemLevel) {
+        this.chaos = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
+        this.guardian = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
+        return this;
+    }
 
     public void createName(double itemLevel) {
         if (itemLevel >= 1415) {
@@ -183,4 +201,5 @@ public class DayTodo {
         }
         return result;
     }
+
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.domain.character.Character;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -25,7 +26,7 @@ public class MemberResponseDto {
 
     @NotEmpty
     @ApiModelProperty(example = "캐릭터 리스트")
-    private List<String> characters;
+    private List<Character> characters;
 
     private String token;
 

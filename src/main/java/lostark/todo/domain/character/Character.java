@@ -36,7 +36,6 @@ public class Character extends BaseTimeEntity {
     @Column(nullable = false)
     private String characterClassName; //캐릭터 클래스
 
-    @Column(nullable = false)
     private String characterImage; //캐릭터 이미지 url
 
     @Column(nullable = false)

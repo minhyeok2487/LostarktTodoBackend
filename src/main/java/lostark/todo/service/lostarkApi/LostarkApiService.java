@@ -22,7 +22,7 @@ public class LostarkApiService {
             HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET", apiKey);
             return getInputStreamReader(httpURLConnection);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -42,7 +42,7 @@ public class LostarkApiService {
     }
 
     //URL 연결(헤더)
-    private HttpURLConnection getHttpURLConnection(String link, String method, String apiKey) throws IOException {
+    private HttpURLConnection getHttpURLConnection(String link, String method, String apiKey) throws Exception {
         URL url = new URL(link);
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod(method);
@@ -54,16 +54,22 @@ public class LostarkApiService {
     }
 
     //아웃풋 출력
-    private InputStreamReader getInputStreamReader(HttpURLConnection httpURLConnection) throws IOException {
+    private InputStreamReader getInputStreamReader(HttpURLConnection httpURLConnection) throws Exception {
         int result = httpURLConnection.getResponseCode();
         InputStream inputStream;
         if(result == 200) {
             inputStream = httpURLConnection.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             return inputStreamReader;
-        } else {
-            throw new RuntimeException("올바르지 않은 로스트아크 apiKey 입니다");
         }
-
+        else if(result == 401) {
+            throw new IllegalArgumentException("올바르지 않은 apiKey 입니다");
+        }
+        else if(result == 429) {
+            throw new IllegalArgumentException("사용한도 (1분에 100개)를 초과했습니다.");
+        }
+        else {
+            throw new RuntimeException(httpURLConnection.getResponseMessage());
+        }
     }
 }

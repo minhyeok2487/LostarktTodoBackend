@@ -20,9 +20,11 @@ public class MemberDto {
     @ApiModelProperty(example = "비밀번호")
     private String password;
 
+    @NotEmpty
     @ApiModelProperty(example = "로스트아크 api 키")
     private String apiKey;
 
+    @NotEmpty
     @ApiModelProperty(example = "대표 캐릭터")
     private String characterName;
 

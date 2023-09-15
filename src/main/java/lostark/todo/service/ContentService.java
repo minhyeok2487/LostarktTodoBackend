@@ -26,6 +26,15 @@ public class ContentService {
         return contentRepository.findAll();
     }
 
+    // 카테고리(카오스던전, 가디언토벌)별 일일컨텐츠 출력
+    public List<DayContent> findDayContent(Category category) {
+        List<DayContent> dayContentList = contentRepository.findDayContentByCategoryOrderByLevelDesc(category);
+        if (dayContentList.size() == 0) {
+            throw new IllegalArgumentException("카테고리가 일일컨텐츠가 아닙니다.(카오스던전, 가디언토벌)");
+        }
+        return dayContentList;
+    }
+
     /**
      * 일일숙제(카오스던전, 가디언토벌)데이터 호출
      */
@@ -58,7 +67,7 @@ public class ContentService {
                             .id(todo.getId())
                             .check(todo.isChecked())
                             .gold(todo.getGold())
-                            .contentName(todo.getContentName().getDisplayName())
+                            .contentName(todo.getContentName())
                             .build())
                     .collect(Collectors.toList());
 
@@ -146,4 +155,21 @@ public class ContentService {
     public DayContent findContentByName(String name) {
         return (DayContent) contentRepository.findContentByName(name).orElseThrow(() -> new IllegalArgumentException(name+" - 없는 컨텐츠 입니다."));
     }
+
+    //주간 컨텐츠 전체 find
+    public List<WeekContent> findAllByWeekContent() {
+        return contentRepository.findAllByWeekContent();
+    }
+
+    //주간 컨텐츠 추가
+    public WeekContent saveWeekContent(WeekContent weekContent) {
+        return contentRepository.save(weekContent);
+    }
+
+    //아이템 레벨보다 작은 주간 컨텐츠 find
+    public List<WeekContent> findAllByWeekContentWithItemLevel(double itemLevel) {
+        return contentRepository.findAllByWeekContentWithItemLevel(itemLevel);
+    }
+
+
 }

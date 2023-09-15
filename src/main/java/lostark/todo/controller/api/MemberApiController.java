@@ -11,6 +11,7 @@ import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
@@ -46,46 +47,75 @@ public class MemberApiController {
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
 
-    @Value("${Lostark-API-Key}")
-    private String apiKey;
 
-    @ApiOperation(value = "캐릭터 추가",
+
+    @ApiOperation(value = "회원가입시 캐릭터 추가",
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
             response = MemberResponseDto.class)
     @PostMapping("/signup")
-    public ResponseEntity signupCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberDto memberDto) {
-        if (memberDto.getApiKey().isEmpty()) {
-            memberDto.setApiKey(apiKey);
-        }
-        // 대표캐릭터와 연동된 캐릭터(api 검증)
-        List<Character> characterList = lostarkCharacterService.getCharacterList(memberDto);
+    public ResponseEntity signupCharacterV2(@AuthenticationPrincipal String username, @RequestBody @Valid MemberDto memberDto) {
+
+        // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+
+        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+        List<Character> characterList = lostarkCharacterService.findCharacterList(memberDto, chaos, guardian);
 
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.getContentResource();
 
-        // 일일 숙제 통계 가져오기
-        Map<String, DayContent> dayContent = contentService.findDayContent();
+        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+        List<Character> calculatedCharacterList = characterService.calculateDayTodoV2(characterList, contentResource);
 
-        for (Character character : characterList) {
-            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-            characterService.calculateDayTodo(character, contentResource, dayContent);
-        }
 
         // Member 회원가입
         memberDto.setUsername(username);
-        Member signupMember = memberService.createCharacter(memberDto, characterList);
+        Member signupMember = memberService.createCharacter(memberDto, calculatedCharacterList);
 
         // 결과 출력
         MemberResponseDto responseDto = MemberResponseDto.builder()
+                .id(signupMember.getId())
                 .username(signupMember.getUsername())
-                .characters(signupMember.getCharacters().stream().map(
-                                character -> character.getCharacterName()
-                                        + " / " + character.getCharacterClassName()
-                                        + " / Lv." + character.getItemLevel())
-                        .collect(Collectors.toList()))
+                .characters(signupMember.getCharacters())
                 .build();
         return new ResponseEntity(responseDto, HttpStatus.OK);
     }
+
+//    @ApiOperation(value = "회원가입시 캐릭터 추가",
+//            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
+//            response = MemberResponseDto.class)
+//    @PostMapping("/signup")
+//    public ResponseEntity signupCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberDto memberDto) {
+//        // 대표캐릭터와 연동된 캐릭터(api 검증)
+//        List<Character> characterList = lostarkCharacterService.getCharacterList(memberDto);
+//
+//        // 재련재료 데이터 리스트로 거래소 데이터 호출
+//        Map<String, Market> contentResource = marketService.getContentResource();
+//
+//        // 일일 숙제 통계 가져오기
+//        Map<String, DayContent> dayContent = contentService.findDayContent();
+//
+//        for (Character character : characterList) {
+//            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+//            characterService.calculateDayTodo(character, contentResource, dayContent);
+//        }
+//
+//        // Member 회원가입
+//        memberDto.setUsername(username);
+//        Member signupMember = memberService.createCharacter(memberDto, characterList);
+//
+//        // 결과 출력
+//        MemberResponseDto responseDto = MemberResponseDto.builder()
+//                .username(signupMember.getUsername())
+//                .characters(signupMember.getCharacters().stream().map(
+//                                character -> character.getCharacterName()
+//                                        + " / " + character.getCharacterClassName()
+//                                        + " / Lv." + character.getItemLevel())
+//                        .collect(Collectors.toList()))
+//                .build();
+//        return new ResponseEntity(responseDto, HttpStatus.OK);
+//    }
 
     @ApiOperation(value = "회원 캐릭터 리스트 조회",
             response = CharacterResponseDto.class)
@@ -182,18 +212,18 @@ public class MemberApiController {
             todoResponseDto.setId(todo.getId());
             todoResponseDto.setCheck(todo.isChecked());
             todoResponseDto.setGold(todo.getGold());
-            todoResponseDto.setContentName(todo.getContentName().getDisplayName());
-            todoResponseDto.setSort(todo.getContentName().getSort());
+            todoResponseDto.setName(todo.getName());
             todoResponseDtoList.add(todoResponseDto);
         }
         List<TodoResponseDto> sortedTodoList = todoResponseDtoList.stream()
-                .sorted(Comparator.comparing(TodoResponseDto::getSort)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(TodoResponseDto::getGold)).collect(Collectors.toList());
 
         CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
                 .id(character.getId())
                 .characterName(character.getCharacterName())
                 .characterImage(character.getCharacterImage())
                 .characterClassName(character.getCharacterClassName())
+                .serverName(character.getServerName())
                 .itemLevel(character.getItemLevel())
                 .sortNumber(character.getSortNumber())
                 .chaosCheck(character.getDayTodo().getChaosCheck())
