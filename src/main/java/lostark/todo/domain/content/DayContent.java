@@ -13,6 +13,7 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @SuperBuilder
 @Entity
 public class DayContent extends Content{

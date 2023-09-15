@@ -39,6 +39,8 @@ public class CharacterResponseDto {
     @ApiModelProperty(notes = "카오스던전 컨텐츠 이름")
     private String chaosName;
 
+    private DayContent chaos;
+
     @ApiModelProperty(notes = "카오스던전 돌았는지 체크, 최소 0, 최대 2")
     private int chaosCheck;
 
@@ -50,6 +52,8 @@ public class CharacterResponseDto {
 
     @ApiModelProperty(notes = "가디언토벌 컨텐츠 내용")
     private String guardianName;
+
+    private DayContent guardian;
 
     @ApiModelProperty(notes = "가디언토벌 돌았는지 체크, 최소 0, 최대 1, 1씩 증감")
     private int guardianCheck;

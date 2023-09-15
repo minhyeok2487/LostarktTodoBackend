@@ -120,7 +120,9 @@ public class DayTodo {
     }
 
     public DayTodo createDayContent(List<DayContent> chaos, List<DayContent> guardian, double itemLevel) {
+        this.chaosName = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get().getName();
         this.chaos = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
+        this.guardianName = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get().getName();
         this.guardian = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
         return this;
     }
