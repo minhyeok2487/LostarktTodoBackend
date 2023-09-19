@@ -54,6 +54,7 @@ public class Character extends BaseTimeEntity {
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
     private List<Todo> todoList;
 
+    private boolean goldCharacter; //골드 획득 지정 캐릭터
     @Override
     public String toString() {
         return "Character{" +
@@ -70,16 +71,20 @@ public class Character extends BaseTimeEntity {
 
     /**
      * 캐릭터 정보 업데이트
-     *
-     * @return
      */
-    public Character updateCharacter(Character character) {
-        this.characterLevel = character.getCharacterLevel();
-        this.characterImage = character.getCharacterImage();
-        this.itemLevel = character.getItemLevel();
-        this.dayTodo.setChaosName(character.getDayTodo().getChaosName());
-        this.dayTodo.setGuardianName(character.getDayTodo().getGuardianName());
+    public Character updateCharacter(Character updatedCharacter) {
+        this.characterLevel = updatedCharacter.getCharacterLevel();
+        this.characterImage = updatedCharacter.getCharacterImage();
+        this.itemLevel = updatedCharacter.getItemLevel();
+        this.dayTodo.setChaosName(updatedCharacter.getDayTodo().getChaosName());
+        this.dayTodo.setChaos(updatedCharacter.getDayTodo().getChaos());
+        this.dayTodo.setGuardianName(updatedCharacter.getDayTodo().getGuardianName());
+        this.dayTodo.setGuardian(updatedCharacter.getDayTodo().getGuardian());
         return this;
     }
 
+    public Character updateGoldCharacter() {
+        this.goldCharacter = !this.goldCharacter;
+        return this;
+    }
 }

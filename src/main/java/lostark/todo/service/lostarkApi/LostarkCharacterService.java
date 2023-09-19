@@ -2,8 +2,7 @@ package lostark.todo.service.lostarkApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.memberDto.MemberDto;
-import lostark.todo.controller.dto.todoDto.TodoResponseDto;
+import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.DayContent;
@@ -30,18 +29,26 @@ public class LostarkCharacterService {
 
     private final LostarkApiService apiService;
 
-    public List<Character> findCharacterList(MemberDto memberDto, List<DayContent> chaos, List<DayContent> guardian) {
+    /**
+     * 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+     * @param characterName
+     * @param apiKey
+     * @param chaos
+     * @param guardian
+     * @return
+     */
+    public List<Character> findCharacterList(String characterName, String apiKey, List<DayContent> chaos, List<DayContent> guardian) {
         try {
-            String encodeCharacterName = URLEncoder.encode(memberDto.getCharacterName(), StandardCharsets.UTF_8);
+            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, memberDto.getApiKey());
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 
             // 1415이상만 필터링
             JSONArray filteredArray = filterLevel(jsonArray);
 
-            JSONArray imageList = getCharacterImage(filteredArray, memberDto.getApiKey());
+            JSONArray imageList = getCharacterImage(filteredArray,apiKey);
             List<Character> characterList = new ArrayList<>();
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
@@ -69,13 +76,13 @@ public class LostarkCharacterService {
                     .collect(Collectors.toList());
             return sortedList;
         } catch (NullPointerException e) {
-            throw new RuntimeException(memberDto.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
+            throw new IllegalArgumentException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    public List<Character> getCharacterList(MemberDto memberDto) {
+    public List<Character> getCharacterList(MemberRequestDto memberDto) {
         try {
             String encodeCharacterName = URLEncoder.encode(memberDto.getCharacterName(), StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";

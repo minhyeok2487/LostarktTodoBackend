@@ -1,10 +1,8 @@
 package lostark.todo.memberApiControllerTest;
 
-import lostark.todo.controller.dto.memberDto.MemberDto;
+import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.exhandler.ErrorResponse;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
@@ -32,7 +30,6 @@ import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
-@Rollback(value = false)
 public class SignupCharacterV2Test {
     @LocalServerPort
     private int port;
@@ -50,26 +47,29 @@ public class SignupCharacterV2Test {
 
     @Value("${Lostark-API-Test-Key}")
     String apiKey;
-    
 
-    
+    String url = "";
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+
     @BeforeEach
     void before() {
         //PATCH 오류 해결
         testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+        //url
+        url = "http://localhost:"+port+"/member/signup";
+
+        //headers
+        headers.add("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + token);
     }
 
     @Test
     @DisplayName("캐릭터 데이터 추가 성공")
+    @Rollback(value = false)
     void signupCharacterV2() {
         //given
-        String url = "http://localhost:"+port+"/member/signup";
-
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", "application/json");
-        headers.set("Authorization", "Bearer " + token);
-
-        MemberDto memberDto = MemberDto.builder()
+        MemberRequestDto memberDto = MemberRequestDto.builder()
                 .characterName("이다")
                 .apiKey(apiKey)
                 .build();
@@ -95,15 +95,9 @@ public class SignupCharacterV2Test {
     @DisplayName("캐릭터 데이터 추가 실패 - 없는 캐릭터명")
     void signupCharacterV2_CharacterNameIsNull() {
         //given
-        String url = "http://localhost:"+port+"/member/signup";
-
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", "application/json");
-        headers.set("Authorization", "Bearer " + token);
-
         String characterName = "asdasdasdasvfvbwfqwdqwdxcacasdwqdwdzxcz";
 
-        MemberDto memberDto = MemberDto.builder()
+        MemberRequestDto memberDto = MemberRequestDto.builder()
                 .characterName(characterName)
                 .apiKey(apiKey)
                 .build();
@@ -121,13 +115,7 @@ public class SignupCharacterV2Test {
     @DisplayName("캐릭터 데이터 추가 실패 - Validation")
     void signupCharacterV2_Validation() {
         //given
-        String url = "http://localhost:"+port+"/member/signup";
-
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", "application/json");
-        headers.set("Authorization", "Bearer " + token);
-
-        MemberDto memberDto = MemberDto.builder()
+        MemberRequestDto memberDto = MemberRequestDto.builder()
                 .apiKey(apiKey)
                 .build();
 
@@ -144,13 +132,7 @@ public class SignupCharacterV2Test {
     @DisplayName("캐릭터 데이터 추가 실패 - apikey")
     void signupCharacterV2_ApiKey() {
         //given
-        String url = "http://localhost:"+port+"/member/signup";
-
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", "application/json");
-        headers.set("Authorization", "Bearer " + token);
-
-        MemberDto memberDto = MemberDto.builder()
+        MemberRequestDto memberDto = MemberRequestDto.builder()
                 .characterName("이다")
                 .apiKey("asdasdcxqw")
                 .build();

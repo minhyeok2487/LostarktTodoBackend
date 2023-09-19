@@ -12,6 +12,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUsername(@Param("username") String username);
 
-
     int deleteByUsername(String username);
 }

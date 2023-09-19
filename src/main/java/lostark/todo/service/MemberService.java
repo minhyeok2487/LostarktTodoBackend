@@ -2,12 +2,9 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
-import lostark.todo.controller.dto.memberDto.MemberDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
-import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
@@ -45,51 +42,15 @@ public class MemberService {
     }
 
     /**
-     * 회원가입
+     * 회원가입 캐릭터 추가
      */
-    public Member createMember(MemberDto signupDto, List<Character> characterList) {
-        // 중복체크
-        if (memberRepository.existsByUsername(signupDto.getUsername())) {
-            String message = signupDto.getUsername() + " 이미 존재하는 username 입니다.";
-            log.error(message);
-            throw new IllegalArgumentException(message);
-        }
-        if (characterList.isEmpty()) {
-            String message = "등록된 캐릭터가 없습니다.";
-            log.error(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        Member member = Member.builder()
-                .username(signupDto.getUsername())
-                .password(passwordEncoder.encode(signupDto.getPassword()))
-                .apiKey(signupDto.getApiKey())
-                .characters(new ArrayList<>())
-                .role(Role.USER)
-                .build();
+    public Member createCharacter(String username, String apiKey, List<Character> characterList) {
+        Member member = findMember(username);
         characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
-
-        return memberRepository.save(member);
-    }
-    public Member createCharacter(MemberDto memberDto, List<Character> characterList) {
-        Member member = findMember(memberDto.getUsername());
-        characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
-        member.setApiKey(memberDto.getApiKey());
+        member.setApiKey(apiKey);
         return member;
     }
 
-    /**
-     * 로그인
-     */
-    public Member login(MemberLoginDto memberloginDto) {
-        String username = memberloginDto.getUsername();
-        Member member = findMember(username);
-        if (passwordEncoder.matches(memberloginDto.getPassword(), member.getPassword())) {
-            return member;
-        } else {
-            throw new IllegalArgumentException("패스워드가 틀립니다.");
-        }
-    }
 
     /**
      * 캐릭터 Todo 업데이트
@@ -124,13 +85,14 @@ public class MemberService {
     /**
      * 캐릭터 리스트 업데이트
      */
-    public List<Character> updateCharacterList(Member member, List<Character> characterList) {
-        List<Character> beforeCharacterList = member.getCharacters();
+    public List<Character> updateCharacterList(List<Character> beforeCharacterList, List<Character> updateCharacterList) {
+        Member member = beforeCharacterList.get(0).getMember();
         List<Character> charactersToUpdate = new ArrayList<>();
         List<Character> charactersToAdd = new ArrayList<>();
         List<Character> charactersToDelete = new ArrayList<>();
 
-        for (Character updateCharacter : characterList) {
+        // 캐릭터 정보 업데이트와 새로운 캐릭터 추가
+        for (Character updateCharacter : updateCharacterList) {
             updateCharacter.setMember(member);
             boolean found = false;
             for (Character beforeCharacter : beforeCharacterList) {
@@ -146,9 +108,10 @@ public class MemberService {
             }
         }
 
+        // 삭제된 캐릭터 삭제
         for (Character beforeCharacter : beforeCharacterList) {
             boolean found = false;
-            for (Character updateCharacter : characterList) {
+            for (Character updateCharacter : updateCharacterList) {
                 if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
                     found = true;
                     break;
@@ -159,6 +122,7 @@ public class MemberService {
             }
         }
 
+        // 정리해서 리턴
         beforeCharacterList.removeAll(charactersToDelete);
         beforeCharacterList.addAll(charactersToAdd);
 
@@ -178,8 +142,4 @@ public class MemberService {
         return member;
     }
 
-    public void deleteMemberCharacters(String username) {
-        Member member = findMember(username);
-        member.setCharacters(null);
-    }
 }

@@ -12,13 +12,10 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberDto {
+public class MemberRequestDto {
 
     @ApiModelProperty(example = "회원이름")
     private String username;
-
-    @ApiModelProperty(example = "비밀번호")
-    private String password;
 
     @NotEmpty
     @ApiModelProperty(example = "로스트아크 api 키")

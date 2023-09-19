@@ -2,9 +2,6 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
-import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
@@ -14,9 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +44,7 @@ public class SchedulerService {
     @Scheduled(cron = "0 0 6 * * ?")
     public void resetDayTodo() {
         // 재련재료 데이터 리스트로 거래소 데이터 호출
-        Map<String, Market> contentResource = marketService.getContentResource();
+        Map<String, Market> contentResource = marketService.findContentResource();
 
         // 일일 숙제 통계 가져오기
         Map<String, DayContent> dayContent = contentService.findDayContent();

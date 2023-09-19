@@ -22,4 +22,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     Optional<Character> findCharacterWithMember(@Param("characterName") String characterName, @Param("username") String username);
 
     void deleteByMember(Member member);
+
+    int countByMemberAndGoldCharacterIsTrue(Member member);
 }

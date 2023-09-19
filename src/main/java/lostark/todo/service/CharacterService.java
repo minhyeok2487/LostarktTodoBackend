@@ -123,37 +123,6 @@ public class CharacterService {
         return character;
     }
 
-    /**
-     * 수익 계산
-     */
-    public void calculateProfit(
-            List<CharacterResponseDto> characterResponseDtoList,
-            Map<String, Market> contentResource) {
-        Market destruction = null;
-        Market guardian = null;
-        Market leapStone = null;
-        for (CharacterResponseDto characterResponseDto : characterResponseDtoList) {
-            if (characterResponseDto.getItemLevel() >= 1415) {
-                destruction = contentResource.get("파괴석 결정");
-                guardian = contentResource.get("수호석 결정");
-                leapStone = contentResource.get("위대한 명예의 돌파석");
-            }
-            if (characterResponseDto.getItemLevel() >= 1540) {
-                destruction = contentResource.get("파괴강석");
-                guardian = contentResource.get("수호강석");
-                leapStone = contentResource.get("경이로운 명예의 돌파석");
-            }
-            if (characterResponseDto.getItemLevel() >= 1580) {
-                destruction = contentResource.get("정제된 파괴강석");
-                guardian = contentResource.get("정제된 수호강석");
-                leapStone = contentResource.get("찬란한 명예의 돌파석");
-            }
-            Market jewelry = contentResource.get("1레벨");
-//            calculateChaos(characterResponseDto, destruction, guardian, jewelry);
-//            calculateGuardian(characterResponseDto, destruction, guardian, leapStone);
-        }
-
-    }
 
     public DayTodo updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
         return character.getDayTodo().updateCheck(characterDayTodoDto); // 변경
@@ -186,5 +155,17 @@ public class CharacterService {
 
     public void deleteCharacter(Member member) {
         characterRepository.deleteByMember(member);
+    }
+
+    /**
+     * 골드 획득 지정캐릭터확인
+     * @param member
+     */
+    public int checkGoldCharacter(Member member) {
+        return characterRepository.countByMemberAndGoldCharacterIsTrue(member);
+    }
+
+    public Character updateGoldCharacter(Character character) {
+        return character.updateGoldCharacter();
     }
 }

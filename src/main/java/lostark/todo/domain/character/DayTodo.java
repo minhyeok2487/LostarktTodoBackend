@@ -118,7 +118,6 @@ public class DayTodo {
             throw new IllegalArgumentException("휴식게이지는 0~100 사이이며, 10단위여야 합니다.");
         }
     }
-
     public DayTodo createDayContent(List<DayContent> chaos, List<DayContent> guardian, double itemLevel) {
         this.chaosName = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get().getName();
         this.chaos = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();

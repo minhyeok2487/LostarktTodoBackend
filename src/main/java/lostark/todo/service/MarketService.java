@@ -2,11 +2,8 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.marketDto.MarketContentResourceDto;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +77,7 @@ public class MarketService {
         return marketRepository.findByNameIn(names);
     }
 
-    public Map<String, Market> getContentResource() {
+    public Map<String, Market> findContentResource() {
         List<Market> marketByNames = findByNameIn(dayContentResource());
 
         Map<String , Market> contentResourceDtoHashMap = new HashMap<>();
