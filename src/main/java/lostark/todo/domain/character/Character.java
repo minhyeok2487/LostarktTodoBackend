@@ -87,4 +87,11 @@ public class Character extends BaseTimeEntity {
         this.goldCharacter = !this.goldCharacter;
         return this;
     }
+
+    public Character createImage(Object characterImage) {
+        if (characterImage != null) {
+            this.characterImage = characterImage.toString();
+        }
+        return this;
+    }
 }
