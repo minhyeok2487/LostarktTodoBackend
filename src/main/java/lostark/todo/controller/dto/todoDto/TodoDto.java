@@ -16,4 +16,6 @@ public class TodoDto {
     private long todoId;
 
     private boolean todoCheck;
+
+    private String message;
 }

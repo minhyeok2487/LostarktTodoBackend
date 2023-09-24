@@ -89,6 +89,7 @@ public class CharacterResponseDto {
                     .contentName(todo.getContentName())
                     .name(todo.getName())
                     .gold(todo.getGold())
+                    .message(todo.getMessage())
                     .build();
             todoResponseDtoList.add(todoResponseDto);
         }

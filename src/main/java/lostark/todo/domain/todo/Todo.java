@@ -37,6 +37,8 @@ public class Todo extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isChecked;
 
+    private String message;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id")
     @JsonBackReference //순환참조 방지
@@ -57,6 +59,11 @@ public class Todo extends BaseTimeEntity {
         this.name = weekContentDto.getName();
         this.contentName = weekContentDto.getName();
         this.gold = weekContentDto.getGold();
+        return this;
+    }
+
+    public Todo updateMessage(String message) {
+        this.message = message;
         return this;
     }
 }

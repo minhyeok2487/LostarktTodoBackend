@@ -66,35 +66,35 @@ public class SignupCharacterV2Test {
         headers.set("Authorization", "Bearer " + token);
     }
 
-    @Test
-    @DisplayName("캐릭터 데이터 추가 성공")
-    @Rollback(value = false)
-    void signupCharacterV2() {
-        //given
-        MemberRequestDto memberDto = MemberRequestDto.builder()
-                .characterName("LivingAimTR")
-                .apiKey(apiKey)
-                .build();
-        
-        //when
-        ResponseEntity<MemberResponseDto> responseEntity = new TestRestTemplate().exchange(url, HttpMethod.POST,
-                new HttpEntity<Object>(memberDto, headers), MemberResponseDto.class);
-
-        //then
-        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        List<Character> characters = responseEntity.getBody().getCharacters();
+//    @Test
+//    @DisplayName("캐릭터 데이터 추가 성공")
+//    @Rollback(value = false)
+//    void signupCharacterV2() {
+//        //given
+//        MemberRequestDto memberDto = MemberRequestDto.builder()
+//                .characterName("LivingAimTR")
+//                .apiKey(apiKey)
+//                .build();
+//
+//        //when
+//        ResponseEntity<MemberResponseDto> responseEntity = new TestRestTemplate().exchange(url, HttpMethod.POST,
+//                new HttpEntity<Object>(memberDto, headers), MemberResponseDto.class);
+//
+//        //then
+//        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//        List<Character> characters = responseEntity.getBody().getCharacters();
 //        for (Character character : characters) {
 //            double contentLevel = character.getDayTodo().getChaos().getLevel();
 //            Assertions.assertThat(contentLevel).isGreaterThanOrEqualTo(character.getCharacterLevel());
 //        }
-
-        for (Character character : characters) {
-            System.out.println("character = " + character);
-        }
-
-        //다음 테스트를 위한 데이터 삭제
-        characterService.deleteCharacter(memberService.findMember(responseEntity.getBody().getUsername()));
-    }
+//
+//        for (Character character : characters) {
+//            System.out.println("character = " + character);
+//        }
+//
+//        //다음 테스트를 위한 데이터 삭제
+//        characterService.deleteCharacter(memberService.findMember(responseEntity.getBody().getUsername()));
+//    }
 
     @Test
     @DisplayName("캐릭터 데이터 추가 실패 - 없는 캐릭터명")

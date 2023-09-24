@@ -92,4 +92,7 @@ public class TodoService {
         return todoList;
     }
 
+    public Todo updateWeekMessage(TodoDto todoDto) {
+        return findById(todoDto.getTodoId()).updateMessage(todoDto.getMessage());
+    }
 }

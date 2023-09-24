@@ -1,9 +1,12 @@
 package lostark.todo.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.comments.Comments;
 
 import javax.persistence.*;
 import java.util.List;
@@ -42,7 +45,12 @@ public class Member extends BaseTimeEntity {
     private Role role;
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @JsonManagedReference
     private List<Character> characters;
+
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @JsonManagedReference
+    private List<Comments> comments;
 
 
     // user 엔티티에 character 리스트 저장

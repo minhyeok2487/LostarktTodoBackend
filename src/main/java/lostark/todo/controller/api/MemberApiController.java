@@ -46,6 +46,14 @@ public class MemberApiController {
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
 
+    @GetMapping()
+    public ResponseEntity findMember(@AuthenticationPrincipal String username) {
+        MemberResponseDto memberResponseDto = MemberResponseDto.builder()
+                .username(username)
+                .build();
+        return new ResponseEntity(memberResponseDto, HttpStatus.OK);
+    }
+
     @ApiOperation(value = "회원가입시 캐릭터 추가",
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
             response = MemberResponseDto.class)

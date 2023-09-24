@@ -1,0 +1,37 @@
+package lostark.todo.controller.dto.commentsDto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lostark.todo.domain.comments.Comments;
+import lostark.todo.domain.member.Member;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CommentResponseDto {
+
+    private long id;
+
+    private String body;
+
+    private String username;
+
+    private long parentId;
+
+    private LocalDateTime lastModifiedDate;
+
+    public CommentResponseDto createResponseDto(Comments comments) {
+        return CommentResponseDto.builder()
+                .id(comments.getId())
+                .lastModifiedDate(comments.getLastModifiedDate())
+                .body(comments.getBody())
+                .username(comments.getMember().getUsername())
+                .parentId(comments.getParentId())
+                .build();
+    }
+}

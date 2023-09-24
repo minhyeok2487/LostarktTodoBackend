@@ -199,4 +199,22 @@ public class CharacterApiController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "캐릭터 주간 숙제 message 수정",
+            response = TodoResponseDto.class)
+    @PatchMapping("/week/message")
+    public ResponseEntity updateWeekMessage(@AuthenticationPrincipal String username,
+                                          @RequestBody TodoDto todoDto) {
+        System.out.println("CharacterApiController.updateWeekMessage");
+        System.out.println("todoDto = " + todoDto.toString());
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
+
+        Todo todo = todoService.updateWeekMessage(todoDto);
+        TodoResponseDto todoResponseDto = TodoResponseDto.builder()
+                .id(todo.getId())
+                .message(todo.getMessage())
+                .build();
+        return new ResponseEntity(todoResponseDto, HttpStatus.OK);
+    }
 }
