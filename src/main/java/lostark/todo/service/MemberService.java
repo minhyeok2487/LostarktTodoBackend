@@ -24,21 +24,12 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     /**
      * 회원 찾기(캐릭터 리스트와 함께)
      */
     public Member findMember(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
-    }
-
-    /**
-     * 회원 삭제(캐릭터 리스트와 함께)
-     */
-    public int deleteMember(String username) {
-        return memberRepository.deleteByUsername(username);
     }
 
     /**

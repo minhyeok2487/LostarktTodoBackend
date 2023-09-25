@@ -18,8 +18,7 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
 
     public List<Comments> findAll() {
-        List<Comments> all = commentsRepository.findAll();
-        return all;
+            return commentsRepository.findAll();
     }
 
     public Comments save(Comments comments) {

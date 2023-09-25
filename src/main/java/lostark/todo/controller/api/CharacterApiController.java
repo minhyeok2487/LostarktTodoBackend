@@ -74,11 +74,8 @@ public class CharacterApiController {
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.findContentResource();
 
-        // 일일 숙제 통계 가져오기
-        Map<String, DayContent> dayContent = contentService.findDayContent();
-
         // 업데이트된 휴식게이지로 예상 수익 계산
-        Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource, dayContent);
+        Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource);
 
         CharacterResponseDto responseDto = CharacterResponseDto.builder()
                 .characterName(resultCharacter.getCharacterName())
@@ -94,7 +91,7 @@ public class CharacterApiController {
     @GetMapping("/day-todo/{characterName}/{category}")
     public ResponseEntity getDayTodoCheck(@AuthenticationPrincipal String username
             , @PathVariable("characterName") String characterName, @PathVariable("category") String category) {
-        Character character = characterService.findCharacter(characterName);
+        Character character = characterService.findCharacterWithMember(characterName, username);
         String name = "";
         if (category.equals("카오스던전")) {
             name = character.getDayTodo().getChaosName();
@@ -102,7 +99,7 @@ public class CharacterApiController {
         if (category.equals("가디언토벌")) {
             name = character.getDayTodo().getGuardianName();
         }
-        DayContent content = contentService.findContentByName(name);
+        DayContent content = contentService.findDayContentByName(name);
         return new ResponseEntity(content, HttpStatus.OK);
     }
 

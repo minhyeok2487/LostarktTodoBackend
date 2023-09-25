@@ -9,13 +9,11 @@ import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import lostark.todo.domain.todo.Todo;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
@@ -70,7 +68,11 @@ public class MemberApiController {
         Map<String, Market> contentResource = marketService.findContentResource();
 
         // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-        List<Character> calculatedCharacterList = characterService.calculateDayTodoV2(characterList, contentResource);
+        List<Character> calculatedCharacterList = new ArrayList<>();
+        for (Character character : characterList) {
+            Character result = characterService.calculateDayTodo(character, contentResource);
+            calculatedCharacterList.add(result);
+        }
 
         // Member 회원가입
         Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
@@ -131,7 +133,11 @@ public class MemberApiController {
         Map<String, Market> contentResource = marketService.findContentResource();
 
         // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-        List<Character> calculatedCharacterList = characterService.calculateDayTodoV2(updatedCharacterList, contentResource);
+        List<Character> calculatedCharacterList = new ArrayList<>();
+        for (Character character : updatedCharacterList) {
+            Character result = characterService.calculateDayTodo(character, contentResource);
+            calculatedCharacterList.add(result);
+        }
 
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()

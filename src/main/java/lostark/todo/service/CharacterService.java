@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.character.DayTodo;
@@ -29,18 +28,6 @@ public class CharacterService {
         return characterRepository.findAll();
     }
 
-    public List<Character> findByMember(Member member) {
-        return characterRepository.findByMember(member);
-    }
-
-    /**
-     * 캐릭터 조회
-     */
-    public Character findCharacter(String characterName) {
-        return characterRepository.findByCharacterName(characterName)
-                .orElseThrow(() -> new IllegalArgumentException("characterName = "+characterName+" : 존재하지 않는 캐릭터"));
-    }
-
     /**
      * 캐릭터 조회(member에 포함된 캐릭터인지 검증)
      */
@@ -50,11 +37,9 @@ public class CharacterService {
     }
 
     /**
-     * 일일 숙제 예상 골드 계산
+     * 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
      */
-    public Character calculateDayTodo(Character character,
-                                 Map<String, Market> contentResource,
-                                 Map<String, DayContent> dayContent) {
+    public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {
         Market jewelry = contentResource.get("1레벨");
         Market destruction;
         Market guardian;
@@ -72,12 +57,9 @@ public class CharacterService {
             guardian = contentResource.get("정제된 수호강석");
             leapStone = contentResource.get("찬란한 명예의 돌파석");
         }
+        calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry, character);
+        calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, character);
 
-        DayContent chaosName = dayContent.get(character.getDayTodo().getChaosName());
-        calculateChaos(chaosName, destruction, guardian, jewelry, character);
-
-        DayContent guardianName = dayContent.get(character.getDayTodo().getGuardianName());
-        calculateGuardian(guardianName, destruction, guardian, leapStone, character);
         return character;
     }
 
@@ -116,7 +98,7 @@ public class CharacterService {
     }
 
     /**
-     * 휴식게이지 업데이트
+     * 일일컨텐츠 휴식게이지 업데이트
      */
     public Character updateGauge(Character character, CharacterDayTodoDto characterDayTodoDto) {
         character.getDayTodo().updateGauge(characterDayTodoDto);
@@ -124,42 +106,18 @@ public class CharacterService {
     }
 
 
+    /**
+     * 일일컨텐츠 체크 업데이트
+     */
     public DayTodo updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
-        return character.getDayTodo().updateCheck(characterDayTodoDto); // 변경
+        return character.getDayTodo().updateCheck(characterDayTodoDto);
     }
 
-    public List<Character> calculateDayTodoV2(List<Character> characterList, Map<String, Market> contentResource) {
-        Market jewelry = contentResource.get("1레벨");
-        Market destruction;
-        Market guardian;
-        Market leapStone;
-        for (Character character : characterList) {
-            if (character.getItemLevel() >= 1415 && character.getItemLevel() < 1540) {
-                destruction = contentResource.get("파괴석 결정");
-                guardian = contentResource.get("수호석 결정");
-                leapStone = contentResource.get("위대한 명예의 돌파석");
-            } else if (character.getItemLevel() >= 1540 && character.getItemLevel() < 1580) {
-                destruction = contentResource.get("파괴강석");
-                guardian = contentResource.get("수호강석");
-                leapStone = contentResource.get("경이로운 명예의 돌파석");
-            } else {
-                destruction = contentResource.get("정제된 파괴강석");
-                guardian = contentResource.get("정제된 수호강석");
-                leapStone = contentResource.get("찬란한 명예의 돌파석");
-            }
-            calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry, character);
-            calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, character);
-        }
-        return characterList;
-    }
 
-    public void deleteCharacter(Member member) {
-        characterRepository.deleteByMember(member);
-    }
+
 
     /**
      * 골드 획득 지정캐릭터확인
-     * @param member
      */
     public int checkGoldCharacter(Member member) {
         return characterRepository.countByMemberAndGoldCharacterIsTrue(member);
