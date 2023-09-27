@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.domain.Role;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
 
@@ -25,6 +26,8 @@ public class CommentResponseDto {
 
     private LocalDateTime lastModifiedDate;
 
+    private Role role;
+
     public CommentResponseDto createResponseDto(Comments comments) {
         return CommentResponseDto.builder()
                 .id(comments.getId())
@@ -32,6 +35,7 @@ public class CommentResponseDto {
                 .body(comments.getBody())
                 .username(comments.getMember().getUsername())
                 .parentId(comments.getParentId())
+                .role(comments.getMember().getRole())
                 .build();
     }
 }

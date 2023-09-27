@@ -42,19 +42,26 @@ public class SchedulerService {
      */
     @Scheduled(cron = "0 0 6 * * ?")
     public void resetDayTodo() {
+        long startTime = System.currentTimeMillis(); // 작업 시작 시간 기록
+
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.findContentResource();
 
         // 휴식게이지 계산
         characterService.findAll().forEach(character -> {
-            character.getDayTodo().setEponaCheck(false); //에포나의뢰, 출석체크 초기화
-            character.getDayTodo().calculateChaos(); //카오스던전 휴식게이지 계산 후 초기화
-            character.getDayTodo().calculateGuardian(); //가디언토벌 휴식게이지 계산 후 초기화
+            character.getDayTodo().setEponaCheck(false); // 에포나의뢰, 출석체크 초기화
+            character.getDayTodo().calculateChaos(); // 카오스던전 휴식게이지 계산 후 초기화
+            character.getDayTodo().calculateGuardian(); // 가디언토벌 휴식게이지 계산 후 초기화
             // 반영된 휴식게이지로 일일숙제 예상 수익 계산
             characterService.calculateDayTodo(character, contentResource);
         });
-        log.info("일일 숙제 초기화 완료");
+
+        long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
+        long executionTime = endTime - startTime; // 작업에 걸린 시간 계산
+
+        log.info("일일 숙제 초기화 완료. 소요 시간: {} 밀리초", executionTime);
     }
+
 
     /**
      * 수요일 오전 6시 주간 숙제 초기화

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 
 import javax.validation.constraints.NotEmpty;
@@ -29,5 +30,7 @@ public class MemberResponseDto {
     private List<Character> characters;
 
     private String token;
+
+    private Role role;
 
 }

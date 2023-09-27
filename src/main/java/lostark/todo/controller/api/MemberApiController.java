@@ -9,6 +9,7 @@ import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
+import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
@@ -46,9 +47,15 @@ public class MemberApiController {
 
     @GetMapping()
     public ResponseEntity findMember(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
         MemberResponseDto memberResponseDto = MemberResponseDto.builder()
                 .username(username)
+                .role(member.getRole())
                 .build();
+        if (member.getRole().equals(Role.ADMIN)) {
+            memberResponseDto.setUsername("관리자");
+        }
+
         return new ResponseEntity(memberResponseDto, HttpStatus.OK);
     }
 

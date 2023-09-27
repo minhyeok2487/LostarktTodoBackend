@@ -45,6 +45,7 @@ public class CommentsApiController {
         Comments updateComments = Comments.builder()
                 .body(commentRequestDto.getBody())
                 .member(member)
+                .parentId(commentRequestDto.getParentId())
                 .build();
         commentsService.save(updateComments); //저장
 
