@@ -55,6 +55,11 @@ public class Character extends BaseTimeEntity {
     private List<Todo> todoList;
 
     private boolean goldCharacter; //골드 획득 지정 캐릭터
+
+    private boolean challengeGuardian; //도전 가디언 토벌
+
+    private boolean challengeAbyss; //도전 어비스 던전
+
     @Override
     public String toString() {
         return "Character{" +
@@ -91,6 +96,16 @@ public class Character extends BaseTimeEntity {
     public Character createImage(Object characterImage) {
         if (characterImage != null) {
             this.characterImage = characterImage.toString();
+        }
+        return this;
+    }
+
+    public Character updateChallenge(String content) {
+        if (content.equals("Guardian")) {
+            this.challengeGuardian = !this.challengeGuardian;
+        }
+        if (content.equals("Abyss")) {
+            this.challengeAbyss = !this.challengeAbyss;
         }
         return this;
     }

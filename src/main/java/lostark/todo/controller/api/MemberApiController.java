@@ -20,6 +20,7 @@ import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -102,7 +103,6 @@ public class MemberApiController {
         if(member.getCharacters().isEmpty()) {
             throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
         }
-
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
                 .map(character -> new CharacterResponseDto().createResponseDto(character))
@@ -110,8 +110,24 @@ public class MemberApiController {
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
         characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
+        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+    }
 
+    @GetMapping("/characterList/{serverName}")
+    public ResponseEntity findCharacterListServerName(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
+        // username -> member 조회
+        Member member = memberService.findMember(username);
+        if(member.getCharacters().isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
+        List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
+        // 결과
+        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+                .map(character -> new CharacterResponseDto().createResponseDto(character))
+                .collect(Collectors.toList());
 
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 
@@ -180,4 +196,13 @@ public class MemberApiController {
     }
 
 
+    @GetMapping("/characterList/server")
+    public ResponseEntity findGroupServerNameCount(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        if(member.getCharacters().isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
+        Map<String, Long> groupServerNameCount = characterService.findGroupServerNameCount(member);
+        return new ResponseEntity(groupServerNameCount, HttpStatus.OK);
+    }
 }

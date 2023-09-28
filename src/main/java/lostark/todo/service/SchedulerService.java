@@ -71,6 +71,10 @@ public class SchedulerService {
         todoService.findAll().forEach(todo -> {
             todo.setChecked(false);
         });
+        characterService.findAll().forEach(character -> {
+            character.setChallengeAbyss(false);
+            character.setChallengeAbyss(false);
+        });
         log.info("주간 숙제 초기화 완료");
     }
 }

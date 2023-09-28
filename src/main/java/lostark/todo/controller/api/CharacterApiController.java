@@ -3,6 +3,7 @@ package lostark.todo.controller.api;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterChallengeRequestDto;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
@@ -13,6 +14,7 @@ import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
+import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todo.TodoContentName;
 import lostark.todo.service.*;
@@ -181,7 +183,7 @@ public class CharacterApiController {
         Character checkedCharacter = characterService.findCharacterWithMember(character.getCharacterName(), username);
 
         // 골드 획득 지정캐릭터 : 6캐릭 이상인지 확인
-        int goldCharacter = characterService.checkGoldCharacter(checkedCharacter.getMember());
+        int goldCharacter = characterService.checkGoldCharacter(checkedCharacter);
         //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
         if (!checkedCharacter.isGoldCharacter() && goldCharacter >= 6) {
             throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
@@ -213,5 +215,23 @@ public class CharacterApiController {
                 .message(todo.getMessage())
                 .build();
         return new ResponseEntity(todoResponseDto, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")
+    @PatchMapping("/challenge")
+    public ResponseEntity updateChallenge(@AuthenticationPrincipal String username,
+                                            @RequestBody CharacterChallengeRequestDto dto) {
+        // username -> member 조회
+        System.out.println("dto = " + dto);
+        Member member = memberService.findMember(username);
+        List<Character> characterList = characterService.updateChallenge(member, dto.getServerName(), dto.getContent());
+        // 결과
+        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+                .map(character -> new CharacterResponseDto().createResponseDto(character))
+                .collect(Collectors.toList());
+
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
+        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 }

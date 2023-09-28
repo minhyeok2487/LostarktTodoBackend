@@ -13,8 +13,7 @@ import lostark.todo.domain.member.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -113,17 +112,51 @@ public class CharacterService {
         return character.getDayTodo().updateCheck(characterDayTodoDto);
     }
 
-
-
-
     /**
      * 골드 획득 지정캐릭터확인
      */
-    public int checkGoldCharacter(Member member) {
-        return characterRepository.countByMemberAndGoldCharacterIsTrue(member);
+    public int checkGoldCharacter(Member member, String servername) {
+        return characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(member, servername);
     }
 
     public Character updateGoldCharacter(Character character) {
         return character.updateGoldCharacter();
+    }
+
+    public Map<String, Long> findGroupServerNameCount(Member member) {
+        List<Object[]> group = characterRepository.findCountGroupByServerName(member);
+        Map<String, Long> resultMap = new HashMap<>();
+        long count = 0L;
+        for (Object[] result : group) {
+            String serverName = (String) result[0];
+            long characterCount = (long) result[1];
+            count += characterCount;
+            resultMap.put(serverName, characterCount);
+        }
+
+        // resultMap 내림차순 정렬
+        Map<String, Long> sortedMap = new LinkedHashMap<>();
+        resultMap.entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .forEachOrdered(entry -> sortedMap.put(entry.getKey(), entry.getValue()));
+        return sortedMap;
+    }
+
+    public List<Character> findCharacterListServerName(Member member, String serverName) {
+        return characterRepository.findCharacterListServerName(member, serverName);
+    }
+
+    public int checkGoldCharacter(Character checkedCharacter) {
+        return characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(checkedCharacter.getMember(), checkedCharacter.getServerName());
+
+    }
+
+    public List<Character> updateChallenge(Member member, String serverName, String content) {
+        List<Character> characterList = findCharacterListServerName(member, serverName);
+        for (Character character : characterList) {
+            character.updateChallenge(content);
+        }
+        return characterList;
     }
 }

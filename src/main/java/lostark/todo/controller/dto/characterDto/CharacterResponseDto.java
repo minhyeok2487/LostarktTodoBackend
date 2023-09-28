@@ -78,6 +78,10 @@ public class CharacterResponseDto {
     @ApiModelProperty(notes = "골드획득 지정")
     private boolean goldCharacter; //에포나
 
+    private boolean challengeGuardian; //도전 가디언 토벌
+
+    private boolean challengeAbyss; //도전 어비스 던전
+
     public CharacterResponseDto createResponseDto(Character character) {
 
         List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
@@ -122,6 +126,8 @@ public class CharacterResponseDto {
                 .eponaCheck(character.getDayTodo().isEponaCheck())
                 .todoList(sortedTodoList)
                 .goldCharacter(character.isGoldCharacter())
+                .challengeAbyss(character.isChallengeAbyss())
+                .challengeGuardian(character.isChallengeGuardian())
                 .build();
         return characterResponseDto;
     }

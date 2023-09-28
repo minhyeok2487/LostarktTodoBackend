@@ -23,5 +23,11 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
     void deleteByMember(Member member);
 
-    int countByMemberAndGoldCharacterIsTrue(Member member);
+    int countByMemberAndServerNameAndGoldCharacterIsTrue(Member member, String serverName);
+
+    @Query(value = "SELECT c.serverName, COUNT(c.id) FROM Character c WHERE c.member = :member GROUP BY c.serverName")
+    List<Object[]> findCountGroupByServerName(@Param("member") Member member);
+
+    @Query(value = "SELECT c FROM Character c WHERE c.member = :member AND c.serverName = :serverName")
+    List<Character> findCharacterListServerName(@Param("member") Member member, @Param("serverName") String serverName);
 }
