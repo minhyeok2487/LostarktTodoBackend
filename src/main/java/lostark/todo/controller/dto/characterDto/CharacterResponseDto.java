@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.todo.Todo;
 
@@ -82,6 +83,8 @@ public class CharacterResponseDto {
 
     private boolean challengeAbyss; //도전 어비스 던전
 
+    private Settings settings;
+
     public CharacterResponseDto createResponseDto(Character character) {
 
         List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
@@ -128,6 +131,7 @@ public class CharacterResponseDto {
                 .goldCharacter(character.isGoldCharacter())
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
+                .settings(character.getSettings())
                 .build();
         return characterResponseDto;
     }

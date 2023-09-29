@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
+import lostark.todo.controller.dto.characterDto.CharacterSettingDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
@@ -105,6 +107,7 @@ public class MemberApiController {
         }
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
+                .filter(character -> character.getSettings().isShowCharacter())
                 .map(character -> new CharacterResponseDto().createResponseDto(character))
                 .collect(Collectors.toList());
 
@@ -123,6 +126,7 @@ public class MemberApiController {
         List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
                 .map(character -> new CharacterResponseDto().createResponseDto(character))
                 .collect(Collectors.toList());
 
@@ -204,5 +208,17 @@ public class MemberApiController {
         }
         Map<String, Long> groupServerNameCount = characterService.findGroupServerNameCount(member);
         return new ResponseEntity(groupServerNameCount, HttpStatus.OK);
+    }
+
+    @GetMapping("/settings")
+    public ResponseEntity findSettings(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        member.getCharacters().sort(Comparator.comparingInt(Character::getSortNumber));
+
+        List<CharacterSettingDto> settingsList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            settingsList.add(CharacterSettingDto.toDto(character));
+        }
+        return new ResponseEntity(settingsList, HttpStatus.OK);
     }
 }

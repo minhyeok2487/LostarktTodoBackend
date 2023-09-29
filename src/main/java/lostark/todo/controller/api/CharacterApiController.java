@@ -3,9 +3,7 @@ package lostark.todo.controller.api;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterChallengeRequestDto;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
@@ -233,5 +231,12 @@ public class CharacterApiController {
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
         characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+    }
+
+    @PatchMapping("/settings")
+    public ResponseEntity updateSettings(@AuthenticationPrincipal String username, @RequestBody SettingRequestDto dto) {
+        Character character = characterService.findCharacterWithMember(dto.getCharacterName(), username);
+        characterService.updateSetting(character, dto.getName(), dto.isValue());
+        return new ResponseEntity(CharacterSettingDto.toDto(character), HttpStatus.OK);
     }
 }

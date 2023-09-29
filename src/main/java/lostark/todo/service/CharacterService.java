@@ -159,4 +159,8 @@ public class CharacterService {
         }
         return characterList;
     }
+
+    public void updateSetting(Character character, String name, boolean value) {
+        character.getSettings().update(name, value);
+    }
 }

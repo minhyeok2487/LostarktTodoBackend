@@ -60,6 +60,9 @@ public class Character extends BaseTimeEntity {
 
     private boolean challengeAbyss; //도전 어비스 던전
 
+    @Embedded
+    private Settings settings;
+
     @Override
     public String toString() {
         return "Character{" +
