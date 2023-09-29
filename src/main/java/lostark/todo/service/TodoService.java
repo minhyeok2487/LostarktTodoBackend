@@ -57,7 +57,7 @@ public class TodoService {
     }
 
     public Todo updateWeekCheck(TodoDto todoDto) {
-        return findById(todoDto.getTodoId()).updateCheck(todoDto.isTodoCheck());
+        return findById(todoDto.getTodoId()).updateCheck();
     }
 
     public List<Todo> findAll() {

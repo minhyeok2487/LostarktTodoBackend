@@ -44,8 +44,9 @@ public class Todo extends BaseTimeEntity {
     @JsonBackReference //순환참조 방지
     private Character character;
 
-    public Todo updateCheck(boolean check) {
-        this.isChecked = !check;
+    public Todo updateCheck() {
+//        this.isChecked = !check;
+        this.isChecked = !this.isChecked;
         return this;
     }
 
