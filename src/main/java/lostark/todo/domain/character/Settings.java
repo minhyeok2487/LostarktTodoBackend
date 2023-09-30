@@ -17,7 +17,6 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class Settings {
 
@@ -35,6 +34,14 @@ public class Settings {
 
    @ColumnDefault("true")
    private boolean showWeekTodo;
+
+   public Settings() {
+      this.showCharacter = true;
+      this.showEpona = true;
+      this.showChaos = true;
+      this.showGuardian = true;
+      this.showWeekTodo = true;
+   }
 
    public void update(String name, boolean value) {
       if(name.equals("showCharacter")) {

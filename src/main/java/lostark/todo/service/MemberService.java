@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +38,7 @@ public class MemberService {
      */
     public Member createCharacter(String username, String apiKey, List<Character> characterList) {
         Member member = findMember(username);
+        characterList.stream().forEach(character -> character.setSettings(new Settings()));
         characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
         member.setApiKey(apiKey);
         return member;
