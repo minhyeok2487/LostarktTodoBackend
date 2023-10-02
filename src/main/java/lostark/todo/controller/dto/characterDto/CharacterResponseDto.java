@@ -124,7 +124,7 @@ public class CharacterResponseDto {
                 todoResponseDtoList.add(todoResponseDto);
             }
             // 골드 획득 내림차순으로 정렬
-            todoResponseDtoList.stream()
+            todoResponseDtoList = todoResponseDtoList.stream()
                     .sorted(Comparator.comparing(TodoResponseDto::getGold).reversed()).collect(Collectors.toList());
             for (int i = 0; i < todoResponseDtoList.size(); i++) {
                 TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);

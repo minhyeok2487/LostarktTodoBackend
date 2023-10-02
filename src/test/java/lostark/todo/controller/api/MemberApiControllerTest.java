@@ -364,4 +364,35 @@ class MemberApiControllerTest {
         Assertions.assertThat(characterResponseDtoList.get(0).getItemLevel()).isEqualTo(itemLevel);
         Assertions.assertThat(characterResponseDtoList.get(1).getItemLevel()).isEqualTo(itemLevel);
     }
+
+    @Test
+    @DisplayName("서버 분리 캐릭터 조회 테스트")
+    void findCharacterListServerNameTest() {
+        // given
+        String username = "tjdgus9564@gmail.com";
+        // username -> member 조회
+        Member member = memberService.findMember(username);
+        if(member.getCharacters().isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
+        String serverName = member.getCharacters().get(0).getServerName();
+        List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
+        // 결과
+        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
+                .map(character -> new CharacterResponseDto().toDto(character))
+                .collect(Collectors.toList());
+
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
+
+        for (CharacterResponseDto characterResponseDto : characterResponseDtoList) {
+            System.out.println("characterResponseDto.getCharacterName() = " + characterResponseDto.getCharacterName());
+            System.out.println("characterResponseDto.getItemLevel() = " + characterResponseDto.getItemLevel());
+            System.out.println("characterResponseDto.getTodoList() = " + characterResponseDto.getTodoList());
+        }
+    }
 }

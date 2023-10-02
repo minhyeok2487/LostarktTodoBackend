@@ -21,7 +21,5 @@ public class TodoResponseDto {
 
     private boolean check;
 
-    private int sort;
-
     private String message;
 }

@@ -94,28 +94,28 @@ public class MemberApiController {
         return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "회원 캐릭터 리스트 조회",
-            response = CharacterResponseDto.class)
-    @GetMapping("/characterList")
-    public ResponseEntity getCharacterList(@AuthenticationPrincipal String username) {
-        // username -> member 조회
-        Member member = memberService.findMember(username);
-        if(member.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
-        // 결과
-        List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
-                .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().toDto(character))
-                .collect(Collectors.toList());
-
-        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
-        );
-        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
-    }
+//    @ApiOperation(value = "회원 캐릭터 리스트 조회",
+//            response = CharacterResponseDto.class)
+//    @GetMapping("/characterList")
+//    public ResponseEntity getCharacterList(@AuthenticationPrincipal String username) {
+//        // username -> member 조회
+//        Member member = memberService.findMember(username);
+//        if(member.getCharacters().isEmpty()) {
+//            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+//        }
+//        // 결과
+//        List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
+//                .filter(character -> character.getSettings().isShowCharacter())
+//                .map(character -> new CharacterResponseDto().toDto(character))
+//                .collect(Collectors.toList());
+//
+//        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+//        characterResponseDtoList.sort(Comparator
+//                .comparingInt(CharacterResponseDto::getSortNumber)
+//                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+//        );
+//        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+//    }
 
     @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
             response = CharacterResponseDto.class)
