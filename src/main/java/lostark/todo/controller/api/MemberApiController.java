@@ -12,7 +12,6 @@ import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
@@ -22,7 +21,6 @@ import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -66,7 +64,7 @@ public class MemberApiController {
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
             response = MemberResponseDto.class)
     @PostMapping("/signup")
-    public ResponseEntity signupCharacterV2(@AuthenticationPrincipal String username, @RequestBody @Valid MemberRequestDto memberDto) {
+    public ResponseEntity saveCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberRequestDto memberDto) {
         // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
         List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
         List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
@@ -108,14 +106,19 @@ public class MemberApiController {
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().createResponseDto(character))
+                .map(character -> new CharacterResponseDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
+            response = CharacterResponseDto.class)
     @GetMapping("/characterList/{serverName}")
     public ResponseEntity findCharacterListServerName(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
         // username -> member 조회
@@ -127,11 +130,14 @@ public class MemberApiController {
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().createResponseDto(character))
+                .map(character -> new CharacterResponseDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 
@@ -154,25 +160,28 @@ public class MemberApiController {
                 beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
 
         // 변경된 내용 업데이트 및 추가, 삭제
-        List<Character> updatedCharacterList = memberService.updateCharacterList(beforeCharacterList, updateCharacterList);
+        memberService.updateCharacterList(member, updateCharacterList);
 
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.findContentResource();
 
         // 일일숙제 예상 수익 계산(휴식 게이지 포함)
         List<Character> calculatedCharacterList = new ArrayList<>();
-        for (Character character : updatedCharacterList) {
+        for (Character character : member.getCharacters()) {
             Character result = characterService.calculateDayTodo(character, contentResource);
             calculatedCharacterList.add(result);
         }
 
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().createResponseDto(character))
+                .map(character -> new CharacterResponseDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
 
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
@@ -193,7 +202,7 @@ public class MemberApiController {
         List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>();
         for (Character character : member.getCharacters()) {
             // Character -> CharacterResponseDto 변경
-            CharacterResponseDto characterResponseDto = new CharacterResponseDto().createResponseDto(character);
+            CharacterResponseDto characterResponseDto = new CharacterResponseDto().toDto(character);
             characterResponseDtoList.add(characterResponseDto);
         }
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);

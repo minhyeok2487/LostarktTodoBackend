@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,6 @@ public class MemberService {
      */
     public Member createCharacter(String username, String apiKey, List<Character> characterList) {
         Member member = findMember(username);
-        characterList.stream().forEach(character -> character.setSettings(new Settings()));
         characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
         member.setApiKey(apiKey);
         return member;
@@ -119,6 +119,50 @@ public class MemberService {
         beforeCharacterList.removeAll(charactersToDelete);
         beforeCharacterList.addAll(charactersToAdd);
 
+        return beforeCharacterList;
+    }
+
+    /**
+     * 캐릭터 업데이트 로직
+     * 업데이트, 추가, 삭제
+     */
+    public List<Character> updateCharacterList(Member member, List<Character> updateCharacterList) {
+        List<Character> beforeCharacterList = member.getCharacters();
+        // 캐릭터 정보 업데이트와 새로운 캐릭터 추가
+        for (Character updateCharacter : updateCharacterList) {
+            updateCharacter.setMember(member);
+            boolean found = false;
+
+            //기존에 있는 캐릭터는 업데이트
+            for (Character beforeCharacter : beforeCharacterList) {
+                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
+                    beforeCharacter.updateCharacter(updateCharacter); // 캐릭터 정보 업데이트
+                    found = true;
+                    break;
+                }
+            }
+
+            //기존에 존재하지 않는 캐릭터면 추가
+            if (!found) {
+                beforeCharacterList.add(updateCharacter);
+            }
+        }
+
+        // 삭제된 캐릭터 삭제
+        Iterator<Character> beforeCharacterIterator = beforeCharacterList.iterator();
+        while (beforeCharacterIterator.hasNext()) {
+            Character beforeCharacter = beforeCharacterIterator.next();
+            boolean found = false;
+            for (Character updateCharacter : updateCharacterList) {
+                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                beforeCharacterIterator.remove();
+            }
+        }
         return beforeCharacterList;
     }
 

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
+import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.DayContent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -61,6 +62,8 @@ public class LostarkCharacterService {
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
                         .dayTodo(new DayTodo())
                         .build();
+                character.setSettings(new Settings());
+                character.setTodoList(new ArrayList<>());
                 character.createImage(jsonObject.get("CharacterImage"));
                 character.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
                 characterList.add(character);
@@ -77,52 +80,11 @@ public class LostarkCharacterService {
             return sortedList;
         } catch (NullPointerException e) {
             throw new IllegalArgumentException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw e;
         }
-    }
-
-    public List<Character> getCharacterList(MemberRequestDto memberDto) {
-        try {
-            String encodeCharacterName = URLEncoder.encode(memberDto.getCharacterName(), StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, memberDto.getApiKey());
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-
-            // 1415이상만 필터링
-            JSONArray filteredArray = filterLevel(jsonArray);
-
-            JSONArray imageList = getCharacterImage(filteredArray, memberDto.getApiKey());
-            List<Character> characterList = new ArrayList<>();
-            for (Object o : imageList) {
-                JSONObject jsonObject = (JSONObject) o;
-                Character character = Character.builder()
-                        .characterName(jsonObject.get("CharacterName").toString())
-                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-                        .characterClassName(jsonObject.get("CharacterClassName").toString())
-                        .serverName(jsonObject.get("ServerName").toString())
-                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
-                        .characterImage(jsonObject.get("CharacterImage").toString())
-                        .dayTodo(new DayTodo())
-                        .build();
-                character.getDayTodo().createName(character.getItemLevel()); // 일일 숙제 이름 넣기
-                characterList.add(character);
-            }
-            //레벨순으로 정렬 후 리턴
-            AtomicInteger sortNumber = new AtomicInteger();
-            List<Character> sortedList = characterList.stream()
-                    .sorted(Comparator.comparing(Character::getItemLevel).reversed()).collect(Collectors.toList())
-                    .stream().map(character -> {
-                        character.setSortNumber(sortNumber.getAndIncrement());
-                        return character;
-                    })
-                    .collect(Collectors.toList());
-            return sortedList;
-        } catch (NullPointerException e) {
-            throw new RuntimeException(memberDto.getCharacterName() + " 은(는) 존재하지 않는 캐릭터 입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

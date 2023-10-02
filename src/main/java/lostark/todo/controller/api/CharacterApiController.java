@@ -150,7 +150,7 @@ public class CharacterApiController {
 
         List<Todo> todoList = todoService.updateWeek_V2(character, weekContentDto);
 
-        CharacterResponseDto responseDto = new CharacterResponseDto().createResponseDto(character);
+        CharacterResponseDto responseDto = new CharacterResponseDto().toDto(character);
 
         return new ResponseEntity(responseDto, HttpStatus.OK);
     }
@@ -225,7 +225,7 @@ public class CharacterApiController {
         List<Character> characterList = characterService.updateChallenge(member, dto.getServerName(), dto.getContent());
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
-                .map(character -> new CharacterResponseDto().createResponseDto(character))
+                .map(character -> new CharacterResponseDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬

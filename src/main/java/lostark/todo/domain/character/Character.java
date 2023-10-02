@@ -27,7 +27,7 @@ public class Character extends BaseTimeEntity {
     @Column(nullable = false)
     private String serverName;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String characterName;
 
     @Column(nullable = false)

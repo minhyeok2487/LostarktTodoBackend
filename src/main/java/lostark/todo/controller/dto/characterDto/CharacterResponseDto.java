@@ -11,7 +11,6 @@ import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.todo.Todo;
 
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -85,30 +84,7 @@ public class CharacterResponseDto {
 
     private Settings settings;
 
-    public CharacterResponseDto createResponseDto(Character character) {
-
-        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
-
-        for (Todo todo : character.getTodoList()) {
-            TodoResponseDto todoResponseDto = TodoResponseDto.builder()
-                    .id(todo.getId())
-                    .check(todo.isChecked())
-                    .contentName(todo.getContentName())
-                    .name(todo.getName())
-                    .gold(todo.getGold())
-                    .message(todo.getMessage())
-                    .build();
-            todoResponseDtoList.add(todoResponseDto);
-        }
-        // 골드 획득 내림차순으로 정렬
-        List<TodoResponseDto> sortedTodoList = todoResponseDtoList.stream()
-                .sorted(Comparator.comparing(TodoResponseDto::getGold).reversed()).collect(Collectors.toList());
-        for (int i = 0; i < sortedTodoList.size(); i++) {
-            TodoResponseDto todoResponseDto = sortedTodoList.get(i);
-            if (i >= 3) {
-                todoResponseDto.setGold(0);
-            }
-        }
+    public CharacterResponseDto toDto(Character character) {
 
         CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
                 .id(character.getId())
@@ -127,12 +103,39 @@ public class CharacterResponseDto {
                 .guardian(character.getDayTodo().getGuardian())
                 .guardianGold(character.getDayTodo().getGuardianGold())
                 .eponaCheck(character.getDayTodo().isEponaCheck())
-                .todoList(sortedTodoList)
                 .goldCharacter(character.isGoldCharacter())
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
                 .settings(character.getSettings())
                 .build();
+
+        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
+
+        if (!character.getTodoList().isEmpty()) {
+            for (Todo todo : character.getTodoList()) {
+                TodoResponseDto todoResponseDto = TodoResponseDto.builder()
+                        .id(todo.getId())
+                        .check(todo.isChecked())
+                        .contentName(todo.getContentName())
+                        .name(todo.getName())
+                        .gold(todo.getGold())
+                        .message(todo.getMessage())
+                        .build();
+                todoResponseDtoList.add(todoResponseDto);
+            }
+            // 골드 획득 내림차순으로 정렬
+            todoResponseDtoList.stream()
+                    .sorted(Comparator.comparing(TodoResponseDto::getGold).reversed()).collect(Collectors.toList());
+            for (int i = 0; i < todoResponseDtoList.size(); i++) {
+                TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);
+                if (i >= 3) {
+                    todoResponseDto.setGold(0);
+                }
+            }
+        }
+
+        characterResponseDto.setTodoList(todoResponseDtoList);
+
         return characterResponseDto;
     }
 }
