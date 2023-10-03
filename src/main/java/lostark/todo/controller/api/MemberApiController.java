@@ -141,6 +141,32 @@ public class MemberApiController {
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
+            response = CharacterResponseDto.class)
+    @GetMapping("/characterList-v3/{serverName}")
+    public ResponseEntity findCharacterListServerNameV3(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
+        System.out.println("MemberApiController.findCharacterListServerNameV3");
+        System.out.println("username = " + username);
+        // username -> member 조회
+        Member member = memberService.findMember(username);
+        if(member.getCharacters().isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
+        List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
+        // 결과
+        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
+                .map(character -> new CharacterResponseDto().toDtoV3(character))
+                .collect(Collectors.toList());
+
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
+        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+    }
+
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
             notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
                     "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +

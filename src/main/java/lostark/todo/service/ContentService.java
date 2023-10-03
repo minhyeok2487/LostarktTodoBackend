@@ -14,6 +14,10 @@ public class ContentService {
 
     private final ContentRepository contentRepository;
 
+    public Content findById(long id) {
+        return contentRepository.findById(id).orElseThrow(()->new IllegalArgumentException("없는 컨텐츠 입니다."));
+    }
+
     /**
      *  카테고리(카오스던전, 가디언토벌)별 일일컨텐츠 출력
      */
@@ -63,4 +67,7 @@ public class ContentService {
     }
 
 
+    public List<WeekContent> findAllByCategoryAndWeekCategory(String weekCategory, WeekContentCategory weekContentCategory) {
+        return contentRepository.findAllByWeekCategoryAndWeekContentCategory(weekCategory, weekContentCategory);
+    }
 }

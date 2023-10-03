@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface ContentRepository extends JpaRepository<Content, Long> {
@@ -19,4 +18,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     List<WeekContent> findAllByWeekContentWithItemLevel(@Param("itemLevel") double itemLevel);
 
     List<DayContent> findDayContentByCategoryOrderByLevelDesc(@Param("category") Category category);
+
+    List<WeekContent> findAllByWeekCategoryAndWeekContentCategory(String weekCategory, WeekContentCategory weekContentCategory);
 }

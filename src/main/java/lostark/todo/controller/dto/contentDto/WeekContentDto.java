@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.Content;
 import lostark.todo.domain.content.WeekContent;
+import lostark.todo.domain.content.WeekContentCategory;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +19,8 @@ public class WeekContentDto {
 
     private String weekCategory;
 
+    private WeekContentCategory weekContentCategory;
+
     private String name;
 
     private double level;
@@ -27,4 +30,17 @@ public class WeekContentDto {
     private int gold; //골드
 
     private boolean checked; //선택
+
+    public WeekContentDto toDto(WeekContent weekContent) {
+        return WeekContentDto.builder()
+                .id(weekContent.getId())
+                .weekCategory(weekContent.getWeekCategory())
+                .weekContentCategory(weekContent.getWeekContentCategory())
+                .level(weekContent.getLevel())
+                .checked(false)
+                .gate(weekContent.getGate())
+                .gold(weekContent.getGold())
+                .name(weekContent.getName())
+                .build();
+    }
 }

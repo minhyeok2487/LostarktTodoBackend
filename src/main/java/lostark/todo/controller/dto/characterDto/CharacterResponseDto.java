@@ -10,6 +10,7 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.todo.Todo;
+import lostark.todo.domain.todoV2.TodoV2;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -113,27 +114,58 @@ public class CharacterResponseDto {
 
         if (!character.getTodoList().isEmpty()) {
             for (Todo todo : character.getTodoList()) {
-                TodoResponseDto todoResponseDto = TodoResponseDto.builder()
-                        .id(todo.getId())
-                        .check(todo.isChecked())
-                        .contentName(todo.getContentName())
-                        .name(todo.getName())
-                        .gold(todo.getGold())
-                        .message(todo.getMessage())
-                        .build();
+                TodoResponseDto todoResponseDto = new TodoResponseDto().toDto(todo);
                 todoResponseDtoList.add(todoResponseDto);
-            }
-            // 골드 획득 내림차순으로 정렬
-            todoResponseDtoList = todoResponseDtoList.stream()
-                    .sorted(Comparator.comparing(TodoResponseDto::getGold).reversed()).collect(Collectors.toList());
-            for (int i = 0; i < todoResponseDtoList.size(); i++) {
-                TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);
-                if (i >= 3) {
-                    todoResponseDto.setGold(0);
-                }
             }
         }
 
+        characterResponseDto.setTodoList(todoResponseDtoList);
+
+        return characterResponseDto;
+    }
+
+    public CharacterResponseDto toDtoV3(Character character) {
+
+        CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
+                .id(character.getId())
+                .characterName(character.getCharacterName())
+                .characterImage(character.getCharacterImage())
+                .characterClassName(character.getCharacterClassName())
+                .serverName(character.getServerName())
+                .itemLevel(character.getItemLevel())
+                .sortNumber(character.getSortNumber())
+                .chaosCheck(character.getDayTodo().getChaosCheck())
+                .chaosGauge(character.getDayTodo().getChaosGauge())
+                .chaos(character.getDayTodo().getChaos())
+                .chaosGold(character.getDayTodo().getChaosGold())
+                .guardianCheck(character.getDayTodo().getGuardianCheck())
+                .guardianGauge(character.getDayTodo().getGuardianGauge())
+                .guardian(character.getDayTodo().getGuardian())
+                .guardianGold(character.getDayTodo().getGuardianGold())
+                .eponaCheck(character.getDayTodo().isEponaCheck())
+                .goldCharacter(character.isGoldCharacter())
+                .challengeAbyss(character.isChallengeAbyss())
+                .challengeGuardian(character.isChallengeGuardian())
+                .settings(character.getSettings())
+                .build();
+
+        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
+        if(!character.getTodoV2List().isEmpty()){
+            for (TodoV2 todo : character.getTodoV2List()) {
+                boolean exitedCheck = false;
+                for (TodoResponseDto exited : todoResponseDtoList) {
+                    if (exited.getWeekCategory().equals(todo.getWeekContent().getWeekCategory())) {
+                        exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
+                        exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        exitedCheck = true;
+                        break;
+                    }
+                }
+                if (!exitedCheck) {
+                    todoResponseDtoList.add(new TodoResponseDto().toDto(todo));
+                }
+            }
+        }
         characterResponseDto.setTodoList(todoResponseDtoList);
 
         return characterResponseDto;

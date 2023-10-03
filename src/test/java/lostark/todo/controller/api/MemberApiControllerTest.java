@@ -62,11 +62,11 @@ class MemberApiControllerTest {
     @DisplayName("회원가입시 캐릭터 추가 테스트 성공")
     void saveCharacterTest() {
         // given //
-        String username = "qwe2487@ajou.ac.kr";
+        String username = "ehdgmlthek@gmail.com";
         MemberRequestDto memberDto = MemberRequestDto.builder()
                 .apiKey(apiKey)
                 .username(username)
-                .characterName("이다")
+                .characterName("개내동1")
                 .build();
 
         // when //
@@ -189,6 +189,53 @@ class MemberApiControllerTest {
         assertThatThrownBy(() -> lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(characterName+" 은(는) 존재하지 않는 캐릭터 입니다.");
+    }
+
+    @Test
+    @DisplayName("회원 캐릭터 업데이트 성공 - 기본")
+    void updateCharacterListTest() {
+        // given //
+        String username = "9gjaxx@gmail.com";
+        Member member = memberService.findMember(username);
+        final int beforeCharacterSize = member.getCharacters().size();
+
+        // 대표캐릭터와 연동된 캐릭터(api 검증)
+        // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+
+        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+        List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
+                member.getCharacters().get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+
+        // when //
+        // 변경된 내용 업데이트 및 추가, 삭제
+        memberService.updateCharacterList(member, updateCharacterList);
+
+        // 재련재료 데이터 리스트로 거래소 데이터 호출
+        Map<String, Market> contentResource = marketService.findContentResource();
+
+        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+        List<Character> calculatedCharacterList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            Character result = characterService.calculateDayTodo(character, contentResource);
+            calculatedCharacterList.add(result);
+        }
+
+        // 결과
+        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterResponseDto().toDto(character))
+                .collect(Collectors.toList());
+
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
+
+
+        // then //
+
     }
 
     @Test

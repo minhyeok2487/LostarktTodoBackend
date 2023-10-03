@@ -5,6 +5,7 @@ import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
+import lostark.todo.domain.todoV2.TodoV2;
 
 import javax.persistence.*;
 import java.util.List;
@@ -53,6 +54,9 @@ public class Character extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
     private List<Todo> todoList;
+
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    private List<TodoV2> todoV2List;
 
     private boolean goldCharacter; //골드 획득 지정 캐릭터
 
