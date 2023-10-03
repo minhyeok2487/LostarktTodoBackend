@@ -206,8 +206,6 @@ public class CharacterApiController {
     public ResponseEntity updateTodoV3All(@AuthenticationPrincipal String username,
                                           @PathVariable("characterName") String characterName,
                                           @RequestBody List<WeekContentDto> weekContentDtoList) {
-        System.out.println("CharacterApiController.updateTodoV3All");
-        System.out.println("username = " + username);
         Character character = characterService.findCharacterWithMember(characterName, username);
         List<WeekContent> weekContentList = contentService.findAllByCategoryAndWeekCategory(
                 weekContentDtoList.get(0).getWeekCategory(), weekContentDtoList.get(0).getWeekContentCategory());

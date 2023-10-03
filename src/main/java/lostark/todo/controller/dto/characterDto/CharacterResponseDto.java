@@ -150,13 +150,24 @@ public class CharacterResponseDto {
                 .build();
 
         List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
+        //weekContent gate 순으로 정렬
+        character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
         if(!character.getTodoV2List().isEmpty()){
             for (TodoV2 todo : character.getTodoV2List()) {
                 boolean exitedCheck = false;
                 for (TodoResponseDto exited : todoResponseDtoList) {
                     if (exited.getWeekCategory().equals(todo.getWeekContent().getWeekCategory())) {
-                        exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
-                        exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        if (exited.getWeekContentCategory().equals(todo.getWeekContent().getWeekContentCategory())) {
+                            exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
+                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        } else {
+                            if (exited.getName().contains("하드") && exited.getName().contains("노말")) {
+                                exited.setName(exited.getName() + " " + " "+todo.getWeekContent().getGate());
+                            } else {
+                                exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
+                            }
+                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        }
                         exitedCheck = true;
                         break;
                     }
@@ -164,6 +175,7 @@ public class CharacterResponseDto {
                 if (!exitedCheck) {
                     todoResponseDtoList.add(new TodoResponseDto().toDto(todo));
                 }
+
             }
         }
         characterResponseDto.setTodoList(todoResponseDtoList);

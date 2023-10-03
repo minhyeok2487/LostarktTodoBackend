@@ -437,9 +437,9 @@ class MemberApiControllerTest {
         );
 
         for (CharacterResponseDto characterResponseDto : characterResponseDtoList) {
-            System.out.println("characterResponseDto.getCharacterName() = " + characterResponseDto.getCharacterName());
-            System.out.println("characterResponseDto.getItemLevel() = " + characterResponseDto.getItemLevel());
-            System.out.println("characterResponseDto.getTodoList() = " + characterResponseDto.getTodoList());
+            stem.out.println("characterResponseDto.getCharacterName() = " + characterResponseDto.getCharacterName());
+            stem.out.println("characterResponseDto.getItemLevel() = " + characterResponseDto.getItemLevel());
+            stem.out.println("characterResponseDto.getTodoList() = " + characterResponseDto.getTodoList());
         }
     }
 }
