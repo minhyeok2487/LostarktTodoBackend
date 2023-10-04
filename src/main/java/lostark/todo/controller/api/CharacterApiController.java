@@ -165,7 +165,6 @@ public class CharacterApiController {
             }
             result.add(weekContentDto);
         }
-        System.out.println("result = " + result);
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
@@ -235,11 +234,12 @@ public class CharacterApiController {
     }
 
     @ApiOperation(value = "골드 획득 캐릭터 지정")
-    @PostMapping("/gold-character")
-    public ResponseEntity updateGoldCharacter(@AuthenticationPrincipal String username, @RequestBody Character character) {
+    @PostMapping("/gold-character/{characterName}")
+    public ResponseEntity updateGoldCharacter(@AuthenticationPrincipal String username,
+                                              @PathVariable("characterName") String characterName) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character checkedCharacter = characterService.findCharacterWithMember(character.getCharacterName(), username);
+        Character checkedCharacter = characterService.findCharacterWithMember(characterName, username);
 
         // 골드 획득 지정캐릭터 : 6캐릭 이상인지 확인
         int goldCharacter = characterService.checkGoldCharacter(checkedCharacter);

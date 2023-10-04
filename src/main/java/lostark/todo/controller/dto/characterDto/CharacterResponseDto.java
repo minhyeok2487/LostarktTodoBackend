@@ -160,6 +160,7 @@ public class CharacterResponseDto {
                         if (exited.getWeekContentCategory().equals(todo.getWeekContent().getWeekContentCategory())) {
                             exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
                             exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                            exited.setGate(todo.getWeekContent().getGate());
                         } else {
                             if (exited.getName().contains("하드") && exited.getName().contains("노말")) {
                                 exited.setName(exited.getName() + " " + " "+todo.getWeekContent().getGate());
@@ -167,6 +168,7 @@ public class CharacterResponseDto {
                                 exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
                             }
                             exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                            exited.setGate(todo.getWeekContent().getGate());
                         }
                         exitedCheck = true;
                         break;
@@ -176,6 +178,13 @@ public class CharacterResponseDto {
                     todoResponseDtoList.add(new TodoResponseDto().toDto(todo));
                 }
 
+            }
+        }
+        todoResponseDtoList.sort(Comparator.comparing(TodoResponseDto::getGold).reversed());
+        for (int i = 0; i < todoResponseDtoList.size(); i++) {
+            TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);
+            if (i >= 3) {
+                todoResponseDto.setGold(0);
             }
         }
         characterResponseDto.setTodoList(todoResponseDtoList);

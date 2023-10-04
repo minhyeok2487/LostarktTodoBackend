@@ -145,8 +145,6 @@ public class MemberApiController {
             response = CharacterResponseDto.class)
     @GetMapping("/characterList-v3/{serverName}")
     public ResponseEntity findCharacterListServerNameV3(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
-        System.out.println("MemberApiController.findCharacterListServerNameV3");
-        System.out.println("username = " + username);
         // username -> member 조회
         Member member = memberService.findMember(username);
         if(member.getCharacters().isEmpty()) {
