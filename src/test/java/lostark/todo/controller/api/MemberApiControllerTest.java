@@ -22,13 +22,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -436,4 +434,45 @@ class MemberApiControllerTest {
                 .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
         );
     }
+
+    @Test
+    void test() {
+        List<Member> all = memberService.findAll();
+
+        for (Member member : all) {
+            boolean duplicate = false;
+            List<Character> characters = member.getCharacters();
+            Set<String> characterNames = new HashSet<>();
+            List<Character> charactersToRemove = new ArrayList<>();
+
+            for (Character character : characters) {
+                String characterName = character.getCharacterName();
+
+                // Check if the character name has already been encountered
+                if (characterNames.contains(characterName)) {
+                    duplicate = true;
+                    System.out.println("Duplicate character id: " + character.getId());
+                    charactersToRemove.add(character);
+                } else {
+                    // Add the character name to the set
+                    characterNames.add(characterName);
+                }
+            }
+
+            // Remove characters with duplicate names based on ID (remove the later occurrence)
+            for (Character characterToRemove : charactersToRemove) {
+                characters.remove(characterToRemove);
+            }
+            if(duplicate) {
+                System.out.println("member = " + member.getUsername() + "/" +member.getId());
+                for (Character character : characters) {
+                    System.out.println("character = " + character);
+                }
+            }
+        }
+    }
+
+
+
+
 }

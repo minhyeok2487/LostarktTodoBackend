@@ -271,4 +271,12 @@ public class MemberApiController {
 
         return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "중복 캐릭터 삭제")
+    @DeleteMapping("/duplicate")
+    public ResponseEntity removeDuplicateCharacters(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        memberService.removeDuplicateCharacters(member);
+        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
+    }
 }

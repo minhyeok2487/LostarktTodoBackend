@@ -119,6 +119,8 @@ public class CharacterResponseDto {
             }
         }
 
+        maxThree(todoResponseDtoList);
+
         characterResponseDto.setTodoList(todoResponseDtoList);
 
         return characterResponseDto;
@@ -180,6 +182,13 @@ public class CharacterResponseDto {
 
             }
         }
+        maxThree(todoResponseDtoList);
+        characterResponseDto.setTodoList(todoResponseDtoList);
+
+        return characterResponseDto;
+    }
+
+    private static void maxThree(List<TodoResponseDto> todoResponseDtoList) {
         todoResponseDtoList.sort(Comparator.comparing(TodoResponseDto::getGold).reversed());
         for (int i = 0; i < todoResponseDtoList.size(); i++) {
             TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);
@@ -187,8 +196,5 @@ public class CharacterResponseDto {
                 todoResponseDto.setGold(0);
             }
         }
-        characterResponseDto.setTodoList(todoResponseDtoList);
-
-        return characterResponseDto;
     }
 }
