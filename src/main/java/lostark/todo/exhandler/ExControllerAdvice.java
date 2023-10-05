@@ -37,7 +37,7 @@ public class ExControllerAdvice {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class,
+    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class, IllegalStateException.class,
             HttpMessageNotReadableException.class, RuntimeException.class, Exception.class})
     public ResponseEntity<ErrorResponse> handlerException(Exception ex) {
         List<String> message = new ArrayList<>();

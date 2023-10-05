@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,6 +49,7 @@ public class MemberApiController {
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
     private final LostarkApiService lostarkApiService;
+    private final ConcurrentHashMap<String, Boolean> usernameLocks;
 
     @GetMapping()
     public ResponseEntity findMember(@AuthenticationPrincipal String username) {
@@ -59,34 +61,42 @@ public class MemberApiController {
         return new ResponseEntity(memberResponseDto, HttpStatus.OK);
     }
 
+
     @ApiOperation(value = "회원가입시 캐릭터 추가",
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
             response = MemberResponseDto.class)
     @PostMapping("/signup")
     public ResponseEntity saveCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberRequestDto memberDto) {
-        // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
-        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
-        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
-
-        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
-        List<Character> characterList = lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian);
-
-        // 재련재료 데이터 리스트로 거래소 데이터 호출
-        Map<String, Market> contentResource = marketService.findContentResource();
-
-        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-        List<Character> calculatedCharacterList = new ArrayList<>();
-        for (Character character : characterList) {
-            Character result = characterService.calculateDayTodo(character, contentResource);
-            calculatedCharacterList.add(result);
+        if (usernameLocks.putIfAbsent(username, true) != null) {
+            throw new IllegalStateException("이미 진행중입니다.");
         }
+        try {
+            // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
 
-        // Member 회원가입
-        Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
+            // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+            List<Character> characterList = lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian);
 
-        // 결과 출력
-        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
-        return new ResponseEntity(memberResponseDto, HttpStatus.OK);
+            // 재련재료 데이터 리스트로 거래소 데이터 호출
+            Map<String, Market> contentResource = marketService.findContentResource();
+
+            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+            List<Character> calculatedCharacterList = new ArrayList<>();
+            for (Character character : characterList) {
+                Character result = characterService.calculateDayTodo(character, contentResource);
+                calculatedCharacterList.add(result);
+            }
+
+            // Member 회원가입
+            Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
+
+            // 결과 출력
+            MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
+            return new ResponseEntity(memberResponseDto, HttpStatus.OK);
+        } finally {
+            usernameLocks.remove(username);
+        }
     }
 
 //    @ApiOperation(value = "회원 캐릭터 리스트 조회",
