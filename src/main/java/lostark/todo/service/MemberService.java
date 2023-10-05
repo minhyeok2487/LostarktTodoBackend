@@ -179,4 +179,10 @@ public class MemberService {
         return member;
     }
 
+    /**
+     * 회원 API KEY 업데이트
+     */
+    public void updateApiKey(Member member, String apiKey) {
+        member.setApiKey(apiKey);
+    }
 }

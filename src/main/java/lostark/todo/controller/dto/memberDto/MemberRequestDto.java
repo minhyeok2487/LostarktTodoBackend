@@ -17,11 +17,9 @@ public class MemberRequestDto {
     @ApiModelProperty(example = "회원이름")
     private String username;
 
-    @NotEmpty
     @ApiModelProperty(example = "로스트아크 api 키")
     private String apiKey;
 
-    @NotEmpty
     @ApiModelProperty(example = "대표 캐릭터")
     private String characterName;
 

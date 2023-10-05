@@ -20,7 +20,9 @@ import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
 import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.lostarkApi.LostarkApiService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.json.simple.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,18 +47,15 @@ public class MemberApiController {
     private final ContentService contentService;
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
+    private final LostarkApiService lostarkApiService;
 
     @GetMapping()
     public ResponseEntity findMember(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
-        MemberResponseDto memberResponseDto = MemberResponseDto.builder()
-                .username(username)
-                .role(member.getRole())
-                .build();
+        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
         if (member.getRole().equals(Role.ADMIN)) {
             memberResponseDto.setUsername("관리자");
         }
-
         return new ResponseEntity(memberResponseDto, HttpStatus.OK);
     }
 
@@ -86,12 +85,8 @@ public class MemberApiController {
         Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
 
         // 결과 출력
-        MemberResponseDto responseDto = MemberResponseDto.builder()
-                .id(signupMember.getId())
-                .username(signupMember.getUsername())
-                .characters(signupMember.getCharacters())
-                .build();
-        return new ResponseEntity(responseDto, HttpStatus.OK);
+        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
+        return new ResponseEntity(memberResponseDto, HttpStatus.OK);
     }
 
 //    @ApiOperation(value = "회원 캐릭터 리스트 조회",
@@ -253,5 +248,27 @@ public class MemberApiController {
             settingsList.add(CharacterSettingDto.toDto(character));
         }
         return new ResponseEntity(settingsList, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "회원 API KEY 갱신")
+    @PatchMapping("/api-key")
+    public ResponseEntity updateApiKey(@AuthenticationPrincipal String username,
+                                       @RequestBody MemberRequestDto memberRequestDto) {
+        // 1. 검증
+        Member member = memberService.findMember(username);
+        if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
+            throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
+        }
+        if (member.getApiKey().equals(memberRequestDto.getApiKey())) {
+            throw new IllegalArgumentException("동일한 API KEY입니다.");
+        }
+
+        // 2. API KEY 인증 확인
+        lostarkApiService.findEvents(memberRequestDto.getApiKey());
+
+        // 3. API KEY 업데이트
+        memberService.updateApiKey(member, memberRequestDto.getApiKey());
+
+        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
     }
 }

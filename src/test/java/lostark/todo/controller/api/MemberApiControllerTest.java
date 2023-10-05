@@ -435,11 +435,5 @@ class MemberApiControllerTest {
                 .comparingInt(CharacterResponseDto::getSortNumber)
                 .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
         );
-
-        for (CharacterResponseDto characterResponseDto : characterResponseDtoList) {
-            stem.out.println("characterResponseDto.getCharacterName() = " + characterResponseDto.getCharacterName());
-            stem.out.println("characterResponseDto.getItemLevel() = " + characterResponseDto.getItemLevel());
-            stem.out.println("characterResponseDto.getTodoList() = " + characterResponseDto.getTodoList());
-        }
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.member.Member;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -29,8 +30,15 @@ public class MemberResponseDto {
     @ApiModelProperty(example = "캐릭터 리스트")
     private List<Character> characters;
 
-    private String token;
-
     private Role role;
+
+    public MemberResponseDto toDto(Member member) {
+        return MemberResponseDto.builder()
+                .id(member.getId())
+                .username(member.getUsername())
+                .characters(member.getCharacters())
+                .role(member.getRole())
+                .build();
+    }
 
 }

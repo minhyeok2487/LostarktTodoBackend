@@ -1,5 +1,12 @@
 package lostark.todo.service.lostarkApi;
 
+import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.DayTodo;
+import lostark.todo.domain.character.Settings;
+import lostark.todo.domain.content.DayContent;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -8,10 +15,31 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class LostarkApiService {
+
+    public JSONArray findEvents(String apiKey) {
+        try {
+            String link = "https://developer-lostark.game.onstove.com/news/events";
+            InputStreamReader inputStreamReader = lostarkGetApi(link, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
+            return jsonArray;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 로스트아크 api 틀(Get, Post)
