@@ -97,33 +97,37 @@ public class TodoService {
         } else {
             boolean categoryAndGate = true;
             boolean beforeGate = false;
-            for (TodoV2 exited : character.getTodoV2List()) {
-                // 같은 weekContent, 같은 gate가 있다면 변경 (노말 <-> 하드)
-                if(exited.getWeekContent().getWeekCategory().equals(todoV2.getWeekContent().getWeekCategory())
-                        && exited.getWeekContent().getGate() == todoV2.getWeekContent().getGate()) {
-                    exited.updateWeekContent(weekContent);
-                    categoryAndGate = false;
-                    break;
-                }
-
-                // 선택시 이전 관문이 선택 되어있어야함
-                if(todoV2.getWeekContent().getGate() >=2
-                        && exited.getWeekContent().getGate() == todoV2.getWeekContent().getGate()-1) {
-                    beforeGate = true;
-                }
-                // 첫번째 관문은 이전 관문 상관없이 선택 가능
-                if(todoV2.getWeekContent().getGate() == 1) {
-                    beforeGate = true;
-                }
-            }
-
-            // 같은 weekContent, 같은 gate가 있는게 아니고 이전 관문이 있다면 더함
-            if(categoryAndGate && beforeGate) {
+            if (character.getTodoV2List().isEmpty()) {
                 character.getTodoV2List().add(todoV2);
-            }
-            // 이전 관문이 없으면 Exception
-            if(categoryAndGate && !beforeGate) {
-                throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
+            } else {
+                for (TodoV2 exited : character.getTodoV2List()) {
+                    // 같은 weekContent, 같은 gate가 있다면 변경 (노말 <-> 하드)
+                    if (exited.getWeekContent().getWeekCategory().equals(todoV2.getWeekContent().getWeekCategory())
+                            && exited.getWeekContent().getGate() == todoV2.getWeekContent().getGate()) {
+                        exited.updateWeekContent(weekContent);
+                        categoryAndGate = false;
+                        break;
+                    }
+
+                    // 선택시 이전 관문이 선택 되어있어야함
+                    if (todoV2.getWeekContent().getGate() >= 2
+                            && exited.getWeekContent().getGate() == todoV2.getWeekContent().getGate() - 1) {
+                        beforeGate = true;
+                    }
+                    // 첫번째 관문은 이전 관문 상관없이 선택 가능
+                    if (todoV2.getWeekContent().getGate() == 1) {
+                        beforeGate = true;
+                    }
+                }
+
+                // 같은 weekContent, 같은 gate가 있는게 아니고 이전 관문이 있다면 더함
+                if (categoryAndGate && beforeGate) {
+                    character.getTodoV2List().add(todoV2);
+                }
+                // 이전 관문이 없으면 Exception
+                if (categoryAndGate && !beforeGate) {
+                    throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
+                }
             }
         }
     }
