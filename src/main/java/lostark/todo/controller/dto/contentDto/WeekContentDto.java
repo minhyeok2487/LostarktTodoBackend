@@ -31,6 +31,8 @@ public class WeekContentDto {
 
     private boolean checked; //선택
 
+    private int coolTime; //주기
+
     public WeekContentDto toDto(WeekContent weekContent) {
         return WeekContentDto.builder()
                 .id(weekContent.getId())

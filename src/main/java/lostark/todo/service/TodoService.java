@@ -32,6 +32,11 @@ public class TodoService {
                 .orElseThrow(() -> new IllegalArgumentException("없는 정보입니다."));
     }
 
+    public TodoV2 findByIdV2(long id) {
+        return todoV2Repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("없는 정보입니다."));
+    }
+
     public Todo updateWeekCheck(TodoDto todoDto) {
         return findById(todoDto.getTodoId()).updateCheck();
     }
@@ -39,6 +44,7 @@ public class TodoService {
     public List<Todo> findAll() {
         return todoRepository.findAll();
     }
+    public List<TodoV2> findAllV2() {return todoV2Repository.findAll();}
 
     public List<Todo> updateWeek_V2(Character character, WeekContentDto weekContentDto) {
         List<Todo> todoList = character.getTodoList();
@@ -80,6 +86,7 @@ public class TodoService {
                 .character(character)
                 .isChecked(false)
                 .gold(weekContent.getGold())
+                .coolTime(2)
                 .build();
 
         //weekContent (아브렐슈드, 일리아칸 등)별로 이미 존재 하면 지움
@@ -146,6 +153,7 @@ public class TodoService {
                         .character(character)
                         .isChecked(false)
                         .gold(content.getGold())
+                        .coolTime(2)
                         .build();
                 updatedTodoV2List.add(todoV2);
             }
@@ -168,4 +176,6 @@ public class TodoService {
         }
 
     }
+
+
 }

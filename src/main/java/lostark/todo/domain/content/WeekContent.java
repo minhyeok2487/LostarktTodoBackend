@@ -35,4 +35,6 @@ public class WeekContent extends Content{
 
     @OneToMany(mappedBy = "weekContent", cascade = {CascadeType.ALL}, orphanRemoval=true)
     private List<TodoV2> todoList;
+
+    private int coolTime; //주기
 }

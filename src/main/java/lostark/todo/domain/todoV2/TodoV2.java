@@ -7,6 +7,7 @@ import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.todo.Todo;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.List;
@@ -41,6 +42,8 @@ public class TodoV2 extends BaseTimeEntity {
     @JoinColumn(name = "character_id")
     @JsonBackReference //순환참조 방지
     private Character character;
+
+    private int coolTime;
 
     public TodoV2 updateCheck() {
         this.isChecked = !this.isChecked;
