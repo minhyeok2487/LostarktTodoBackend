@@ -19,5 +19,15 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     List<DayContent> findDayContentByCategoryOrderByLevelDesc(@Param("category") Category category);
 
-    List<WeekContent> findAllByWeekCategoryAndWeekContentCategory(String weekCategory, WeekContentCategory weekContentCategory);
+    @Query("SELECT w FROM WeekContent w " +
+            "WHERE w.level <= :itemLevel " +
+            "AND w.weekCategory = :weekCategory " +
+            "AND w.weekContentCategory = :weekContentCategory")
+    List<WeekContent> findAllWeekContent(@Param("itemLevel") double itemLevel,
+                                         @Param("weekCategory") String weekCategory,
+                                         @Param("weekContentCategory") WeekContentCategory weekContentCategory);
+
+    @Query("SELECT w FROM WeekContent w WHERE w.weekCategory = :weekCategory AND w.gate = :gate")
+    Optional<WeekContent> findByWeekCategoryAndGate(@Param("weekCategory") String weekCategory,
+                                                    @Param("gate") int gate);
 }

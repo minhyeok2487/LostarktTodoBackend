@@ -18,4 +18,10 @@ public class TodoDto {
     private boolean todoCheck;
 
     private String message;
+
+    private String weekCategory;
+
+    private int currentGate;
+
+    private int totalGate;
 }

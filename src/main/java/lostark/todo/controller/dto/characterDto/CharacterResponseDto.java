@@ -152,6 +152,7 @@ public class CharacterResponseDto {
                 .build();
 
         List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
+
         //weekContent gate 순으로 정렬
         character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
         if(!character.getTodoV2List().isEmpty()){
@@ -161,28 +162,34 @@ public class CharacterResponseDto {
                     if (exited.getWeekCategory().equals(todo.getWeekContent().getWeekCategory())) {
                         if (exited.getWeekContentCategory().equals(todo.getWeekContent().getWeekContentCategory())) {
                             exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
-                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
-                            exited.setGate(todo.getWeekContent().getGate());
                         } else {
                             if (exited.getName().contains("하드") && exited.getName().contains("노말")) {
                                 exited.setName(exited.getName() + " " + " "+todo.getWeekContent().getGate());
                             } else {
                                 exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
                             }
-                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
-                            exited.setGate(todo.getWeekContent().getGate());
+                        }
+                        exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        exited.setTotalGate(todo.getWeekContent().getGate());
+                        if(todo.isChecked()) {
+                            exited.setCurrentGate(todo.getWeekContent().getGate());
                         }
                         exitedCheck = true;
                         break;
                     }
                 }
                 if (!exitedCheck) {
-                    todoResponseDtoList.add(new TodoResponseDto().toDto(todo));
+                    TodoResponseDto dto = new TodoResponseDto().toDto(todo);
+                    todoResponseDtoList.add(dto);
                 }
-
             }
         }
         maxThree(todoResponseDtoList);
+        for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
+            if (todoResponseDto.getCurrentGate() == todoResponseDto.getTotalGate()) {
+                todoResponseDto.setCheck(true);
+            }
+        }
         characterResponseDto.setTodoList(todoResponseDtoList);
 
         return characterResponseDto;

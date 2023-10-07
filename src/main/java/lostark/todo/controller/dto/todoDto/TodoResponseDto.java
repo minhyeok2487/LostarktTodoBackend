@@ -23,7 +23,8 @@ public class TodoResponseDto {
 
     private String message;
 
-    private int gate;
+    private int currentGate;
+    private int totalGate;
 
     private String weekCategory;
     private WeekContentCategory weekContentCategory;
@@ -31,13 +32,14 @@ public class TodoResponseDto {
     public TodoResponseDto toDto(TodoV2 todo) {
         return TodoResponseDto.builder()
                 .id(todo.getId())
-                .check(todo.isChecked())
+                .check(false)
                 .name(todo.getWeekContent().getName()
                         + "<br />" + todo.getWeekContent().getWeekContentCategory()
                         + " " + todo.getWeekContent().getGate())
                 .gold(todo.getGold())
                 .message(todo.getMessage())
-                .gate(todo.getWeekContent().getGate())
+                .currentGate(todo.isChecked() ? todo.getWeekContent().getGate() : 0)
+                .totalGate(todo.getWeekContent().getGate())
                 .weekCategory(todo.getWeekContent().getWeekCategory())
                 .weekContentCategory(todo.getWeekContent().getWeekContentCategory())
                 .build();

@@ -206,9 +206,8 @@ public class CharacterApiController {
                                           @PathVariable("characterName") String characterName,
                                           @RequestBody List<WeekContentDto> weekContentDtoList) {
         Character character = characterService.findCharacterWithMember(characterName, username);
-        List<WeekContent> weekContentList = contentService.findAllByCategoryAndWeekCategory(
+        List<WeekContent> weekContentList = contentService.findAllByCategoryAndWeekCategory(character.getItemLevel(),
                 weekContentDtoList.get(0).getWeekCategory(), weekContentDtoList.get(0).getWeekContentCategory());
-
         todoService.updateWeekAllV3(character, weekContentList);
 
         CharacterResponseDto responseDto = new CharacterResponseDto().toDtoV3(character);
@@ -231,6 +230,18 @@ public class CharacterApiController {
                 .check(todo.isChecked())
                 .build();
         return new ResponseEntity(todoResponseDto, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 숙제 check 수정")
+    @PatchMapping("/week-v3/check")
+    public ResponseEntity updateWeekCheckV3(@AuthenticationPrincipal String username,
+                                          @RequestBody TodoDto todoDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
+        todoService.updateWeekCheckV3(character, todoDto.getWeekCategory(), todoDto.getCurrentGate(), todoDto.getTotalGate());
+        CharacterResponseDto responseDto = new CharacterResponseDto().toDtoV3(character);
+        return new ResponseEntity(responseDto, HttpStatus.OK);
     }
 
     @ApiOperation(value = "골드 획득 캐릭터 지정")
