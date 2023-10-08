@@ -114,13 +114,8 @@ public class CharacterApiController {
         // 아이템 레벨보다 작은 컨텐츠 불러옴
         List<WeekContent> allByWeekContent = contentService.findAllByWeekContentWithItemLevel(character.getItemLevel());
 
-        // 임시 id 71이상
-        List<WeekContent> collect = allByWeekContent.stream()
-                .filter(weekContent -> weekContent.getId() >= 71)
-                .collect(Collectors.toList());
-
         List<WeekContentDto> result = new ArrayList<>();
-        for (WeekContent weekContent : collect) {
+        for (WeekContent weekContent : allByWeekContent) {
             WeekContentDto weekContentDto = WeekContentDto.builder()
                     .weekCategory(weekContent.getWeekCategory())
                     .level(weekContent.getLevel())
@@ -148,7 +143,7 @@ public class CharacterApiController {
         Character character = characterService.findCharacterWithMember(characterName, username);
 
         // 아이템 레벨보다 작은 컨텐츠 불러옴
-        List<WeekContent> allByWeekContent = contentService.findAllByWeekContentWithItemLevel(character.getItemLevel());
+        List<WeekContent> allByWeekContent = contentService.findAllByWeekContentWithItemLevelV2(character.getItemLevel());
 
         List<WeekContentDto> result = new ArrayList<>();
         for (WeekContent weekContent : allByWeekContent) {

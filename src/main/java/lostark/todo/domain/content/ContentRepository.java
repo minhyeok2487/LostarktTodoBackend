@@ -15,6 +15,9 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     List<WeekContent> findAllByWeekContent();
 
     @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.id BETWEEN 17 AND 70")
+    List<WeekContent> findAllByWeekContentWithItemLevelV2(@Param("itemLevel") double itemLevel);
+
+    @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.id >= 71")
     List<WeekContent> findAllByWeekContentWithItemLevel(@Param("itemLevel") double itemLevel);
 
     List<DayContent> findDayContentByCategoryOrderByLevelDesc(@Param("category") Category category);

@@ -65,6 +65,9 @@ public class ContentService {
     public List<WeekContent> findAllByWeekContentWithItemLevel(double itemLevel) {
         return contentRepository.findAllByWeekContentWithItemLevel(itemLevel);
     }
+    public List<WeekContent> findAllByWeekContentWithItemLevelV2(double itemLevel) {
+        return contentRepository.findAllByWeekContentWithItemLevelV2(itemLevel);
+    }
 
 
     public List<WeekContent> findAllByCategoryAndWeekCategory(double itemLevel, String weekCategory, WeekContentCategory weekContentCategory) {

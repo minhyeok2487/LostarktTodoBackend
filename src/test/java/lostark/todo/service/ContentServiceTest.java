@@ -188,13 +188,13 @@ class ContentServiceTest {
         weekContentList.add(content2);
         weekContentList.add(content3);
         double itemLevel = 1611.12;
-        given(contentRepository.findAllByWeekContentWithItemLevel(itemLevel))
+        given(contentRepository.findAllByWeekContentWithItemLevelV2(itemLevel))
                 .willReturn(weekContentList.stream()
                         .filter(weekContent -> weekContent.getLevel()<=itemLevel)
                         .collect(Collectors.toList()));
 
         // when
-        List<WeekContent> result = contentService.findAllByWeekContentWithItemLevel(itemLevel);
+        List<WeekContent> result = contentService.findAllByWeekContentWithItemLevelV2(itemLevel);
 
         // then
         assertThat(result.size()).isNotEqualTo(weekContentList.size());
