@@ -35,11 +35,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String registrationId = userRequest.getClientRegistration().getRegistrationId(); //현재 로그인 진행 중인 서비스를 구분하는 코드
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();                      //OAuth2 로그인 진행 시 키가 되는 필드값
-
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-        System.out.println("userRequest = " + userRequest.getAccessToken().getTokenValue());
 
         String authProvider = userRequest.getClientRegistration().getClientName();
+        log.info("userName : {}", attributes.getEmail());
         Member member = null;
         // 유저가 존재하지 않으면 새로 생성한다.
         if (!memberRepository.existsByUsername(attributes.getEmail())) {
@@ -51,9 +50,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .role(Role.USER)
                     .build();
             member = memberRepository.save(member);
+            log.info("{} Signup Success", attributes.getEmail());
         } else {
             member = memberRepository.findByUsername(attributes.getEmail()).orElseThrow();
             member.setAccessKey(userRequest.getAccessToken().getTokenValue());
+            log.info("{} Login Success", attributes.getEmail());
         }
 
         return new ApplicationOAuth2User(member.getUsername(), oAuth2User.getAttributes());

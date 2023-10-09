@@ -34,13 +34,11 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
     log.info("auth succeeded");
     String key = keyValueRepository.findByKeyName("JWT-KEY");
-    log.info("key ={}", key);
     TokenProvider tokenProvider = new TokenProvider();
     String token = tokenProvider.createToken(authentication,key);
 
     Optional<Cookie> oCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(REDIRECT_URI_PARAM)).findFirst();
     Optional<String> redirectUri = oCookie.map(Cookie::getValue);
-    log.info("token {}", token);
     response.sendRedirect(redirectUri.orElseGet(() -> LOCAL_REDIRECT_URL)+"/sociallogin?token="+token);
   }
 

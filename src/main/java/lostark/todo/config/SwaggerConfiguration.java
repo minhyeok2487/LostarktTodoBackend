@@ -47,7 +47,7 @@ public class SwaggerConfiguration {
      */
     @Bean
     public Docket userApi() {
-        version = "유저";
+        version = "user";
         title = "로스트아크 숙제 체크 API";
 
         return new Docket(DocumentationType.SWAGGER_2)
@@ -65,7 +65,7 @@ public class SwaggerConfiguration {
 
     @Bean
     public Docket adminApi() {
-        version = "관리자";
+        version = "admin";
         title = "로스트아크 숙제 체크 API";
 
         return new Docket(DocumentationType.SWAGGER_2)

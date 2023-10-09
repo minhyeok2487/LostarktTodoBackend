@@ -1,6 +1,7 @@
 package lostark.todo.controller.admin;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.content.WeekContent;
@@ -22,16 +23,16 @@ public class WeekContentApiController {
 
     private final ContentService contentService;
 
+    @ApiOperation(value = "주간 컨텐츠 전체 호출")
     @GetMapping("/")
     public ResponseEntity getWeekContent() {
-        List<WeekContent> weekContentList = contentService.findAllByWeekContent();
-        return new ResponseEntity(weekContentList, HttpStatus.OK);
+        return new ResponseEntity(contentService.findAllByWeekContent(), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "주간 컨텐츠 추가")
     @PostMapping("/")
-    public ResponseEntity addWeekContent(@RequestBody WeekContent weekContent) {
-        WeekContent result = contentService.saveWeekContent(weekContent);
-        return new ResponseEntity(result, HttpStatus.OK);
+    public ResponseEntity postWeekContent(@RequestBody WeekContent weekContent) {
+        return new ResponseEntity(contentService.saveWeekContent(weekContent), HttpStatus.OK);
     }
 
 }

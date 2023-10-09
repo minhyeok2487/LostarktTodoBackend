@@ -56,7 +56,10 @@ public class CharacterService {
             guardian = contentResource.get("정제된 수호강석");
             leapStone = contentResource.get("찬란한 명예의 돌파석");
         }
+        // 카오스 던전 계산
         calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry, character);
+
+        // 가디언 토벌 계산
         calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, character);
 
         return character;
@@ -108,8 +111,9 @@ public class CharacterService {
     /**
      * 일일컨텐츠 체크 업데이트
      */
-    public DayTodo updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
-        return character.getDayTodo().updateCheck(characterDayTodoDto);
+    public Character updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
+        character.getDayTodo().updateCheck(characterDayTodoDto);
+        return character;
     }
 
     /**
@@ -149,7 +153,6 @@ public class CharacterService {
 
     public int checkGoldCharacter(Character checkedCharacter) {
         return characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(checkedCharacter.getMember(), checkedCharacter.getServerName());
-
     }
 
     public List<Character> updateChallenge(Member member, String serverName, String content) {

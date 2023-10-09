@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
-public class Other {
+public class OtherConfig {
 
     /**
-     * 회원 중복 가입 방지
+     * 회원 중복 가입 방지 HashMap
      */
     @Bean
     public ConcurrentHashMap<String, Boolean> usernameLocks() {

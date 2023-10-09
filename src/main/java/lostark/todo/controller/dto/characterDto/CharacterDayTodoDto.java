@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.domain.character.DayTodo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -22,15 +23,22 @@ public class CharacterDayTodoDto {
 
     private boolean eponaCheck;
 
-    @Min(value = 0)
-    @Max(value = 100)
     private Integer chaosGauge;
 
     private Integer chaosCheck;
 
-    @Min(value = 0)
-    @Max(value = 100)
     private Integer guardianGauge;
 
     private Integer guardianCheck;
+
+    public CharacterDayTodoDto toDto(String characterName, DayTodo dayTodo) {
+        return CharacterDayTodoDto.builder()
+                .characterName(characterName)
+                .eponaCheck(dayTodo.isEponaCheck())
+                .chaosGauge(dayTodo.getChaosGauge())
+                .chaosCheck(dayTodo.getChaosCheck())
+                .guardianGauge(dayTodo.getGuardianGauge())
+                .guardianCheck(dayTodo.getGuardianCheck())
+                .build();
+    }
 }

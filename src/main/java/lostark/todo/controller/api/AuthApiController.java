@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,41 +27,41 @@ public class AuthApiController {
 
     private final MemberService memberService;
 
-    @ApiOperation(value = "로그아웃", notes = "구글 로그인 로그아웃")
+    @ApiOperation(value = "로그아웃", notes = "구글 로그인 로그아웃", response = String.class)
     @GetMapping("/logout")
     public ResponseEntity logout(@AuthenticationPrincipal String username) {
         String accessKey = memberService.findMember(username).getAccessKey();
         try {
-            // URL to revoke the token
+            // 토큰 취소 URL
             String revokeUrl = "https://accounts.google.com/o/oauth2/revoke";
 
-            // Create a connection to the revoke URL
+            // URl 연결
             URL url = new URL(revokeUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            // Set the request method to POST
+            // POST 매핑
             connection.setRequestMethod("POST");
 
-            // Set the Content-Length header
-            String requestBody = "token=" + accessKey; // Include the access token in the request body
+            // Body 생성
+            String requestBody = "token=" + accessKey;
             connection.setRequestProperty("Content-Length", String.valueOf(requestBody.length()));
 
-            // Enable input/output streams
+            // input/output 스트림 true
             connection.setDoOutput(true);
 
-            // Write the request body
+            // Body 작성
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(requestBody.getBytes("UTF-8"));
             }
 
-            // Get the response code (HTTP 200 indicates success)
+            // 성공
             int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
+            log.info("Google Logout Response Code: {}", responseCode);
 
-            // Close the connection
+            // 닫기
             connection.disconnect();
-            log.info("로그아웃 성공");
-            return new ResponseEntity("로그아웃 성공", HttpStatus.OK);
+            log.info("Google Logout Success");
+            return new ResponseEntity("Google Logout Success", HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

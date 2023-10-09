@@ -1,41 +1,45 @@
 # 로스트아크 숙제 체크 사이트
+## https://app.loatodo.com
+![img.png](img.png)
+[![Video Label](http://img.youtube.com/vi/AKnNXoO45d0/0.jpg)](https://youtu.be/AKnNXoO45d0)
+
 ## Github
-- [Backend](https://github.com/minhyeok2487/LostarkTodo)
-- [Frontend](https://github.com/minhyeok2487/lostarkTodoReact)
+- [Backend](https://github.com/minhyeok2487/LostarktTodoBackend)
+- [Frontend](https://github.com/minhyeok2487/LostarkTodoFrontend)
 
 ## 프로젝트
 ### 개요
-- 로스트아크 일일, 주간 컨텐츠 체크 및 공유 사이트
+- 로스트아크 일일, 주간 컨텐츠 관리 사이트
     - 일일 컨텐츠 : 카오스 던전, 가디언 토벌, 에포나 의뢰
         - 로스트아크 오픈 API의 거래소, 경매장 등의 데이터를 호출해 예상 수익 계산
+        - 체크한 내용을 바탕으로 휴식게이지 계산 -> 인게임과 동일한 휴식게이지
     - 주간 컨텐츠 : 군단장 레이드, 어비스 던전, 어비스레이드
-        - 다른 사용자와 공유
-- 컨텐츠 완료 한 기록 저장
+        - 주간 수익 계산
+        - 몇 개의 2주 주기 컨텐츠 계산
+- 컨텐츠 완료 한 기록 저장 (개발중)
 
 ### 기간
-* 2023.08.02 ~ 2023.08.31(기본 기능 개발)
-* 2023.09.01 ~ 2023.09.15(베타 버전 배포)
+* 2023.08.02 ~ 2023.09.10(기본 기능 개발)
+* 2023.09.11 베타 버전 배포
 
 ### 주요 기능
-#### 1. 회원 가입 시 검증
-* 이메일 인증 
-* 비밀번호 확인 
-* ApiKey, 대표캐릭터 -> Api가 필수이기 때문에 로아 점검 중에는 가입불가
+#### 1. 가입
+* 구글 로그인으로 가입 가능
+* ApiKey, 대표캐릭터 -> ApiKey 가 필수이기 때문에 로스트아크 서버 점검 중에는 가입불가
 
-#### 2. 로그인, 구글 계정 연동
-* ApiKey, 대표캐릭터만 추가
-
-#### 3. Todo
+#### 2. Todo
 * 캐릭터 Info
   * 캐릭터 이미지 안에 클래스, 서버, 아이템 레벨, 캐릭터 이름 출력
 * 일일 숙제 체크
   * 돋보기 클릭 시 재료 통계와 시세 보기
-  * 체크 버튼 오른쪽 클릭 시 휴식게이지 수정
-  * 매일 오전 6시 초기화(휴식게이지 계산)
+  * 하단 녹새 바 클릭 시 휴식게이지 수정
+  * 매일 오전 6시 휴식게이지 계산 후 초기화
 * 주간 숙제 관리
   * 원하는 컨텐츠 체크 후 저장
   * 같은 레이드 동시 선택 불가 (예시 - 카양겔(노말), 카양겔(하드))
-  * 최대 3개
+  * 골드 획득이 높은 순으로 정렬 -> 3개 주간 골드로 포함
+  * 관문 통합과 관문 분리 -> 2가지 버전으로 개발
+* 서버별 출력 분리
 * 주간 원정대 숙제 체크
   * 도전 어비스 던전
   * 도전 가디언 토벌
@@ -64,33 +68,21 @@
   <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
   <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
 </div>
-<div>
-  <img src="https://img.shields.io/badge/Intellij-000000?style=for-the-badge&logo=IntelliJ%20IDEA&logoColor=white">
-  <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
-  <img src="https://img.shields.io/badge/ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white">
-</div>
+
 
 ### Frontend Development
 <div>
-  <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
-<img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white">
-<img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
-<img src="https://img.shields.io/badge/jquery-0769AD?style=for-the-badge&logo=jquery&logoColor=white">
-</div>
-<div>
-  <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=Thymeleaf&logoColor=white">
 <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=white">
 </div>
 
 ### DataBase
 <div>
   <img src="https://img.shields.io/badge/amazonrds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white">
-<img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">
+<img src="https://img.shields.io/badge/mySql-003545?style=for-the-badge&logo=MySql&logoColor=white">
 </div>
 
 ### Communication
 <div>
-  <img src="https://img.shields.io/badge/jira-0052CC?style=for-the-badge&logo=jira&logoColor=white">
 <img src="https://img.shields.io/badge/confluence-172B4D?style=for-the-badge&logo=confluence&logoColor=white">
 <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
 </div>

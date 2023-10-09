@@ -126,61 +126,13 @@ public class DayTodo {
         return this;
     }
 
-    public void createName(double itemLevel) {
-        if (itemLevel >= 1415) {
-            this.chaosName = "타락1";
-            this.guardianName = "데스칼루다";
-        }
-        if (itemLevel >= 1445) {
-            this.chaosName = "타락2";
-            this.guardianName = "데스칼루다";
-        }
-        if (itemLevel >= 1460) {
-            this.chaosName = "타락2";
-            this.guardianName = "쿤겔라니움";
-        }
-        if (itemLevel >= 1475) {
-            this.chaosName = "타락3";
-            this.guardianName = "쿤겔라니움";
-        }
-        if (itemLevel >= 1490) {
-            this.chaosName = "공허1";
-            this.guardianName = "칼엘리고스";
-        }
-        if (itemLevel >= 1520) {
-            this.chaosName = "공허2";
-            this.guardianName = "칼엘리고스";
-        }
-        if (itemLevel >= 1540) {
-            this.chaosName = "절망1";
-            this.guardianName = "하누마탄";
-        }
-        if (itemLevel >= 1560) {
-            this.chaosName = "절망2";
-            this.guardianName = "하누마탄";
-        }
-        if (itemLevel >= 1580) {
-            this.chaosName = "천공1";
-            this.guardianName = "소나벨";
-        }
-        if (itemLevel >= 1600) {
-            this.chaosName = "천공2";
-            this.guardianName = "소나벨";
-        }
-        if (itemLevel >= 1610) {
-            this.chaosName = "계몽1";
-            this.guardianName = "가르가디스";
-        }
-    }
-
     /**
-     * 캐릭터 DayTodo - eponaCheck 변경
+     * 캐릭터 DayTodo updateCheck
      */
-    public DayTodo updateCheck(CharacterDayTodoDto characterDayTodoDto) {
+    public void updateCheck(CharacterDayTodoDto characterDayTodoDto) {
         this.eponaCheck = characterDayTodoDto.isEponaCheck();
         this.chaosCheck = characterDayTodoDto.getChaosCheck();
         this.guardianCheck = characterDayTodoDto.getGuardianCheck();
-        return this;
     }
 
     // 두 숫자 더하기

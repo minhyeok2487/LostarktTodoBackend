@@ -1,6 +1,7 @@
 package lostark.todo.controller.api;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
@@ -21,15 +22,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/comments")
-@Api(tags = {"Comments API"})
+@Api(tags = {"방명 API"})
 public class CommentsApiController {
 
     private final CommentsService commentsService;
     private final MemberService memberService;
 
-    /**
-     * 전체 Comments 불러오기
-     */
+    @ApiOperation(value = "전체 Comments 불러오기")
     @GetMapping()
     public ResponseEntity findComments(@AuthenticationPrincipal String username) {
         List<Comments> allComments = commentsService.findAll();
@@ -39,8 +38,10 @@ public class CommentsApiController {
         return new ResponseEntity(commentResponseDtoList, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "comment 저장")
     @PostMapping()
-    public ResponseEntity saveComments(@AuthenticationPrincipal String username, @RequestBody CommentRequestDto commentRequestDto) {
+    public ResponseEntity saveComments(@AuthenticationPrincipal String username,
+                                       @RequestBody CommentRequestDto commentRequestDto) {
         Member member = memberService.findMember(username);
         Comments updateComments = Comments.builder()
                 .body(commentRequestDto.getBody())
@@ -56,6 +57,7 @@ public class CommentsApiController {
         return new ResponseEntity( commentResponseDtoList, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "comment 수정")
     @PatchMapping()
     public ResponseEntity updateComments(@AuthenticationPrincipal String username, @RequestBody CommentRequestDto commentRequestDto) {
         Member member = memberService.findMember(username);
@@ -73,6 +75,7 @@ public class CommentsApiController {
         return new ResponseEntity( commentResponseDtoList, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "comment 삭제")
     @DeleteMapping()
     public ResponseEntity deleteComments(@AuthenticationPrincipal String username, @RequestBody CommentRequestDto commentRequestDto) {
         Member member = memberService.findMember(username);
@@ -86,6 +89,6 @@ public class CommentsApiController {
         List<CommentResponseDto> commentResponseDtoList = allComments.stream()
                 .map(comments -> new CommentResponseDto().createResponseDto(comments))
                 .collect(Collectors.toList());
-        return new ResponseEntity( commentResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity(commentResponseDtoList, HttpStatus.OK);
     }
 }

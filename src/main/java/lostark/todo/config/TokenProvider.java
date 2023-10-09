@@ -30,29 +30,28 @@ public class TokenProvider {
 
 
     /**
-     * JWT 생성
+     * JWT 생성 (구글 로그인 연동으로 사용X)
      */
     public String createToken(Member member) {
-        // 기한 지금으로부터 1일
-        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
-
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .setSubject(member.getUsername())
                 .setIssuer("LostarkTodo")
                 .setIssuedAt(new Date())
-//                .setExpiration(expiryDate) 임시 기한 무제한
                 .compact();
     }
 
+    /**
+     * 구글 로그인 연동 Token 생성
+     */
     public String createToken(Authentication authentication, String key) {
         ApplicationOAuth2User userPrincipal = (ApplicationOAuth2User) authentication.getPrincipal();
+        // 기한 무제한
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, key)
                 .setSubject(userPrincipal.getName())
                 .setIssuer("LostarkTodo")
                 .setIssuedAt(new Date())
-//                .setExpiration(expiryDate) 임시 기한 무제한
                 .compact();
     }
 
@@ -64,7 +63,6 @@ public class TokenProvider {
         // parseClaimsJws메서드가 Base 64로 디코딩 및 파싱.
         // 즉, 헤더와 페이로드를 setSigningKey로 넘어온 시크릿을 이용 해 서명 후, token의 서명 과 비교.
         // 위조되지 않았다면 페이로드(Claims) 리턴, 위조라면 예외를 날림
-
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
