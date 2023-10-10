@@ -77,6 +77,10 @@ public class TodoService {
         return findById(todoDto.getTodoId()).updateMessage(todoDto.getMessage());
     }
 
+    public TodoV2 updateWeekMessageV3(TodoDto todoDto) {
+        return findByIdV2(todoDto.getTodoId()).updateMessage(todoDto.getMessage());
+    }
+
     /**
      * 주간 숙제 추가/삭제(1개씩)
      */
@@ -182,4 +186,10 @@ public class TodoService {
     }
 
 
+    public void updateWeekCheckAllV3(Character character, String weekCategory) {
+        List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
+        for (TodoV2 todoV2 : todoV2List) {
+            todoV2.updateCheck();
+        }
+    }
 }

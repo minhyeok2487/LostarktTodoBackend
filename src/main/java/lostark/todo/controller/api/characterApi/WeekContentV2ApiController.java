@@ -23,15 +23,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/character/week")
+@RequestMapping("/character/week/v2")
 @Api(tags = {"캐릭터 API - 주간 컨텐츠 V2"})
 public class WeekContentV2ApiController {
 
     private final CharacterService characterService;
     private final TodoService todoService;
     private final ContentService contentService;
-    private final MarketService marketService;
-    private final MemberService memberService;
 
     @ApiOperation(value = "캐릭터 주간 숙제 추가폼")
     @GetMapping("{characterName}")
@@ -46,14 +44,7 @@ public class WeekContentV2ApiController {
 
         List<WeekContentDto> result = new ArrayList<>();
         for (WeekContent weekContent : allByWeekContent) {
-            WeekContentDto weekContentDto = WeekContentDto.builder()
-                    .weekCategory(weekContent.getWeekCategory())
-                    .level(weekContent.getLevel())
-                    .checked(false)
-                    .gate(weekContent.getGate())
-                    .gold(weekContent.getGold())
-                    .name(weekContent.getName())
-                    .build();
+            WeekContentDto weekContentDto = new WeekContentDto().toDto(weekContent);
             for (Todo todo : character.getTodoList()) {
                 if (todo.getName().equals(weekContentDto.getName())) {
                     weekContentDto.setChecked(true);
@@ -78,9 +69,9 @@ public class WeekContentV2ApiController {
         return new ResponseEntity(new CharacterResponseDto().toDto(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 숙제 check 수정",
+    @ApiOperation(value = "캐릭터 주간 숙제 check",
             response = TodoResponseDto.class)
-    @PatchMapping("/week/check")
+    @PatchMapping("/week/v2/check")
     public ResponseEntity updateWeekCheck(@AuthenticationPrincipal String username,
                                           @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
@@ -109,6 +100,5 @@ public class WeekContentV2ApiController {
                 .message(todo.getMessage())
                 .build();
         return new ResponseEntity(todoResponseDto, HttpStatus.OK);
-
     }
 }

@@ -2,15 +2,11 @@ package lostark.todo.domain.todoV2;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
-import lostark.todo.domain.todo.Todo;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
@@ -45,14 +41,8 @@ public class TodoV2 extends BaseTimeEntity {
 
     private int coolTime;
 
-    public TodoV2 updateCheck() {
+    public void updateCheck() {
         this.isChecked = !this.isChecked;
-        return this;
-    }
-
-    public TodoV2 updateContentGold(WeekContentDto weekContentDto) {
-        this.gold = weekContentDto.getGold();
-        return this;
     }
 
     public TodoV2 updateMessage(String message) {

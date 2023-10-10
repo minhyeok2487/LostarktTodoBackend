@@ -61,15 +61,8 @@ public class CharacterApiController {
                                             @RequestBody CharacterChallengeRequestDto dto) {
         // username -> member 조회
         Member member = memberService.findMember(username);
-        List<Character> characterList = characterService.updateChallenge(member, dto.getServerName(), dto.getContent());
-        // 결과
-        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
-                .map(character -> new CharacterResponseDto().toDto(character))
-                .collect(Collectors.toList());
-
-        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator.comparingInt(CharacterResponseDto::getSortNumber));
-        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+        List<Character> characters = characterService.updateChallenge(member, dto.getServerName(), dto.getContent());
+        return new ResponseEntity<>(new CharacterChallengeResponseDto().toDto(characters.get(0)), HttpStatus.OK);
     }
 
     @PatchMapping("/settings")

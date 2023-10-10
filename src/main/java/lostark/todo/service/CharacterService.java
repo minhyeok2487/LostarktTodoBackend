@@ -8,6 +8,7 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import org.springframework.stereotype.Service;
@@ -165,5 +166,26 @@ public class CharacterService {
 
     public void updateSetting(Character character, String name, boolean value) {
         character.getSettings().update(name, value);
+    }
+
+    public void extracted(List<Character> characters) {
+        for (Character character : characters) {
+            character.getTodoV2List().forEach(todoV2 -> {
+                WeekContent weekContent = todoV2.getWeekContent();
+                if(weekContent.getCoolTime()==2){
+                    if(todoV2.getCoolTime()==2) {
+                        if(todoV2.isChecked()) {
+                            todoV2.setCoolTime(0);
+                        } else {
+                            todoV2.setCoolTime(1);
+                        }
+                    }
+                    else {
+                        todoV2.setCoolTime(2);
+                    }
+                }
+                todoV2.setChecked(false);
+            });
+        }
     }
 }

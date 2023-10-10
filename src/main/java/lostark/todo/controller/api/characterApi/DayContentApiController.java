@@ -37,10 +37,7 @@ import java.util.stream.Collectors;
 public class DayContentApiController {
 
     private final CharacterService characterService;
-    private final TodoService todoService;
-    private final ContentService contentService;
     private final MarketService marketService;
-    private final MemberService memberService;
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트",
             response = CharacterResponseDto.class)

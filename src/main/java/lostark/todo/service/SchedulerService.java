@@ -89,6 +89,12 @@ public class SchedulerService {
             }
             todoV2.setChecked(false);
         });
+
+        // 다음주에 변경
+        todoService.findAllV2().forEach(todoV2 -> {
+            todoV2.setChecked(false);
+        });
+
         characterService.findAll().forEach(character -> {
             character.setChallengeAbyss(false);
             character.setChallengeAbyss(false);

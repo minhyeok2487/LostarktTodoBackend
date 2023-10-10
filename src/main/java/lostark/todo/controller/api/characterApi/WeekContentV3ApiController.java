@@ -7,8 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
+import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
+import lostark.todo.domain.member.Member;
+import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.service.*;
 import org.springframework.http.HttpStatus;
@@ -22,14 +25,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/character/week-v3")
+@RequestMapping("/character/week/v3")
 @Api(tags = {"캐릭터 API - 주간 컨텐츠 V3"})
 public class WeekContentV3ApiController {
 
     private final CharacterService characterService;
     private final TodoService todoService;
     private final ContentService contentService;
-    private final MarketService marketService;
     private final MemberService memberService;
 
     @ApiOperation(value = "캐릭터 주간 숙제 추가폼 V3")
@@ -73,7 +75,7 @@ public class WeekContentV3ApiController {
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 전체 추가/제거 V3")
-    @PostMapping("week-v3-all/{characterName}")
+    @PostMapping("/all/{characterName}")
     public ResponseEntity updateTodoV3All(@AuthenticationPrincipal String username,
                                           @PathVariable("characterName") String characterName,
                                           @RequestBody List<WeekContentDto> weekContentDtoList) {
@@ -86,7 +88,7 @@ public class WeekContentV3ApiController {
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 check 수정")
-    @PatchMapping("/week-v3/check")
+    @PatchMapping("/check")
     public ResponseEntity updateWeekCheckV3(@AuthenticationPrincipal String username,
                                             @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
@@ -95,4 +97,41 @@ public class WeekContentV3ApiController {
         todoService.updateWeekCheckV3(character, todoDto.getWeekCategory(), todoDto.getCurrentGate(), todoDto.getTotalGate());
         return new ResponseEntity(new CharacterResponseDto().toDtoV3(character), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "캐릭터 주간 숙제 check 수정 All")
+    @PatchMapping("/check/all")
+    public ResponseEntity updateWeekCheckAllV3(@AuthenticationPrincipal String username,
+                                            @RequestBody TodoDto todoDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
+        todoService.updateWeekCheckAllV3(character, todoDto.getWeekCategory());
+        return new ResponseEntity(new CharacterResponseDto().toDtoV3(character), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 숙제 message 수정",
+            response = TodoResponseDto.class)
+    @PatchMapping("/message")
+    public ResponseEntity updateWeekMessageV3(@AuthenticationPrincipal String username,
+                                            @RequestBody TodoDto todoDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
+        Todo todo = todoService.updateWeekMessage(todoDto);
+        TodoResponseDto todoResponseDto = TodoResponseDto.builder()
+                .id(todo.getId())
+                .message(todo.getMessage())
+                .build();
+        return new ResponseEntity(todoResponseDto, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "테스트용 일주일 지나기")
+    @GetMapping("/test")
+    public ResponseEntity test(@AuthenticationPrincipal String username) {
+        List<Character> characters = memberService.findMember(username).getCharacters();
+        characterService.extracted(characters);
+        return new ResponseEntity(characters, HttpStatus.OK);
+    }
+
+
 }
