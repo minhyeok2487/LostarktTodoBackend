@@ -85,6 +85,8 @@ public class CharacterResponseDto {
 
     private Settings settings;
 
+    private int weekGold;
+
     public CharacterResponseDto toDto(Character character) {
 
         CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
@@ -184,6 +186,9 @@ public class CharacterResponseDto {
                         todoResponseDtoList.add(dto);
                     }
                 }
+                if(characterResponseDto.isGoldCharacter() && todo.isChecked()) {
+                    characterResponseDto.setWeekGold(characterResponseDto.getWeekGold()+todo.getGold());
+                }
             }
         }
         maxThree(todoResponseDtoList);
@@ -192,6 +197,7 @@ public class CharacterResponseDto {
                 todoResponseDto.setCheck(true);
             }
         }
+
         characterResponseDto.setTodoList(todoResponseDtoList);
 
         return characterResponseDto;

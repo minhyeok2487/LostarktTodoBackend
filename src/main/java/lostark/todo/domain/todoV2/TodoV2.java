@@ -14,7 +14,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@ToString
 public class TodoV2 extends BaseTimeEntity {
 
     @Id
@@ -46,12 +45,29 @@ public class TodoV2 extends BaseTimeEntity {
     }
 
     public TodoV2 updateMessage(String message) {
-        this.message = message;
+        if (message.isEmpty()) {
+            this.message = null;
+        } else {
+            this.message = message;
+        }
         return this;
     }
 
     public void updateWeekContent(WeekContent weekContent) {
         this.weekContent = weekContent;
         this.gold = weekContent.getGold();
+    }
+
+    @Override
+    public String toString() {
+        return "TodoV2{" +
+                "id=" + id +
+                ", weekContent=" + weekContent.getId() +
+                ", isChecked=" + isChecked +
+                ", gold=" + gold +
+                ", message='" + message + '\'' +
+                ", character=" + character.getId() +
+                ", coolTime=" + coolTime +
+                '}';
     }
 }

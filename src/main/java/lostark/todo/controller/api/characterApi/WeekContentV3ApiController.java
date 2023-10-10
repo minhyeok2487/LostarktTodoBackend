@@ -117,7 +117,7 @@ public class WeekContentV3ApiController {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
-        Todo todo = todoService.updateWeekMessage(todoDto);
+        TodoV2 todo = todoService.updateWeekMessageV3(todoDto);
         TodoResponseDto todoResponseDto = TodoResponseDto.builder()
                 .id(todo.getId())
                 .message(todo.getMessage())

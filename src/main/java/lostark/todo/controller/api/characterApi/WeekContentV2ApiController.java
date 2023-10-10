@@ -71,7 +71,7 @@ public class WeekContentV2ApiController {
 
     @ApiOperation(value = "캐릭터 주간 숙제 check",
             response = TodoResponseDto.class)
-    @PatchMapping("/week/v2/check")
+    @PatchMapping("/check")
     public ResponseEntity updateWeekCheck(@AuthenticationPrincipal String username,
                                           @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
