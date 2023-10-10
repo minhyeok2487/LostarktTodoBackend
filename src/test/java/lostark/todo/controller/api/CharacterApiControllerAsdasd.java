@@ -4,9 +4,11 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
+import lostark.todo.service.TodoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 
@@ -22,6 +24,9 @@ class CharacterApiControllerAsdasd {
 
     @Autowired
     CharacterService characterService;
+
+    @Autowired
+    TodoService todoService;
 
     @Test
     void todoForm() {

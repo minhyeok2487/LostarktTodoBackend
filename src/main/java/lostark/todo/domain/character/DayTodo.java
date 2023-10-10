@@ -67,18 +67,23 @@ public class DayTodo {
         switch (chaosCheck) {
             case 0:
                 chaosGauge = add(chaosGauge, 20);
+                break;
             case 1:
                 if (chaosGauge >= 20) {
                     chaosGauge = subtract(chaosGauge, 10);
+                    break;
                 } else {
                     chaosGauge = add(chaosGauge, 10);
+                    break;
                 }
             case 2:
                 if(chaosGauge >= 40) {
                     chaosGauge = subtract(chaosGauge, 40);
+                    break;
                 }
-                if(chaosGauge == 30) {
+                if(chaosGauge >= 30) {
                     chaosGauge = subtract(chaosGauge, 20);
+                    break;
                 }
         }
         chaosCheck = 0;
@@ -91,9 +96,11 @@ public class DayTodo {
         switch (guardianCheck) {
             case 0:
                 guardianGauge = add(guardianGauge, 10);
+                break;
             case 1:
                 if (guardianGauge >= 20) {
                     guardianGauge = subtract(guardianGauge, 20);
+                    break;
                 }
         }
         this.guardianCheck = 0;
