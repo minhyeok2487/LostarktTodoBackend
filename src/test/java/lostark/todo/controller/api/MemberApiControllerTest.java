@@ -17,16 +17,21 @@ import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.assertj.core.api.Assertions;
+import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -148,7 +153,7 @@ class MemberApiControllerTest {
         // given //
         String username = "qwe2487@ajou.ac.kr";
         MemberRequestDto memberDto = MemberRequestDto.builder()
-                .apiKey(apiKey+"123")
+                .apiKey(apiKey + "123")
                 .username(username)
                 .characterName("이다")
                 .build();
@@ -186,7 +191,7 @@ class MemberApiControllerTest {
         // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
         assertThatThrownBy(() -> lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(characterName+" 은(는) 존재하지 않는 캐릭터 입니다.");
+                .hasMessage(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
     }
 
     @Test
@@ -352,7 +357,7 @@ class MemberApiControllerTest {
         //업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈보다 작다
         Assertions.assertThat(characterResponseDtoList.size()).isLessThan(beforeCharacterSize);
         //2개의 캐릭터를 삭제했기 때문에 업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈 - 2이다.
-        Assertions.assertThat(characterResponseDtoList.size()).isEqualTo(beforeCharacterSize-2);
+        Assertions.assertThat(characterResponseDtoList.size()).isEqualTo(beforeCharacterSize - 2);
     }
 
     @Test
@@ -417,7 +422,7 @@ class MemberApiControllerTest {
         String username = "tjdgus9564@gmail.com";
         // username -> member 조회
         Member member = memberService.findMember(username);
-        if(member.getCharacters().isEmpty()) {
+        if (member.getCharacters().isEmpty()) {
             throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
         }
         String serverName = member.getCharacters().get(0).getServerName();
@@ -435,44 +440,52 @@ class MemberApiControllerTest {
         );
     }
 
-    @Test
-    void test() {
-        List<Member> all = memberService.findAll();
+//    @Test
+//    @DisplayName("서버 분리 캐릭터 업데이트 테스트2")
+//    void updateCharacterListTestV2() {
+//        long memberId = 34;
+//        Member member = memberService.findMember(memberId);
+//        List<Character> beforeCharacterList = member.getCharacters();
+//        // 비교 : 캐릭터 이름, 아이템레벨, 클래스
+//        for (Character character : beforeCharacterList) {
+//            JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
+//            System.out.println("jsonObject = " + jsonObject);
+//        }
 
-        for (Member member : all) {
-            boolean duplicate = false;
-            List<Character> characters = member.getCharacters();
-            Set<String> characterNames = new HashSet<>();
-            List<Character> charactersToRemove = new ArrayList<>();
-
-            for (Character character : characters) {
-                String characterName = character.getCharacterName();
-
-                // Check if the character name has already been encountered
-                if (characterNames.contains(characterName)) {
-                    duplicate = true;
-                    System.out.println("Duplicate character id: " + character.getId());
-                    charactersToRemove.add(character);
-                } else {
-                    // Add the character name to the set
-                    characterNames.add(characterName);
-                }
-            }
-
-            // Remove characters with duplicate names based on ID (remove the later occurrence)
-            for (Character characterToRemove : charactersToRemove) {
-                characters.remove(characterToRemove);
-            }
-            if(duplicate) {
-                System.out.println("member = " + member.getUsername() + "/" +member.getId());
-                for (Character character : characters) {
-                    System.out.println("character = " + character);
-                }
-            }
-        }
-    }
+//        // 대표캐릭터와 연동된 캐릭터(api 검증)
+//        // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+//        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+//        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+//
+//        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+//        List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
+//                beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
 
 
-
+//        // 변경된 내용 업데이트 및 추가, 삭제
+//        memberService.updateCharacterList(member, updateCharacterList);
+//
+//        // 재련재료 데이터 리스트로 거래소 데이터 호출
+//        Map<String, Market> contentResource = marketService.findContentResource();
+//
+//        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+//        List<Character> calculatedCharacterList = new ArrayList<>();
+//        for (Character character : member.getCharacters()) {
+//            Character result = characterService.calculateDayTodo(character, contentResource);
+//            calculatedCharacterList.add(result);
+//        }
+//
+//        // 결과
+//        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
+//                .map(character -> new CharacterResponseDto().toDto(character))
+//                .collect(Collectors.toList());
+//
+//        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+//        characterResponseDtoList.sort(Comparator
+//                .comparingInt(CharacterResponseDto::getSortNumber)
+//                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+//        );
+//        System.out.println("characterResponseDtoList = " + characterResponseDtoList);
+//}
 
 }

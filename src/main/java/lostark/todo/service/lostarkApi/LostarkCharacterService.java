@@ -10,9 +10,11 @@ import lostark.todo.domain.content.DayContent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +47,7 @@ public class LostarkCharacterService {
             InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-
+            System.out.println("jsonArray = " + jsonArray);
             // 1415이상만 필터링
             JSONArray filteredArray = filterLevel(jsonArray);
 
@@ -127,5 +129,18 @@ public class LostarkCharacterService {
             }
         }
         return result;
+    }
+
+    public JSONObject findCharacter(String characterName, String apiKey) {
+        try {
+            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject result = (JSONObject) parser.parse(inputStreamReader);
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -32,6 +32,11 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
     }
 
+    public Member findMember(long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다"));
+    }
+
     /**
      * 회원가입 캐릭터 추가
      */
