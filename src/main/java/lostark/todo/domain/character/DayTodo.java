@@ -81,7 +81,7 @@ public class DayTodo {
                     chaosGauge = subtract(chaosGauge, 40);
                     break;
                 }
-                if(chaosGauge >= 30) {
+                if(chaosGauge <= 30 && chaosGauge >= 20) {
                     chaosGauge = subtract(chaosGauge, 20);
                     break;
                 }

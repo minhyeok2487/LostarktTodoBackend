@@ -86,6 +86,7 @@ public class Character extends BaseTimeEntity {
      * 캐릭터 정보 업데이트
      */
     public Character updateCharacter(Character updatedCharacter) {
+        this.characterName = updatedCharacter.getCharacterName();
         this.characterLevel = updatedCharacter.getCharacterLevel();
         this.characterImage = updatedCharacter.getCharacterImage();
         this.itemLevel = updatedCharacter.getItemLevel();
@@ -96,6 +97,9 @@ public class Character extends BaseTimeEntity {
         return this;
     }
 
+    /**
+     * 캐릭터 정보 닉네임 변경
+     */
     public Character changeCharacter(Character updatedCharacter) {
         this.characterName = updatedCharacter.getCharacterName();
         this.characterLevel = updatedCharacter.getCharacterLevel();

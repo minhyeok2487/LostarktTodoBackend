@@ -195,12 +195,12 @@ public class MemberApiController {
             } else {
                 // 데이터 변경
                 Character newCharacter = Character.builder()
+                        .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
                         .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
-                        .dayTodo(new DayTodo())
+                        .dayTodo(new DayTodo().createDayContent(chaos, guardian, character.getItemLevel()))
                         .build();
-                newCharacter.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
                 characterService.updateCharacter(character, newCharacter);
             }
         }
@@ -212,7 +212,7 @@ public class MemberApiController {
             }
         }
 
-        // 추가
+        // 추가 리스트
         List<Character> addList = new ArrayList<>();
         List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
                 beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
@@ -229,6 +229,7 @@ public class MemberApiController {
             }
         }
 
+        //삭제 하면서 캐릭터 닉네임 변경감지
         if (!addList.isEmpty()) {
             for (Character character : addList) {
                 if (character.getCharacterImage() != null) {
@@ -238,7 +239,7 @@ public class MemberApiController {
                             String beforeCharacterImageId = extracted(before.getCharacterImage());
                             if(beforeCharacterImageId.equals(characterImageId)) {
                                 log.info("change characterName {} to {}", before.getCharacterName(), character.getCharacterName());
-                                character = before.changeCharacter(character);
+                                character = before.updateCharacter(character);
                             }
                         }
                     }
@@ -259,7 +260,7 @@ public class MemberApiController {
 
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDto(character))
+                .map(character -> new CharacterResponseDto().toDtoV3(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
