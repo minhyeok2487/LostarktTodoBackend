@@ -72,7 +72,7 @@ public class DayContentApiController {
         // 업데이트된 휴식게이지로 예상 수익 계산
         Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource);
 
-        return new ResponseEntity(new CharacterResponseDto().toDto(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity(new CharacterResponseDto().toDtoV3(resultCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 통계보기")

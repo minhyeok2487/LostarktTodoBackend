@@ -21,7 +21,9 @@ public class CharacterDayTodoDto {
     @NotEmpty()
     private String characterName;
 
-    private boolean eponaCheck;
+    private Integer eponaCheck;
+
+    private Integer eponaGauge;
 
     private Integer chaosGauge;
 
@@ -31,10 +33,12 @@ public class CharacterDayTodoDto {
 
     private Integer guardianCheck;
 
+
     public CharacterDayTodoDto toDto(String characterName, DayTodo dayTodo) {
         return CharacterDayTodoDto.builder()
                 .characterName(characterName)
-                .eponaCheck(dayTodo.isEponaCheck())
+                .eponaCheck(dayTodo.getEponaCheck2())
+                .eponaGauge(dayTodo.getEponaGauge())
                 .chaosGauge(dayTodo.getChaosGauge())
                 .chaosCheck(dayTodo.getChaosCheck())
                 .guardianGauge(dayTodo.getGuardianGauge())

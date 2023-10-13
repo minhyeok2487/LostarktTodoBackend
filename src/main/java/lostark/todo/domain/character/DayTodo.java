@@ -48,7 +48,13 @@ public class DayTodo {
 
     private double guardianGold;
 
-    private boolean eponaCheck; //에포나
+    private boolean eponaCheck;
+
+    @Size(max = 3)
+    private int eponaCheck2;
+
+    @Size(max = 100)
+    private int eponaGauge;
 
 
     /**
@@ -57,7 +63,46 @@ public class DayTodo {
     public void updateDayContent(CharacterCheckDto characterCheckDto) {
         this.chaosCheck = characterCheckDto.getChaosCheck();
         this.guardianCheck = characterCheckDto.getGuardianCheck();
-        this.eponaCheck = characterCheckDto.isEponaCheck();
+        this.eponaCheck2 = characterCheckDto.getEponaCheck();
+    }
+
+    /**
+     * 에포나의뢰 휴식게이지 계산 후 초기화
+     */
+    public void calculateEpona() {
+        switch (eponaCheck2) {
+            case 0:
+                eponaGauge = add(eponaGauge, 60);
+                break;
+            case 1:
+                if (chaosGauge < 20) {
+                    eponaGauge = add(eponaGauge, 20);
+                    break;
+                }
+            case 2:
+                if(eponaGauge >= 40) {
+                    eponaGauge = subtract(eponaGauge, 40);
+                    eponaGauge = add(eponaGauge, 10);
+                    break;
+                } else if(eponaGauge <= 30 && eponaGauge >= 20) {
+                    eponaGauge = subtract(eponaGauge, 20);
+                    eponaGauge = add(eponaGauge, 10);
+                    break;
+                } else {
+                    eponaGauge = add(eponaGauge, 10);
+                }
+            case 3:
+                if(eponaGauge >= 60) {
+                    eponaGauge = subtract(eponaGauge, 60);
+                    break;
+                } else if(eponaGauge <= 50 && eponaGauge >= 40) {
+                    eponaGauge = subtract(eponaGauge, 40);
+                    break;
+                } else if(eponaGauge <=30 && eponaGauge >= 20){
+                    eponaGauge = subtract(eponaGauge, 20);
+                }
+        }
+        eponaCheck2 = 0;
     }
 
     /**
@@ -117,6 +162,10 @@ public class DayTodo {
         Integer dtoGuardianGauge = characterDayTodoDto.getGuardianGauge();
         validateGauge(dtoGuardianGauge); //검증
         this.guardianGauge = dtoGuardianGauge;
+
+        Integer dtoEponGauge = characterDayTodoDto.getEponaGauge();
+        validateGauge(dtoEponGauge);
+        this.eponaGauge = dtoEponGauge;
     }
 
     /**
@@ -139,7 +188,7 @@ public class DayTodo {
      * 캐릭터 DayTodo updateCheck
      */
     public void updateCheck(CharacterDayTodoDto characterDayTodoDto) {
-        this.eponaCheck = characterDayTodoDto.isEponaCheck();
+        this.eponaCheck2 = characterDayTodoDto.getEponaCheck();
         this.chaosCheck = characterDayTodoDto.getChaosCheck();
         this.guardianCheck = characterDayTodoDto.getGuardianCheck();
     }
@@ -163,5 +212,6 @@ public class DayTodo {
         }
         return result;
     }
+
 
 }

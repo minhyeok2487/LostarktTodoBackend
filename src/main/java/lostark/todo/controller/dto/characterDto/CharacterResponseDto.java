@@ -70,8 +70,9 @@ public class CharacterResponseDto {
     private double guardianGold;
 
     @ApiModelProperty(notes = "에포나 의뢰 체크")
-    private boolean eponaCheck; //에포나
+    private int eponaCheck; //에포나
 
+    private int eponaGauge;
 
     @ApiModelProperty(notes = "주간 숙제 체크")
     private List<TodoResponseDto> todoList;
@@ -105,7 +106,8 @@ public class CharacterResponseDto {
                 .guardianGauge(character.getDayTodo().getGuardianGauge())
                 .guardian(character.getDayTodo().getGuardian())
                 .guardianGold(character.getDayTodo().getGuardianGold())
-                .eponaCheck(character.getDayTodo().isEponaCheck())
+                .eponaCheck(character.getDayTodo().getEponaCheck2())
+                .eponaGauge(character.getDayTodo().getEponaGauge())
                 .goldCharacter(character.isGoldCharacter())
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
@@ -146,7 +148,8 @@ public class CharacterResponseDto {
                 .guardianGauge(character.getDayTodo().getGuardianGauge())
                 .guardian(character.getDayTodo().getGuardian())
                 .guardianGold(character.getDayTodo().getGuardianGold())
-                .eponaCheck(character.getDayTodo().isEponaCheck())
+                .eponaCheck(character.getDayTodo().getEponaCheck2())
+                .eponaGauge(character.getDayTodo().getEponaGauge())
                 .goldCharacter(character.isGoldCharacter())
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
