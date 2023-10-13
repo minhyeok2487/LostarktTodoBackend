@@ -24,6 +24,14 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    /**
+     * ApiKey가 있는 회원 리스트
+     */
+    public List<Member> findAllByApiKeyNotNull() {
+        return memberRepository.findAllByApiKeyNotNull();
+    }
+
     /**
      * 회원 찾기(캐릭터 리스트와 함께)
      */
@@ -78,52 +86,6 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    /**
-     * 캐릭터 리스트 업데이트
-     */
-    public List<Character> updateCharacterList(List<Character> beforeCharacterList, List<Character> updateCharacterList) {
-        Member member = beforeCharacterList.get(0).getMember();
-        List<Character> charactersToUpdate = new ArrayList<>();
-        List<Character> charactersToAdd = new ArrayList<>();
-        List<Character> charactersToDelete = new ArrayList<>();
-
-        // 캐릭터 정보 업데이트와 새로운 캐릭터 추가
-        for (Character updateCharacter : updateCharacterList) {
-            updateCharacter.setMember(member);
-            boolean found = false;
-            for (Character beforeCharacter : beforeCharacterList) {
-                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
-                    Character updated = beforeCharacter.updateCharacter(updateCharacter); // 캐릭터 정보 업데이트
-                    charactersToUpdate.add(updated);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                charactersToAdd.add(updateCharacter);
-            }
-        }
-
-        // 삭제된 캐릭터 삭제
-        for (Character beforeCharacter : beforeCharacterList) {
-            boolean found = false;
-            for (Character updateCharacter : updateCharacterList) {
-                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                charactersToDelete.add(beforeCharacter);
-            }
-        }
-
-        // 정리해서 리턴
-        beforeCharacterList.removeAll(charactersToDelete);
-        beforeCharacterList.addAll(charactersToAdd);
-
-        return beforeCharacterList;
-    }
 
     /**
      * 캐릭터 업데이트 로직

@@ -42,12 +42,7 @@ public class LostarkCharacterService {
      */
     public List<Character> findCharacterList(String characterName, String apiKey, List<DayContent> chaos, List<DayContent> guardian) {
         try {
-            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-            System.out.println("jsonArray = " + jsonArray);
+            JSONArray jsonArray = findCharacters(characterName, apiKey);
             // 1415이상만 필터링
             JSONArray filteredArray = filterLevel(jsonArray);
 
@@ -88,6 +83,17 @@ public class LostarkCharacterService {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 캐릭터 리스트 출력
+     */
+    public JSONArray findCharacters(String characterName, String apiKey) throws IOException, ParseException {
+        String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+        String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
+        InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+        JSONParser parser = new JSONParser();
+        return (JSONArray) parser.parse(inputStreamReader);
     }
 
     // 1415이상만 필터링 메소드

@@ -77,6 +77,7 @@ public class Character extends BaseTimeEntity {
                 ", characterClassName='" + characterClassName + '\'' +
                 ", characterImage='" + characterImage + '\'' +
                 ", itemLevel=" + itemLevel +
+                ", sortNumber=" + sortNumber +
                 ", characterDayContent=" + dayTodo +
                 '}';
     }
@@ -85,6 +86,18 @@ public class Character extends BaseTimeEntity {
      * 캐릭터 정보 업데이트
      */
     public Character updateCharacter(Character updatedCharacter) {
+        this.characterLevel = updatedCharacter.getCharacterLevel();
+        this.characterImage = updatedCharacter.getCharacterImage();
+        this.itemLevel = updatedCharacter.getItemLevel();
+        this.dayTodo.setChaosName(updatedCharacter.getDayTodo().getChaosName());
+        this.dayTodo.setChaos(updatedCharacter.getDayTodo().getChaos());
+        this.dayTodo.setGuardianName(updatedCharacter.getDayTodo().getGuardianName());
+        this.dayTodo.setGuardian(updatedCharacter.getDayTodo().getGuardian());
+        return this;
+    }
+
+    public Character changeCharacter(Character updatedCharacter) {
+        this.characterName = updatedCharacter.getCharacterName();
         this.characterLevel = updatedCharacter.getCharacterLevel();
         this.characterImage = updatedCharacter.getCharacterImage();
         this.itemLevel = updatedCharacter.getItemLevel();

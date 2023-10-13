@@ -12,6 +12,7 @@ import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
@@ -23,6 +24,7 @@ import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkApiService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -171,25 +173,79 @@ public class MemberApiController {
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
-            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
-                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
-                    "캐릭터 추가 및 삭제 ",
-            response = CharacterResponseDto.class)
+        notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
+                "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
+                "캐릭터 추가 및 삭제 ",
+        response = CharacterResponseDto.class)
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
-        List<Character> beforeCharacterList = member.getCharacters();
-        // 대표캐릭터와 연동된 캐릭터(api 검증)
-        // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
         List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
         List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
 
-        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+        List<Character> beforeCharacterList = member.getCharacters();
+        List<Character> removeList = new ArrayList<>();
+        // 비교 : 캐릭터 이름, 아이템레벨, 클래스
+        for (Character character : beforeCharacterList) {
+            JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
+            if (jsonObject == null) {
+                log.info("delete character name : {}", character.getCharacterName());
+                //삭제 리스트에 추가
+                removeList.add(character);
+            } else {
+                // 데이터 변경
+                Character newCharacter = Character.builder()
+                        .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
+                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .dayTodo(new DayTodo())
+                        .build();
+                newCharacter.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
+                characterService.updateCharacter(character, newCharacter);
+            }
+        }
+
+        // 삭제
+        if (!removeList.isEmpty()) {
+            for (Character character : removeList) {
+                characterService.deleteCharacter(beforeCharacterList, character);
+            }
+        }
+
+        // 추가
+        List<Character> addList = new ArrayList<>();
         List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
                 beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+        for (Character character : updateCharacterList) {
+            boolean contain = false;
+            for (Character before : beforeCharacterList) {
+                if (before.getCharacterName().equals(character.getCharacterName())) {
+                    contain = true;
+                    break;
+                }
+            }
+            if (!contain) {
+                addList.add(character);
+            }
+        }
 
-        // 변경된 내용 업데이트 및 추가, 삭제
-        memberService.updateCharacterList(member, updateCharacterList);
+        if (!addList.isEmpty()) {
+            for (Character character : addList) {
+                if (character.getCharacterImage() != null) {
+                    String characterImageId = extracted(character.getCharacterImage());
+                    for (Character before : removeList) {
+                        if (before.getCharacterImage() != null) {
+                            String beforeCharacterImageId = extracted(before.getCharacterImage());
+                            if(beforeCharacterImageId.equals(characterImageId)) {
+                                log.info("change characterName {} to {}", before.getCharacterName(), character.getCharacterName());
+                                character = before.changeCharacter(character);
+                            }
+                        }
+                    }
+                    beforeCharacterList.add(character);
+                }
+            }
+        }
 
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.findContentResource();
@@ -214,6 +270,60 @@ public class MemberApiController {
 
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
+
+    private static String extracted(String url) {
+        // URL에서 원하는 부분을 추출
+        int startIndex = url.lastIndexOf('/') + 1; // '/' 다음 인덱스부터 시작
+        int endIndex = url.indexOf(".png"); // ".png" 이전까지
+
+        return url.substring(startIndex, endIndex);
+
+    }
+
+//    @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
+//            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
+//                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
+//                    "캐릭터 추가 및 삭제 ",
+//            response = CharacterResponseDto.class)
+//    @PatchMapping("/characterList")
+//    public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
+//        Member member = memberService.findMember(username);
+//        List<Character> beforeCharacterList = member.getCharacters();
+//        // 대표캐릭터와 연동된 캐릭터(api 검증)
+//        // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+//        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+//        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+//
+//        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+//        List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
+//                beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+//
+//        // 변경된 내용 업데이트 및 추가, 삭제
+//        memberService.updateCharacterList(member, updateCharacterList);
+//
+//        // 재련재료 데이터 리스트로 거래소 데이터 호출
+//        Map<String, Market> contentResource = marketService.findContentResource();
+//
+//        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+//        List<Character> calculatedCharacterList = new ArrayList<>();
+//        for (Character character : member.getCharacters()) {
+//            Character result = characterService.calculateDayTodo(character, contentResource);
+//            calculatedCharacterList.add(result);
+//        }
+//
+//        // 결과
+//        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
+//                .map(character -> new CharacterResponseDto().toDto(character))
+//                .collect(Collectors.toList());
+//
+//        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+//        characterResponseDtoList.sort(Comparator
+//                .comparingInt(CharacterResponseDto::getSortNumber)
+//                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+//        );
+//
+//        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+//    }
 
     @ApiOperation(value = "회원과 연결된 캐릭터 리스트의 변경된 Todo항목 저장", response = CharacterCheckDto.class)
     @PatchMapping("/characterList/todo")

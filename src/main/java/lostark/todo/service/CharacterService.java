@@ -188,4 +188,18 @@ public class CharacterService {
             });
         }
     }
+
+    /**
+     * 캐릭터 데이터 업데이트
+     */
+    public Character updateCharacter(Character character, Character newCharacter) {
+        return character.updateCharacter(newCharacter);
+    }
+
+    /**
+     * 캐릭터 삭제
+     */
+    public void deleteCharacter(List<Character> beforeCharacterList, Character character) {
+        beforeCharacterList.remove(character);
+    }
 }
