@@ -70,38 +70,16 @@ public class DayTodo {
      * 에포나의뢰 휴식게이지 계산 후 초기화
      */
     public void calculateEpona() {
-        switch (eponaCheck2) {
-            case 0:
-                eponaGauge = add(eponaGauge, 60);
-                break;
-            case 1:
-                if (chaosGauge < 20) {
-                    eponaGauge = add(eponaGauge, 20);
-                    break;
-                }
-            case 2:
-                if(eponaGauge >= 40) {
-                    eponaGauge = subtract(eponaGauge, 40);
-                    eponaGauge = add(eponaGauge, 10);
-                    break;
-                } else if(eponaGauge <= 30 && eponaGauge >= 20) {
-                    eponaGauge = subtract(eponaGauge, 20);
-                    eponaGauge = add(eponaGauge, 10);
-                    break;
-                } else {
-                    eponaGauge = add(eponaGauge, 10);
-                }
-            case 3:
-                if(eponaGauge >= 60) {
-                    eponaGauge = subtract(eponaGauge, 60);
-                    break;
-                } else if(eponaGauge <= 50 && eponaGauge >= 40) {
-                    eponaGauge = subtract(eponaGauge, 40);
-                    break;
-                } else if(eponaGauge <=30 && eponaGauge >= 20){
-                    eponaGauge = subtract(eponaGauge, 20);
-                }
+        for (int i = 0; i < eponaCheck2; i++) {
+            if (eponaGauge >= 20) {
+                eponaGauge = subtract(eponaGauge, 20);
+            }
         }
+
+        for (int i = 0; i < 3-eponaCheck2; i++) {
+            eponaGauge = add(eponaGauge, 10);
+        }
+
         eponaCheck2 = 0;
     }
 
@@ -109,27 +87,14 @@ public class DayTodo {
      * 카오스던전 휴식게이지 계산 후 초기화
      */
     public void calculateChaos() {
-        switch (chaosCheck) {
-            case 0:
-                chaosGauge = add(chaosGauge, 20);
-                break;
-            case 1:
-                if (chaosGauge >= 20) {
-                    chaosGauge = subtract(chaosGauge, 10);
-                    break;
-                } else {
-                    chaosGauge = add(chaosGauge, 10);
-                    break;
-                }
-            case 2:
-                if(chaosGauge >= 40) {
-                    chaosGauge = subtract(chaosGauge, 40);
-                    break;
-                }
-                if(chaosGauge <= 30 && chaosGauge >= 20) {
-                    chaosGauge = subtract(chaosGauge, 20);
-                    break;
-                }
+        for (int i = 0; i < chaosCheck; i++) {
+            if (chaosGauge >= 20) {
+                chaosGauge = subtract(chaosGauge, 20);
+            }
+        }
+
+        for (int i = 0; i < 2-chaosCheck; i++) {
+            chaosGauge = add(chaosGauge, 10);
         }
         chaosCheck = 0;
     }
@@ -138,15 +103,14 @@ public class DayTodo {
      * 가디언토벌 휴식게이지 계산 후 초기화
      */
     public void calculateGuardian() {
-        switch (guardianCheck) {
-            case 0:
-                guardianGauge = add(guardianGauge, 10);
-                break;
-            case 1:
-                if (guardianGauge >= 20) {
-                    guardianGauge = subtract(guardianGauge, 20);
-                    break;
-                }
+        for (int i = 0; i < guardianCheck; i++) {
+            if (guardianGauge >= 20) {
+                guardianGauge = subtract(guardianGauge, 20);
+            }
+        }
+
+        for (int i = 0; i < 1-guardianCheck; i++) {
+            guardianGauge = add(guardianGauge, 10);
         }
         this.guardianCheck = 0;
     }

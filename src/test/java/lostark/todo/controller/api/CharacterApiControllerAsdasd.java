@@ -1,6 +1,7 @@
 package lostark.todo.controller.api;
 
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
@@ -45,4 +46,5 @@ class CharacterApiControllerAsdasd {
                 .collect(Collectors.toList());
 
     }
+
 }
