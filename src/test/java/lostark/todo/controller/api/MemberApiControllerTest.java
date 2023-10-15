@@ -474,4 +474,107 @@ class MemberApiControllerTest {
             }
         }
     }
+
+    @Test
+    void test121312() {
+        Member member = memberService.findMember(1149);
+        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+
+        List<Character> beforeCharacterList = member.getCharacters();
+        List<Character> removeList = new ArrayList<>();
+        // 비교 : 캐릭터 이름, 아이템레벨, 클래스
+        for (Character character : beforeCharacterList) {
+            JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
+            if (jsonObject == null) {
+                log.info("delete character name : {}", character.getCharacterName());
+                //삭제 리스트에 추가
+                removeList.add(character);
+            } else {
+                // 데이터 변경
+                Character newCharacter = Character.builder()
+                        .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
+                        .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
+                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .dayTodo(new DayTodo().createDayContent(chaos, guardian, character.getItemLevel()))
+                        .build();
+                characterService.updateCharacter(character, newCharacter);
+            }
+        }
+
+        // 삭제
+        if (!removeList.isEmpty()) {
+            for (Character character : removeList) {
+                characterService.deleteCharacter(beforeCharacterList, character);
+            }
+        }
+
+        // 추가 리스트
+        List<Character> addList = new ArrayList<>();
+        List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
+                beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+        for (Character character : updateCharacterList) {
+            boolean contain = false;
+            for (Character before : beforeCharacterList) {
+                if (before.getCharacterName().equals(character.getCharacterName())) {
+                    contain = true;
+                    break;
+                }
+            }
+            if (!contain) {
+                addList.add(character);
+            }
+        }
+
+        //삭제 하면서 캐릭터 닉네임 변경감지
+        if (!addList.isEmpty()) {
+            for (Character character : addList) {
+                if (character.getCharacterImage() != null) {
+                    String characterImageId = extracted(character.getCharacterImage());
+                    for (Character before : removeList) {
+                        if (before.getCharacterImage() != null) {
+                            String beforeCharacterImageId = extracted(before.getCharacterImage());
+                            if(beforeCharacterImageId.equals(characterImageId)) {
+                                log.info("change characterName {} to {}", before.getCharacterName(), character.getCharacterName());
+                                character = before.updateCharacter(character);
+                            }
+                        }
+                    }
+                    beforeCharacterList.add(character);
+                }
+            }
+        }
+
+        // 재련재료 데이터 리스트로 거래소 데이터 호출
+        Map<String, Market> contentResource = marketService.findContentResource();
+
+        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+        List<Character> calculatedCharacterList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            Character result = characterService.calculateDayTodo(character, contentResource);
+            calculatedCharacterList.add(result);
+        }
+
+        // 결과
+        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterResponseDto().toDtoV3(character))
+                .collect(Collectors.toList());
+
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
+
+    }
+
+    private static String extracted(String url) {
+        // URL에서 원하는 부분을 추출
+        int startIndex = url.lastIndexOf('/') + 1; // '/' 다음 인덱스부터 시작
+        int endIndex = url.indexOf(".png"); // ".png" 이전까지
+
+        return url.substring(startIndex, endIndex);
+
+    }
 }

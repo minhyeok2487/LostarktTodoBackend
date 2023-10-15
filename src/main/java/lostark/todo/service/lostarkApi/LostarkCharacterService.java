@@ -61,6 +61,7 @@ public class LostarkCharacterService {
                         .build();
                 character.setSettings(new Settings());
                 character.setTodoList(new ArrayList<>());
+                character.setTodoV2List(new ArrayList<>());
                 character.createImage(jsonObject.get("CharacterImage"));
                 character.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
                 characterList.add(character);

@@ -5,6 +5,8 @@
 ## Github
 - [Backend](https://github.com/minhyeok2487/LostarktTodoBackend)
 - [Frontend](https://github.com/minhyeok2487/LostarkTodoFrontend)
+- [Frontend-Publisher](https://github.com/leehanbee35/LostarkTodoFrontend.git)
+
 
 ## 프로젝트
 ### 개요

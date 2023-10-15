@@ -57,6 +57,8 @@ public class DayTodo {
     private int eponaGauge;
 
 
+
+
     /**
      * 일일컨텐츠 업데이트 메서드
      */
