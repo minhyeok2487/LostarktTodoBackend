@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
+import java.lang.reflect.Field;
 import java.util.List;
 
 @Embeddable
@@ -43,21 +44,31 @@ public class Settings {
       this.showWeekTodo = true;
    }
 
+//   public void update(String name, boolean value) {
+//      if(name.equals("showCharacter")) {
+//         this.showCharacter = value;
+//      }
+//      if(name.equals("showEpona")) {
+//         this.showEpona = value;
+//      }
+//      if(name.equals("showChaos")) {
+//         this.showChaos = value;
+//      }
+//      if(name.equals("showGuardian")) {
+//         this.showGuardian = value;
+//      }
+//      if(name.equals("showWeekTodo")) {
+//         this.showWeekTodo = value;
+//      }
+//   }
+
    public void update(String name, boolean value) {
-      if(name.equals("showCharacter")) {
-         this.showCharacter = value;
-      }
-      if(name.equals("showEpona")) {
-         this.showEpona = value;
-      }
-      if(name.equals("showChaos")) {
-         this.showChaos = value;
-      }
-      if(name.equals("showGuardian")) {
-         this.showGuardian = value;
-      }
-      if(name.equals("showWeekTodo")) {
-         this.showWeekTodo = value;
+      try {
+         Field field = getClass().getDeclaredField(name);
+         field.setAccessible(true); // 필드에 접근할 수 있도록 설정
+         field.set(this, value);
+      } catch (Exception e) {
+         throw new IllegalArgumentException("없는 필드 값 입니다.");
       }
    }
 }

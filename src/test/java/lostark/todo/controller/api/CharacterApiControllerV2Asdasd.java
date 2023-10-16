@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @SpringBootTest
 @Transactional
-class CharacterApiControllerAsdasd {
+class CharacterApiControllerV2Asdasd {
 
     @Autowired
     ContentService contentService;

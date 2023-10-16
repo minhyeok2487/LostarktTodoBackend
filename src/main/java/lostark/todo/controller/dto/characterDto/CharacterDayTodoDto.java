@@ -18,6 +18,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class CharacterDayTodoDto {
 
+    private long characterId;
+
     @NotEmpty()
     private String characterName;
 
@@ -32,17 +34,4 @@ public class CharacterDayTodoDto {
     private Integer guardianGauge;
 
     private Integer guardianCheck;
-
-
-    public CharacterDayTodoDto toDto(String characterName, DayTodo dayTodo) {
-        return CharacterDayTodoDto.builder()
-                .characterName(characterName)
-                .eponaCheck(dayTodo.getEponaCheck2())
-                .eponaGauge(dayTodo.getEponaGauge())
-                .chaosGauge(dayTodo.getChaosGauge())
-                .chaosCheck(dayTodo.getChaosCheck())
-                .guardianGauge(dayTodo.getGuardianGauge())
-                .guardianCheck(dayTodo.getGuardianCheck())
-                .build();
-    }
 }

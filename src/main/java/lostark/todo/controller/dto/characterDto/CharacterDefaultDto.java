@@ -9,13 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SettingRequestDto {
+public class CharacterDefaultDto {
 
     private long characterId;
 
     private String characterName;
-
-    private boolean value;
-
-    private String name;
 }

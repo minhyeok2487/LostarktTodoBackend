@@ -15,6 +15,8 @@ public class CharacterSettingDto {
 
     private long id;
 
+    private long characterId;
+
     private String serverName;
 
     private String characterName;
@@ -42,6 +44,7 @@ public class CharacterSettingDto {
     public static CharacterSettingDto toDto(Character entity) {
         return CharacterSettingDto.builder()
                 .id(entity.getId())
+                .characterId(entity.getId())
                 .serverName(entity.getServerName())
                 .characterName(entity.getCharacterName())
                 .characterLevel(entity.getCharacterLevel())

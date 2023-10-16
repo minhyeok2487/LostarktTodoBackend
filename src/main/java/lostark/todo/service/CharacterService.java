@@ -37,6 +37,14 @@ public class CharacterService {
     }
 
     /**
+     * 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
+     */
+    public Character findCharacter(long characterId, String characterName, String username) {
+        return characterRepository.findCharacterWithMember(characterId, username).orElseThrow(
+                () -> new IllegalArgumentException("characterName = "+characterName+" / username = " + username + " : 존재하지 않는 캐릭터"));
+    }
+
+    /**
      * 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
      */
     public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {
@@ -125,6 +133,14 @@ public class CharacterService {
     }
 
     public Character updateGoldCharacter(Character character) {
+        // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
+        int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
+                character.getMember(), character.getServerName());
+
+        //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
+        if (!character.isGoldCharacter() && goldCharacter >= 6) {
+            throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
+        }
         return character.updateGoldCharacter();
     }
 
@@ -152,9 +168,6 @@ public class CharacterService {
         return characterRepository.findCharacterListServerName(member, serverName);
     }
 
-    public int checkGoldCharacter(Character checkedCharacter) {
-        return characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(checkedCharacter.getMember(), checkedCharacter.getServerName());
-    }
 
     public List<Character> updateChallenge(Member member, String serverName, String content) {
         List<Character> characterList = findCharacterListServerName(member, serverName);

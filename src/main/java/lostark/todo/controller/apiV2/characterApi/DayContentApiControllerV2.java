@@ -1,14 +1,16 @@
-package lostark.todo.controller.api.characterApi;
+package lostark.todo.controller.apiV2.characterApi;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.*;
+import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
+import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
-import lostark.todo.service.*;
+import lostark.todo.service.CharacterService;
+import lostark.todo.service.MarketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,26 +22,26 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/character/day-content")
-@Api(tags = {"캐릭터 API - 일일 컨텐츠"})
-public class DayContentApiController {
+@RequestMapping("/v2/character/day-content")
+@Api(tags = {"캐릭터 API V2 - 일일 컨텐츠"})
+public class DayContentApiControllerV2 {
 
     private final CharacterService characterService;
     private final MarketService marketService;
 
-    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트",
-            response = CharacterResponseDto.class)
+    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterResponseDto.class)
     @PatchMapping("/check")
     public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
                                       @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
+        Character character = characterService.findCharacter(
+                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
 
         // Check 업데이트
         Character updateCharacter = characterService.updateCheck(character, characterDayTodoDto);
 
-        return new ResponseEntity(new CharacterResponseDto().toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity(new CharacterResponseDto().toDtoV2(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
@@ -49,7 +51,8 @@ public class DayContentApiController {
                                              @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
+        Character character = characterService.findCharacter(
+                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
 
         // 휴식게이지 업데이트
         Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto);
@@ -63,21 +66,4 @@ public class DayContentApiController {
         return new ResponseEntity(new CharacterResponseDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
-    /**
-     * 아직 안씀
-     */
-    @ApiOperation(value = "캐릭터 일일컨텐츠 통계보기")
-    @GetMapping("{characterName}/{category}")
-    public ResponseEntity getDayTodoCheck(@AuthenticationPrincipal String username
-            , @PathVariable("characterName") String characterName, @PathVariable("category") String category) {
-        Character character = characterService.findCharacterWithMember(characterName, username);
-        DayContent content = new DayContent();
-        if (category.equals("카오스던전")) {
-            content = character.getDayTodo().getChaos();
-        }
-        if (category.equals("가디언토벌")) {
-            content = character.getDayTodo().getGuardian();
-        }
-        return new ResponseEntity(content, HttpStatus.OK);
-    }
 }

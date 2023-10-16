@@ -23,7 +23,6 @@ import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkApiService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,7 +160,7 @@ public class MemberApiController {
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().toDtoV3(character))
+                .map(character -> new CharacterResponseDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
@@ -260,7 +259,7 @@ public class MemberApiController {
 
         // 결과
         List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDtoV3(character))
+                .map(character -> new CharacterResponseDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬

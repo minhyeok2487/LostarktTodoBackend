@@ -4,26 +4,15 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.*;
-import lostark.todo.controller.dto.contentDto.WeekContentDto;
-import lostark.todo.controller.dto.todoDto.TodoDto;
-import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.DayTodo;
-import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.content.WeekContent;
-import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import lostark.todo.domain.todo.Todo;
-import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,16 +32,10 @@ public class CharacterApiController {
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(characterName, username);
 
-        // 골드 획득 지정캐릭터 : 서버별 6캐릭 이상인지 확인
-        int goldCharacter = characterService.checkGoldCharacter(character);
-        //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
-        if (!character.isGoldCharacter() && goldCharacter >= 6) {
-            throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
-        }
-
+        // 골드 획득 캐릭터 지정
         Character resultCharacter = characterService.updateGoldCharacter(character);
 
-        return new ResponseEntity<>(new CharacterResponseDto().toDto(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponseDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")

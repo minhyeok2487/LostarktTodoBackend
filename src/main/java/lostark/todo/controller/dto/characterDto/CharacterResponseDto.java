@@ -130,7 +130,7 @@ public class CharacterResponseDto {
         return characterResponseDto;
     }
 
-    public CharacterResponseDto toDtoV3(Character character) {
+    public CharacterResponseDto toDtoV2(Character character) {
 
         CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
                 .id(character.getId())
@@ -214,5 +214,19 @@ public class CharacterResponseDto {
                 todoResponseDto.setGold(0);
             }
         }
+    }
+
+    public List<CharacterResponseDto> toDtoList(List<Character> characterList) {
+        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
+                .map(character -> new CharacterResponseDto().toDtoV2(character))
+                .collect(Collectors.toList());
+
+        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+        characterResponseDtoList.sort(Comparator
+                .comparingInt(CharacterResponseDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        );
+        return characterResponseDtoList;
     }
 }
