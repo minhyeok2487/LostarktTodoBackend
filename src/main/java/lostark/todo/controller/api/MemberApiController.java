@@ -197,7 +197,7 @@ public class MemberApiController {
                         .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
-                        .dayTodo(new DayTodo().createDayContent(chaos, guardian, character.getItemLevel()))
+                        .dayTodo(new DayTodo().createDayContent(chaos, guardian, Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""))))
                         .build();
                 characterService.updateCharacter(character, newCharacter);
             }
