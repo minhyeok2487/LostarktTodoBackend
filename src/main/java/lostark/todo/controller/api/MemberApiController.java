@@ -182,10 +182,9 @@ public class MemberApiController {
         List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
         List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
 
-        List<Character> beforeCharacterList = member.getCharacters();
         List<Character> removeList = new ArrayList<>();
         // 비교 : 캐릭터 이름, 아이템레벨, 클래스
-        for (Character character : beforeCharacterList) {
+        for (Character character : member.getCharacters()) {
             JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
             if (jsonObject == null) {
                 log.info("delete character name : {}", character.getCharacterName());
@@ -207,17 +206,17 @@ public class MemberApiController {
         // 삭제
         if (!removeList.isEmpty()) {
             for (Character character : removeList) {
-                characterService.deleteCharacter(beforeCharacterList, character);
+                characterService.deleteCharacter(member.getCharacters(), character);
             }
         }
 
         // 추가 리스트
         List<Character> addList = new ArrayList<>();
         List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
-                beforeCharacterList.get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+                member.getCharacters().get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
         for (Character character : updateCharacterList) {
             boolean contain = false;
-            for (Character before : beforeCharacterList) {
+            for (Character before : member.getCharacters()) {
                 if (before.getCharacterName().equals(character.getCharacterName())) {
                     contain = true;
                     break;
@@ -228,23 +227,9 @@ public class MemberApiController {
             }
         }
 
-        //삭제 하면서 캐릭터 닉네임 변경감지
+        //추가 하면서 캐릭터 닉네임 변경감지
         if (!addList.isEmpty()) {
-            for (Character character : addList) {
-                if (character.getCharacterImage() != null) {
-                    String characterImageId = extracted(character.getCharacterImage());
-                    for (Character before : removeList) {
-                        if (before.getCharacterImage() != null) {
-                            String beforeCharacterImageId = extracted(before.getCharacterImage());
-                            if(beforeCharacterImageId.equals(characterImageId)) {
-                                log.info("change characterName {} to {}", before.getCharacterName(), character.getCharacterName());
-                                character = before.updateCharacter(character);
-                            }
-                        }
-                    }
-                    beforeCharacterList.add(character);
-                }
-            }
+            characterService.addCharacterList(addList, removeList, member);
         }
 
         // 재련재료 데이터 리스트로 거래소 데이터 호출
@@ -271,14 +256,6 @@ public class MemberApiController {
         return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
     }
 
-    private static String extracted(String url) {
-        // URL에서 원하는 부분을 추출
-        int startIndex = url.lastIndexOf('/') + 1; // '/' 다음 인덱스부터 시작
-        int endIndex = url.indexOf(".png"); // ".png" 이전까지
-
-        return url.substring(startIndex, endIndex);
-
-    }
 
 //    @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
 //            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +

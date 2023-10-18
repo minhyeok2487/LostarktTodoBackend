@@ -97,21 +97,6 @@ public class Character extends BaseTimeEntity {
         return this;
     }
 
-    /**
-     * 캐릭터 정보 닉네임 변경
-     */
-    public Character changeCharacter(Character updatedCharacter) {
-        this.characterName = updatedCharacter.getCharacterName();
-        this.characterLevel = updatedCharacter.getCharacterLevel();
-        this.characterImage = updatedCharacter.getCharacterImage();
-        this.itemLevel = updatedCharacter.getItemLevel();
-        this.dayTodo.setChaosName(updatedCharacter.getDayTodo().getChaosName());
-        this.dayTodo.setChaos(updatedCharacter.getDayTodo().getChaos());
-        this.dayTodo.setGuardianName(updatedCharacter.getDayTodo().getGuardianName());
-        this.dayTodo.setGuardian(updatedCharacter.getDayTodo().getGuardian());
-        return this;
-    }
-
     public Character updateGoldCharacter() {
         this.goldCharacter = !this.goldCharacter;
         return this;
@@ -132,5 +117,21 @@ public class Character extends BaseTimeEntity {
             this.challengeAbyss = !this.challengeAbyss;
         }
         return this;
+    }
+
+    public void changeCharacter(Character before) {
+        this.sortNumber = before.getSortNumber();
+        this.dayTodo.setEponaGauge(before.getDayTodo().getEponaGauge());
+        this.dayTodo.setEponaCheck2(before.getDayTodo().getEponaCheck2());
+        this.dayTodo.setChaosGauge(before.getDayTodo().getChaosGauge());
+        this.dayTodo.setChaosCheck(before.getDayTodo().getChaosCheck());
+        this.dayTodo.setGuardianGauge(before.getDayTodo().getGuardianGauge());
+        this.dayTodo.setGuardianCheck(before.getDayTodo().getGuardianCheck());
+        this.todoList = before.getTodoList();
+        this.todoV2List = before.getTodoV2List();
+        this.goldCharacter = before.isGoldCharacter();
+        this.challengeAbyss = before.isChallengeAbyss();
+        this.challengeGuardian = before.isChallengeGuardian();
+        this.settings = before.getSettings();
     }
 }

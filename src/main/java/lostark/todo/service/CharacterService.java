@@ -215,4 +215,33 @@ public class CharacterService {
     public void deleteCharacter(List<Character> beforeCharacterList, Character character) {
         beforeCharacterList.remove(character);
     }
+
+    /**
+     * 캐릭터 리스트 추가
+     */
+    public void addCharacterList(List<Character> addList, List<Character> removeList, Member member) {
+        for (Character addCharacter : addList) {
+            if (addCharacter.getCharacterImage() != null) { //이미지가 null이 아니면 => 캐릭터 닉네임이 바뀐 경우가 존재
+                String characterImageId = extracted(addCharacter.getCharacterImage()); //이미지 url속 캐릭터 id(addList)
+                for (Character before : removeList) { //삭제된 리스트 중에서
+                    if (before.getCharacterImage() != null) { //이미지가 null이 아닌
+                        String beforeCharacterImageId = extracted(before.getCharacterImage()); //이미지 url속 캐릭터 id(removeList)
+                        if(beforeCharacterImageId.equals(characterImageId)) { //만약 id가 같다면
+                            log.info("change characterName {} to {}", before.getCharacterName(), addCharacter.getCharacterName());
+                            addCharacter.changeCharacter(before);
+                        }
+                    }
+                }
+            }
+            member.addCharacter(addCharacter);
+        }
+    }
+
+
+    private static String extracted(String url) {
+        // URL에서 원하는 부분을 추출
+        int startIndex = url.lastIndexOf('/') + 1; // '/' 다음 인덱스부터 시작
+        int endIndex = url.indexOf(".png"); // ".png" 이전까지
+        return url.substring(startIndex, endIndex);
+    }
 }

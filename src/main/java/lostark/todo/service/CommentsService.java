@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.comments.CommentsRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,7 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
 
     public List<Comments> findAll() {
-            return commentsRepository.findAll();
+            return commentsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
     public Comments save(Comments comments) {
