@@ -26,6 +26,8 @@ public class CommentResponseDto {
 
     private LocalDateTime lastModifiedDate;
 
+    private long memberId;
+
     private Role role;
 
     public CommentResponseDto createResponseDto(Comments comments) {
@@ -35,6 +37,7 @@ public class CommentResponseDto {
                 .body(comments.getBody())
                 .username(comments.getMember().getUsername())
                 .parentId(comments.getParentId())
+                .memberId(comments.getMember().getId())
                 .role(comments.getMember().getRole())
                 .build();
     }
