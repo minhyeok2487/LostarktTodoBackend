@@ -52,6 +52,8 @@ public class Character extends BaseTimeEntity {
     @Embedded
     private DayTodo dayTodo;
 
+    @Embedded WeekTodo weekTodo;
+
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
     private List<Todo> todoList;
 
@@ -127,6 +129,9 @@ public class Character extends BaseTimeEntity {
         this.dayTodo.setChaosCheck(before.getDayTodo().getChaosCheck());
         this.dayTodo.setGuardianGauge(before.getDayTodo().getGuardianGauge());
         this.dayTodo.setGuardianCheck(before.getDayTodo().getGuardianCheck());
+        this.weekTodo.setWeekEpona(before.getWeekTodo().getWeekEpona());
+        this.weekTodo.setSilmaelChange(before.getWeekTodo().isSilmaelChange());
+        this.weekTodo.setCubeTicket(before.getWeekTodo().getCubeTicket());
         this.todoList = before.getTodoList();
         this.todoV2List = before.getTodoV2List();
         this.goldCharacter = before.isGoldCharacter();

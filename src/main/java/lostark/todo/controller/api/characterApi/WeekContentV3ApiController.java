@@ -107,7 +107,7 @@ public class WeekContentV3ApiController {
         return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 숙제 message 수정",
+    @ApiOperation(value = "캐릭터 주간 레이드 message 수정",
             response = TodoResponseDto.class)
     @PatchMapping("/message")
     public ResponseEntity updateWeekMessageV3(@AuthenticationPrincipal String username,
@@ -122,14 +122,5 @@ public class WeekContentV3ApiController {
                 .build();
         return new ResponseEntity(todoResponseDto, HttpStatus.OK);
     }
-
-    @ApiOperation(value = "테스트용 일주일 지나기")
-    @GetMapping("/test")
-    public ResponseEntity test(@AuthenticationPrincipal String username) {
-        List<Character> characters = memberService.findMember(username).getCharacters();
-        characterService.extracted(characters);
-        return new ResponseEntity(characters, HttpStatus.OK);
-    }
-
 
 }

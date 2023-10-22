@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
-import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
@@ -243,5 +242,12 @@ public class CharacterService {
         int startIndex = url.lastIndexOf('/') + 1; // '/' 다음 인덱스부터 시작
         int endIndex = url.indexOf(".png"); // ".png" 이전까지
         return url.substring(startIndex, endIndex);
+    }
+
+    /**
+     * 주간 에포나 체크 업데이트
+     */
+    public void updateWeekEpona(Character character) {
+        character.getWeekTodo().updateWeekEpona();
     }
 }

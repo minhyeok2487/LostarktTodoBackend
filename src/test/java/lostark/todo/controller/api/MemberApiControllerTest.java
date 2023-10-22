@@ -7,6 +7,7 @@ import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.character.Settings;
+import lostark.todo.domain.character.WeekTodo;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
@@ -268,6 +269,7 @@ class MemberApiControllerTest {
                 .serverName("루페온")
                 .itemLevel(1655.0)
                 .dayTodo(new DayTodo())
+                .weekTodo(new WeekTodo())
                 .sortNumber(0)
                 .build();
         newCharacter.setSettings(new Settings());

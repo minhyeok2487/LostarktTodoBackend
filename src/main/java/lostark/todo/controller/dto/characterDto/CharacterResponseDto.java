@@ -88,6 +88,8 @@ public class CharacterResponseDto {
 
     private int weekGold;
 
+    private int weekEpona;
+
     public CharacterResponseDto toDto(Character character) {
 
         CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
@@ -153,6 +155,7 @@ public class CharacterResponseDto {
                 .goldCharacter(character.isGoldCharacter())
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
+                .weekEpona(character.getWeekTodo().getWeekEpona())
                 .settings(character.getSettings())
                 .build();
 
