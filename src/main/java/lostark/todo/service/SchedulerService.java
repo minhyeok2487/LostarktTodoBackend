@@ -93,6 +93,8 @@ public class SchedulerService {
         characterService.findAll().forEach(character -> {
             character.setChallengeAbyss(false);
             character.setChallengeAbyss(false);
+            character.getWeekTodo().setWeekEpona(0);
+            character.getWeekTodo().setSilmaelChange(false);
         });
         long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
         long executionTime = endTime - startTime; // 작업에 걸린 시간 계산

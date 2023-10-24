@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
@@ -69,7 +69,7 @@ public class WeekContentV3ApiController {
 
         todoService.updateWeek_V3(character, weekContent);
 
-        return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 전체 추가/제거 V3")
@@ -82,7 +82,7 @@ public class WeekContentV3ApiController {
                 weekContentDtoList.get(0).getWeekCategory(), weekContentDtoList.get(0).getWeekContentCategory());
         todoService.updateWeekAllV3(character, weekContentList);
 
-        return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 check 수정")
@@ -93,7 +93,7 @@ public class WeekContentV3ApiController {
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
         todoService.updateWeekCheckV3(character, todoDto.getWeekCategory(), todoDto.getCurrentGate(), todoDto.getTotalGate());
-        return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 check 수정 All")
@@ -104,7 +104,7 @@ public class WeekContentV3ApiController {
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacterWithMember(todoDto.getCharacterName(), username);
         todoService.updateWeekCheckAllV3(character, todoDto.getWeekCategory());
-        return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정",

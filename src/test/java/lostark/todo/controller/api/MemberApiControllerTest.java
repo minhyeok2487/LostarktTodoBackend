@@ -1,7 +1,7 @@
 package lostark.todo.controller.api;
 
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
@@ -19,21 +19,16 @@ import lostark.todo.service.MarketService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.assertj.core.api.Assertions;
-import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -229,14 +224,14 @@ class MemberApiControllerTest {
         }
 
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDto(character))
+        List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
 
 
@@ -293,22 +288,22 @@ class MemberApiControllerTest {
         }
 
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDto(character))
+        List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
 
 
         // then //
         //업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈보다 크다
-        Assertions.assertThat(characterResponseDtoList.size()).isGreaterThan(beforeCharacterSize);
+        Assertions.assertThat(characterDtoList.size()).isGreaterThan(beforeCharacterSize);
         //업데이트 후  리스트의 첫번째는 추가된 캐릭터이다.(아이템레벨이 제일 크기때문)
-        Assertions.assertThat(characterResponseDtoList.get(0)).isEqualTo(new CharacterResponseDto().toDto(newCharacter));
+        Assertions.assertThat(characterDtoList.get(0)).isEqualTo(new CharacterDto().toDto(newCharacter));
     }
 
     @Test
@@ -347,21 +342,21 @@ class MemberApiControllerTest {
         }
 
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDto(character))
+        List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
 
         // then //
         //업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈보다 작다
-        Assertions.assertThat(characterResponseDtoList.size()).isLessThan(beforeCharacterSize);
+        Assertions.assertThat(characterDtoList.size()).isLessThan(beforeCharacterSize);
         //2개의 캐릭터를 삭제했기 때문에 업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈 - 2이다.
-        Assertions.assertThat(characterResponseDtoList.size()).isEqualTo(beforeCharacterSize - 2);
+        Assertions.assertThat(characterDtoList.size()).isEqualTo(beforeCharacterSize - 2);
     }
 
     @Test
@@ -401,22 +396,22 @@ class MemberApiControllerTest {
         }
 
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDto(character))
+        List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
 
         // then //
         //업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈와 같다
-        Assertions.assertThat(characterResponseDtoList.size()).isEqualTo(beforeCharacterSize);
+        Assertions.assertThat(characterDtoList.size()).isEqualTo(beforeCharacterSize);
         //업데이트 된 아이템레벨 확인
-        Assertions.assertThat(characterResponseDtoList.get(0).getItemLevel()).isEqualTo(itemLevel);
-        Assertions.assertThat(characterResponseDtoList.get(1).getItemLevel()).isEqualTo(itemLevel);
+        Assertions.assertThat(characterDtoList.get(0).getItemLevel()).isEqualTo(itemLevel);
+        Assertions.assertThat(characterDtoList.get(1).getItemLevel()).isEqualTo(itemLevel);
     }
 
     @Test
@@ -432,15 +427,15 @@ class MemberApiControllerTest {
         String serverName = member.getCharacters().get(0).getServerName();
         List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+        List<CharacterDto> characterDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().toDto(character))
+                .map(character -> new CharacterDto().toDto(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
     }
 

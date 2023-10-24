@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
@@ -66,7 +66,7 @@ public class WeekContentV2ApiController {
 
         todoService.updateWeek_V2(character, weekContentDto);
 
-        return new ResponseEntity(new CharacterResponseDto().toDto(character), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 숙제 check",

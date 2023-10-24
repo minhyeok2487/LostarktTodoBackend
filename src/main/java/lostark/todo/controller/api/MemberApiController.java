@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSettingDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
@@ -124,7 +124,7 @@ public class MemberApiController {
 //    }
 
     @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
-            response = CharacterResponseDto.class)
+            response = CharacterDto.class)
     @GetMapping("/characterList/{serverName}")
     public ResponseEntity findCharacterListServerName(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
         // username -> member 조회
@@ -134,21 +134,21 @@ public class MemberApiController {
         }
         List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+        List<CharacterDto> characterDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().toDto(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
-        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
-            response = CharacterResponseDto.class)
+            response = CharacterDto.class)
     @GetMapping("/characterList-v3/{serverName}")
     public ResponseEntity findCharacterListServerNameV3(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
         // username -> member 조회
@@ -158,24 +158,24 @@ public class MemberApiController {
         }
         List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+        List<CharacterDto> characterDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().toDtoV2(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
-        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
         notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
                 "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
                 "캐릭터 추가 및 삭제 ",
-        response = CharacterResponseDto.class)
+        response = CharacterDto.class)
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
@@ -243,17 +243,17 @@ public class MemberApiController {
         }
 
         // 결과
-        List<CharacterResponseDto> characterResponseDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterResponseDto().toDtoV2(character))
+        List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
 
-        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
 
@@ -309,19 +309,19 @@ public class MemberApiController {
         return new ResponseEntity<>(memberService.updateTodo(username, characterCheckDtoList), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 순서변경 저장", response = CharacterResponseDto.class)
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
     @PatchMapping("/characterList/sorting")
     public ResponseEntity updateSort(@AuthenticationPrincipal String username,
                                      @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
         Member member = memberService.updateSort(username, characterSortDtoList);
 
-        List<CharacterResponseDto> characterResponseDtoList = new ArrayList<>();
+        List<CharacterDto> characterDtoList = new ArrayList<>();
         for (Character character : member.getCharacters()) {
             // Character -> CharacterResponseDto 변경
-            CharacterResponseDto characterResponseDto = new CharacterResponseDto().toDto(character);
-            characterResponseDtoList.add(characterResponseDto);
+            CharacterDto characterDto = new CharacterDto().toDtoV2(character);
+            characterDtoList.add(characterDto);
         }
-        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
 

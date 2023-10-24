@@ -28,7 +28,7 @@ public class DayContentApiController {
     private final MarketService marketService;
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트",
-            response = CharacterResponseDto.class)
+            response = CharacterDto.class)
     @PatchMapping("/check")
     public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
                                       @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
@@ -39,11 +39,11 @@ public class DayContentApiController {
         // Check 업데이트
         Character updateCharacter = characterService.updateCheck(character, characterDayTodoDto);
 
-        return new ResponseEntity(new CharacterResponseDto().toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
-            response = CharacterResponseDto.class)
+            response = CharacterDto.class)
     @PatchMapping("/gauge")
     public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,
                                              @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
@@ -60,7 +60,7 @@ public class DayContentApiController {
         // 업데이트된 휴식게이지로 예상 수익 계산
         Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource);
 
-        return new ResponseEntity(new CharacterResponseDto().toDtoV2(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
     /**

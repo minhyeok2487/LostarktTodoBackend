@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CharacterResponseDto {
+public class CharacterDto {
 
     private long id;
 
@@ -90,51 +90,11 @@ public class CharacterResponseDto {
 
     private int weekEpona;
 
-    public CharacterResponseDto toDto(Character character) {
+    private boolean silmaelChange;
 
-        CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
-                .id(character.getId())
-                .characterName(character.getCharacterName())
-                .characterImage(character.getCharacterImage())
-                .characterClassName(character.getCharacterClassName())
-                .serverName(character.getServerName())
-                .itemLevel(character.getItemLevel())
-                .sortNumber(character.getSortNumber())
-                .chaosCheck(character.getDayTodo().getChaosCheck())
-                .chaosGauge(character.getDayTodo().getChaosGauge())
-                .chaos(character.getDayTodo().getChaos())
-                .chaosGold(character.getDayTodo().getChaosGold())
-                .guardianCheck(character.getDayTodo().getGuardianCheck())
-                .guardianGauge(character.getDayTodo().getGuardianGauge())
-                .guardian(character.getDayTodo().getGuardian())
-                .guardianGold(character.getDayTodo().getGuardianGold())
-                .eponaCheck(character.getDayTodo().getEponaCheck2())
-                .eponaGauge(character.getDayTodo().getEponaGauge())
-                .goldCharacter(character.isGoldCharacter())
-                .challengeAbyss(character.isChallengeAbyss())
-                .challengeGuardian(character.isChallengeGuardian())
-                .settings(character.getSettings())
-                .build();
+    public CharacterDto toDtoV2(Character character) {
 
-        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
-
-        if (!character.getTodoList().isEmpty()) {
-            for (Todo todo : character.getTodoList()) {
-                TodoResponseDto todoResponseDto = new TodoResponseDto().toDto(todo);
-                todoResponseDtoList.add(todoResponseDto);
-            }
-        }
-
-        maxThree(todoResponseDtoList);
-
-        characterResponseDto.setTodoList(todoResponseDtoList);
-
-        return characterResponseDto;
-    }
-
-    public CharacterResponseDto toDtoV2(Character character) {
-
-        CharacterResponseDto characterResponseDto = CharacterResponseDto.builder()
+        CharacterDto characterDto = CharacterDto.builder()
                 .id(character.getId())
                 .characterName(character.getCharacterName())
                 .characterImage(character.getCharacterImage())
@@ -156,6 +116,7 @@ public class CharacterResponseDto {
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
                 .weekEpona(character.getWeekTodo().getWeekEpona())
+                .silmaelChange(character.getWeekTodo().isSilmaelChange())
                 .settings(character.getSettings())
                 .build();
 
@@ -192,8 +153,8 @@ public class CharacterResponseDto {
                         todoResponseDtoList.add(dto);
                     }
                 }
-                if(characterResponseDto.isGoldCharacter() && todo.isChecked()) {
-                    characterResponseDto.setWeekGold(characterResponseDto.getWeekGold()+todo.getGold());
+                if(characterDto.isGoldCharacter() && todo.isChecked()) {
+                    characterDto.setWeekGold(characterDto.getWeekGold()+todo.getGold());
                 }
             }
         }
@@ -204,9 +165,9 @@ public class CharacterResponseDto {
             }
         }
 
-        characterResponseDto.setTodoList(todoResponseDtoList);
+        characterDto.setTodoList(todoResponseDtoList);
 
-        return characterResponseDto;
+        return characterDto;
     }
 
     private static void maxThree(List<TodoResponseDto> todoResponseDtoList) {
@@ -219,17 +180,17 @@ public class CharacterResponseDto {
         }
     }
 
-    public List<CharacterResponseDto> toDtoList(List<Character> characterList) {
-        List<CharacterResponseDto> characterResponseDtoList = characterList.stream()
+    public List<CharacterDto> toDtoList(List<Character> characterList) {
+        List<CharacterDto> characterDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterResponseDto().toDtoV2(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterResponseDtoList.sort(Comparator
-                .comparingInt(CharacterResponseDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+        characterDtoList.sort(Comparator
+                .comparingInt(CharacterDto::getSortNumber)
+                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
-        return characterResponseDtoList;
+        return characterDtoList;
     }
 }

@@ -19,10 +19,10 @@ public class WeekTodo {
     private int CubeTicket;
 
     public void updateWeekEpona() {
-        if(weekEpona<3) {
-            weekEpona++;
+        if(this.weekEpona <3) {
+            this.weekEpona++;
         } else {
-            weekEpona = 0;
+            this.weekEpona = 0;
         }
     }
 

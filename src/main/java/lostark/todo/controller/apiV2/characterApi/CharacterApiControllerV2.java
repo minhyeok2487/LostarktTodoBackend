@@ -14,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class CharacterApiControllerV2 {
     private final CharacterService characterService;
     private final MemberService memberService;
 
-    @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterResponseDto.class)
+    @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterDto.class)
     @PatchMapping("/gold-character")
     public ResponseEntity updateGoldCharacter(@AuthenticationPrincipal String username, @RequestBody CharacterDefaultDto characterDefaultDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
@@ -39,7 +37,7 @@ public class CharacterApiControllerV2 {
         // 골드 획득 캐릭터 지정
         Character resultCharacter = characterService.updateGoldCharacter(character);
 
-        return new ResponseEntity<>(new CharacterResponseDto().toDtoV2(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")
@@ -53,7 +51,7 @@ public class CharacterApiControllerV2 {
         List<Character> characterList = characterService.updateChallenge(
                 member, characterChallengeRequestDto.getServerName(), characterChallengeRequestDto.getContent());
 
-        return new ResponseEntity<>(new CharacterResponseDto().toDtoList(characterList), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterDto().toDtoList(characterList), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 출력 내용 수정")
@@ -66,6 +64,6 @@ public class CharacterApiControllerV2 {
 
         characterService.updateSetting(character, settingRequestDto.getName(), settingRequestDto.isValue());
 
-        return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 }

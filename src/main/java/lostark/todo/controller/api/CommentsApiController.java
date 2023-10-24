@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
 import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
 import lostark.todo.domain.comments.Comments;

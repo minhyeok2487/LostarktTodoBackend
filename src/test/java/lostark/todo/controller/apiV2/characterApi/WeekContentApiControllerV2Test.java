@@ -1,7 +1,7 @@
 package lostark.todo.controller.apiV2.characterApi;
 
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
-import lostark.todo.controller.dto.characterDto.CharacterResponseDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.CharacterService;
 import org.assertj.core.api.Assertions;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -35,7 +33,7 @@ class WeekContentApiControllerV2Test {
 
         //when
         characterService.updateWeekEpona(character);
-        CharacterResponseDto responseDto = new CharacterResponseDto().toDtoV2(character);
+        CharacterDto responseDto = new CharacterDto().toDtoV2(character);
 
         //then
         if (defaultValue<3) {

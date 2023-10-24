@@ -35,7 +35,7 @@ public class CharacterApiController {
         // 골드 획득 캐릭터 지정
         Character resultCharacter = characterService.updateGoldCharacter(character);
 
-        return new ResponseEntity<>(new CharacterResponseDto().toDtoV2(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")
