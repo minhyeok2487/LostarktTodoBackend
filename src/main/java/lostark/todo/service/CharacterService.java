@@ -250,4 +250,8 @@ public class CharacterService {
     public void updateWeekEpona(Character character) {
         character.getWeekTodo().updateWeekEpona();
     }
+
+    public void updateSilmael(Character character) {
+        character.getWeekTodo().updateSilmael();
+    }
 }

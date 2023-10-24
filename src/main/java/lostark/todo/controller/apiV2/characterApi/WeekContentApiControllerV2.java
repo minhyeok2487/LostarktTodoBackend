@@ -34,11 +34,8 @@ import java.util.List;
 public class WeekContentApiControllerV2 {
 
     private final CharacterService characterService;
-    private final TodoService todoService;
-    private final ContentService contentService;
-    private final MemberService memberService;
 
-    @ApiOperation(value = "캐릭터 주간 에포나 체크 업데이트", response = CharacterResponseDto.class)
+    @ApiOperation(value = "캐릭터 주간 에포나 체크", response = CharacterResponseDto.class)
     @PatchMapping("/epona")
     public ResponseEntity updateWeekTodoEponaCheck(@AuthenticationPrincipal String username,
                                                    @RequestBody CharacterDefaultDto characterDefaultDto) {
@@ -49,6 +46,21 @@ public class WeekContentApiControllerV2 {
 
         // Check 업데이트
         characterService.updateWeekEpona(character);
+
+        return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 실마엘 교환 체크", response = CharacterResponseDto.class)
+    @PatchMapping("/silmael")
+    public ResponseEntity updateSilmael(@AuthenticationPrincipal String username,
+                                                   @RequestBody CharacterDefaultDto characterDefaultDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacter(
+                characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
+
+        // Check 업데이트
+        characterService.updateSilmael(character);
 
         return new ResponseEntity(new CharacterResponseDto().toDtoV2(character), HttpStatus.OK);
     }

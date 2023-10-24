@@ -25,4 +25,8 @@ public class WeekTodo {
             weekEpona = 0;
         }
     }
+
+    public void updateSilmael() {
+        this.silmaelChange = !this.silmaelChange;
+    }
 }
