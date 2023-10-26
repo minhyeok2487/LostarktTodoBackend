@@ -3,6 +3,7 @@ package lostark.todo.domain.character;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
+import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
@@ -138,5 +139,33 @@ public class Character extends BaseTimeEntity {
         this.challengeAbyss = before.isChallengeAbyss();
         this.challengeGuardian = before.isChallengeGuardian();
         this.settings = before.getSettings();
+    }
+
+    /**
+     * 주간 컨텐츠 초기화
+     */
+    public void resetWeek() {
+        // 주간 레이드
+        for (TodoV2 todoV2 : this.todoV2List) {
+            WeekContent weekContent = todoV2.getWeekContent();
+            if(weekContent.getCoolTime()==2){ //2주 레이드(아브렐4, 카멘4관문)
+                if(todoV2.getCoolTime()==2) { //2주구간 그대로인데
+                    if(todoV2.isChecked()) { //체크면 주기 0으로 변경
+                        todoV2.setCoolTime(0);
+                    } else { //체크가 안되면 주기 1로 변경
+                        todoV2.setCoolTime(1);
+                    }
+                }
+                else { //2주 쿨타임이 아니라면 (0or1) -> 격주임
+                    todoV2.setCoolTime(2); // 쿨타임 다시 2로 변경
+                }
+            }
+            todoV2.setChecked(false); //나머지는 그냥 false
+        }
+
+        this.setChallengeAbyss(false); //도전 어비스 던전
+        this.setChallengeGuardian(false); //도전 가디언 토벌
+        this.getWeekTodo().setWeekEpona(0); //주간에포나
+        this.getWeekTodo().setSilmaelChange(false); //실마엘 혈석교환
     }
 }

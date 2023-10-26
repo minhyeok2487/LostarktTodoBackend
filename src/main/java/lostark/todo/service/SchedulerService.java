@@ -60,7 +60,7 @@ public class SchedulerService {
         long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
         long executionTime = endTime - startTime; // 작업에 걸린 시간 계산
 
-        log.info("일일 숙제 초기화 완료. 소요 시간: {} 밀리초", executionTime);
+        log.info("reset day content. time: {} ms", executionTime);
     }
 
 
@@ -70,35 +70,13 @@ public class SchedulerService {
     @Scheduled(cron = "0 0 6 * * 3")
     public void resetWeekTodo() {
         long startTime = System.currentTimeMillis(); // 작업 시작 시간 기록
-        todoService.findAll().forEach(todo -> {
-            todo.setChecked(false);
-        });
-        todoService.findAllV2().forEach(todoV2 -> {
-            WeekContent weekContent = todoV2.getWeekContent();
-            if(weekContent.getCoolTime()==2){
-                if(todoV2.getCoolTime()==2) {
-                    if(todoV2.isChecked()) {
-                        todoV2.setCoolTime(0);
-                    } else {
-                        todoV2.setCoolTime(1);
-                    }
-                }
-                else {
-                    todoV2.setCoolTime(2);
-                }
-            }
-            todoV2.setChecked(false);
-        });
 
         characterService.findAll().forEach(character -> {
-            character.setChallengeAbyss(false);
-            character.setChallengeAbyss(false);
-            character.getWeekTodo().setWeekEpona(0);
-            character.getWeekTodo().setSilmaelChange(false);
+            character.resetWeek();
         });
         long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
         long executionTime = endTime - startTime; // 작업에 걸린 시간 계산
 
-        log.info("주간 숙제 초기화 완료. 소요 시간: {} 밀리초", executionTime);
+        log.info("reset week content, time: {} ms", executionTime);
     }
 }
