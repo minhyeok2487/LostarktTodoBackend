@@ -36,31 +36,22 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showWeekTodo;
 
+
+   @ColumnDefault("true")
+   private boolean showWeekEpona;
+
+   @ColumnDefault("true")
+   private boolean showSilmaelChange;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
       this.showChaos = true;
       this.showGuardian = true;
       this.showWeekTodo = true;
+      this.showWeekEpona = true;
+      this.showSilmaelChange = true;
    }
-
-//   public void update(String name, boolean value) {
-//      if(name.equals("showCharacter")) {
-//         this.showCharacter = value;
-//      }
-//      if(name.equals("showEpona")) {
-//         this.showEpona = value;
-//      }
-//      if(name.equals("showChaos")) {
-//         this.showChaos = value;
-//      }
-//      if(name.equals("showGuardian")) {
-//         this.showGuardian = value;
-//      }
-//      if(name.equals("showWeekTodo")) {
-//         this.showWeekTodo = value;
-//      }
-//   }
 
    public void update(String name, boolean value) {
       try {

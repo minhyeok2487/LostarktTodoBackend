@@ -123,8 +123,8 @@ public class CharacterDto {
         List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
 
         //weekContent gate 순으로 정렬
-        character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
         if(!character.getTodoV2List().isEmpty()){
+            character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
             for (TodoV2 todo : character.getTodoV2List()) {
                 if(todo.getCoolTime()>=1) {
                     boolean exitedCheck = false;

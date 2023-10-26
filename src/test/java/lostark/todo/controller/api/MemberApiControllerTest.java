@@ -225,7 +225,7 @@ class MemberApiControllerTest {
 
         // 결과
         List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterDto().toDto(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
@@ -265,6 +265,7 @@ class MemberApiControllerTest {
                 .itemLevel(1655.0)
                 .dayTodo(new DayTodo())
                 .weekTodo(new WeekTodo())
+                .todoV2List(new ArrayList<>())
                 .sortNumber(0)
                 .build();
         newCharacter.setSettings(new Settings());
@@ -289,7 +290,7 @@ class MemberApiControllerTest {
 
         // 결과
         List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterDto().toDto(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
@@ -303,7 +304,7 @@ class MemberApiControllerTest {
         //업데이트 후 리스트 사이즈는 업데이트 전 리스트 사이즈보다 크다
         Assertions.assertThat(characterDtoList.size()).isGreaterThan(beforeCharacterSize);
         //업데이트 후  리스트의 첫번째는 추가된 캐릭터이다.(아이템레벨이 제일 크기때문)
-        Assertions.assertThat(characterDtoList.get(0)).isEqualTo(new CharacterDto().toDto(newCharacter));
+        Assertions.assertThat(characterDtoList.get(0)).isEqualTo(new CharacterDto().toDtoV2(newCharacter));
     }
 
     @Test
@@ -343,7 +344,7 @@ class MemberApiControllerTest {
 
         // 결과
         List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterDto().toDto(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
@@ -397,7 +398,7 @@ class MemberApiControllerTest {
 
         // 결과
         List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
-                .map(character -> new CharacterDto().toDto(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
@@ -429,7 +430,7 @@ class MemberApiControllerTest {
         // 결과
         List<CharacterDto> characterDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterDto().toDto(character))
+                .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
         // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.Settings;
+import org.hibernate.annotations.ColumnDefault;
 
 @Data
 @NoArgsConstructor
@@ -41,6 +42,10 @@ public class CharacterSettingDto {
 
     private boolean showWeekTodo;
 
+    private boolean showWeekEpona;
+
+    private boolean showSilmaelChange;
+
     public static CharacterSettingDto toDto(Character entity) {
         return CharacterSettingDto.builder()
                 .id(entity.getId())
@@ -57,6 +62,8 @@ public class CharacterSettingDto {
                 .showChaos(entity.getSettings().isShowChaos())
                 .showGuardian(entity.getSettings().isShowGuardian())
                 .showWeekTodo(entity.getSettings().isShowWeekTodo())
+                .showWeekEpona(entity.getSettings().isShowWeekEpona())
+                .showSilmaelChange(entity.getSettings().isShowSilmaelChange())
                 .build();
     }
 }
