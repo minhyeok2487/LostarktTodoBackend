@@ -17,4 +17,6 @@ public interface TodoV2Repository extends JpaRepository<TodoV2, Long> {
 
     @Query("SELECT t FROM TodoV2 t WHERE t.character = :character AND t.weekContent.weekCategory =:weekCategory")
     List<TodoV2> findAllCharacterAndWeekCategory(Character character, String weekCategory);
+
+    List<TodoV2> findAllByCharacter(Character character);
 }

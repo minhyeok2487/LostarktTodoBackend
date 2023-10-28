@@ -43,6 +43,7 @@ public class WeekContentDto {
                 .gate(weekContent.getGate())
                 .gold(weekContent.getGold())
                 .name(weekContent.getName())
+                .coolTime(weekContent.getCoolTime())
                 .build();
     }
 }

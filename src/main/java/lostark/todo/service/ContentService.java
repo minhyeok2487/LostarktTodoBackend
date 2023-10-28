@@ -62,12 +62,16 @@ public class ContentService {
     /**
      * 아이템 레벨보다 작은 주간 컨텐츠 조회
      */
+    public List<WeekContent> findAllWeekContent(double itemLevel) {
+        return contentRepository.findAllWeekContent(itemLevel);
+    }
     public List<WeekContent> findAllByWeekContentWithItemLevel(double itemLevel) {
         return contentRepository.findAllByWeekContentWithItemLevel(itemLevel);
     }
     public List<WeekContent> findAllByWeekContentWithItemLevelV2(double itemLevel) {
         return contentRepository.findAllByWeekContentWithItemLevelV2(itemLevel);
     }
+
 
 
     public List<WeekContent> findAllByCategoryAndWeekCategory(double itemLevel, String weekCategory, WeekContentCategory weekContentCategory) {

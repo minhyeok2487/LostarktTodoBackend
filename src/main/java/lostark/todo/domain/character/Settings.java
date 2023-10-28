@@ -36,7 +36,6 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showWeekTodo;
 
-
    @ColumnDefault("true")
    private boolean showWeekEpona;
 

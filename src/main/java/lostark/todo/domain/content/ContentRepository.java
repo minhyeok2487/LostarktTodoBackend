@@ -1,5 +1,7 @@
 package lostark.todo.domain.content;
 
+import lostark.todo.domain.character.Character;
+import lostark.todo.domain.todoV2.TodoV2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,9 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     @Query("SELECT w FROM WeekContent w")
     List<WeekContent> findAllByWeekContent();
+
+    @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.coolTime <= 2")
+    List<WeekContent> findAllWeekContent(@Param("itemLevel") double itemLevel);
 
     @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.id BETWEEN 17 AND 70")
     List<WeekContent> findAllByWeekContentWithItemLevelV2(@Param("itemLevel") double itemLevel);
