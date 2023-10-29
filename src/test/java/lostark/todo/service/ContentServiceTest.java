@@ -1,9 +1,6 @@
 package lostark.todo.service;
 
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.ContentRepository;
-import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.content.WeekContent;
+import lostark.todo.domain.content.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -200,5 +197,4 @@ class ContentServiceTest {
         assertThat(result.size()).isNotEqualTo(weekContentList.size());
         assertThat(result.size()).isEqualTo(2);
     }
-
 }

@@ -38,4 +38,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     @Query("SELECT w FROM WeekContent w WHERE w.weekCategory = :weekCategory AND w.gate = :gate")
     Optional<WeekContent> findByWeekCategoryAndGate(@Param("weekCategory") String weekCategory,
                                                     @Param("gate") int gate);
+
+    Optional<CubeContent> findByName(String name);
 }

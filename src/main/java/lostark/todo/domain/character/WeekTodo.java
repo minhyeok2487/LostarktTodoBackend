@@ -16,7 +16,7 @@ public class WeekTodo {
 
     private boolean silmaelChange;
 
-    private int CubeTicket;
+    private int cubeTicket;
 
     public void updateWeekEpona() {
         if(this.weekEpona <3) {
@@ -28,5 +28,9 @@ public class WeekTodo {
 
     public void updateSilmael() {
         this.silmaelChange = !this.silmaelChange;
+    }
+
+    public void updateCubeTicket(int num) {
+        this.cubeTicket += num;
     }
 }

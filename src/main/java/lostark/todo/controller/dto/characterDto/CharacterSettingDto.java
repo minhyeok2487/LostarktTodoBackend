@@ -46,6 +46,8 @@ public class CharacterSettingDto {
 
     private boolean showSilmaelChange;
 
+    private boolean showCubeTicket;
+
     public static CharacterSettingDto toDto(Character entity) {
         return CharacterSettingDto.builder()
                 .id(entity.getId())
@@ -64,6 +66,7 @@ public class CharacterSettingDto {
                 .showWeekTodo(entity.getSettings().isShowWeekTodo())
                 .showWeekEpona(entity.getSettings().isShowWeekEpona())
                 .showSilmaelChange(entity.getSettings().isShowSilmaelChange())
+                .showCubeTicket(entity.getSettings().isShowCubeTicket())
                 .build();
     }
 }

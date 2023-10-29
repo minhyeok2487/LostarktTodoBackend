@@ -105,4 +105,7 @@ public class MarketService {
     }
 
 
+    public Market findByName(String name) {
+        return marketRepository.findByName(name).orElseThrow(()->new IllegalArgumentException(name + "은 없는 아이템 입니다."));
+    }
 }

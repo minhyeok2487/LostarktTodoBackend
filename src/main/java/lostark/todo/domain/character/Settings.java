@@ -42,6 +42,9 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showSilmaelChange;
 
+   @ColumnDefault("true")
+   private boolean showCubeTicket;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -50,6 +53,7 @@ public class Settings {
       this.showWeekTodo = true;
       this.showWeekEpona = true;
       this.showSilmaelChange = true;
+      this.showCubeTicket = true;
    }
 
    public void update(String name, boolean value) {

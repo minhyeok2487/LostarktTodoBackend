@@ -251,7 +251,17 @@ public class CharacterService {
         character.getWeekTodo().updateWeekEpona();
     }
 
+    /**
+     * 실마엘 교환 업데이트
+     */
     public void updateSilmael(Character character) {
         character.getWeekTodo().updateSilmael();
+    }
+
+    /**
+     * 큐브 티켓 업데이트
+     */
+    public void updateCubeTicket(Character character, int num) {
+        character.getWeekTodo().updateCubeTicket(num);
     }
 }

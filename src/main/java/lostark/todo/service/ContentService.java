@@ -82,4 +82,11 @@ public class ContentService {
         return contentRepository.findByWeekCategoryAndGate(weekCategory, currentGate)
                 .orElseThrow(() -> new IllegalArgumentException(""));
     }
+
+    /**
+     * 큐브 컨텐츠 호출
+     */
+    public CubeContent findCubeContent(String name) {
+        return contentRepository.findByName(name).orElseThrow(()->new IllegalArgumentException(name + "은 없는 컨텐츠 입니다."));
+    }
 }

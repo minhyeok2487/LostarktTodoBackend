@@ -88,6 +88,12 @@ public class CharacterDto {
 
     private int weekGold;
 
+    private int weekEpona;
+
+    private boolean silmaelChange;
+
+    private int cubeTicket;
+
     public CharacterDto toDtoV2(Character character) {
 
         CharacterDto characterDto = CharacterDto.builder()
@@ -111,6 +117,9 @@ public class CharacterDto {
                 .goldCharacter(character.isGoldCharacter())
                 .challengeAbyss(character.isChallengeAbyss())
                 .challengeGuardian(character.isChallengeGuardian())
+                .weekEpona(character.getWeekTodo().getWeekEpona())
+                .silmaelChange(character.getWeekTodo().isSilmaelChange())
+                .cubeTicket(character.getWeekTodo().getCubeTicket())
                 .settings(character.getSettings())
                 .build();
 

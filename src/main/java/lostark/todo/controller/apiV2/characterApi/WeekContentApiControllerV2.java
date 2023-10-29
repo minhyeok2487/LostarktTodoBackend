@@ -92,10 +92,10 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 실마엘 교환 체크", response = CharacterDto.class)
+    @ApiOperation(value = "캐릭터 실마엘 교환 업데이트", response = CharacterDto.class)
     @PatchMapping("/silmael")
     public ResponseEntity updateSilmael(@AuthenticationPrincipal String username,
-                                                   @RequestBody CharacterDto characterDto) {
+                                        @RequestBody CharacterDto characterDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacter(
@@ -103,6 +103,31 @@ public class WeekContentApiControllerV2 {
 
         // Check 업데이트
         characterService.updateSilmael(character);
+
+        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 큐브 티켓 업데이트", response = CharacterDto.class)
+    @PatchMapping("/cube/{state}")
+    public ResponseEntity updateCubeTicket(@AuthenticationPrincipal String username,
+                                           @RequestBody CharacterDto characterDto,
+                                           @PathVariable String state) {
+        int num = 0;
+        if (state.equals("add")) {
+            num = 1;
+        } else if (state.equals("substract")) {
+            num = -1;
+        } else {
+            throw new IllegalArgumentException("없는 메소드 입니다.");
+        }
+
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacter(
+                characterDto.getId(), characterDto.getCharacterName(), username);
+
+        // cubeTicket 업데이트
+        characterService.updateCubeTicket(character, num);
 
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
