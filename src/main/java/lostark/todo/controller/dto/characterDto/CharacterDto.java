@@ -156,12 +156,29 @@ public class CharacterDto {
                         todoResponseDtoList.add(dto);
                     }
                 }
-                if(characterDto.isGoldCharacter() && todo.isChecked()) {
-                    characterDto.setWeekGold(characterDto.getWeekGold()+todo.getGold());
+
+            }
+
+            //골드 획득 - 높은 순으로 3개
+            maxThree(todoResponseDtoList);
+
+            // 캐릭터 주간 레이드 수익 저장
+            if (characterDto.isGoldCharacter()) {
+                for (TodoV2 todo : character.getTodoV2List()) {
+                    if (todo.isChecked()) {
+                        String weekCategory = todo.getWeekContent().getWeekCategory();
+                        int todoGold = todo.getGold();
+                        for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
+                            if (weekCategory.equals(todoResponseDto.getWeekCategory()) && todoResponseDto.getGold() != 0) {
+                                characterDto.setWeekGold(characterDto.getWeekGold() + todoGold);
+                            }
+                        }
+                    }
                 }
             }
         }
-        maxThree(todoResponseDtoList);
+
+        //한 컨텐츠 완료 했는지 체크
         for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
             if (todoResponseDto.getCurrentGate() == todoResponseDto.getTotalGate()) {
                 todoResponseDto.setCheck(true);

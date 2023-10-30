@@ -37,10 +37,8 @@ public class CubeContentApiController {
     @GetMapping("/{name}")
     public ResponseEntity getCubeContent(@AuthenticationPrincipal String username,
                                          @PathVariable String name) {
-
         CubeContent cubeContent = contentService.findCubeContent(name);
         Market jewelry = marketService.findByName("1레벨");
-        log.info(cubeContent.toString());
         return new ResponseEntity(new CubeContentDto().toDto(cubeContent, jewelry), HttpStatus.OK);
     }
 
