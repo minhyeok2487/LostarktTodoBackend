@@ -71,9 +71,30 @@ public class SchedulerService {
     public void resetWeekTodo() {
         long startTime = System.currentTimeMillis(); // 작업 시작 시간 기록
 
-        characterService.findAll().forEach(character -> {
-            character.resetWeek();
+        todoService.findAllV2().forEach(todoV2 -> {
+            WeekContent weekContent = todoV2.getWeekContent();
+            if(weekContent.getCoolTime()==2){
+                if(todoV2.getCoolTime()==2) {
+                    if(todoV2.isChecked()) {
+                        todoV2.setCoolTime(0);
+                    } else {
+                        todoV2.setCoolTime(1);
+                    }
+                }
+                else {
+                    todoV2.setCoolTime(2);
+                }
+            }
+            todoV2.setChecked(false);
         });
+
+        characterService.findAll().forEach(character -> {
+            character.setChallengeAbyss(false); //도전 어비스 던전
+            character.setChallengeGuardian(false); //도전 가디언 토벌
+            character.getWeekTodo().setWeekEpona(0); //주간에포나
+            character.getWeekTodo().setSilmaelChange(false); //실마엘 혈석교환
+        });
+
         long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
         long executionTime = endTime - startTime; // 작업에 걸린 시간 계산
 

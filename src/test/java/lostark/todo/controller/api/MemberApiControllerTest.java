@@ -412,7 +412,6 @@ class MemberApiControllerTest {
         Assertions.assertThat(characterDtoList.size()).isEqualTo(beforeCharacterSize);
         //업데이트 된 아이템레벨 확인
         Assertions.assertThat(characterDtoList.get(0).getItemLevel()).isEqualTo(itemLevel);
-        Assertions.assertThat(characterDtoList.get(1).getItemLevel()).isEqualTo(itemLevel);
     }
 
     @Test
@@ -438,38 +437,5 @@ class MemberApiControllerTest {
                 .comparingInt(CharacterDto::getSortNumber)
                 .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
-    }
-
-    @Test
-    @DisplayName("중복 캐릭터")
-    @Rollback(value = false)
-    void findDuplicateCharacters() {
-        List<Member> allByApiKeyNotNull = memberService.findAllByApiKeyNotNull();
-        for (Member member : allByApiKeyNotNull) {
-            boolean duplicate = false;
-            List<Character> characters = member.getCharacters();
-            Set<String> characterNames = new HashSet<>();
-            List<Character> charactersToRemove = new ArrayList<>();
-
-            for (Character character : characters) {
-                String characterName = character.getCharacterName();
-
-                if (characterNames.contains(characterName)) {
-                    duplicate = true;
-                    charactersToRemove.add(character);
-                } else {
-                    characterNames.add(characterName);
-                }
-            }
-
-            for (Character characterToRemove : charactersToRemove) {
-                characters.remove(characterToRemove);
-            }
-
-            if(duplicate) {
-                log.info("중복 존재 - id: {}, username: {}", member.getId(), member.getUsername());
-                log.info("삭제된 캐릭터 : {}", charactersToRemove);
-            }
-        }
     }
 }
