@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
+import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.character.Settings;
@@ -13,10 +14,9 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
-import lostark.todo.service.CharacterService;
-import lostark.todo.service.ContentService;
-import lostark.todo.service.MarketService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domain.todo.Todo;
+import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -55,6 +55,9 @@ class MemberApiControllerTest {
 
     @Autowired
     CharacterService characterService;
+
+    @Autowired
+    TodoService todoService;
 
     @Value("${Lostark-API-Test-Key}")
     String apiKey;
@@ -438,4 +441,6 @@ class MemberApiControllerTest {
                 .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
         );
     }
+
 }
+

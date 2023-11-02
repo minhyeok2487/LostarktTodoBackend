@@ -173,7 +173,7 @@ public class TodoService {
     public void updateWeekCheckV3(Character character, String weekCategory, int currentGate, int totalGate) {
         if (currentGate<totalGate) {
             TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(character, weekCategory, currentGate+1)
-                    .orElseThrow(() -> new IllegalArgumentException(""));
+                    .orElseThrow(() -> new IllegalArgumentException("이전 관문이 없습니다. 주간 숙제 관리에서 추가해주세요"));
             result.updateCheck();
         }
         if (currentGate == totalGate) {
