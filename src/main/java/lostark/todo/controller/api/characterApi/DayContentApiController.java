@@ -24,60 +24,60 @@ import java.util.Map;
 @Api(tags = {"캐릭터 API - 일일 컨텐츠"})
 public class DayContentApiController {
 
-    private final CharacterService characterService;
-    private final MarketService marketService;
-
-    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트",
-            response = CharacterDto.class)
-    @PatchMapping("/check")
-    public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
-                                      @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
-        // 로그인한 아이디에 등록된 캐릭터인지 검증
-        // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
-
-        // Check 업데이트
-        Character updateCharacter = characterService.updateCheck(character, characterDayTodoDto);
-
-        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
-            response = CharacterDto.class)
-    @PatchMapping("/gauge")
-    public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,
-                                             @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
-        // 로그인한 아이디에 등록된 캐릭터인지 검증
-        // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
-
-        // 휴식게이지 업데이트
-        Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto);
-
-        // 재련재료 데이터 리스트로 거래소 데이터 호출
-        Map<String, Market> contentResource = marketService.findContentResource();
-
-        // 업데이트된 휴식게이지로 예상 수익 계산
-        Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource);
-
-        return new ResponseEntity(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
-    }
-
-    /**
-     * 아직 안씀
-     */
-    @ApiOperation(value = "캐릭터 일일컨텐츠 통계보기")
-    @GetMapping("{characterName}/{category}")
-    public ResponseEntity getDayTodoCheck(@AuthenticationPrincipal String username
-            , @PathVariable("characterName") String characterName, @PathVariable("category") String category) {
-        Character character = characterService.findCharacterWithMember(characterName, username);
-        DayContent content = new DayContent();
-        if (category.equals("카오스던전")) {
-            content = character.getDayTodo().getChaos();
-        }
-        if (category.equals("가디언토벌")) {
-            content = character.getDayTodo().getGuardian();
-        }
-        return new ResponseEntity(content, HttpStatus.OK);
-    }
+//    private final CharacterService characterService;
+//    private final MarketService marketService;
+//
+//    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트",
+//            response = CharacterDto.class)
+//    @PatchMapping("/check")
+//    public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
+//                                      @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
+//        // 로그인한 아이디에 등록된 캐릭터인지 검증
+//        // 다른 아이디면 자동으로 Exception 처리
+//        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
+//
+//        // Check 업데이트
+//        Character updateCharacter = characterService.updateCheck(character, characterDayTodoDto);
+//
+//        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
+//    }
+//
+//    @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
+//            response = CharacterDto.class)
+//    @PatchMapping("/gauge")
+//    public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,
+//                                             @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
+//        // 로그인한 아이디에 등록된 캐릭터인지 검증
+//        // 다른 아이디면 자동으로 Exception 처리
+//        Character character = characterService.findCharacterWithMember(characterDayTodoDto.getCharacterName(), username);
+//
+//        // 휴식게이지 업데이트
+//        Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto);
+//
+//        // 재련재료 데이터 리스트로 거래소 데이터 호출
+//        Map<String, Market> contentResource = marketService.findContentResource();
+//
+//        // 업데이트된 휴식게이지로 예상 수익 계산
+//        Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource);
+//
+//        return new ResponseEntity(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
+//    }
+//
+//    /**
+//     * 아직 안씀
+//     */
+//    @ApiOperation(value = "캐릭터 일일컨텐츠 통계보기")
+//    @GetMapping("{characterName}/{category}")
+//    public ResponseEntity getDayTodoCheck(@AuthenticationPrincipal String username
+//            , @PathVariable("characterName") String characterName, @PathVariable("category") String category) {
+//        Character character = characterService.findCharacterWithMember(characterName, username);
+//        DayContent content = new DayContent();
+//        if (category.equals("카오스던전")) {
+//            content = character.getDayTodo().getChaos();
+//        }
+//        if (category.equals("가디언토벌")) {
+//            content = character.getDayTodo().getGuardian();
+//        }
+//        return new ResponseEntity(content, HttpStatus.OK);
+//    }
 }

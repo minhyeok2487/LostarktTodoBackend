@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TodoDto {
 
+    private long characterId;
+
     private String characterName;
 
     private long todoId;

@@ -80,4 +80,5 @@ class WeekContentApiControllerV2Test {
         List<TodoV2> todoV2List = todoV2ServiceTestCode.findTodoV2List(characterService.findCharacter(id, characterName, username));
         Assertions.assertThat(collect.size()).isEqualTo(todoV2List.size());
     }
+
 }
