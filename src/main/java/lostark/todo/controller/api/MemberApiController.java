@@ -244,6 +244,7 @@ public class MemberApiController {
 
         // 결과
         List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
                 .map(character -> new CharacterDto().toDtoV2(character))
                 .collect(Collectors.toList());
 
