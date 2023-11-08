@@ -6,7 +6,6 @@ import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.content.DayContent;
 
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
@@ -153,6 +152,77 @@ public class DayTodo {
     /**
      * 캐릭터 DayTodo updateCheck
      */
+    public void updateCheckEpona() {
+        if(eponaCheck2 < 3) {
+            eponaCheck2 += 1;
+            if(eponaGauge>=20) {
+                eponaGauge -= 20;
+            }
+        } else {
+            eponaCheck2 = 0;
+        }
+    }
+
+    public void updateCheckEponaAll() {
+        if(eponaCheck2 == 3) {
+            eponaCheck2 = 0;
+        } else {
+            while (eponaCheck2 < 3) {
+                eponaCheck2 += 1;
+                if(eponaGauge>=20) {
+                    eponaGauge -= 20;
+                }
+            }
+        }
+    }
+
+    public void updateCheckChaos() {
+        if(chaosCheck < 2) {
+            chaosCheck += 1;
+            if(chaosGauge >= 20) {
+                chaosGauge -= 20;
+            }
+        } else {
+            chaosCheck = 0;
+        }
+    }
+
+    public void updateCheckChaosAll() {
+        if(chaosCheck == 2) {
+            chaosCheck = 0;
+        } else {
+            while (chaosCheck < 2) {
+                chaosCheck += 1;
+                if(chaosGauge>=20) {
+                    chaosGauge -= 20;
+                }
+            }
+        }
+    }
+
+    public void updateCheckGuardian() {
+        if(guardianCheck < 1) {
+            guardianCheck += 1;
+            if(guardianGauge >= 20) {
+                guardianGauge -= 20;
+            }
+        } else {
+            guardianCheck = 0;
+        }
+    }
+
+    public void updateCheckGuardianAll() {
+        if(guardianCheck < 1) {
+            guardianCheck += 1;
+            if(guardianGauge >= 20) {
+                guardianGauge -= 20;
+            }
+        } else {
+            guardianCheck = 0;
+        }
+    }
+
+
     public void updateCheck(CharacterDayTodoDto characterDayTodoDto) {
         this.eponaCheck2 = characterDayTodoDto.getEponaCheck();
         this.chaosCheck = characterDayTodoDto.getChaosCheck();
@@ -178,6 +248,7 @@ public class DayTodo {
         }
         return result;
     }
+
 
 
 }

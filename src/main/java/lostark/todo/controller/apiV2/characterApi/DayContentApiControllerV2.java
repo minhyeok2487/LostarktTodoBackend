@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
+import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.market.Market;
@@ -28,20 +29,54 @@ public class DayContentApiControllerV2 {
     private final CharacterService characterService;
     private final MarketService marketService;
 
+//    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
+//    @PatchMapping("/check")
+//    public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
+//                                      @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
+//        // 로그인한 아이디에 등록된 캐릭터인지 검증
+//        // 다른 아이디면 자동으로 Exception 처리
+//        Character character = characterService.findCharacter(
+//                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
+//
+//        // Check 업데이트
+//        Character updateCharacter = characterService.updateCheck(character, characterDayTodoDto);
+//
+//        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
+//    }
+
     @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
-    @PatchMapping("/check")
+    @PatchMapping({"/check/{category}", "/check/{category}/{all}"})
     public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
-                                      @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
+                                             @PathVariable("category") String category,
+                                             @PathVariable(value = "all", required = false) String all,
+                                             @RequestBody @Valid CharacterDefaultDto characterDefaultDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacter(
-                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
+                characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
 
         // Check 업데이트
-        Character updateCharacter = characterService.updateCheck(character, characterDayTodoDto);
+        Character updateCharacter;
 
-        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
+        if (all == null) {
+            updateCharacter = characterService.updateCheck(character, category);
+        } else {
+            updateCharacter = characterService.updateCheckAll(character, category);
+        }
+
+        int chaosCheckValue = updateCharacter.getDayTodo().getChaosCheck();
+        int guardianCheckValue = updateCharacter.getDayTodo().getGuardianCheck();
+
+        if ((category.equals("chaos") && chaosCheckValue == 0) ||
+                (category.equals("guardian") && guardianCheckValue == 0)) {
+            throw new IllegalStateException("휴식게이지 재입력전까지 예상 수익이 다를 수 있습니다.");
+        }
+
+        return ResponseEntity.ok(new CharacterDto().toDtoV2(updateCharacter));
+
+
     }
+
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
             response = CharacterDto.class)

@@ -119,6 +119,32 @@ public class CharacterService {
     /**
      * 일일컨텐츠 체크 업데이트
      */
+    public Character updateCheck(Character character, String category) {
+        if(category.equals("epona")) {
+            character.getDayTodo().updateCheckEpona();
+        }
+        if(category.equals("chaos")) {
+            character.getDayTodo().updateCheckChaos();
+        }
+        if(category.equals("guardian")) {
+            character.getDayTodo().updateCheckGuardian();
+        }
+        return character;
+    }
+
+    public Character updateCheckAll(Character character, String category) {
+        if(category.equals("epona")) {
+            character.getDayTodo().updateCheckEponaAll();
+        }
+        if(category.equals("chaos")) {
+            character.getDayTodo().updateCheckChaosAll();
+        }
+        if(category.equals("guardian")) {
+            character.getDayTodo().updateCheckGuardianAll();
+        }
+        return character;
+    }
+
     public Character updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
         character.getDayTodo().updateCheck(characterDayTodoDto);
         return character;
@@ -271,4 +297,7 @@ public class CharacterService {
     public int updateWeekContent() {
         return updateWeekContent();
     }
+
+
+
 }
