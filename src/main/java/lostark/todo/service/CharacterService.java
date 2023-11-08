@@ -264,4 +264,11 @@ public class CharacterService {
     public void updateCubeTicket(Character character, int num) {
         character.getWeekTodo().updateCubeTicket(num);
     }
+
+    /**
+     * 주간 숙제 초기화
+     */
+    public int updateWeekContent() {
+        return updateWeekContent();
+    }
 }

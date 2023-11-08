@@ -34,4 +34,14 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
     @Query(value = "SELECT c FROM Character c WHERE c.member = :member AND c.serverName = :serverName")
     List<Character> findCharacterListServerName(@Param("member") Member member, @Param("serverName") String serverName);
+
+    @Modifying
+    @Query(value = "UPDATE Character c SET " +
+            "c.challengeAbyss = false, c.challengeGuardian = false, " +
+            "c.weekTodo.weekEpona = 0, c.weekTodo.silmaelChange = false")
+    int updateWeekContent();
+
+    @Modifying
+    @Query(value = "UPDATE Character c SET c.challengeAbyss = true , c.challengeGuardian = true , c.weekTodo.weekEpona = 2, c.weekTodo.silmaelChange = true")
+    int beforeUpdate();
 }

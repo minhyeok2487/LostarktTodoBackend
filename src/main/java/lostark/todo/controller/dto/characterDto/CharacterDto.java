@@ -9,7 +9,6 @@ import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 
 import java.util.ArrayList;

@@ -2,9 +2,11 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
+import lostark.todo.domain.todoV2.TodoV2Repository;
 import lostark.todo.service.lostarkApi.LostarkMarketService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,8 +25,8 @@ public class SchedulerService {
     private final CharacterService characterService;
     private final LostarkMarketService lostarkMarketService;
     private final MarketService marketService;
-    private final ContentService contentService;
-    private final TodoService todoService;
+    private final TodoV2Repository todoV2Repository;
+    private final CharacterRepository characterRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -69,35 +71,10 @@ public class SchedulerService {
      */
     @Scheduled(cron = "0 0 6 * * 3")
     public void resetWeekTodo() {
-        long startTime = System.currentTimeMillis(); // 작업 시작 시간 기록
+        log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 
-        todoService.findAllV2().forEach(todoV2 -> {
-            WeekContent weekContent = todoV2.getWeekContent();
-            if(weekContent.getCoolTime()==2){
-                if(todoV2.getCoolTime()==2) {
-                    if(todoV2.isChecked()) {
-                        todoV2.setCoolTime(0);
-                    } else {
-                        todoV2.setCoolTime(1);
-                    }
-                }
-                else {
-                    todoV2.setCoolTime(2);
-                }
-            }
-            todoV2.setChecked(false);
-        });
+        log.info("todoV2Repository.resetTodoV2() = {}", todoV2Repository.resetTodoV2()); // 주간 레이드 초기화
 
-        characterService.findAll().forEach(character -> {
-            character.setChallengeAbyss(false); //도전 어비스 던전
-            character.setChallengeGuardian(false); //도전 가디언 토벌
-            character.getWeekTodo().setWeekEpona(0); //주간에포나
-            character.getWeekTodo().setSilmaelChange(false); //실마엘 혈석교환
-        });
-
-        long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
-        long executionTime = endTime - startTime; // 작업에 걸린 시간 계산
-
-        log.info("reset week content, time: {} ms", executionTime);
+        log.info("updateWeekContent = {}", characterRepository.updateWeekContent()); // 주간 숙제 초기화
     }
 }
