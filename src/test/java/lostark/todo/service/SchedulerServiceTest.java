@@ -71,8 +71,8 @@ class SchedulerServiceTest {
     public void resetDayTodoV2() {
         Map<String, Market> contentResource = marketService.findContentResource();
 
-//        log.info("characterRepository.updateDayContentGauge() = {}",characterRepository.updateDayContentGauge());
-//        log.info("characterRepository.updateDayContentCheck() = {}",characterRepository.updateDayContentCheck());
+        log.info("characterRepository.updateDayContentGauge() = {}",characterRepository.updateDayContentGauge());
+        log.info("characterRepository.updateDayContentCheck() = {}",characterRepository.updateDayContentCheck());
         double jewelry = (double) contentResource.get("1레벨").getRecentPrice();
         double 파괴석_결정 = (double) contentResource.get("파괴석 결정").getRecentPrice() / 10;
         double 수호석_결정 = (double) contentResource.get("수호석 결정").getRecentPrice() / 10;
@@ -121,7 +121,8 @@ class SchedulerServiceTest {
             }
         }
 
-        chaos.forEach((key, value) -> characterRepository.updateDayContentPrice(key, value));
+        chaos.forEach((key, value) -> characterRepository.updateDayContentPriceChaos(key, value));
+        guardian.forEach((key, value) -> characterRepository.updateDayContentPriceGuardian(key, value));
 
     }
 

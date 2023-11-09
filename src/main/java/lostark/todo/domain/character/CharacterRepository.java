@@ -54,15 +54,24 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     int updateDayContentCheck();
 
     @Modifying
-    @Query(value = "UPDATE Character c SET c.dayTodo.chaosGold = CASE WHEN c.dayTodo.chaosGauge >= 40 THEN (:price * 4.0) END " +
+    @Query(value = "UPDATE Character c SET c.dayTodo.chaosGold = " +
+            "CASE WHEN c.dayTodo.chaosGauge >= 40 THEN (:price * 4.0) " +
+            "WHEN c.dayTodo.chaosGauge >=20 AND c.dayTodo.chaosGauge < 40 THEN (:price * 3.0) " +
+            "ELSE (:price *2.0) END " +
             "WHERE c.dayTodo.chaos = :dayContent")
-    void updateDayContentPrice(@Param("dayContent") DayContent dayContent, @Param("price") Double price);
+    void updateDayContentPriceChaos(@Param("dayContent") DayContent dayContent, @Param("price") Double price);
 
-
+    @Modifying
+    @Query(value = "UPDATE Character c SET c.dayTodo.guardianGold = " +
+            "CASE WHEN c.dayTodo.guardianGauge >= 20 THEN (:price * 2.0) " +
+            "ELSE :price END " +
+            "WHERE c.dayTodo.guardian = :dayContent")
+    void updateDayContentPriceGuardian(@Param("dayContent") DayContent dayContent, @Param("price") Double price);
 
     @Modifying
     @Query(value = "UPDATE Character c SET c.challengeAbyss = true , c.challengeGuardian = true , c.weekTodo.weekEpona = 2, c.weekTodo.silmaelChange = true")
     int beforeUpdate();
+
 
 
 }
