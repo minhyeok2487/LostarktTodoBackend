@@ -1,5 +1,6 @@
 package lostark.todo.domain.character;
 
+import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -7,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {
@@ -42,6 +42,27 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     int updateWeekContent();
 
     @Modifying
+    @Query(value = "UPDATE Character c SET " +
+            "c.dayTodo.eponaGauge = CASE WHEN (c.dayTodo.eponaGauge + (3 - c.dayTodo.eponaCheck2) * 10) > 100 THEN 100 ELSE (c.dayTodo.eponaGauge + (3 - c.dayTodo.eponaCheck2) * 10) END, " +
+            "c.dayTodo.chaosGauge = CASE WHEN (c.dayTodo.chaosGauge + (2 - c.dayTodo.chaosCheck) * 10) > 100 THEN 100 ELSE (c.dayTodo.chaosGauge + (2 - c.dayTodo.chaosCheck) * 10) END," +
+            "c.dayTodo.guardianGauge = CASE WHEN (c.dayTodo.guardianGauge + (1 - c.dayTodo.guardianCheck) * 10) > 100 THEN 100 ELSE (c.dayTodo.guardianGauge + (1 - c.dayTodo.guardianCheck) * 10) END")
+    int updateDayContentGauge();
+
+    @Modifying
+    @Query(value = "UPDATE Character c SET " +
+            "c.dayTodo.eponaCheck2 = 0, c.dayTodo.chaosCheck = 0, c.dayTodo.guardianCheck = 0")
+    int updateDayContentCheck();
+
+    @Modifying
+    @Query(value = "UPDATE Character c SET c.dayTodo.chaosGold = CASE WHEN c.dayTodo.chaosGauge >= 40 THEN (:price * 4.0) END " +
+            "WHERE c.dayTodo.chaos = :dayContent")
+    void updateDayContentPrice(@Param("dayContent") DayContent dayContent, @Param("price") Double price);
+
+
+
+    @Modifying
     @Query(value = "UPDATE Character c SET c.challengeAbyss = true , c.challengeGuardian = true , c.weekTodo.weekEpona = 2, c.weekTodo.silmaelChange = true")
     int beforeUpdate();
+
+
 }

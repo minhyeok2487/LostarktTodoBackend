@@ -40,4 +40,7 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
                                                     @Param("gate") int gate);
 
     Optional<CubeContent> findByName(String name);
+
+    @Query("SELECT d FROM DayContent d")
+    List<DayContent> findAllByDayContent();
 }
