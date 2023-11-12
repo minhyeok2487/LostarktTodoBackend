@@ -3,6 +3,9 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.CharacterRepository;
+import lostark.todo.domain.content.Category;
+import lostark.todo.domain.content.ContentRepository;
+import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
@@ -13,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,11 +26,11 @@ import java.util.Map;
 @Slf4j
 public class SchedulerService {
 
-    private final CharacterService characterService;
     private final LostarkMarketService lostarkMarketService;
     private final MarketService marketService;
     private final TodoV2Repository todoV2Repository;
     private final CharacterRepository characterRepository;
+    private final ContentRepository contentRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -45,31 +49,68 @@ public class SchedulerService {
      */
     @Scheduled(cron = "0 0 6 * * ?")
     public void resetDayTodo() {
-        long startTime = System.currentTimeMillis(); // 작업 시작 시간 기록
+        log.info("updateDayContentGauge() = {}",characterRepository.updateDayContentGauge()); //휴식게이지 계산
+        log.info("updateDayContentCheck() = {}",characterRepository.updateDayContentCheck()); //체크 초기화
 
-        // 재련재료 데이터 리스트로 거래소 데이터 호출
+        // 반영된 휴식게이지로 일일숙제 예상 수익 계산
         Map<String, Market> contentResource = marketService.findContentResource();
+        double jewelry = (double) contentResource.get("1레벨").getRecentPrice();
+        double 파괴석_결정 = (double) contentResource.get("파괴석 결정").getRecentPrice() / 10;
+        double 수호석_결정 = (double) contentResource.get("수호석 결정").getRecentPrice() / 10;
+        double 파괴강석 = (double) contentResource.get("파괴강석").getRecentPrice() / 10;
+        double 수호강석 = (double) contentResource.get("수호강석").getRecentPrice() / 10;
+        double 정제된_파괴강석 = (double) contentResource.get("정제된 파괴강석").getRecentPrice() / 10;
+        double 정제된_수호강석 = (double) contentResource.get("정제된 수호강석").getRecentPrice() / 10;
 
-        // 휴식게이지 계산
-        characterService.findAll().forEach(character -> {
-            character.getDayTodo().calculateEpona(); // 에포나의뢰, 출석체크 초기화
-            character.getDayTodo().calculateChaos(); // 카오스던전 휴식게이지 계산 후 초기화
-            character.getDayTodo().calculateGuardian(); // 가디언토벌 휴식게이지 계산 후 초기화
-            // 반영된 휴식게이지로 일일숙제 예상 수익 계산
-            characterService.calculateDayTodo(character, contentResource);
-        });
+        List<DayContent> allByDayContent = contentRepository.findAllByDayContent();
+        Map<DayContent, Double> chaos = new HashMap<>();
+        Map<DayContent, Double> guardian = new HashMap<>();
+        for (DayContent dayContent : allByDayContent) {
+            if (dayContent.getLevel()>=1415 && dayContent.getLevel()<1490) {
+                if(dayContent.getCategory().equals(Category.카오스던전)) {
+                    double price = jewelry * dayContent.getJewelry() + 파괴석_결정 * dayContent.getDestructionStone() + 수호석_결정 * dayContent.getGuardianStone();
+                    price = Math.round(price * 100.0) / 100.0;
+                    chaos.put(dayContent, price);
+                }
+                if(dayContent.getCategory().equals(Category.가디언토벌)) {
+                    double price = dayContent.getJewelry() + 파괴석_결정 * dayContent.getDestructionStone() + 수호석_결정 * dayContent.getGuardianStone() + dayContent.getLeapStone() * contentResource.get("위대한 명예의 돌파석").getRecentPrice();
+                    price = Math.round(price * 100.0) / 100.0;
+                    guardian.put(dayContent, price);
+                }
+            } else if (dayContent.getLevel()>=1490 && dayContent.getLevel()<1580) {
+                if(dayContent.getCategory().equals(Category.카오스던전)) {
+                    double price = jewelry * dayContent.getJewelry() + 파괴강석 * dayContent.getDestructionStone() + 수호강석 * dayContent.getGuardianStone();
+                    price = Math.round(price * 100.0) / 100.0;
+                    chaos.put(dayContent, price);
+                }
+                if(dayContent.getCategory().equals(Category.가디언토벌)) {
+                    double price = dayContent.getJewelry() + 파괴강석 * dayContent.getDestructionStone() + 수호강석 * dayContent.getGuardianStone() + dayContent.getLeapStone() * contentResource.get("경이로운 명예의 돌파석").getRecentPrice();
+                    price = Math.round(price * 100.0) / 100.0;
+                    guardian.put(dayContent, price);
+                }
+            } else {
+                if(dayContent.getCategory().equals(Category.카오스던전)) {
+                    double price = jewelry * dayContent.getJewelry() + 정제된_파괴강석 * dayContent.getDestructionStone() + 정제된_수호강석 * dayContent.getGuardianStone();
+                    price = Math.round(price * 100.0) / 100.0;
+                    chaos.put(dayContent, price);
+                }
+                if(dayContent.getCategory().equals(Category.가디언토벌)) {
+                    double price = dayContent.getJewelry() + 정제된_파괴강석 * dayContent.getDestructionStone() + 정제된_수호강석 * dayContent.getGuardianStone() + dayContent.getLeapStone() * contentResource.get("찬란한 명예의 돌파석").getRecentPrice();
+                    price = Math.round(price * 100.0) / 100.0;
+                    guardian.put(dayContent, price);
+                }
+            }
+        }
 
-        long endTime = System.currentTimeMillis(); // 작업 종료 시간 기록
-        long executionTime = endTime - startTime; // 작업에 걸린 시간 계산
-
-        log.info("reset day content. time: {} ms", executionTime);
+        chaos.forEach((key, value) -> characterRepository.updateDayContentPriceChaos(key, value)); //카오스던전 계산
+        guardian.forEach((key, value) -> characterRepository.updateDayContentPriceGuardian(key, value)); //가디언토벌 계산
     }
 
 
     /**
-     * 수요일 오전 6시 주간 숙제 초기화
+     * 수요일 오전 6시 5분 주간 숙제 초기화
      */
-    @Scheduled(cron = "0 0 6 * * 3")
+    @Scheduled(cron = "0 5 6 * * 3")
     public void resetWeekTodo() {
         log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 

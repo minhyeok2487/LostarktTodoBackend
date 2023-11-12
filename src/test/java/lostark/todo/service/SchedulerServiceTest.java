@@ -44,14 +44,8 @@ class SchedulerServiceTest {
     @Autowired
     ContentRepository contentRepository;
 
-    @BeforeEach
-    void before() {
-//        todoV2Repository.beforeUpdate();
-//        characterRepository.beforeUpdate();
-    }
 
     @Test
-    @Rollback(value = false)
     public void resetDayTodo() {
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.findContentResource();
@@ -67,7 +61,6 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @Rollback(value = false)
     public void resetDayTodoV2() {
         Map<String, Market> contentResource = marketService.findContentResource();
 
@@ -127,9 +120,10 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @Rollback(value = false)
     @DisplayName("기존 주간 숙제 초기화")
     void resetWeekTodo() {
+        todoV2Repository.beforeUpdate();
+        characterRepository.beforeUpdate();
         todoService.findAllV2().forEach(todoV2 -> {
             WeekContent weekContent = todoV2.getWeekContent();
             if(weekContent.getCoolTime()==2){
@@ -156,9 +150,10 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @Rollback(value = false)
     @DisplayName("변경된 주간 숙제 초기화(bulk)")
     void resetWeekTodoV2() {
+        todoV2Repository.beforeUpdate();
+        characterRepository.beforeUpdate();
         log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 
         log.info("todoV2Repository.resetTodoV2() = {}", todoV2Repository.resetTodoV2()); // 주간 레이드 초기화

@@ -47,6 +47,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .accessKey(userRequest.getAccessToken().getTokenValue())
                     .authProvider(authProvider)
                     .characters(new ArrayList<>())
+                    .friends(new ArrayList<>())
                     .role(Role.USER)
                     .build();
             member = memberRepository.save(member);

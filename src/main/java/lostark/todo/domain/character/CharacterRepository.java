@@ -73,5 +73,5 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     int beforeUpdate();
 
 
-
+    List<Character> findAllByCharacterName(String characterName);
 }

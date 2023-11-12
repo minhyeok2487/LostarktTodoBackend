@@ -299,5 +299,10 @@ public class CharacterService {
     }
 
 
-
+    /**
+     * 캐릭터 검색(리스트)
+     */
+    public List<Character> findCharacter(String characterName) {
+        return characterRepository.findAllByCharacterName(characterName);
+    }
 }

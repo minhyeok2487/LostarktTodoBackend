@@ -7,6 +7,7 @@ import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.comments.Comments;
+import lostark.todo.domain.friends.Friends;
 
 import javax.persistence.*;
 import java.util.List;
@@ -51,6 +52,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
     @JsonManagedReference
     private List<Comments> comments;
+
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @JsonManagedReference
+    private List<Friends> friends;
 
 
     // user 엔티티에 character 리스트 저장

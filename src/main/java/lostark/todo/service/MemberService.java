@@ -7,6 +7,7 @@ import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.Settings;
+import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -181,5 +182,33 @@ public class MemberService {
         } else {
             throw new IllegalArgumentException("중복된 캐릭터가 없습니다.");
         }
+    }
+
+    public String findMemberFriend(Member toMember, Member fromMember) {
+        if(toMember.getFriends().isEmpty()) {
+            return "친구 요청";
+        } else {
+            for (Friends friend : toMember.getFriends()) {
+                if(friend.getFromMember() == fromMember.getId()) {
+                    for (Friends fromMemberFriend : fromMember.getFriends()) {
+                        if(fromMemberFriend.getFromMember() == friend.getId()) {
+                            if(friend.isAreWeFriend() && fromMemberFriend.isAreWeFriend()) {
+                                return "친구";
+                            }
+                            else if(friend.isAreWeFriend() && !fromMemberFriend.isAreWeFriend()) {
+                                return "친구 요청 진행중";
+                            }
+                            else if(!friend.isAreWeFriend() && fromMemberFriend.isAreWeFriend()) {
+                                return "친구 요청 받음";
+                            }
+                            else {
+                                return "친구 요청";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return "???";
     }
 }
