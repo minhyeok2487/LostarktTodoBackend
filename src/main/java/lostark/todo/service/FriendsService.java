@@ -2,15 +2,12 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
-import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
 import lostark.todo.domain.member.Member;
-import lostark.todo.domain.member.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +27,13 @@ public class FriendsService {
                 .member(toMember)
                 .fromMember(fromMember.getId())
                 .areWeFriend(true)
+                .friendSettings(new FriendSettings())
                 .build();
         Friends fromFriends = Friends.builder()
                 .member(fromMember)
                 .fromMember(toMember.getId())
                 .areWeFriend(false)
+                .friendSettings(new FriendSettings())
                 .build();
         friendsRepository.save(toFriends);
         friendsRepository.save(fromFriends);
@@ -101,6 +100,8 @@ public class FriendsService {
                             .areWeFriend(areWeFriend)
                             .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
                             .characterList(characterDtoList)
+                            .toFriendSettings(friends.getFriendSettings())
+                            .fromFriendSettings(fromFriend.getFriendSettings())
                             .build();
 
                     returnDtoList.add(friendsReturnDto);
@@ -118,5 +119,11 @@ public class FriendsService {
         } else {
             throw new IllegalStateException("잘못된 요청입니다.");
         }
+    }
+
+    public FriendSettings updateSetting(long id, String name, boolean value) {
+        Friends friends = friendsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 데이터 입니다."));
+        friends.getFriendSettings().update(name, value);
+        return friends.getFriendSettings();
     }
 }

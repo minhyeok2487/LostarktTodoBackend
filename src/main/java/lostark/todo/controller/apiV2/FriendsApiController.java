@@ -4,13 +4,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.contentDto.CubeContentDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
+import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.CubeContent;
-import lostark.todo.domain.friends.Friends;
-import lostark.todo.domain.market.Market;
+import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.FriendsService;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -67,7 +65,7 @@ public class FriendsApiController {
     }
 
     @ApiOperation(value = "친구 리스트")
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity getFriends(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
         List<FriendsReturnDto> friends = friendsService.findFriends(member);
@@ -97,5 +95,16 @@ public class FriendsApiController {
         friendsService.updateFriendsRequest(toMember, fromMember, category);
         List<FriendsReturnDto> friends = friendsService.findFriends(toMember);
         return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 권한 수정")
+    @PatchMapping("/settings")
+    public ResponseEntity updateSettings(@AuthenticationPrincipal String username,
+                                         @RequestBody FriendSettingRequestDto friendSettingRequestDto) {
+
+        FriendSettings friendSettings = friendsService.updateSetting(friendSettingRequestDto.getId(),
+                friendSettingRequestDto.getName(), friendSettingRequestDto.isValue());
+
+        return new ResponseEntity(friendSettings, HttpStatus.OK);
     }
 }

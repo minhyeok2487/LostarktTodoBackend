@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.member.Member;
 
 import javax.persistence.*;
@@ -26,4 +27,8 @@ public class FriendsReturnDto {
     private String nickName;
 
     private List<CharacterDto> characterList;
+
+    private FriendSettings toFriendSettings;
+
+    private FriendSettings fromFriendSettings;
 }
