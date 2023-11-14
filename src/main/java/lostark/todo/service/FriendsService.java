@@ -126,4 +126,12 @@ public class FriendsService {
         friends.getFriendSettings().update(name, value);
         return friends.getFriendSettings();
     }
+
+    public boolean checkSetting(Member fromMember, Member toMember, String content) {
+        Friends memberAndFromMember = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
+        if(content.equals("dayContent")){
+            return memberAndFromMember.getFriendSettings().isCheckDayTodo();
+        }
+        return false;
+    }
 }

@@ -4,12 +4,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
 import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
+import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.FriendSettings;
+import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.FriendsService;
@@ -19,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,5 +110,28 @@ public class FriendsApiController {
                 friendSettingRequestDto.getName(), friendSettingRequestDto.isValue());
 
         return new ResponseEntity(friendSettings, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
+    @PatchMapping({"/day-content/check/{category}", "/check/{category}/{all}"})
+    public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
+                                             @PathVariable("category") String category,
+                                             @PathVariable(value = "all", required = false) String all,
+                                             @RequestBody @Valid CharacterDefaultDto characterDefaultDto) {
+        Character friendCharacter = characterService.findCharacterById(characterDefaultDto.getCharacterId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean dayContent = friendsService.checkSetting(fromMember, toMember, "dayContent");
+
+        if(dayContent) {
+            // Check 업데이트
+            if (all == null) {
+                friendCharacter = characterService.updateCheck(friendCharacter, category);
+            } else {
+                friendCharacter = characterService.updateCheckAll(friendCharacter, category);
+            }
+        }
+        return ResponseEntity.ok(new CharacterDto().toDtoV2(friendCharacter));
     }
 }

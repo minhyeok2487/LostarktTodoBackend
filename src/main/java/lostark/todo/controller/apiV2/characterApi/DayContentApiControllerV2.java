@@ -71,10 +71,7 @@ public class DayContentApiControllerV2 {
                 (category.equals("guardian") && guardianCheckValue == 0)) {
             throw new IllegalStateException("휴식게이지 재입력전까지 예상 수익이 다를 수 있습니다.");
         }
-
         return ResponseEntity.ok(new CharacterDto().toDtoV2(updateCharacter));
-
-
     }
 
 

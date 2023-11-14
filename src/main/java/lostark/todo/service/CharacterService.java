@@ -305,4 +305,8 @@ public class CharacterService {
     public List<Character> findCharacter(String characterName) {
         return characterRepository.findAllByCharacterName(characterName);
     }
+
+    public Character findCharacterById(long characterId) {
+        return characterRepository.findById(characterId).orElseThrow(() -> new IllegalArgumentException("캐릭터 id 에러"));
+    }
 }
