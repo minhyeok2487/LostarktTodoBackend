@@ -132,6 +132,12 @@ public class FriendsService {
         if(content.equals("dayContent")){
             return memberAndFromMember.getFriendSettings().isCheckDayTodo();
         }
+        if(content.equals("raid")){
+            return memberAndFromMember.getFriendSettings().isCheckRaid();
+        }
+        if(content.equals("weekTodo")){
+            return memberAndFromMember.getFriendSettings().isCheckWeekTodo();
+        }
         return false;
     }
 }

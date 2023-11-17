@@ -17,6 +17,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.FriendsService;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,6 +37,7 @@ public class FriendsApiController {
     private final CharacterService characterService;
     private final MemberService memberService;
     private final FriendsService friendsService;
+    private final TodoServiceV2 todoServiceV2;
 
     @ApiOperation(value = "캐릭터 검색")
     @GetMapping("/character/{characterName}")
@@ -113,7 +115,7 @@ public class FriendsApiController {
     }
 
     @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
-    @PatchMapping({"/day-content/check/{category}", "/check/{category}/{all}"})
+    @PatchMapping({"/day-content/check/{category}", "/day-content/check/{category}/{all}"})
     public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
                                              @PathVariable("category") String category,
                                              @PathVariable(value = "all", required = false) String all,
@@ -133,5 +135,99 @@ public class FriendsApiController {
             }
         }
         return ResponseEntity.ok(new CharacterDto().toDtoV2(friendCharacter));
+    }
+
+    @ApiOperation(value = "깐부 캐릭터 주간 레이드 check 수정")
+    @PatchMapping({"/raid/check", "/raid/check/{all}"})
+    public ResponseEntity updateWeekRaidCheck(@AuthenticationPrincipal String username,
+                                              @PathVariable(value = "all", required = false) String all,
+                                              @RequestBody TodoDto todoDto) {
+        Character friendCharacter = characterService.findCharacterById(todoDto.getCharacterId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean raid = friendsService.checkSetting(fromMember, toMember, "raid");
+
+        if(raid) {
+            if (all == null) {
+                todoServiceV2.updateWeekRaidCheck(friendCharacter, todoDto.getWeekCategory(), todoDto.getCurrentGate(), todoDto.getTotalGate());
+            } else {
+                todoServiceV2.updateWeekRaidCheckAll(friendCharacter, todoDto.getWeekCategory());
+            }
+        }
+        return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 캐릭터 주간 에포나 체크",
+            notes = "'all'이 붙으면 전체 체크/해제",
+            response = CharacterDto.class)
+    @PatchMapping({"/epona/{all}","/epona"})
+    public ResponseEntity updateWeekTodoEponaCheck(@AuthenticationPrincipal String username,
+                                                   @PathVariable(required = false) String all,
+                                                   @RequestBody CharacterDto characterDto) {
+        Character friendCharacter = characterService.findCharacterById(characterDto.getId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "raid");
+
+        // all?
+        if (weekTodo) {
+            if(all != null) {
+                if (friendCharacter.getWeekTodo().getWeekEpona() <3) {
+                    friendCharacter.getWeekTodo().setWeekEpona(2);
+                }
+            }
+            // Check 업데이트
+            characterService.updateWeekEpona(friendCharacter);
+        }
+
+        return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 캐릭터 실마엘 교환 업데이트", response = CharacterDto.class)
+    @PatchMapping("/silmael")
+    public ResponseEntity updateSilmael(@AuthenticationPrincipal String username,
+                                        @RequestBody CharacterDto characterDto) {
+        Character friendCharacter = characterService.findCharacterById(characterDto.getId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "raid");
+
+        if(weekTodo) {
+            // Check 업데이트
+            characterService.updateSilmael(friendCharacter);
+        }
+
+        return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 캐릭터 큐브 티켓 업데이트", response = CharacterDto.class)
+    @PatchMapping("/cube/{state}")
+    public ResponseEntity updateCubeTicket(@AuthenticationPrincipal String username,
+                                           @RequestBody CharacterDto characterDto,
+                                           @PathVariable String state) {
+        int num = 0;
+        if (state.equals("add")) {
+            num = 1;
+        } else if (state.equals("substract")) {
+            num = -1;
+        } else {
+            throw new IllegalArgumentException("없는 메소드 입니다.");
+        }
+
+        Character friendCharacter = characterService.findCharacterById(characterDto.getId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "raid");
+
+        // cubeTicket 업데이트
+        if(weekTodo) {
+            characterService.updateCubeTicket(friendCharacter, num);
+        }
+
+        return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 }
