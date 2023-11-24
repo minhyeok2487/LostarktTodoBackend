@@ -3,6 +3,7 @@ package lostark.todo.domain.content;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lostark.todo.domain.todoV2.TodoV2;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @SuperBuilder
 @Entity
 @ToString
+@Audited
 public class WeekContent extends Content{
 
     private String weekCategory; //카테고리 : 발탄, 비아키스

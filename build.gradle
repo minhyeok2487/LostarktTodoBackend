@@ -51,6 +51,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	implementation 'mysql:mysql-connector-java:8.0.32'
+
+	implementation 'org.springframework.data:spring-data-envers'
 }
 
 task release {

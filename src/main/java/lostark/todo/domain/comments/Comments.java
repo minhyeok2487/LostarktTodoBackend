@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
+@Audited
 public class Comments extends BaseTimeEntity {
 
     @Id

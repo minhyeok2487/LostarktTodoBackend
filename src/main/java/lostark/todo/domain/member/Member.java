@@ -8,6 +8,7 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.friends.Friends;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 @Entity
+@Audited
 public class Member extends BaseTimeEntity {
 
     /**

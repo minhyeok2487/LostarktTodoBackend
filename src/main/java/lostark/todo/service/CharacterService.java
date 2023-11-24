@@ -73,7 +73,7 @@ public class CharacterService {
         return character;
     }
 
-    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry, Character character) {
+    private double calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry, Character character) {
         double price = 0;
         price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
         price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
@@ -89,10 +89,10 @@ public class CharacterService {
         }
 
         price = Math.round(price * 100.0) / 100.0;
-        character.getDayTodo().setChaosGold(price);
+        return price;
     }
 
-    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone, Character character) {
+    private double calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone, Character character) {
         double price = 0;
         price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
         price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
@@ -104,15 +104,90 @@ public class CharacterService {
         }
 
         price = Math.round(price * 100.0) / 100.0;
-        character.getDayTodo().setGuardianGold(price);
+        return price;
+    }
+
+    private double calculateChaosV2(DayContent dayContent, Market destruction, Market guardian, Market jewelry, int chaosGauge) {
+        double price = 0;
+        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += jewelry.getRecentPrice() * dayContent.getJewelry();
+
+        if (chaosGauge >= 40) {
+            price = price*4;
+        } else if (chaosGauge < 40 && chaosGauge >= 20) {
+            price = price*3;
+        } else {
+            price = price*2;
+        }
+
+        price = Math.round(price * 100.0) / 100.0;
+        return price;
+    }
+
+    private double calculateGuardianV2(DayContent dayContent, Market destruction, Market guardian, Market leapStone, int guardianGauge) {
+        double price = 0;
+        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
+
+        if (guardianGauge >= 20) {
+            price = price*2;
+        }
+
+        price = Math.round(price * 100.0) / 100.0;
+        return price;
     }
 
     /**
      * 일일컨텐츠 휴식게이지 업데이트
      */
-    public Character updateGauge(Character character, CharacterDayTodoDto characterDayTodoDto) {
-        character.getDayTodo().updateGauge(characterDayTodoDto);
+    public Character updateGauge(Character character, CharacterDayTodoDto characterDayTodoDto, Map<String, Market> contentResource) {
+        Integer dtoChaosGauge = characterDayTodoDto.getChaosGauge();
+        validateGauge(dtoChaosGauge); //검증
+
+        Integer dtoGuardianGauge = characterDayTodoDto.getGuardianGauge();
+        validateGauge(dtoGuardianGauge); //검증
+
+        Integer dtoEponGauge = characterDayTodoDto.getEponaGauge();
+        validateGauge(dtoEponGauge); //검증
+
+        Market jewelry = contentResource.get("1레벨");
+        Market destruction;
+        Market guardian;
+        Market leapStone;
+        if (character.getItemLevel() >= 1415 && character.getItemLevel() < 1540) {
+            destruction = contentResource.get("파괴석 결정");
+            guardian = contentResource.get("수호석 결정");
+            leapStone = contentResource.get("위대한 명예의 돌파석");
+        } else if (character.getItemLevel() >= 1540 && character.getItemLevel() < 1580) {
+            destruction = contentResource.get("파괴강석");
+            guardian = contentResource.get("수호강석");
+            leapStone = contentResource.get("경이로운 명예의 돌파석");
+        } else {
+            destruction = contentResource.get("정제된 파괴강석");
+            guardian = contentResource.get("정제된 수호강석");
+            leapStone = contentResource.get("찬란한 명예의 돌파석");
+        }
+        // 카오스 던전 계산
+        double chaosGold = calculateChaosV2(character.getDayTodo().getChaos(), destruction, guardian, jewelry, dtoChaosGauge);
+
+        // 가디언 토벌 계산
+        double guardianGold = calculateGuardianV2(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, dtoGuardianGauge);
+
+//        character.getDayTodo().updateGauge(characterDayTodoDto);
+//
+//        // 업데이트된 휴식게이지로 예상 수익 계산
+//        calculateDayTodo(character, contentResource);
+
+        character.getDayTodo().updateDayContentGauge(characterDayTodoDto, chaosGold, guardianGold);
         return character;
+    }
+
+    private void validateGauge(Integer gauge) {
+        if (gauge < 0 || gauge > 100 || gauge % 10 != 0) {
+            throw new IllegalArgumentException("휴식게이지는 0~100 사이이며, 10단위여야 합니다.");
+        }
     }
 
 
@@ -153,10 +228,6 @@ public class CharacterService {
     /**
      * 골드 획득 지정캐릭터확인
      */
-    public int checkGoldCharacter(Member member, String servername) {
-        return characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(member, servername);
-    }
-
     public Character updateGoldCharacter(Character character) {
         // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
         int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
@@ -169,8 +240,11 @@ public class CharacterService {
         return character.updateGoldCharacter();
     }
 
-    public Map<String, Long> findGroupServerNameCount(Member member) {
-        List<Object[]> group = characterRepository.findCountGroupByServerName(member);
+    public Map<String, Long> findGroupServerNameCount(String username) {
+        List<Object[]> group = characterRepository.findCountGroupByServerName(username);
+        if(group.isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
         Map<String, Long> resultMap = new HashMap<>();
         long count = 0L;
         for (Object[] result : group) {
@@ -193,6 +267,17 @@ public class CharacterService {
         return characterRepository.findCharacterListServerName(member, serverName);
     }
 
+    /**
+     * 서버별 캐릭터 리스트 호출
+     * Member -> username
+     */
+    public List<Character> findCharacterListServerName(String username, String serverName) {
+        List<Character> characterList = characterRepository.findCharacterListServerName(username, serverName);
+        if(characterList.isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
+        return characterList;
+    }
 
     public List<Character> updateChallenge(Member member, String serverName, String content) {
         List<Character> characterList = findCharacterListServerName(member, serverName);

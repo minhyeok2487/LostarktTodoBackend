@@ -100,74 +100,26 @@ public class MemberApiController {
         }
     }
 
-//    @ApiOperation(value = "회원 캐릭터 리스트 조회",
-//            response = CharacterResponseDto.class)
-//    @GetMapping("/characterList")
-//    public ResponseEntity getCharacterList(@AuthenticationPrincipal String username) {
-//        // username -> member 조회
-//        Member member = memberService.findMember(username);
-//        if(member.getCharacters().isEmpty()) {
-//            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-//        }
-//        // 결과
-//        List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
-//                .filter(character -> character.getSettings().isShowCharacter())
-//                .map(character -> new CharacterResponseDto().toDto(character))
-//                .collect(Collectors.toList());
-//
-//        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-//        characterResponseDtoList.sort(Comparator
-//                .comparingInt(CharacterResponseDto::getSortNumber)
-//                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
-//        );
-//        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
-//    }
-
-    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
-            response = CharacterDto.class)
-    @GetMapping("/characterList/{serverName}")
-    public ResponseEntity findCharacterListServerName(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
-        // username -> member 조회
-        Member member = memberService.findMember(username);
-        if(member.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
-        List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
-        // 결과
-        List<CharacterDto> characterDtoList = characterList.stream()
-                .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterDto().toDtoV2(character))
-                .collect(Collectors.toList());
-
-        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterDtoList.sort(Comparator
-                .comparingInt(CharacterDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
-        );
-        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+    @ApiOperation(value = "캐릭터 서버 리스트 불러오기")
+    @GetMapping("/characterList/server")
+    public ResponseEntity<Map<String, Long>> findGroupServerNameCount(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(characterService.findGroupServerNameCount(username), HttpStatus.OK);
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
             response = CharacterDto.class)
     @GetMapping("/characterList-v3/{serverName}")
     public ResponseEntity findCharacterListServerNameV3(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
-        // username -> member 조회
-        Member member = memberService.findMember(username);
-        if(member.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
-        List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
+
+        //username, serverName -> characterList 조회
+        List<Character> characterList = characterService.findCharacterListServerName(username, serverName);
+
         // 결과
         List<CharacterDto> characterDtoList = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterDto().toDtoV2(character))
-                .collect(Collectors.toList());
-
-        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterDtoList.sort(Comparator
-                .comparingInt(CharacterDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
-        );
+                .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
+                        .comparingInt(CharacterDto::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
         return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
@@ -194,6 +146,7 @@ public class MemberApiController {
                 // 데이터 변경
                 Character newCharacter = Character.builder()
                         .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
+                        .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
                         .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
                         .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
@@ -245,20 +198,81 @@ public class MemberApiController {
         // 결과
         List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterDto().toDtoV2(character))
-                .collect(Collectors.toList());
-
-        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-        characterDtoList.sort(Comparator
-                .comparingInt(CharacterDto::getSortNumber)
-                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
-        );
+                .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
+                        .comparingInt(CharacterDto::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
 
         return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
 
-//    @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트의 변경된 Todo항목 저장", response = CharacterCheckDto.class)
+    @PatchMapping("/characterList/todo")
+    public ResponseEntity updateTodo(@AuthenticationPrincipal String username,
+                                     @RequestBody @Valid List<CharacterCheckDto> characterCheckDtoList) {
+        return new ResponseEntity<>(memberService.updateTodo(username, characterCheckDtoList), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
+    @PatchMapping("/characterList/sorting")
+    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
+                                     @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
+        Member member = memberService.updateSort(username, characterSortDtoList);
+
+        List<CharacterDto> characterDtoList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            // Character -> CharacterResponseDto 변경
+            CharacterDto characterDto = new CharacterDto().toDtoV2(character);
+            characterDtoList.add(characterDto);
+        }
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/settings")
+    public ResponseEntity findSettings(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        member.getCharacters().sort(Comparator.comparingInt(Character::getSortNumber));
+
+        List<CharacterSettingDto> settingsList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            settingsList.add(CharacterSettingDto.toDto(character));
+        }
+        return new ResponseEntity(settingsList, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "회원 API KEY 갱신")
+    @PatchMapping("/api-key")
+    public ResponseEntity updateApiKey(@AuthenticationPrincipal String username,
+                                       @RequestBody MemberRequestDto memberRequestDto) {
+        // 1. 검증
+        Member member = memberService.findMember(username);
+        if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
+            throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
+        }
+        if (member.getApiKey().equals(memberRequestDto.getApiKey())) {
+            throw new IllegalArgumentException("동일한 API KEY입니다.");
+        }
+
+        // 2. API KEY 인증 확인
+        lostarkApiService.findEvents(memberRequestDto.getApiKey());
+
+        // 3. API KEY 업데이트
+        memberService.updateApiKey(member, memberRequestDto.getApiKey());
+
+        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "중복 캐릭터 삭제")
+    @DeleteMapping("/duplicate")
+    public ResponseEntity removeDuplicateCharacters(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        memberService.removeDuplicateCharacters(member);
+        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
+    }
+
+
+    //    @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
 //            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
 //                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
 //                    "캐릭터 추가 및 삭제 ",
@@ -303,78 +317,50 @@ public class MemberApiController {
 //        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
 //    }
 
-    @ApiOperation(value = "회원과 연결된 캐릭터 리스트의 변경된 Todo항목 저장", response = CharacterCheckDto.class)
-    @PatchMapping("/characterList/todo")
-    public ResponseEntity updateTodo(@AuthenticationPrincipal String username,
-                                     @RequestBody @Valid List<CharacterCheckDto> characterCheckDtoList) {
-        return new ResponseEntity<>(memberService.updateTodo(username, characterCheckDtoList), HttpStatus.OK);
-    }
+    //    @ApiOperation(value = "회원 캐릭터 리스트 조회",
+//            response = CharacterResponseDto.class)
+//    @GetMapping("/characterList")
+//    public ResponseEntity getCharacterList(@AuthenticationPrincipal String username) {
+//        // username -> member 조회
+//        Member member = memberService.findMember(username);
+//        if(member.getCharacters().isEmpty()) {
+//            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+//        }
+//        // 결과
+//        List<CharacterResponseDto> characterResponseDtoList = member.getCharacters().stream()
+//                .filter(character -> character.getSettings().isShowCharacter())
+//                .map(character -> new CharacterResponseDto().toDto(character))
+//                .collect(Collectors.toList());
+//
+//        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+//        characterResponseDtoList.sort(Comparator
+//                .comparingInt(CharacterResponseDto::getSortNumber)
+//                .thenComparing(Comparator.comparingDouble(CharacterResponseDto::getItemLevel).reversed())
+//        );
+//        return new ResponseEntity<>(characterResponseDtoList, HttpStatus.OK);
+//    }
 
-    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
-    @PatchMapping("/characterList/sorting")
-    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
-                                     @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
-        Member member = memberService.updateSort(username, characterSortDtoList);
-
-        List<CharacterDto> characterDtoList = new ArrayList<>();
-        for (Character character : member.getCharacters()) {
-            // Character -> CharacterResponseDto 변경
-            CharacterDto characterDto = new CharacterDto().toDtoV2(character);
-            characterDtoList.add(characterDto);
-        }
-        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
-    }
-
-
-    @GetMapping("/characterList/server")
-    public ResponseEntity findGroupServerNameCount(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
-        if(member.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
-        Map<String, Long> groupServerNameCount = characterService.findGroupServerNameCount(member);
-        return new ResponseEntity(groupServerNameCount, HttpStatus.OK);
-    }
-
-    @GetMapping("/settings")
-    public ResponseEntity findSettings(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
-        member.getCharacters().sort(Comparator.comparingInt(Character::getSortNumber));
-
-        List<CharacterSettingDto> settingsList = new ArrayList<>();
-        for (Character character : member.getCharacters()) {
-            settingsList.add(CharacterSettingDto.toDto(character));
-        }
-        return new ResponseEntity(settingsList, HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "회원 API KEY 갱신")
-    @PatchMapping("/api-key")
-    public ResponseEntity updateApiKey(@AuthenticationPrincipal String username,
-                                       @RequestBody MemberRequestDto memberRequestDto) {
-        // 1. 검증
-        Member member = memberService.findMember(username);
-        if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
-            throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
-        }
-        if (member.getApiKey().equals(memberRequestDto.getApiKey())) {
-            throw new IllegalArgumentException("동일한 API KEY입니다.");
-        }
-
-        // 2. API KEY 인증 확인
-        lostarkApiService.findEvents(memberRequestDto.getApiKey());
-
-        // 3. API KEY 업데이트
-        memberService.updateApiKey(member, memberRequestDto.getApiKey());
-
-        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "중복 캐릭터 삭제")
-    @DeleteMapping("/duplicate")
-    public ResponseEntity removeDuplicateCharacters(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
-        memberService.removeDuplicateCharacters(member);
-        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
-    }
+//    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
+//            response = CharacterDto.class)
+//    @GetMapping("/characterList/{serverName}")
+//    public ResponseEntity findCharacterListServerName(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
+//        // username -> member 조회
+//        Member member = memberService.findMember(username);
+//        if(member.getCharacters().isEmpty()) {
+//            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+//        }
+//        List<Character> characterList = characterService.findCharacterListServerName(member, serverName);
+//        // 결과
+//        List<CharacterDto> characterDtoList = characterList.stream()
+//                .filter(character -> character.getSettings().isShowCharacter())
+//                .map(character -> new CharacterDto().toDtoV2(character))
+//                .collect(Collectors.toList());
+//
+//        // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+//        characterDtoList.sort(Comparator
+//                .comparingInt(CharacterDto::getSortNumber)
+//                .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
+//        );
+//        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+//    }
 }

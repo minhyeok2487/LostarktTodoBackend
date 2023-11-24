@@ -28,7 +28,7 @@ public class CharacterApiControllerV2 {
 
     @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterDto.class)
     @PatchMapping("/gold-character")
-    public ResponseEntity updateGoldCharacter(@AuthenticationPrincipal String username, @RequestBody CharacterDefaultDto characterDefaultDto) {
+    public ResponseEntity<CharacterDto> updateGoldCharacter(@AuthenticationPrincipal String username, @RequestBody CharacterDefaultDto characterDefaultDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacter(
@@ -56,7 +56,7 @@ public class CharacterApiControllerV2 {
 
     @ApiOperation(value = "캐릭터 출력 내용 수정")
     @PatchMapping("/settings")
-    public ResponseEntity updateSettings(@AuthenticationPrincipal String username, @RequestBody SettingRequestDto settingRequestDto) {
+    public ResponseEntity<CharacterDto> updateSettings(@AuthenticationPrincipal String username, @RequestBody SettingRequestDto settingRequestDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacter(
@@ -64,6 +64,6 @@ public class CharacterApiControllerV2 {
 
         characterService.updateSetting(character, settingRequestDto.getName(), settingRequestDto.isValue());
 
-        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 }

@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.content.DayContent;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
@@ -17,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class DayTodo {
 
     private String chaosName;
@@ -57,7 +57,22 @@ public class DayTodo {
     private int eponaGauge;
 
 
-
+    @Override
+    public String toString() {
+        return "DayTodo{" +
+                "chaosName='" + chaosName + '\'' +
+                ", chaosCheck=" + chaosCheck +
+                ", chaosGauge=" + chaosGauge +
+                ", chaosGold=" + chaosGold +
+                ", guardianName='" + guardianName + '\'' +
+                ", guardianCheck=" + guardianCheck +
+                ", guardianGauge=" + guardianGauge +
+                ", guardianGold=" + guardianGold +
+                ", eponaCheck=" + eponaCheck +
+                ", eponaCheck2=" + eponaCheck2 +
+                ", eponaGauge=" + eponaGauge +
+                '}';
+    }
 
     /**
      * 일일컨텐츠 업데이트 메서드
@@ -251,5 +266,11 @@ public class DayTodo {
     }
 
 
-
+    public void updateDayContentGauge(CharacterDayTodoDto characterDayTodoDto, double chaosGold, double guardianGold) {
+        this.chaosGauge = characterDayTodoDto.getChaosGauge();
+        this.guardianGauge = characterDayTodoDto.getGuardianGauge();
+        this.eponaGauge = characterDayTodoDto.getEponaGauge();
+        this.chaosGold = chaosGold;
+        this.guardianGold = guardianGold;
+    }
 }

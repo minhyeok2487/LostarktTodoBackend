@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
+import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
+import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
@@ -79,7 +81,7 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 레이드 전체 추가/제거 V3")
+    @ApiOperation(value = "캐릭터 주간 레이드 전체 추가/제거 all")
     @PostMapping("/raid/{characterId}/{characterName}/all")
     public ResponseEntity updateWeekRaidAll(@AuthenticationPrincipal String username,
                                           @PathVariable long characterId,
@@ -117,6 +119,22 @@ public class WeekContentApiControllerV2 {
 
         todoServiceV2.updateWeekRaidCheckAll(character, todoDto.getWeekCategory());
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 레이드 message 수정",
+            response = TodoResponseDto.class)
+    @PatchMapping("/message")
+    public ResponseEntity updateWeekMessage(@AuthenticationPrincipal String username,
+                                            @RequestBody TodoDto todoDto) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacter(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
+        TodoV2 todo = todoServiceV2.updateWeekMessage(todoDto);
+        TodoResponseDto todoResponseDto = TodoResponseDto.builder()
+                .id(todo.getId())
+                .message(todo.getMessage())
+                .build();
+        return new ResponseEntity(todoResponseDto, HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 에포나 체크",

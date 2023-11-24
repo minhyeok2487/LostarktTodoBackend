@@ -85,16 +85,13 @@ public class DayContentApiControllerV2 {
         Character character = characterService.findCharacter(
                 characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
 
-        // 휴식게이지 업데이트
-        Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto);
-
         // 재련재료 데이터 리스트로 거래소 데이터 호출
         Map<String, Market> contentResource = marketService.findContentResource();
 
-        // 업데이트된 휴식게이지로 예상 수익 계산
-        Character resultCharacter = characterService.calculateDayTodo(updateCharacter, contentResource);
+        // 휴식게이지 업데이트 후 예상 수익 계산
+        Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto, contentResource);
 
-        return new ResponseEntity(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
     }
 
 }

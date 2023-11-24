@@ -10,12 +10,14 @@ import lostark.todo.security.ApplicationOAuth2User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
 /**
  * JWT(JSON Web Token) 생성과 유효성 검사를 담당하는 서비스 클래스
@@ -32,14 +34,14 @@ public class TokenProvider {
     /**
      * JWT 생성 (구글 로그인 연동으로 사용X)
      */
-    public String createToken(Member member) {
-        return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, secretKey)
-                .setSubject(member.getUsername())
-                .setIssuer("LostarkTodo")
-                .setIssuedAt(new Date())
-                .compact();
-    }
+//    public String createToken(Member member) {
+//        return Jwts.builder()
+//                .signWith(SignatureAlgorithm.HS512, secretKey)
+//                .setSubject(member.getUsername())
+//                .setIssuer("LostarkTodo")
+//                .setIssuedAt(new Date())
+//                .compact();
+//    }
 
     /**
      * 구글 로그인 연동 Token 생성
@@ -71,5 +73,4 @@ public class TokenProvider {
         return claims.getSubject();
 
     }
-
 }

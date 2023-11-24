@@ -2,6 +2,7 @@ package lostark.todo.domain.content;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Audited
 public abstract class Content {
 
     @Id

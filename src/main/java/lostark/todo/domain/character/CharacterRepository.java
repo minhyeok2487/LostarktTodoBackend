@@ -5,6 +5,7 @@ import lostark.todo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -29,11 +30,15 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
     int countByMemberAndServerNameAndGoldCharacterIsTrue(Member member, String serverName);
 
-    @Query(value = "SELECT c.serverName, COUNT(c.id) FROM Character c WHERE c.member = :member GROUP BY c.serverName")
-    List<Object[]> findCountGroupByServerName(@Param("member") Member member);
-
     @Query(value = "SELECT c FROM Character c WHERE c.member = :member AND c.serverName = :serverName")
     List<Character> findCharacterListServerName(@Param("member") Member member, @Param("serverName") String serverName);
+
+    @Query(value = "SELECT DISTINCT c FROM Character c " +
+            "JOIN FETCH c.todoV2List t JOIN FETCH t.weekContent " +
+            "JOIN FETCH c.dayTodo.guardian " +
+            "JOIN FETCH c.dayTodo.chaos " +
+            "WHERE c.member.username = :username AND c.serverName = :serverName")
+    List<Character> findCharacterListServerName(@Param("username") String username, @Param("serverName") String serverName);
 
     @Modifying
     @Query(value = "UPDATE Character c SET " +
@@ -74,4 +79,7 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
 
     List<Character> findAllByCharacterName(String characterName);
+
+    @Query(value = "SELECT c.serverName, COUNT(c.id) FROM Character c WHERE c.member.username = :username GROUP BY c.serverName")
+    List<Object[]> findCountGroupByServerName(@Param("username") String username);
 }

@@ -2,6 +2,7 @@ package lostark.todo.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.Role;
 import lostark.todo.security.CustomOAuth2UserService;
 import lostark.todo.security.OAuthSuccessHandler;
 import lostark.todo.security.RedirectUrlCookieFilter;
