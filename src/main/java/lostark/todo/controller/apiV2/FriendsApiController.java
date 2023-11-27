@@ -90,7 +90,7 @@ public class FriendsApiController {
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "친구 요청 수락/거부")
+    @ApiOperation(value = "친구 요청 수락/거부/삭제")
     @PatchMapping("/{fromUser}/{category}")
     public ResponseEntity updateFriendsRequest(@AuthenticationPrincipal String username,
                                                @PathVariable("fromUser") String fromUser,

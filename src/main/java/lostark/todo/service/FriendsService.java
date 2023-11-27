@@ -116,6 +116,11 @@ public class FriendsService {
             friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).setAreWeFriend(true);
         } else if(category.equals("reject")) {
             friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).setAreWeFriend(false);
+        } else if(category.equals("delete")) {
+            Friends toMemberEntity = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
+            Friends fromMemberEntity = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
+            friendsRepository.delete(toMemberEntity);
+            friendsRepository.delete(fromMemberEntity);
         } else {
             throw new IllegalStateException("잘못된 요청입니다.");
         }
