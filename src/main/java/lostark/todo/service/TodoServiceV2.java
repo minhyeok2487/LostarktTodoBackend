@@ -51,6 +51,7 @@ public class TodoServiceV2 {
 
         if (existingTodo.isPresent()) {
             character.getTodoV2List().remove(existingTodo.get());
+            todoV2Repository.delete(existingTodo.get());
         } else {
             boolean categoryAndGate = true;
             boolean beforeGate = false;
@@ -58,6 +59,7 @@ public class TodoServiceV2 {
                 //첫번째 관문이 아니라면 Exception
                 if (todoV2.getWeekContent().getGate() == 1) {
                     character.getTodoV2List().add(todoV2);
+                    todoV2Repository.save(todoV2);
                 } else {
                     throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
                 }
@@ -85,6 +87,7 @@ public class TodoServiceV2 {
                 // 같은 weekContent, 같은 gate가 있는게 아니고 이전 관문이 있다면 더함
                 if (categoryAndGate && beforeGate) {
                     character.getTodoV2List().add(todoV2);
+                    todoV2Repository.save(todoV2);
                 }
                 // 이전 관문이 없으면 Exception
                 if (categoryAndGate && !beforeGate) {
@@ -101,16 +104,22 @@ public class TodoServiceV2 {
     public void updateWeekRaidAll(Character character, List<WeekContent> weekContentList) {
         WeekContent weekContent = weekContentList.get(0);
         List<TodoV2> updatedTodoV2List = new ArrayList<>();
+        List<TodoV2> removedList = new ArrayList<>();
         boolean check = false;
         // 하나라도 선택 되어 있으면 삭제
         for (TodoV2 todoV2 : character.getTodoV2List()) {
             if (todoV2.getWeekContent().getWeekCategory().equals(weekContent.getWeekCategory())) {
+                removedList.add(todoV2);
                 check = true;
             }
         }
 
-        character.getTodoV2List().removeIf(todoV2 ->
-                todoV2.getWeekContent().getWeekCategory().equals(weekContent.getWeekCategory()));
+        if(!removedList.isEmpty()) {
+            for (TodoV2 todoV2 : removedList) {
+                character.getTodoV2List().remove(todoV2);
+                todoV2Repository.delete(todoV2);
+            }
+        }
 
         // 하나도 없으면 전체 추가
         if(!check) {
@@ -123,6 +132,7 @@ public class TodoServiceV2 {
                         .coolTime(2)
                         .build();
                 updatedTodoV2List.add(todoV2);
+                todoV2Repository.save(todoV2);
             }
             character.getTodoV2List().addAll(updatedTodoV2List);
         }

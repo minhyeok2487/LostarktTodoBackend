@@ -59,7 +59,7 @@ public class Character extends BaseTimeEntity {
 
     @Embedded WeekTodo weekTodo;
 
-    @OneToMany(mappedBy = "character", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
     private List<Todo> todoList;
 
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
