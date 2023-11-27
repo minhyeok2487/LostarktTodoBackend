@@ -34,7 +34,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     List<Character> findCharacterListServerName(@Param("member") Member member, @Param("serverName") String serverName);
 
     @Query(value = "SELECT DISTINCT c FROM Character c " +
-            "JOIN FETCH c.todoV2List t JOIN FETCH t.weekContent " +
             "JOIN FETCH c.dayTodo.guardian " +
             "JOIN FETCH c.dayTodo.chaos " +
             "WHERE c.member.username = :username AND c.serverName = :serverName")

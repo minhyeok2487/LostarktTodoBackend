@@ -59,10 +59,10 @@ public class Character extends BaseTimeEntity {
 
     @Embedded WeekTodo weekTodo;
 
-    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.REMOVE})
     private List<Todo> todoList;
 
-    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
     private List<TodoV2> todoV2List;
 
     private boolean goldCharacter; //골드 획득 지정 캐릭터

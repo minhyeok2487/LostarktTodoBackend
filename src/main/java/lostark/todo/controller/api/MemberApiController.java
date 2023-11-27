@@ -138,21 +138,24 @@ public class MemberApiController {
         // 비교 : 캐릭터 이름, 아이템레벨, 클래스
         for (Character character : member.getCharacters()) {
             JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
-            if (jsonObject == null) {
+            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+            if (jsonObject == null || itemMaxLevel < 1415.0) {
                 log.info("delete character name : {}", character.getCharacterName());
                 //삭제 리스트에 추가
                 removeList.add(character);
             } else {
                 // 데이터 변경
-                Character newCharacter = Character.builder()
-                        .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
-                        .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
-                        .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
-                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
-                        .dayTodo(new DayTodo().createDayContent(chaos, guardian, Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""))))
-                        .build();
-                characterService.updateCharacter(character, newCharacter);
+                if (itemMaxLevel >= 1415.0) {
+                    Character newCharacter = Character.builder()
+                            .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
+                            .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
+                            .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
+                            .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+                            .itemLevel(itemMaxLevel)
+                            .dayTodo(new DayTodo().createDayContent(chaos, guardian, itemMaxLevel))
+                            .build();
+                    characterService.updateCharacter(character, newCharacter);
+                }
             }
         }
 
@@ -201,6 +204,7 @@ public class MemberApiController {
                 .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
                         .comparingInt(CharacterDto::getSortNumber)
                         .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
+
 
         return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
