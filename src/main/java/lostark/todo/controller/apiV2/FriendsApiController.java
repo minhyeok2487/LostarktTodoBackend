@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterChallengeRequestDto;
+import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
@@ -14,11 +15,9 @@ import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
+import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import lostark.todo.service.CharacterService;
-import lostark.todo.service.FriendsService;
-import lostark.todo.service.MemberService;
-import lostark.todo.service.TodoServiceV2;
+import lostark.todo.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -39,6 +39,7 @@ public class FriendsApiController {
     private final MemberService memberService;
     private final FriendsService friendsService;
     private final TodoServiceV2 todoServiceV2;
+    private final MarketService marketService;
 
     @ApiOperation(value = "캐릭터 검색")
     @GetMapping("/character/{characterName}")
@@ -136,6 +137,27 @@ public class FriendsApiController {
             }
         }
         return ResponseEntity.ok(new CharacterDto().toDtoV2(friendCharacter));
+    }
+
+    @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 휴식게이지 업데이트",
+            response = CharacterDto.class)
+    @PatchMapping("/day-content/gauge")
+    public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,
+                                             @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
+        Character friendCharacter = characterService.findCharacterById(characterDayTodoDto.getCharacterId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean dayContent = friendsService.checkSetting(fromMember, toMember, "dayContent");
+        if(dayContent) {
+            // 재련재료 데이터 리스트로 거래소 데이터 호출
+            Map<String, Market> contentResource = marketService.findContentResource();
+
+            // 휴식게이지 업데이트 후 예상 수익 계산
+            friendCharacter = characterService.updateGauge(friendCharacter, characterDayTodoDto, contentResource);
+        }
+
+        return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "깐부 캐릭터 주간 레이드 check 수정")
