@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterChallengeRequestDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
@@ -169,7 +170,7 @@ public class FriendsApiController {
         Member fromMember = friendCharacter.getMember();
         Member toMember = memberService.findMember(username);
 
-        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "raid");
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
         // all?
         if (weekTodo) {
@@ -193,7 +194,7 @@ public class FriendsApiController {
         Member fromMember = friendCharacter.getMember();
         Member toMember = memberService.findMember(username);
 
-        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "raid");
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
         if(weekTodo) {
             // Check 업데이트
@@ -221,7 +222,7 @@ public class FriendsApiController {
         Member fromMember = friendCharacter.getMember();
         Member toMember = memberService.findMember(username);
 
-        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "raid");
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
         // cubeTicket 업데이트
         if(weekTodo) {
@@ -229,5 +230,29 @@ public class FriendsApiController {
         }
 
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")
+    @PatchMapping("/challenge")
+    public ResponseEntity updateChallenge(@AuthenticationPrincipal String username,
+                                          @RequestBody CharacterChallengeRequestDto characterChallengeRequestDto) {
+
+        Character friendCharacter = characterService.findCharacterById(characterChallengeRequestDto.getCharacterId());
+        Member fromMember = friendCharacter.getMember();
+        Member toMember = memberService.findMember(username);
+
+        boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
+
+        // 도전 어비스, 가디언 업데이트
+        List<Character> characterList = fromMember.getCharacters();
+        if(weekTodo) {
+            characterList = characterService.updateChallenge(
+                    fromMember, characterChallengeRequestDto.getServerName(), characterChallengeRequestDto.getContent());
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+
+        return new ResponseEntity<>(new CharacterDto().toDtoList(characterList), HttpStatus.OK);
     }
 }

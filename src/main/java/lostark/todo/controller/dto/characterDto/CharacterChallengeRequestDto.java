@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CharacterChallengeRequestDto {
 
+    private long characterId;
+
     private String serverName;
 
     private String content;
