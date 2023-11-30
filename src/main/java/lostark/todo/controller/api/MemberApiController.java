@@ -138,12 +138,13 @@ public class MemberApiController {
         // 비교 : 캐릭터 이름, 아이템레벨, 클래스
         for (Character character : member.getCharacters()) {
             JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
-            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
-            if (jsonObject == null || itemMaxLevel < 1415.0) {
+            if (jsonObject == null) {
                 log.info("delete character name : {}", character.getCharacterName());
                 //삭제 리스트에 추가
                 removeList.add(character);
             } else {
+                double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+
                 // 데이터 변경
                 if (itemMaxLevel >= 1415.0) {
                     Character newCharacter = Character.builder()
@@ -155,6 +156,9 @@ public class MemberApiController {
                             .dayTodo(new DayTodo().createDayContent(chaos, guardian, itemMaxLevel))
                             .build();
                     characterService.updateCharacter(character, newCharacter);
+                } else {
+                    //삭제 리스트에 추가
+                    removeList.add(character);
                 }
             }
         }
