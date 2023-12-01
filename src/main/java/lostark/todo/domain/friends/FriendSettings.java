@@ -28,6 +28,8 @@ public class FriendSettings {
 
     private boolean updateRaid;
 
+    private boolean setting;
+
     public FriendSettings() {
         this.showDayTodo = true;
         this.showRaid = true;
@@ -37,6 +39,7 @@ public class FriendSettings {
         this.checkWeekTodo = false;
         this.updateGauge = false;
         this.updateRaid = false;
+        this.setting = false;
     }
 
     public void update(String name, boolean value) {

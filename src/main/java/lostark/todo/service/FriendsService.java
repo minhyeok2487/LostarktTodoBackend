@@ -23,6 +23,10 @@ public class FriendsService {
     private final FriendsRepository friendsRepository;
 
     public void addFriendsRequest(Member toMember, Member fromMember) {
+        Friends friends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
+        if(friends != null) {
+            throw new IllegalStateException("먼저 기존 요청을 삭제하여 주십시오.");
+        }
         Friends toFriends = Friends.builder()
                 .member(toMember)
                 .fromMember(fromMember.getId())
@@ -53,7 +57,7 @@ public class FriendsService {
                 return "깐부 요청 받음";
             }
             else {
-                return "깐부 요청";
+                return "요청 거부";
             }
         }
         return "깐부 요청";
@@ -142,6 +146,9 @@ public class FriendsService {
         }
         if(content.equals("weekTodo")){
             return memberAndFromMember.getFriendSettings().isCheckWeekTodo();
+        }
+        if(content.equals("setting")){
+            return memberAndFromMember.getFriendSettings().isSetting();
         }
         return false;
     }

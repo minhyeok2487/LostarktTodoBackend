@@ -4,20 +4,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterChallengeRequestDto;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
-import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
-import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
 import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.DayTodo;
+import lostark.todo.domain.content.Category;
+import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
+import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,8 +27,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -40,6 +44,16 @@ public class FriendsApiController {
     private final FriendsService friendsService;
     private final TodoServiceV2 todoServiceV2;
     private final MarketService marketService;
+    private final ContentService contentService;
+    private final LostarkCharacterService lostarkCharacterService;
+
+    @ApiOperation(value = "친구 리스트")
+    @GetMapping()
+    public ResponseEntity getFriends(@AuthenticationPrincipal String username) {
+        Member member = memberService.findMember(username);
+        List<FriendsReturnDto> friends = friendsService.findFriends(member);
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
 
     @ApiOperation(value = "캐릭터 검색")
     @GetMapping("/character/{characterName}")
@@ -66,18 +80,10 @@ public class FriendsApiController {
                     dtoList.add(dto);
                 }
             }
-            return new ResponseEntity(dtoList, HttpStatus.OK);
+            return new ResponseEntity<>(dtoList, HttpStatus.OK);
         } else {
             throw new IllegalArgumentException(characterName + "은(는) 등록되지 않은 캐릭터명입니다.");
         }
-    }
-
-    @ApiOperation(value = "친구 리스트")
-    @GetMapping()
-    public ResponseEntity getFriends(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
-        List<FriendsReturnDto> friends = friendsService.findFriends(member);
-        return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
     @ApiOperation(value = "친구 요청")
@@ -254,7 +260,7 @@ public class FriendsApiController {
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")
+    @ApiOperation(value = "깐부 원정대 주간 숙제(도전어비스, 도전가디언) 수정")
     @PatchMapping("/challenge")
     public ResponseEntity updateChallenge(@AuthenticationPrincipal String username,
                                           @RequestBody CharacterChallengeRequestDto characterChallengeRequestDto) {
@@ -276,5 +282,123 @@ public class FriendsApiController {
 
 
         return new ResponseEntity<>(new CharacterDto().toDtoList(characterList), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부의 캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
+    @PatchMapping("/characterList/sorting/{fromUser}")
+    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
+                                     @PathVariable("fromUser") String fromUser,
+                                     @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
+        Member toMember = memberService.findMember(username);
+        Member fromMember = memberService.findMember(fromUser);
+        boolean setting = friendsService.checkSetting(fromMember, toMember, "setting");
+
+        if(setting) {
+            Member member = memberService.updateSort(fromUser, characterSortDtoList);
+
+            List<CharacterDto> characterDtoList = new ArrayList<>();
+            for (Character character : member.getCharacters()) {
+                // Character -> CharacterResponseDto 변경
+                CharacterDto characterDto = new CharacterDto().toDtoV2(character);
+                characterDtoList.add(characterDto);
+            }
+            return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+    }
+
+    @ApiOperation(value = "깐 캐릭터 리스트 업데이트")
+    @PatchMapping("/characterList/{fromUser}")
+    public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username,
+                                              @PathVariable("fromUser") String fromUser) {
+        Member toMember = memberService.findMember(username);
+        Member member = memberService.findMember(fromUser);
+        boolean setting = friendsService.checkSetting(member, toMember, "setting");
+
+        if(setting) {
+            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+
+            List<Character> removeList = new ArrayList<>();
+            // 비교 : 캐릭터 이름, 아이템레벨, 클래스
+            for (Character character : member.getCharacters()) {
+                JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
+                if (jsonObject == null) {
+                    log.info("delete character name : {}", character.getCharacterName());
+                    //삭제 리스트에 추가
+                    removeList.add(character);
+                } else {
+                    double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+
+                    // 데이터 변경
+                    if (itemMaxLevel >= 1415.0) {
+                        Character newCharacter = Character.builder()
+                                .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
+                                .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
+                                .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
+                                .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+                                .itemLevel(itemMaxLevel)
+                                .dayTodo(new DayTodo().createDayContent(chaos, guardian, itemMaxLevel))
+                                .build();
+                        characterService.updateCharacter(character, newCharacter);
+                    } else {
+                        //삭제 리스트에 추가
+                        removeList.add(character);
+                    }
+                }
+            }
+
+            // 삭제
+            if (!removeList.isEmpty()) {
+                for (Character character : removeList) {
+                    characterService.deleteCharacter(member.getCharacters(), character);
+                }
+            }
+
+            // 추가 리스트
+            List<Character> addList = new ArrayList<>();
+            List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
+                    member.getCharacters().get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+            for (Character character : updateCharacterList) {
+                boolean contain = false;
+                for (Character before : member.getCharacters()) {
+                    if (before.getCharacterName().equals(character.getCharacterName())) {
+                        contain = true;
+                        break;
+                    }
+                }
+                if (!contain) {
+                    addList.add(character);
+                }
+            }
+
+            //추가 하면서 캐릭터 닉네임 변경감지
+            if (!addList.isEmpty()) {
+                characterService.addCharacterList(addList, removeList, member);
+            }
+
+            // 재련재료 데이터 리스트로 거래소 데이터 호출
+            Map<String, Market> contentResource = marketService.findContentResource();
+
+            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+            List<Character> calculatedCharacterList = new ArrayList<>();
+            for (Character character : member.getCharacters()) {
+                Character result = characterService.calculateDayTodo(character, contentResource);
+                calculatedCharacterList.add(result);
+            }
+
+            // 결과
+            List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                    .filter(character -> character.getSettings().isShowCharacter())
+                    .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
+                            .comparingInt(CharacterDto::getSortNumber)
+                            .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
+
+
+            return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
     }
 }

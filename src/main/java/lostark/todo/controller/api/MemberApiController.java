@@ -15,12 +15,10 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.logs.Logs;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import lostark.todo.service.CharacterService;
-import lostark.todo.service.ContentService;
-import lostark.todo.service.MarketService;
-import lostark.todo.service.MemberService;
+import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkApiService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.json.simple.JSONObject;
@@ -50,6 +48,7 @@ public class MemberApiController {
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
     private final LostarkApiService lostarkApiService;
+    private final LogsService logsService;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
 
     @GetMapping()
@@ -120,6 +119,11 @@ public class MemberApiController {
                 .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
                         .comparingInt(CharacterDto::getSortNumber)
                         .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
+        Logs build = Logs.builder()
+                .memberId(characterList.get(0).getMember().getId())
+                .message(username+" 접속")
+                .build();
+        logsService.save(build);
         return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
     }
 
