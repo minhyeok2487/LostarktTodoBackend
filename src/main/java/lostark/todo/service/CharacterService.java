@@ -394,4 +394,5 @@ public class CharacterService {
     public Character findCharacterById(long characterId) {
         return characterRepository.findById(characterId).orElseThrow(() -> new IllegalArgumentException("캐릭터 id 에러"));
     }
+
 }
