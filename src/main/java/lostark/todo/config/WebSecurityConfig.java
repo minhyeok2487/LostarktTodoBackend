@@ -49,7 +49,8 @@ public class WebSecurityConfig {
             "/swagger-ui.html",
             "/webjars/**",
             "/auth/**", "/oauth2/**",
-            "/css/**", "js/**", "/"
+            "/css/**", "js/**", "/",
+            "/v2/boards/**",
     };
 
 

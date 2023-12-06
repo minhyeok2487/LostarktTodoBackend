@@ -18,7 +18,6 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Getter
 @Setter
 @Table(name = "characters")
-@Audited(withModifiedFlag = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

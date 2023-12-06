@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 @Builder
 @Entity
 @ToString
-@Audited
+
 public class Friends extends BaseTimeEntity {
 
     @Id

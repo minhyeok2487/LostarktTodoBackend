@@ -15,7 +15,7 @@ import java.util.List;
 @SuperBuilder
 @Entity
 @ToString
-@Audited
+
 public class WeekContent extends Content{
 
     private String weekCategory; //카테고리 : 발탄, 비아키스

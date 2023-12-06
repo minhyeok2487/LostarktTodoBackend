@@ -15,7 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Audited
+
 public class TodoV2 extends BaseTimeEntity {
 
     @Id

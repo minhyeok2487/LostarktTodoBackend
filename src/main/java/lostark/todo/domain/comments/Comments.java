@@ -16,7 +16,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Audited
 public class Comments extends BaseTimeEntity {
 
     @Id
