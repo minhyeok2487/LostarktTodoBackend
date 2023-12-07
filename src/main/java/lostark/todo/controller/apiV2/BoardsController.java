@@ -31,7 +31,7 @@ public class BoardsController {
 
     @ApiOperation(value = "메인 공지 + 게시판 전체글 10개씩 가져오기")
     @GetMapping("")
-    public ResponseEntity<?> getAllNotNotice(@RequestParam(value="page", defaultValue="1") int page) {
+    public ResponseEntity<?> getAllNotNotice(@RequestParam(value="page") int page) {
         Page<Boards> all = boardsService.findAll(page-1);
         List<BoardDto> boardDtoList = all
                 .stream().map(board -> new BoardDto().toDto(board))

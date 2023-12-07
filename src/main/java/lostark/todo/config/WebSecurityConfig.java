@@ -50,7 +50,7 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/auth/**", "/oauth2/**",
             "/css/**", "js/**", "/",
-            "/v2/boards/**",
+            "/v2/boards"
     };
 
 

@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,10 +32,18 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
+    private static final List<String> AUTH_WHITELIST = Arrays.asList(
+            "/v2/boards"
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            // 특정 경로 로그인 없이 사용가능하게
+            if (isPathInAuthWhitelist(request)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             // 요청에서 토큰 가져오기
             String token = parseBearerToken(request);
 
@@ -68,5 +77,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    // 경로 확인
+    private boolean isPathInAuthWhitelist(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return AUTH_WHITELIST.stream().anyMatch(path::matches);
     }
 }
