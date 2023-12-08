@@ -25,7 +25,6 @@ import java.util.Map;
 @Transactional
 @Slf4j
 public class SchedulerService {
-
     private final LostarkMarketService lostarkMarketService;
     private final MarketService marketService;
     private final TodoV2Repository todoV2Repository;

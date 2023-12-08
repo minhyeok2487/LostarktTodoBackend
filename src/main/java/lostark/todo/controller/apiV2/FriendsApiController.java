@@ -308,12 +308,12 @@ public class FriendsApiController {
         }
     }
 
-    @ApiOperation(value = "깐 캐릭터 리스트 업데이트")
-    @PatchMapping("/characterList/{fromUser}")
+    @ApiOperation(value = "깐부 캐릭터 리스트 업데이트")
+    @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username,
-                                              @PathVariable("fromUser") String fromUser) {
+                                              @RequestBody FriendsReturnDto dto) {
         Member toMember = memberService.findMember(username);
-        Member member = memberService.findMember(fromUser);
+        Member member = memberService.findMember(dto.getFriendUsername());
         boolean setting = friendsService.checkSetting(member, toMember, "setting");
 
         if(setting) {

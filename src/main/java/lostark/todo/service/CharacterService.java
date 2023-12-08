@@ -10,6 +10,9 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -395,4 +398,11 @@ public class CharacterService {
         return characterRepository.findById(characterId).orElseThrow(() -> new IllegalArgumentException("캐릭터 id 에러"));
     }
 
+    public void updateImage(Character character, String characterimageUrl) {
+        character.updateImageUrl(characterimageUrl);
+    }
+
+    public Page<Character> findAll100(int page) {
+        return characterRepository.findAll(PageRequest.of(page, 100));
+    }
 }

@@ -172,4 +172,8 @@ public class Character extends BaseTimeEntity {
         this.getWeekTodo().setWeekEpona(0); //주간에포나
         this.getWeekTodo().setSilmaelChange(false); //실마엘 혈석교환
     }
+
+    public void updateImageUrl(String characterimageUrl) {
+        this.characterImage = characterimageUrl;
+    }
 }
