@@ -10,7 +10,7 @@ import java.util.List;
 public interface BoardsRepository extends JpaRepository<Boards, Long> {
 
     @Query("SELECT b FROM Boards b WHERE b.isNotice = false ORDER BY b.createdDate DESC")
-    Page<Boards> findAllIsNoticeForce(Pageable pageable);
+    Page<Boards> findAllByNoticeFalse(Pageable pageable);
 
     @Query("SELECT b FROM Boards b WHERE b.isNotice = true ORDER BY b.createdDate DESC")
     List<Boards> findAllByNoticeIsTrue();

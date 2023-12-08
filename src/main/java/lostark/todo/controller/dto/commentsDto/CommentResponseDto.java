@@ -24,7 +24,7 @@ public class CommentResponseDto {
 
     private long parentId;
 
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime regDate;
 
     private long memberId;
 
@@ -33,7 +33,7 @@ public class CommentResponseDto {
     public CommentResponseDto createResponseDto(Comments comments) {
         return CommentResponseDto.builder()
                 .id(comments.getId())
-                .lastModifiedDate(comments.getLastModifiedDate())
+                .regDate(comments.getCreatedDate())
                 .body(comments.getBody())
                 .username(comments.getMember().getUsername())
                 .parentId(comments.getParentId())

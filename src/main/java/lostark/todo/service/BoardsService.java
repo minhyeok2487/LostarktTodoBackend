@@ -20,7 +20,7 @@ public class BoardsService {
     private final BoardsRepository boardsRepository;
 
     public Page<Boards> findAll(int page) {
-        return boardsRepository.findAllIsNoticeForce(PageRequest.of(page, 10));
+        return boardsRepository.findAllByNoticeFalse(PageRequest.of(page, 10));
     }
 
     public Boards find(long no) {

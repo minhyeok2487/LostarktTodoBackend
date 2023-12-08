@@ -4,16 +4,21 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.commentsDto.CommentListDto;
 import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
+import lostark.todo.domain.Role;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +34,32 @@ public class CommentsApiController {
 
     @ApiOperation(value = "전체 Comments 불러오기")
     @GetMapping()
-    public ResponseEntity findComments(@AuthenticationPrincipal String username) {
-        List<Comments> allComments = commentsService.findAll();
-        List<CommentResponseDto> commentResponseDtoList = allComments.stream()
-                .map(comments -> new CommentResponseDto().createResponseDto(comments))
-                .collect(Collectors.toList());
-        return new ResponseEntity(commentResponseDtoList, HttpStatus.OK);
+    public ResponseEntity<?> findComments(@AuthenticationPrincipal String username, @RequestParam(value="page") int page) {
+        Page<Comments> allComments = commentsService.findAllByParentIdIs0(page-1);
+        int totalPages = allComments.getTotalPages();
+
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        for (Comments comment : allComments.getContent()) {
+            List<Comments> commentList = commentsService.findAllByParentId(comment.getId());
+            commentResponseDtoList.add(new CommentResponseDto().createResponseDto(comment));
+            if(!commentList.isEmpty()) {
+                for (Comments reply : commentList) {
+                    commentResponseDtoList.add(new CommentResponseDto().createResponseDto(reply));
+                }
+            }
+        }
+
+        Member member = memberService.findMember(username);
+        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
+        if (member.getRole().equals(Role.ADMIN)) {
+            memberResponseDto.setUsername("관리자");
+        }
+        return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages, memberResponseDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 저장")
     @PostMapping()
-    public ResponseEntity saveComments(@AuthenticationPrincipal String username,
+    public ResponseEntity<?> saveComments(@AuthenticationPrincipal String username,
                                        @RequestBody CommentRequestDto commentRequestDto) {
         Member member = memberService.findMember(username);
         Comments updateComments = Comments.builder()
@@ -47,13 +67,28 @@ public class CommentsApiController {
                 .member(member)
                 .parentId(commentRequestDto.getParentId())
                 .build();
-        commentsService.save(updateComments); //저장
+        commentsService.save(updateComments);
 
-        List<Comments> allComments = commentsService.findAll();
-        List<CommentResponseDto> commentResponseDtoList = allComments.stream()
-                .map(comments -> new CommentResponseDto().createResponseDto(comments))
-                .collect(Collectors.toList());
-        return new ResponseEntity( commentResponseDtoList, HttpStatus.OK);
+        Page<Comments> allComments = commentsService.findAllByParentIdIs0(0);
+        int totalPages = allComments.getTotalPages();
+
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        for (Comments comment : allComments.getContent()) {
+            List<Comments> commentList = commentsService.findAllByParentId(comment.getId());
+            commentResponseDtoList.add(new CommentResponseDto().createResponseDto(comment));
+            if(!commentList.isEmpty()) {
+                for (Comments reply : commentList) {
+                    commentResponseDtoList.add(new CommentResponseDto().createResponseDto(reply));
+                }
+            }
+        }
+
+        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
+        if (member.getRole().equals(Role.ADMIN)) {
+            memberResponseDto.setUsername("관리자");
+        }
+
+        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages, memberResponseDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 수정")

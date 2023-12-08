@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.comments.CommentsRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,15 @@ import java.util.List;
 public class CommentsService {
 
     private final CommentsRepository commentsRepository;
+
+    public Page<Comments> findAllByParentIdIs0(int page) {
+        return commentsRepository.findAllByParentIdIs0(PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
+    }
+
+    public List<Comments> findAllByParentId(long id) {
+        return commentsRepository.findAllByParentId(id);
+    }
+
 
     public List<Comments> findAll() {
             return commentsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
