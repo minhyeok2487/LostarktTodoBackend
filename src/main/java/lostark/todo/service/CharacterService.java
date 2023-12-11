@@ -405,4 +405,5 @@ public class CharacterService {
     public Page<Character> findAll100(int page) {
         return characterRepository.findAll(PageRequest.of(page, 100));
     }
+
 }

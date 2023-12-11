@@ -47,7 +47,7 @@ public class CharacterApiControllerV2 {
         // username -> member 조회
         Member member = memberService.findMember(username);
 
-        // 도전 어비스, 가디언 업데이
+        // 도전 어비스, 가디언 업데이트
         List<Character> characterList = characterService.updateChallenge(
                 member, characterChallengeRequestDto.getServerName(), characterChallengeRequestDto.getContent());
 
