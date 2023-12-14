@@ -39,7 +39,7 @@ public class MemberApiControllerV2 {
     public ResponseEntity<?> findCharacterList(@AuthenticationPrincipal String username) {
 
         // username -> characterList 조회
-        List<Character> characterList = memberService.findMember(username).getCharacters();
+        List<Character> characterList = characterService.findCharacterListUsername(username);
 
         // 결과
         Map<String, List<CharacterDto>> characterDtoMap = characterList.stream()

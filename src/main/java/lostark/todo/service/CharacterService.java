@@ -406,4 +406,11 @@ public class CharacterService {
         return characterRepository.findAll(PageRequest.of(page, 100));
     }
 
+    public List<Character> findCharacterListUsername(String username) {
+        List<Character> characterList = characterRepository.findAllByUsername(username);
+        if(characterList.isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
+        return characterList;
+    }
 }

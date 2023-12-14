@@ -81,4 +81,7 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 
     @Query(value = "SELECT c.serverName, COUNT(c.id) FROM Character c WHERE c.member.username = :username GROUP BY c.serverName")
     List<Object[]> findCountGroupByServerName(@Param("username") String username);
+
+    @Query(value = "SELECT c FROM Character c WHERE c.member.username = :username ")
+    List<Character> findAllByUsername(String username);
 }
