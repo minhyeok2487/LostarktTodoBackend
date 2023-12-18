@@ -13,9 +13,9 @@ public class ErrorResponse {
 
     private int errorCode;
     private String exceptionName;
-    private List<String> errorMessage;
+    private String errorMessage;
 
-    public static ErrorResponse of(int errorCode, String exceptionName, List<String> errorMessage) {
+    public static ErrorResponse of(int errorCode, String exceptionName, String errorMessage) {
         return new ErrorResponse(errorCode, exceptionName, errorMessage);
     }
 }
