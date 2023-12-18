@@ -1,24 +1,11 @@
 package lostark.todo.controller.apiV2;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.boardsDto.BoardDto;
-import lostark.todo.controller.dto.boardsDto.BoardListDto;
-import lostark.todo.controller.dto.commentsDto.CommentListDto;
-import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
-import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.comments.Comments;
 import lostark.todo.service.CommentsService;
 import lostark.todo.service.MemberService;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

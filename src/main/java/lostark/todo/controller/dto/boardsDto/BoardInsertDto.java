@@ -1,20 +1,21 @@
 package lostark.todo.controller.dto.boardsDto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardListDto {
+public class BoardInsertDto {
 
-    private List<BoardResponseDto> boardResponseDtoList;
-    private int totalPages;
+    @ApiModelProperty(notes = "제목")
+    private String title;
 
-    private List<BoardResponseDto> noticeList;
+    @ApiModelProperty(notes = "내용")
+    private String content;
+
 }

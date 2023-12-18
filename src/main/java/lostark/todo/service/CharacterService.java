@@ -90,8 +90,8 @@ public class CharacterService {
         } else {
             price = price*2;
         }
-
         price = Math.round(price * 100.0) / 100.0;
+        character.getDayTodo().setChaosGold(price);
         return price;
     }
 
@@ -107,6 +107,7 @@ public class CharacterService {
         }
 
         price = Math.round(price * 100.0) / 100.0;
+        character.getDayTodo().setGuardianGold(price);
         return price;
     }
 

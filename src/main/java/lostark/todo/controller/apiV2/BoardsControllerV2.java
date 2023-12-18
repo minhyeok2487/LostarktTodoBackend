@@ -1,10 +1,12 @@
 package lostark.todo.controller.apiV2;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.boardsDto.BoardDto;
+import lostark.todo.controller.dto.boardsDto.BoardResponseDto;
 import lostark.todo.controller.dto.boardsDto.BoardListDto;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
@@ -24,42 +26,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/v2/boards")
 @Api(tags = {"공지사항 (게시판) api"})
-public class BoardsController {
+public class BoardsControllerV2 {
 
     private final MemberService memberService;
     private final BoardsService boardsService;
 
-    @ApiOperation(value = "메인 공지 + 게시판 전체글 10개씩 가져오기")
+    @ApiOperation(value = "메인 공지 + 게시판 전체글 10개씩 가져오기", response = BoardListDto.class)
     @GetMapping("")
     public ResponseEntity<?> getAllNotNotice(@RequestParam(value="page") int page) {
-        Page<Boards> all = boardsService.findAll(page-1);
-        List<BoardDto> boardDtoList = all
-                .stream().map(board -> new BoardDto().toDto(board))
+        Page<Boards> all = boardsService.findAllByNoticeFalse(page-1);
+        List<BoardResponseDto> boardResponseDtoList = all
+                .stream().map(board -> new BoardResponseDto().toDto(board))
                 .collect(Collectors.toList());
         int totalPages = all.getTotalPages();
 
-        List<BoardDto> noticeList = boardsService.findAllByNoticeIsTrue()
-                .stream().map(board -> new BoardDto().toDto(board))
+        List<BoardResponseDto> noticeList = boardsService.findAllByNoticeIsTrue()
+                .stream().map(board -> new BoardResponseDto().toDto(board))
                 .collect(Collectors.toList());
 
-        BoardListDto response = new BoardListDto(boardDtoList, totalPages, noticeList);
+        BoardListDto response = new BoardListDto(boardResponseDtoList, totalPages, noticeList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "글 하나 가져오기")
+    @ApiOperation(value = "글 하나 가져오기", response = BoardResponseDto.class)
     @GetMapping("/{no}")
     public ResponseEntity<?> get(@PathVariable long no) {
-        return new ResponseEntity<>(new BoardDto().toDto(boardsService.find(no)), HttpStatus.OK);
+        return new ResponseEntity<>(new BoardResponseDto().toDto(boardsService.findById(no)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시글 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "JWT Bearer 토큰", required = true,
+                    dataTypeClass = String.class, paramType = "header")
+    })
     @PostMapping()
     public ResponseEntity<?> save(@AuthenticationPrincipal String username,
-                                  @RequestBody BoardDto boardDto) {
+                                  @RequestBody BoardResponseDto boardResponseDto) {
         Member member = memberService.findMember(username);
 
-        Boards save = boardsService.save(new BoardDto().toEntityDefault(boardDto, member));
+        Boards save = boardsService.save(new BoardResponseDto().toEntityDefault(boardResponseDto, member));
 
-        return new ResponseEntity<>(new BoardDto().toDto(save), HttpStatus.CREATED);
+        return new ResponseEntity<>(new BoardResponseDto().toDto(save), HttpStatus.CREATED);
     }
 }

@@ -37,7 +37,7 @@ public class SwaggerConfiguration {
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
                 .title(title)
-                .description("로스트아크 숙제 체크 REST API")
+//                .description("로스트아크 일정 관리 REST API")
                 .version(version)
                 .build();
     }
@@ -48,7 +48,7 @@ public class SwaggerConfiguration {
     @Bean
     public Docket userApi() {
         version = "user";
-        title = "로스트아크 숙제 체크 API";
+        title = "로스트아크 일정 관리 REST API";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
@@ -64,9 +64,9 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket adminApi() {
-        version = "admin";
-        title = "로스트아크 숙제 체크 API";
+    public Docket v3() {
+        version = "v3";
+        title = "로스트아크 일정 관리 REST API";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
@@ -74,8 +74,8 @@ public class SwaggerConfiguration {
                 .groupName(version)
                 .apiInfo(apiInfo(title, version))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.admin"))
-                .paths(PathSelectors.ant("/**"))
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV3"))
+                .paths(PathSelectors.ant("/v3/**"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));

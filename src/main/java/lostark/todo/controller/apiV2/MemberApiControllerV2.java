@@ -1,10 +1,13 @@
 package lostark.todo.controller.apiV2;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkApiService;
@@ -22,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/v2/member")
-@Api(tags = {"회원 API"})
+@Api(tags = {"회원 API V2"})
 public class MemberApiControllerV2 {
 
     private final CharacterService characterService;
@@ -34,7 +37,13 @@ public class MemberApiControllerV2 {
     private final LogsService logsService;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
 
-    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리(Map)")
+    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리(Map)",
+            notes = "key = 서버 이름, value = 캐릭터 리스트",
+            response = Map.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "JWT Bearer 토큰", required = true,
+                    dataTypeClass = String.class, paramType = "header")
+    })
     @GetMapping("/characterList")
     public ResponseEntity<?> findCharacterList(@AuthenticationPrincipal String username) {
 

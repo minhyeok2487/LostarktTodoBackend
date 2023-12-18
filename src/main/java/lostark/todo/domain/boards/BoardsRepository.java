@@ -12,6 +12,10 @@ public interface BoardsRepository extends JpaRepository<Boards, Long> {
     @Query("SELECT b FROM Boards b WHERE b.isNotice = false ORDER BY b.createdDate DESC")
     Page<Boards> findAllByNoticeFalse(Pageable pageable);
 
+    @Query("SELECT b FROM Boards b ORDER BY b.createdDate DESC")
+    Page<Boards> findAll(Pageable pageable);
+
     @Query("SELECT b FROM Boards b WHERE b.isNotice = true ORDER BY b.createdDate DESC")
     List<Boards> findAllByNoticeIsTrue();
+
 }

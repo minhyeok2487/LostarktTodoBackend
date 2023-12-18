@@ -1,6 +1,8 @@
 package lostark.todo.controller.apiV2.characterApi;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +42,12 @@ public class CharacterApiControllerV2 {
         return new ResponseEntity<>(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정")
+    @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정",
+            response = CharacterDto.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "JWT Bearer 토큰", required = true,
+                    dataTypeClass = String.class, paramType = "header")
+    })
     @PatchMapping("/challenge")
     public ResponseEntity updateChallenge(@AuthenticationPrincipal String username,
                                           @RequestBody CharacterChallengeRequestDto characterChallengeRequestDto) {

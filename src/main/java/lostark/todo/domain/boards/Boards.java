@@ -39,4 +39,22 @@ public class Boards extends BaseTimeEntity {
     private boolean isNotice;
 
     private int views;
+
+    @Override
+    public String toString() {
+        return "Boards{" +
+                "id=" + id +
+                ", member=" + member.getUsername() +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", isNotice=" + isNotice +
+                ", views=" + views +
+                '}';
+    }
+
+    public Boards update(String title, String content) {
+        this.title = title;
+        this.content = content;
+        return this;
+    }
 }
