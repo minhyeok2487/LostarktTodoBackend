@@ -107,4 +107,21 @@ public class BoardsController {
             throw new CustomIllegalArgumentException("사이트 공지사항 수정 에러", "권한이 없습니다.", member);
         }
     }
+
+    @ApiOperation(value = "사이트 공지사항 삭제",
+            notes = "어드민 권한 필요",
+            response = BoardResponseDto.class)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal String username, @PathVariable long id) {
+        Member member = memberService.findMember(username);
+
+        if (member.getRole().equals(Role.ADMIN)) {
+            boardsService.delete(id);
+            log.info("사이트 공지사항을 성공적으로 삭제하였습니다. Id: {}, 수정자 : {}", id, username);
+            return new ResponseEntity<>("ok", HttpStatus.OK);
+        } else {
+            throw new CustomIllegalArgumentException("사이트 공지사항 수정 에러", "권한이 없습니다.", member);
+        }
+    }
+
 }

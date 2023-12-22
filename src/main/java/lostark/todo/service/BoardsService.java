@@ -45,4 +45,8 @@ public class BoardsService {
         Boards boards = findById(boardUpdateDto.getId());
         return boards.update(boardUpdateDto.getTitle(), boardUpdateDto.getContent());
     }
+
+    public void delete(long id) {
+        boardsRepository.delete(findById(id));
+    }
 }

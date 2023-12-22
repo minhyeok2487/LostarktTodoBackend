@@ -227,4 +227,32 @@ class BoardsControllerTest {
         assertThat(update.getTitle()).isNotEqualTo(beforeTitle);
         assertThat(update.getContent()).isNotEqualTo(beforeContent);
     }
+
+    /*사이트 공지사항 삭제 Method*/
+    public void delete(String username,long id) {
+        Member member = memberService.findMember(username);
+
+        if (member.getRole().equals(Role.ADMIN)) {
+            boardsService.delete(id);
+            log.info("사이트 공지사항을 성공적으로 삭제하였습니다. Id: {}, 수정자 : {}", id, username);
+        } else {
+            throw new CustomIllegalArgumentException("사이트 공지사항 수정 에러", "권한이 없습니다.", member);
+        }
+    }
+
+    @Test
+    @DisplayName("사이트 공지사항 삭제 테스트")
+    void deleteTest() {
+        //given
+        long id = 3L;
+        String username = "repeat2487@gmail.com";
+
+        //when
+        delete(username, id);
+
+        //then
+        assertThrows(IllegalArgumentException.class, () -> {
+            boardsService.findById(3L);
+        });
+    }
 }
