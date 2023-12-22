@@ -9,13 +9,18 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
+import lostark.todo.domain.notices.Notices;
 import lostark.todo.domain.todoV2.TodoV2Repository;
+import lostark.todo.service.discordWebHook.DiscordWebhook;
 import lostark.todo.service.lostarkApi.LostarkMarketService;
+import lostark.todo.service.lostarkApi.LostarkNewsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +35,15 @@ public class SchedulerService {
     private final TodoV2Repository todoV2Repository;
     private final CharacterRepository characterRepository;
     private final ContentRepository contentRepository;
+    private final LostarkNewsService newsService;
+    private final NoticesService noticesService;
+    private final WebHookService webHookService;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
+
+    @Value("${API-KEY3}")
+    public String apiKey3;
 
     /**
      * 매일 오전 0시 거래소 데이터 갱신
@@ -116,5 +127,21 @@ public class SchedulerService {
         log.info("todoV2Repository.resetTodoV2() = {}", todoV2Repository.resetTodoV2()); // 주간 레이드 초기화
 
         log.info("updateWeekContent = {}", characterRepository.updateWeekContent()); // 주간 숙제 초기화
+    }
+
+
+    /*로스트아크 새로운 공지사항 가져와서 저장 (매 정각에 자동 실행)*/
+    @Scheduled(cron = "10 0 * * * *")
+    public void getLostarkNotice() {
+        List<Notices> noticesList = newsService.getNoticeList(apiKey3);
+        for (Notices notices : noticesList) {
+            if (noticesService.save(notices)) {
+                webHookService.sendMessage(new DiscordWebhook.EmbedObject()
+                        .setTitle("새로운 로스트아크 공지사항이 저장되었습니다.")
+                        .addField("제목", notices.getTitle(), true)
+                        .addField("링크", notices.getLink(), false)
+                        .setColor(Color.GREEN));
+            }
+        }
     }
 }
