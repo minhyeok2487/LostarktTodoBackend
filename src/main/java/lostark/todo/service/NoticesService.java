@@ -2,8 +2,11 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.notices.NoticesRepository;
 import lostark.todo.domain.notices.Notices;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,5 +37,9 @@ public class NoticesService {
         }
         String[] parts = notice.getLink().split("/");
         return parts[parts.length - 1];
+    }
+
+    public Page<Notices> findAll(int page, int size) {
+        return noticesRepository.findAll(PageRequest.of(page, size));
     }
 }
