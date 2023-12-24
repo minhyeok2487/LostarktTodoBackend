@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
+import lostark.todo.domain.member.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -33,13 +34,16 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
     log.info("auth succeeded");
+    ApplicationOAuth2User userPrincipal = (ApplicationOAuth2User) authentication.getPrincipal();
+    String username = userPrincipal.getName();
+
     String key = keyValueRepository.findByKeyName("JWT-KEY");
     TokenProvider tokenProvider = new TokenProvider();
     String token = tokenProvider.createToken(authentication,key);
 
     Optional<Cookie> oCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(REDIRECT_URI_PARAM)).findFirst();
     Optional<String> redirectUri = oCookie.map(Cookie::getValue);
-    response.sendRedirect(redirectUri.orElseGet(() -> LOCAL_REDIRECT_URL)+"/sociallogin?token="+token);
+    response.sendRedirect(redirectUri.orElseGet(() -> LOCAL_REDIRECT_URL)+"/sociallogin?token="+token+"&username="+username);
   }
 
 }
