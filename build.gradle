@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.13'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id "com.gorylenko.gradle-git-properties" version '2.4.1'
 }
 
 group = 'lostark'
@@ -37,6 +38,9 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	//json
 	implementation 'org.jsoup:jsoup:1.15.3'
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
@@ -53,6 +57,12 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.32'
 
 	implementation 'org.springframework.data:spring-data-envers'
+
+	// email 인증
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 task release {
@@ -79,4 +89,8 @@ task release {
 
 test {
 	useJUnitPlatform()
+}
+
+springBoot {
+	buildInfo()
 }

@@ -27,4 +27,7 @@ public class OtherConfig {
     AuditReader auditReader() {
         return AuditReaderFactory.get(entityManagerFactory.createEntityManager());
     }
+
+
+
 }
