@@ -30,7 +30,7 @@ public class MailController {
         return new ResponseEntity<>("인증번호 전송이 정상처리 되었습니다.", HttpStatus.OK);
     }
 
-    @ApiOperation(value = "이메일 인증번호 체크",
+    @ApiOperation(value = "이메일 인증번호 인증",
             notes = "3분이내 인증번호가 일치해야 true 리턴",
             response = AuthResponseDto.class)
     @PostMapping("/auth")
