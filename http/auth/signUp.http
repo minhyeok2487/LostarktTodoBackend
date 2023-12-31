@@ -1,0 +1,27 @@
+### 1. 회원가입전 이메일 인증번호 전송
+POST http://localhost:5000/v3/mail
+Content-Type: application/json
+
+{
+  "mail" : "repeater2487@naver.com"
+}
+
+### 2. 회원가입전 이메일 인증번호 인증
+POST http://localhost:5000/v3/mail/auth
+Content-Type: application/json
+
+{
+  "mail":"repeater2487@naver.com",
+  "number":113376
+}
+
+### 3. 1차 회원가입
+POST http://localhost:5000/v3/auth/signup
+Content-Type: application/json
+
+{
+  "mail":"repeater2487@naver.com",
+  "number":113376,
+  "password": "123456",
+  "equalPassword": "123456"
+}

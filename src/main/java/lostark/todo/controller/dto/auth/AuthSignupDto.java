@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +19,7 @@ public class AuthSignupDto {
     @ApiModelProperty(example = "회원 이메일")
     private String mail;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(example = "이메일 인증번호")
     private int number;
 

@@ -5,10 +5,9 @@ import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.controller.dto.mailDto.MailRequestDto;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.redis.Mail;
-import lostark.todo.domain.redis.RedisRepository;
+import lostark.todo.domain.redis.MailRepository;
 import lostark.todo.exhandler.exceptions.CustomIllegalArgumentException;
 import lostark.todo.service.MailService;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +24,7 @@ public class MailControllerV3Test {
     MailService mailService;
 
     @Autowired
-    RedisRepository repository;
+    MailRepository repository;
 
     /*메일 전송 메소드*/
     public int sendMail(MailRequestDto mailRequestDto) {
@@ -64,6 +63,7 @@ public class MailControllerV3Test {
                     "인증번호가 일치하지 않습니다.", tempMember);
         }
     }
+
 
 //    @Test
 //    @DisplayName("메일 인증번호 체크 테스트")

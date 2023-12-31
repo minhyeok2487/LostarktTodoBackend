@@ -60,6 +60,7 @@ public class MemberService {
                 .username(mail)
                 .password(passwordEncoder.encode(password))
                 .characters(new ArrayList<>())
+                .authProvider("none")
                 .role(Role.USER)
                 .build();
 

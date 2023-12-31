@@ -7,16 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.auth.AuthResponseDto;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.controller.dto.mailDto.MailRequestDto;
-import lostark.todo.domain.redis.Mail;
-import lostark.todo.domain.redis.RedisRepository;
 import lostark.todo.service.MailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -26,7 +20,6 @@ import java.util.List;
 public class MailController {
 
     private final MailService mailService;
-    private final RedisRepository repository;
 
     @ApiOperation(value = "이메일 인증번호 전송",
             response = Integer.class)
@@ -42,14 +35,7 @@ public class MailController {
             response = AuthResponseDto.class)
     @PostMapping("/auth")
     public ResponseEntity<?> authMail(@RequestBody MailCheckDto mailCheckDto) {
-        boolean auth = false;
-        List<Mail> allByMail = repository.findAllByMail(mailCheckDto.getMail());
-        for (Mail mail : allByMail) {
-            if (mail.getNumber() == mailCheckDto.getNumber() && Duration.between(mail.getRegDate(), LocalDateTime.now()).toMinutes() <= 3) {
-                auth = true;
-                mail.setCheck(true); //안됨
-            }
-        }
+        boolean auth = mailService.checkMail(mailCheckDto);
         if (auth) {
             log.info("이메일 인증번호 성공, email={}", mailCheckDto.getMail());
             return new ResponseEntity<>(new AuthResponseDto(true, "이메일 인증번호 성공"), HttpStatus.OK);
