@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "email", timeToLive = 360)
+@RedisHash(value = "email", timeToLive = 3600)
 public class Mail {
 
     @Id
@@ -21,11 +21,14 @@ public class Mail {
 
     private Integer number;
 
+    private boolean check;
+
     private LocalDateTime regDate;
 
     public Mail(String mail, int number) {
         this.mail = mail;
         this.number = number;
+        this.check = false;
         this.regDate = LocalDateTime.now();
     }
 }

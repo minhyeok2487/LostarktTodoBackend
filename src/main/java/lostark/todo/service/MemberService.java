@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
+import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.friends.Friends;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
      * ApiKey가 있는 회원 리스트
@@ -44,6 +46,24 @@ public class MemberService {
     public Member findMember(long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다"));
+    }
+
+    /**
+     * 1차 회원가입
+     */
+    public Member createMember(String mail, String password) {
+        if (memberRepository.existsByUsername(mail)) {
+            throw new IllegalArgumentException(mail + " 이미 존재하는 이메일 입니다.");
+        }
+
+        Member member = Member.builder()
+                .username(mail)
+                .password(passwordEncoder.encode(password))
+                .characters(new ArrayList<>())
+                .role(Role.USER)
+                .build();
+
+        return memberRepository.save(member);
     }
 
     /**

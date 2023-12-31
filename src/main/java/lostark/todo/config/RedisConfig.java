@@ -28,8 +28,10 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
 
+        // Redis 연결 팩토리 설정
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
+        // 직렬화
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
 

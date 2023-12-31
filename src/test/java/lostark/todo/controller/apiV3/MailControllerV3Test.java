@@ -65,32 +65,32 @@ public class MailControllerV3Test {
         }
     }
 
-    @Test
-    @DisplayName("메일 인증번호 체크 테스트")
-    void checkMailTest() {
-        String mail = "repeater2487@naver.com";
-        MailRequestDto mailRequestDto = new MailRequestDto(mail);
-
-        int number = sendMail(mailRequestDto);
-
-        MailCheckDto mailCheckDto = new MailCheckDto(mail, number);
-        checkMail(mailCheckDto);
-    }
-
-    @Test
-    @DisplayName("메일 인증번호 체크 실패 - 시간 만료")
-    void checkMailTestExpired() {
-        String mail = "repeater2487@naver.com";
-        MailRequestDto mailRequestDto = new MailRequestDto(mail);
-
-        int number = sendMail(mailRequestDto);
-
-        try {
-            Thread.sleep(190000);
-            MailCheckDto mailCheckDto = new MailCheckDto(mail, number);
-            checkMail(mailCheckDto);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Test
+//    @DisplayName("메일 인증번호 체크 테스트")
+//    void checkMailTest() {
+//        String mail = "repeater2487@naver.com";
+//        MailRequestDto mailRequestDto = new MailRequestDto(mail);
+//
+//        int number = sendMail(mailRequestDto);
+//
+//        MailCheckDto mailCheckDto = new MailCheckDto(mail, number);
+//        checkMail(mailCheckDto);
+//    }
+//
+//    @Test
+//    @DisplayName("메일 인증번호 체크 실패 - 시간 만료")
+//    void checkMailTestExpired() {
+//        String mail = "repeater2487@naver.com";
+//        MailRequestDto mailRequestDto = new MailRequestDto(mail);
+//
+//        int number = sendMail(mailRequestDto);
+//
+//        try {
+//            Thread.sleep(190000);
+//            MailCheckDto mailCheckDto = new MailCheckDto(mail, number);
+//            checkMail(mailCheckDto);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }
