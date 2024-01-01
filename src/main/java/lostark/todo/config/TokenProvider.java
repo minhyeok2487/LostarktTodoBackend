@@ -32,16 +32,16 @@ public class TokenProvider {
 
 
     /**
-     * JWT 생성 (구글 로그인 연동으로 사용X)
+     * 일반 로그인 JWT 생성
      */
-//    public String createToken(Member member) {
-//        return Jwts.builder()
-//                .signWith(SignatureAlgorithm.HS512, secretKey)
-//                .setSubject(member.getUsername())
-//                .setIssuer("LostarkTodo")
-//                .setIssuedAt(new Date())
-//                .compact();
-//    }
+    public String createToken(Member member) {
+        return Jwts.builder()
+                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .setSubject(member.getUsername())
+                .setIssuer("LostarkTodo")
+                .setIssuedAt(new Date())
+                .compact();
+    }
 
     /**
      * 구글 로그인 연동 Token 생성

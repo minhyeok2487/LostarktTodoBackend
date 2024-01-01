@@ -32,6 +32,9 @@ public class MemberResponseDto {
 
     private Role role;
 
+    @ApiModelProperty(example = "jwt")
+    private String token;
+
     public MemberResponseDto toDto(Member member) {
         return MemberResponseDto.builder()
                 .id(member.getId())

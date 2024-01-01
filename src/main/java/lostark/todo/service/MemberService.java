@@ -28,6 +28,16 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    public Member login(MemberLoginDto memberloginDto) {
+        String username = memberloginDto.getUsername();
+        Member member = findMember(username);
+        if (passwordEncoder.matches(memberloginDto.getPassword(), member.getPassword())) {
+            return member;
+        } else {
+            throw new IllegalArgumentException("패스워드가 틀립니다.");
+        }
+    }
+
     /**
      * ApiKey가 있는 회원 리스트
      */

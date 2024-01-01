@@ -15,7 +15,7 @@ import javax.validation.constraints.NotEmpty;
 public class MemberLoginDto {
 
     @NotEmpty
-    @ApiModelProperty(example = "회원이름")
+    @ApiModelProperty(example = "회원 이메일")
     private String username;
 
     @ApiModelProperty(example = "비밀번호")

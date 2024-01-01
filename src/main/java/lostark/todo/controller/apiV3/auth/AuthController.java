@@ -4,8 +4,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.auth.AuthResponseDto;
 import lostark.todo.controller.dto.auth.AuthSignupDto;
+import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
@@ -42,6 +44,8 @@ public class AuthController {
     private final ContentService contentService;
     private final LostarkCharacterService lostarkCharacterService;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
+    private final TokenProvider tokenProvider;
+
 
     @ApiOperation(value = "1차 회원 가입",
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponseDto.class)
@@ -102,6 +106,20 @@ public class AuthController {
         } finally {
             usernameLocks.remove(memberDto.getUsername());
         }
+    }
+
+    @ApiOperation(value = "일반 로그인",
+            notes="JWT", response = MemberResponseDto.class)
+    @PostMapping("/login")
+    public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginDto memberloginDto) {
+        Member member = memberService.login(memberloginDto);
+        String token = tokenProvider.createToken(member);
+
+        MemberResponseDto responseDto = MemberResponseDto.builder()
+                .username(member.getUsername())
+                .token(token)
+                .build();
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @ApiOperation(value = "로그아웃",
