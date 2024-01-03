@@ -16,7 +16,6 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
-import lostark.todo.service.lostarkApi.LostarkApiService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +52,7 @@ public class AuthController {
     public ResponseEntity<?> signUp(@RequestBody @Valid AuthSignupDto authSignupDto) {
         boolean auth = mailService.isAuth(authSignupDto);
         if (!auth) {
-            throw new IllegalStateException("인증번호 체크가 만료되었습니다. 다시 인증해주십시오.");
+            throw new IllegalStateException("이메일 인증이 실패하였습니다.");
         }
 
         if (!authSignupDto.getPassword().equals(authSignupDto.getEqualPassword())) {
