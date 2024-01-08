@@ -1,4 +1,4 @@
-package lostark.todo.controller.api;
+package lostark.todo.controller.apiV3;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,12 +12,14 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
+import lostark.todo.service.discordWebHook.DiscordWebhook;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,14 +27,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/comments")
-@Api(tags = {"방명 API"})
+@RequestMapping("/v3/comments")
+@Api(tags = {"방명록 API"})
 public class CommentsApiController {
 
     private final CommentsService commentsService;
     private final MemberService memberService;
+    private final WebHookService webHookService;
 
-    @ApiOperation(value = "전체 Comments 불러오기")
+    @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 5개씩 불러옴")
     @GetMapping()
     public ResponseEntity<?> findComments(@AuthenticationPrincipal String username, @RequestParam(value="page") int page) {
         Page<Comments> allComments = commentsService.findAllByParentIdIs0(page-1);
@@ -82,6 +85,14 @@ public class CommentsApiController {
                 }
             }
         }
+        if (!member.getRole().equals(Role.ADMIN)) {
+            webHookService.sendMessage(new DiscordWebhook.EmbedObject()
+                    .setTitle("새로운 방명록이 작성되었습니다.")
+                    .setDescription("<@&1184700819308822570>")
+                    .addField("내용", updateComments.getBody(), true)
+                    .setColor(Color.BLUE));
+        }
+
 
         return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages, null), HttpStatus.OK);
     }

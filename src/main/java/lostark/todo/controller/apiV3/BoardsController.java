@@ -4,10 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.boardsDto.BoardInsertDto;
-import lostark.todo.controller.dto.boardsDto.BoardResponseDto;
-import lostark.todo.controller.dto.boardsDto.BoardUpdateDto;
-import lostark.todo.controller.dto.boardsDto.BoardsDto;
+import lostark.todo.controller.dto.boardsDto.*;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
@@ -36,9 +33,9 @@ public class BoardsController {
     @ApiOperation(value = "사이트 공지사항 page, size 크기로 가져오기",
             notes = "sort : 작성일 최근순, page : 1부터 시작",
             response = BoardsDto.class)
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<?> findAll(@RequestParam(value = "page", defaultValue = "1") int page,
-                                              @RequestParam(value = "size", defaultValue = "5") int size) {
+                                     @RequestParam(value = "size", defaultValue = "5") int size) {
         if (page < 1) {
             throw new CustomIllegalArgumentException("사이트 공지사항 가져오기 에러", "page 입력 값은 1보다 커야 합니다.", null);
         }
@@ -57,11 +54,30 @@ public class BoardsController {
         return new ResponseEntity<>(boardsDto, HttpStatus.OK);
     }
 
+
+    @ApiOperation(value = "메인 공지 + 게시판 전체글 10개씩 가져오기", response = BoardListDto.class)
+    @GetMapping("/default")
+    public ResponseEntity<?> getAllNotNotice(@RequestParam(value="page") int page) {
+        log.info(String.valueOf(page));
+        Page<Boards> all = boardsService.findAllByNoticeFalse(page-1);
+        List<BoardResponseDto> boardResponseDtoList = all
+                .stream().map(board -> new BoardResponseDto().toDto(board))
+                .collect(Collectors.toList());
+        int totalPages = all.getTotalPages();
+
+        List<BoardResponseDto> noticeList = boardsService.findAllByNoticeIsTrue()
+                .stream().map(board -> new BoardResponseDto().toDto(board))
+                .collect(Collectors.toList());
+
+        BoardListDto response = new BoardListDto(boardResponseDtoList, totalPages, noticeList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @ApiOperation(value = "사이트 공지사항 id로 가져오기", response = BoardResponseDto.class)
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable long id) {
         if (id < 0) {
-            throw new CustomIllegalArgumentException("사이트 공지사항 id로 가져오기 에러","id는 0보다 커야합니다.", null);
+            throw new CustomIllegalArgumentException("사이트 공지사항 id로 가져오기 에러", "id는 0보다 커야합니다.", null);
         }
         log.info("사이트 공지사항을 성공적으로 검색했습니다. Id: {}", id);
         return new ResponseEntity<>(new BoardResponseDto().toDto(boardsService.findById(id)), HttpStatus.OK);
