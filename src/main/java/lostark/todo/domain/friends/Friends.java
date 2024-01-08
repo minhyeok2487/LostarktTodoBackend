@@ -3,12 +3,8 @@ package lostark.todo.domain.friends;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.member.Member;
-import org.hibernate.envers.Audited;
-
 import javax.persistence.*;
-import java.lang.reflect.Field;
 
 @Getter
 @Setter

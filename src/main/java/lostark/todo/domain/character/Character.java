@@ -7,12 +7,8 @@ import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
-import org.hibernate.envers.Audited;
-
 import javax.persistence.*;
 import java.util.List;
-
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 
 @Getter

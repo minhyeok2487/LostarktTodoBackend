@@ -9,8 +9,6 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
-import org.hibernate.envers.Audited;
-
 import javax.persistence.*;
 import java.util.List;
 

@@ -2,8 +2,6 @@ package lostark.todo.domain.content;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.envers.Audited;
-
 import javax.persistence.*;
 
 @Entity

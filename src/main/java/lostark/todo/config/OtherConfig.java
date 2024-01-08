@@ -1,8 +1,6 @@
 package lostark.todo.config;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,12 +20,4 @@ public class OtherConfig {
     public ConcurrentHashMap<String, Boolean> usernameLocks() {
         return new ConcurrentHashMap<>();
     }
-
-    @Bean
-    AuditReader auditReader() {
-        return AuditReaderFactory.get(entityManagerFactory.createEntityManager());
-    }
-
-
-
 }

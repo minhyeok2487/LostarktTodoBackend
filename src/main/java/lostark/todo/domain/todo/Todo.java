@@ -5,8 +5,6 @@ import lombok.*;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
-import org.hibernate.envers.Audited;
-
 import javax.persistence.*;
 
 @Getter
@@ -16,7 +14,6 @@ import javax.persistence.*;
 @Builder
 @Entity
 @ToString
-
 public class Todo extends BaseTimeEntity {
 
     @Id

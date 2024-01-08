@@ -3,7 +3,6 @@ package lostark.todo.domain.content;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lostark.todo.domain.character.DayTodo;
-import org.hibernate.envers.Audited;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

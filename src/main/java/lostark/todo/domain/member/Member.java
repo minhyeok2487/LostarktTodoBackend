@@ -9,8 +9,7 @@ import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.friends.Friends;
-import org.hibernate.envers.Audited;
-
+import lostark.todo.domain.notification.Notification;
 import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +61,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
     @JsonManagedReference
     private List<Boards> boards;
+
+    @OneToMany(mappedBy = "receiver", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @JsonManagedReference
+    private List<Notification> notifications;
 
 
     // user 엔티티에 character 리스트 저장
