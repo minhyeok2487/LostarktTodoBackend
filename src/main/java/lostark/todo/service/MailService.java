@@ -68,12 +68,14 @@ public class MailService {
     public boolean checkMail(MailCheckDto mailCheckDto) {
         List<Mail> allByMail = repository.findAllByMail(mailCheckDto.getMail());
         log.info("인증번호 갯수 : {}", allByMail.size());
-        for (Mail mail : allByMail) {
-            if (mail.getNumber() == mailCheckDto.getNumber()
-                    && Duration.between(mail.getRegDate(), LocalDateTime.now()).toMinutes() <= 3) {
-                mail.setCheck(true);
-                repository.save(mail);
-                return true;
+        if (!allByMail.isEmpty()) {
+            for (Mail mail : allByMail) {
+                if (mail.getNumber() == mailCheckDto.getNumber()
+                        && Duration.between(mail.getRegDate(), LocalDateTime.now()).toMinutes() <= 3) {
+                    mail.setCheck(true);
+                    repository.save(mail);
+                    return true;
+                }
             }
         }
         return false;

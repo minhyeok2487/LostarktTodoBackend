@@ -29,9 +29,6 @@ public class ExControllerAdvice {
         List<String> message = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             StringBuilder builder = new StringBuilder();
-            builder.append("[");
-            builder.append(fieldError.getField());
-            builder.append("](은)는 ");
             builder.append(fieldError.getDefaultMessage());
             builder.append(" 입력된 값: [");
             builder.append(fieldError.getRejectedValue());

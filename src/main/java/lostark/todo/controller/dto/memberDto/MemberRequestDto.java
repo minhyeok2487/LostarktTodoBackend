@@ -14,9 +14,6 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 public class MemberRequestDto {
 
-    @ApiModelProperty(example = "회원이름")
-    private String username;
-
     @ApiModelProperty(example = "로스트아크 api 키")
     private String apiKey;
 

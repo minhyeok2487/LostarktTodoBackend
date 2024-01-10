@@ -58,7 +58,6 @@ public class MemberApiControllerV2 {
                         .comparingInt(CharacterDto::getSortNumber)
                         .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed()))
                 .collect(Collectors.groupingBy(CharacterDto::getServerName));
-
         return new ResponseEntity<>(characterDtoMap, HttpStatus.OK);
     }
 }

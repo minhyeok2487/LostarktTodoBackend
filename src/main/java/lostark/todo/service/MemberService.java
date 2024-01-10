@@ -7,7 +7,6 @@ import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
@@ -50,7 +49,7 @@ public class MemberService {
      */
     public Member findMember(String username) {
         return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException(username + "은(는) 없는 회원입니다"));
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
     }
 
     public Member findMember(long memberId) {
@@ -241,5 +240,13 @@ public class MemberService {
             }
         }
         return "???";
+    }
+
+    public boolean existByUsername(String mail) {
+        return memberRepository.existsByUsername(mail);
+    }
+
+    public void removeUser(Member member) {
+        memberRepository.delete(member);
     }
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,5 +15,6 @@ import lombok.NoArgsConstructor;
 public class MailRequestDto {
 
     @ApiModelProperty(notes = "메일")
+    @Email(message = "올바른 이메일 형식을 입력해주세요.")
     String mail;
 }

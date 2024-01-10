@@ -63,10 +63,10 @@ public class AuthController {
         Member signupMember = memberService.createMember(authSignupDto.getMail(), authSignupDto.getPassword());
 
         String message = "회원가입이 정상 처리되었습니다. username:" + authSignupDto.getMail();
-        log.info(message);
 
         // 회원가입 완료시 Redis에 저장된 인증번호 모두 삭제
         mailService.deleteAll(authSignupDto.getMail());
+
         return new ResponseEntity<>(new AuthResponseDto(true, message), HttpStatus.CREATED);
     }
 
@@ -74,8 +74,10 @@ public class AuthController {
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
             response = MemberResponseDto.class)
     @PostMapping("/character")
-    public ResponseEntity<?> saveCharacter(@RequestBody @Valid MemberRequestDto memberDto) {
-        if (usernameLocks.putIfAbsent(memberDto.getUsername(), true) != null) {
+    public ResponseEntity<?> saveCharacter(
+            @AuthenticationPrincipal String username,
+            @RequestBody MemberRequestDto memberDto) {
+        if (usernameLocks.putIfAbsent(username, true) != null) {
             throw new IllegalStateException("이미 진행중입니다.");
         }
         try {
@@ -97,13 +99,13 @@ public class AuthController {
             }
 
             // Member 회원가입
-            Member signupMember = memberService.createCharacter(memberDto.getUsername(), memberDto.getApiKey(), calculatedCharacterList);
+            Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
 
             // 결과 출력
             MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
             return new ResponseEntity<>(memberResponseDto, HttpStatus.OK);
         } finally {
-            usernameLocks.remove(memberDto.getUsername());
+            usernameLocks.remove(username);
         }
     }
 
@@ -135,6 +137,9 @@ public class AuthController {
             } catch (Exception e) {
                 return new ResponseEntity<>(new AuthResponseDto(false, "구글 로그아웃 실패 : " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
+        }
+        if (member.getAuthProvider().equals("none")) {
+            authResponseDto = new AuthResponseDto(true, "로그아웃 성공");
         }
 
         return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
