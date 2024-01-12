@@ -19,8 +19,9 @@ public class reset {
     @Test
     @Rollback(value = false)
     void resetTestUser() {
-        String username = "repeater2487@naver.com";
-        Member member = memberService.findMember(username);
+        long memberId = 5726L;
+        String username = "test@test.com";
+        Member member = memberService.findMember(memberId);
         memberService.removeUser(member);
     }
 }

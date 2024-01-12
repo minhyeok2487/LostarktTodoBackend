@@ -33,7 +33,7 @@ public class MemberService {
         if (passwordEncoder.matches(memberloginDto.getPassword(), member.getPassword())) {
             return member;
         } else {
-            throw new IllegalArgumentException("패스워드가 틀립니다.");
+            throw new IllegalArgumentException("이메일 또는 패스워드가 일치하지 않습니다.");
         }
     }
 
@@ -54,7 +54,7 @@ public class MemberService {
 
     public Member findMember(long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다"));
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
     }
 
     /**

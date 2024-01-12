@@ -19,4 +19,9 @@ public class CommentListDto {
     int totalPages;
 
     MemberResponseDto memberResponseDto;
+
+    public CommentListDto(List<CommentResponseDto> commentDtoList, int totalPages) {
+        this.commentDtoList = commentDtoList;
+        this.totalPages = totalPages;
+    }
 }

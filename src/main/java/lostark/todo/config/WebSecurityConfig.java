@@ -8,12 +8,14 @@ import lostark.todo.security.OAuthSuccessHandler;
 import lostark.todo.security.RedirectUrlCookieFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.Cookie;
@@ -73,6 +75,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests() // 인증 필요하지 않는 링크
                 .antMatchers(PERMIT_ALL_LINK).permitAll()
+                .antMatchers(HttpMethod.GET,"/v3/comments").permitAll() // 방명록 불러오기 Get만 허용
                 .anyRequest().authenticated() // 나머지 경로 모두 인증
                 .and().oauth2Login()//OAuth 로그인
                 .authorizationEndpoint().baseUri("/auth/authorize")

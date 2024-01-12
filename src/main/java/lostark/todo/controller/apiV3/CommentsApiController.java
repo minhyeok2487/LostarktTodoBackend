@@ -16,6 +16,7 @@ import lostark.todo.service.discordWebHook.DiscordWebhook;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +36,9 @@ public class CommentsApiController {
     private final MemberService memberService;
     private final WebHookService webHookService;
 
-    @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 5개씩 불러옴")
+    @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
     @GetMapping()
-    public ResponseEntity<?> findComments(@AuthenticationPrincipal String username, @RequestParam(value="page") int page) {
+    public ResponseEntity<?> findComments(@AuthenticationPrincipal String username, @RequestParam(value="page", defaultValue = "5") int page) {
         Page<Comments> allComments = commentsService.findAllByParentIdIs0(page-1);
         int totalPages = allComments.getTotalPages();
 
@@ -52,12 +53,16 @@ public class CommentsApiController {
             }
         }
 
-        Member member = memberService.findMember(username);
-        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
-        if (member.getRole().equals(Role.ADMIN)) {
-            memberResponseDto.setUsername("관리자");
+        if(!username.equals("anonymousUser")) {
+            Member member = memberService.findMember(username);
+            MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
+            if (member.getRole().equals(Role.ADMIN)) {
+                memberResponseDto.setUsername("관리자");
+            }
+            return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages, memberResponseDto), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages, memberResponseDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 저장")
