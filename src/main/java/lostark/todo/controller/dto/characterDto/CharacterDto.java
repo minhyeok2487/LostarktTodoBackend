@@ -158,8 +158,11 @@ public class CharacterDto {
 
             }
 
-            //골드 획득 - 높은 순으로 3개
+            // 골드 획득 높은거에서 3개
             maxThree(todoResponseDtoList);
+
+            //sortNumber 순서대로 출력
+            todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));
 
             // 캐릭터 주간 레이드 수익 저장
             if (characterDto.isGoldCharacter()) {

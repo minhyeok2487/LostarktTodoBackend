@@ -3,6 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.todoDto.TodoDto;
+import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.todoV2.TodoV2;
@@ -44,6 +45,7 @@ public class TodoServiceV2 {
                 .isChecked(false)
                 .gold(weekContent.getGold())
                 .coolTime(2)
+                .sortNumber(999)
                 .build();
 
         //weekContent (아브렐슈드, 일리아칸 등)별로 이미 존재 하면 지움
@@ -130,6 +132,7 @@ public class TodoServiceV2 {
                         .isChecked(false)
                         .gold(content.getGold())
                         .coolTime(2)
+                        .sortNumber(999)
                         .build();
                 updatedTodoV2List.add(todoV2);
                 todoV2Repository.save(todoV2);
@@ -160,6 +163,19 @@ public class TodoServiceV2 {
         for (TodoV2 todoV2 : todoV2List) {
             if (todoV2.getCoolTime() != 0) { //2주기 레이드 체크 방지
                 todoV2.updateCheck();
+            }
+        }
+    }
+
+    // 캐릭터 보스별로 순서 정렬
+    public void updateWeekRaidSort(Character character, List<TodoSortRequestDto> dtos) {
+        for (TodoSortRequestDto dto : dtos) {
+            List<TodoV2> todoV2List = todoV2Repository.findByCharacterAndWeekCategory(character, dto.getWeekCategory());
+
+            if (!todoV2List.isEmpty()) {
+                for (TodoV2 todoV2 : todoV2List) {
+                    todoV2.setSortNumber(dto.getSortNumber());
+                }
             }
         }
     }

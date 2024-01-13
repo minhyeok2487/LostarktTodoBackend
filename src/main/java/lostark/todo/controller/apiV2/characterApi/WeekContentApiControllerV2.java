@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
+import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.todo.Todo;
@@ -135,6 +136,21 @@ public class WeekContentApiControllerV2 {
                 .message(todo.getMessage())
                 .build();
         return new ResponseEntity(todoResponseDto, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 레이드 순서 변경")
+    @PutMapping("/raid/{characterId}/{characterName}/sort")
+    public ResponseEntity<?> updateTodoSort(@AuthenticationPrincipal String username,
+                                            @PathVariable long characterId,
+                                            @PathVariable String characterName,
+                                            @RequestBody List<TodoSortRequestDto> todoSortRequestDtos) {
+        // 로그인한 아이디에 등록된 캐릭터인지 검증
+        // 다른 아이디면 자동으로 Exception 처리
+        Character character = characterService.findCharacter(characterId, characterName, username);
+
+        todoServiceV2.updateWeekRaidSort(character, todoSortRequestDtos);
+
+        return new ResponseEntity<>(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 에포나 체크",

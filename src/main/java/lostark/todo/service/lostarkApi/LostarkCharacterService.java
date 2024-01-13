@@ -79,7 +79,7 @@ public class LostarkCharacterService {
                     .collect(Collectors.toList());
             return sortedList;
         } catch (NullPointerException e) {
-            throw new IllegalArgumentException(characterName + " 은(는) 존재하지 않는 캐릭터 입니다.");
+            throw new IllegalArgumentException("존재하지 않는 캐릭터명 입니다.");
         } catch (IllegalArgumentException e) {
             throw e;
         }

@@ -98,7 +98,7 @@ public class LostarkApiService {
                 return inputStreamReader;
             }
             else if(result == 401) {
-                throw new IllegalArgumentException("올바르지 않은 apiKey 입니다");
+                throw new IllegalArgumentException("올바르지 않은 apiKey 입니다.");
             }
             else if(result == 429) {
                 throw new IllegalArgumentException("사용한도 (1분에 100개)를 초과했습니다.");

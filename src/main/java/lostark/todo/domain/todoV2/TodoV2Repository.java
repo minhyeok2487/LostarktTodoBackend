@@ -40,4 +40,7 @@ public interface TodoV2Repository extends JpaRepository<TodoV2, Long> {
     @Modifying
     @Query("UPDATE TodoV2 t set t.isChecked = true")
     int beforeUpdate();
+
+    @Query("SELECT t FROM TodoV2 t WHERE t.character = :character AND t.weekContent.weekCategory = :weekCategory")
+    List<TodoV2> findByCharacterAndWeekCategory(Character character, String weekCategory);
 }

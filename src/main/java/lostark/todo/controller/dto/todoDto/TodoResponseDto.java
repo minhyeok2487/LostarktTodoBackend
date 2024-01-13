@@ -24,11 +24,14 @@ public class TodoResponseDto {
     private String message;
 
     private int currentGate;
+
     private int totalGate;
 
     private String weekCategory;
+
     private WeekContentCategory weekContentCategory;
 
+    private int sortNumber;
     public TodoResponseDto toDto(TodoV2 todo) {
         return TodoResponseDto.builder()
                 .id(todo.getId())
@@ -42,6 +45,7 @@ public class TodoResponseDto {
                 .totalGate(todo.getWeekContent().getGate())
                 .weekCategory(todo.getWeekContent().getWeekCategory())
                 .weekContentCategory(todo.getWeekContent().getWeekContentCategory())
+                .sortNumber(todo.getSortNumber())
                 .build();
     }
 

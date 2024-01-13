@@ -40,10 +40,6 @@ public class MemberApiControllerV2 {
     @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리(Map)",
             notes = "key = 서버 이름, value = 캐릭터 리스트",
             response = Map.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "JWT Bearer 토큰", required = true,
-                    dataTypeClass = String.class, paramType = "header")
-    })
     @GetMapping("/characterList")
     public ResponseEntity<?> findCharacterList(@AuthenticationPrincipal String username) {
 

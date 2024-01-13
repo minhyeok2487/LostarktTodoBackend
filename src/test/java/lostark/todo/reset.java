@@ -13,15 +13,15 @@ import javax.transaction.Transactional;
 @Transactional
 public class reset {
 
-    @Autowired
-    MemberService memberService;
-
-    @Test
-    @Rollback(value = false)
-    void resetTestUser() {
-        long memberId = 5726L;
-        String username = "test@test.com";
-        Member member = memberService.findMember(memberId);
-        memberService.removeUser(member);
-    }
+//    @Autowired
+//    MemberService memberService;
+//
+//    @Test
+//    @Rollback(value = false)
+//    void resetTestUser() {
+//        long memberId = 5726L;
+//        String username = "test@test.com";
+//        Member member = memberService.findMember(memberId);
+//        memberService.removeUser(member);
+//    }
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -39,6 +40,9 @@ public class TodoV2 extends BaseTimeEntity {
     private Character character;
 
     private int coolTime;
+
+    @ColumnDefault("0")
+    private int sortNumber;
 
     public void updateCheck() {
         this.isChecked = !this.isChecked;
