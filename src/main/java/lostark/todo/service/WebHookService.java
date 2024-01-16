@@ -18,11 +18,8 @@ public class WebHookService {
 
     private String url = "https://discord.com/api/webhooks/1186118216452427776/FkY1W_sn60sZNyxGS5yjTzazuDL6x3op6kNkVeNXKamW1Kp5_Q7BoXdGxoBedcRFY3FQ";
 
-    @Value("${discord.noticeURL}")
-    private String noticeUrl;
-
-    public void sendMessage(DiscordWebhook.EmbedObject embedObject) {
-        DiscordWebhook webhook = new DiscordWebhook(noticeUrl);
+    public void sendMessage(DiscordWebhook.EmbedObject embedObject, String url) {
+        DiscordWebhook webhook = new DiscordWebhook(url);
         webhook.setUsername("Loatodo 알림");
         webhook.addEmbed(embedObject);
         try {

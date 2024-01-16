@@ -15,8 +15,11 @@ import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
+import lostark.todo.event.entity.member.MemberEvent;
+import lostark.todo.event.entity.member.MemberEventType;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static lostark.todo.event.entity.member.MemberEventType.signUp;
 
 @RestController
 @Slf4j
@@ -44,7 +49,7 @@ public class AuthController {
     private final LostarkCharacterService lostarkCharacterService;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
     private final TokenProvider tokenProvider;
-
+    private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "1차 회원 가입",
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponseDto.class)
@@ -62,10 +67,13 @@ public class AuthController {
         // Member 회원가입
         Member signupMember = memberService.createMember(authSignupDto.getMail(), authSignupDto.getPassword());
 
-        String message = "회원가입이 정상 처리되었습니다. username:" + authSignupDto.getMail();
-
         // 회원가입 완료시 Redis에 저장된 인증번호 모두 삭제
         mailService.deleteAll(authSignupDto.getMail());
+
+        // 이벤트 실행
+        MemberEventType eventType = MemberEventType.signUp;
+        String message = eventType.getMessage() + "/ username : " + authSignupDto.getMail();
+        eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
 
         return new ResponseEntity<>(new AuthResponseDto(true, message), HttpStatus.CREATED);
     }
@@ -100,6 +108,10 @@ public class AuthController {
 
             // Member 회원가입
             Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
+
+            // 이벤트 실행
+            MemberEventType eventType = MemberEventType.addCharacters;
+            eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
 
             // 결과 출력
             MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);

@@ -11,15 +11,15 @@ import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
+import lostark.todo.event.entity.CommentEvent;
 import lostark.todo.service.*;
-import lostark.todo.service.discordWebHook.DiscordWebhook;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class CommentsController {
 
     private final CommentsService commentsService;
     private final MemberService memberService;
-    private final WebHookService webHookService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
     @GetMapping()
@@ -88,14 +88,8 @@ public class CommentsController {
                 }
             }
         }
-        if (!member.getRole().equals(Role.ADMIN)) {
-            webHookService.sendMessage(new DiscordWebhook.EmbedObject()
-                    .setTitle("새로운 방명록이 작성되었습니다.")
-                    .setDescription("<@&1184700819308822570>")
-                    .addField("내용", updateComments.getBody(), true)
-                    .setColor(Color.BLUE));
-        }
 
+        eventPublisher.publishEvent(new CommentEvent(eventPublisher, member, "새로운 방명록이 작성되었습니다."));
 
         return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages, null), HttpStatus.OK);
     }

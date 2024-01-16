@@ -1,6 +1,7 @@
 package lostark.todo;
 
 import lostark.todo.domain.member.Member;
+import lostark.todo.service.CharacterService;
 import lostark.todo.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,18 @@ import javax.transaction.Transactional;
 @Transactional
 public class reset {
 
-//    @Autowired
-//    MemberService memberService;
-//
-//    @Test
-//    @Rollback(value = false)
-//    void resetTestUser() {
-//        long memberId = 5726L;
-//        String username = "test@test.com";
-//        Member member = memberService.findMember(memberId);
-//        memberService.removeUser(member);
-//    }
+    @Autowired
+    MemberService memberService;
+
+    @Autowired
+    CharacterService characterService;
+    @Test
+    @Rollback(value = false)
+    void resetTestUser() {
+        long memberId = 5726L;
+        String username = "repeater2487@naver.com";
+        Member member = memberService.findMember(username);
+        memberService.removeUser(member);
+//        characterService.removeUser(member);
+    }
 }

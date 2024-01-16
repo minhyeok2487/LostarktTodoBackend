@@ -414,4 +414,8 @@ public class CharacterService {
         }
         return characterList;
     }
+
+    public void removeUser(Member member) {
+        characterRepository.deleteByMember(member);
+    }
 }

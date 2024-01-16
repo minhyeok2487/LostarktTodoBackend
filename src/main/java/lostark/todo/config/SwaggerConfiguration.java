@@ -57,9 +57,10 @@ public class SwaggerConfiguration {
     /**
      * 설정 Bean 등록
      */
+
     @Bean
-    public Docket userApi() {
-        version = "user";
+    public Docket v2() {
+        version = "v2";
         title = "로스트아크 일정 관리 REST API";
 
         return new Docket(DocumentationType.SWAGGER_2)
@@ -68,8 +69,7 @@ public class SwaggerConfiguration {
                 .groupName(version)
                 .apiInfo(apiInfo(title, version))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.api"))
-                .paths(PathSelectors.ant("/**"))
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV2"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));
@@ -87,7 +87,6 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo(title, version))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV3"))
-                .paths(PathSelectors.ant("/v3/**"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));

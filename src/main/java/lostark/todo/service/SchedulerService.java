@@ -45,6 +45,9 @@ public class SchedulerService {
     @Value("${API-KEY3}")
     public String apiKey3;
 
+    @Value("${discord.noticeURL}")
+    private String noticeUrl;
+
     /**
      * 매일 오전 0시 거래소 데이터 갱신
      */
@@ -140,7 +143,7 @@ public class SchedulerService {
                         .setTitle("새로운 로스트아크 공지사항이 저장되었습니다.")
                         .addField("제목", notices.getTitle(), true)
                         .addField("링크", notices.getLink(), false)
-                        .setColor(Color.GREEN));
+                        .setColor(Color.GREEN), noticeUrl);
             }
         }
     }

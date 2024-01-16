@@ -1,4 +1,4 @@
-package lostark.todo.controller.api;
+package lostark.todo.controller.apiV2;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,81 +51,81 @@ public class MemberApiController {
     private final LogsService logsService;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
 
-    @GetMapping()
-    public ResponseEntity findMember(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
-        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
-        if (member.getRole().equals(Role.ADMIN)) {
-            memberResponseDto.setUsername("관리자");
-        }
-        return new ResponseEntity(memberResponseDto, HttpStatus.OK);
-    }
+//    @GetMapping()
+//    public ResponseEntity findMember(@AuthenticationPrincipal String username) {
+//        Member member = memberService.findMember(username);
+//        MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
+//        if (member.getRole().equals(Role.ADMIN)) {
+//            memberResponseDto.setUsername("관리자");
+//        }
+//        return new ResponseEntity(memberResponseDto, HttpStatus.OK);
+//    }
 
 
-    @ApiOperation(value = "회원가입시 캐릭터 추가",
-            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
-            response = MemberResponseDto.class)
-    @PostMapping("/signup")
-    public ResponseEntity saveCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberRequestDto memberDto) {
-        if (usernameLocks.putIfAbsent(username, true) != null) {
-            throw new IllegalStateException("이미 진행중입니다.");
-        }
-        try {
-            // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
-            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
-            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+//    @ApiOperation(value = "회원가입시 캐릭터 추가",
+//            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
+//            response = MemberResponseDto.class)
+//    @PostMapping("/signup")
+//    public ResponseEntity saveCharacter(@AuthenticationPrincipal String username, @RequestBody @Valid MemberRequestDto memberDto) {
+//        if (usernameLocks.putIfAbsent(username, true) != null) {
+//            throw new IllegalStateException("이미 진행중입니다.");
+//        }
+//        try {
+//            // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+//            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+//            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+//
+//            // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+//            List<Character> characterList = lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian);
+//
+//            // 재련재료 데이터 리스트로 거래소 데이터 호출
+//            Map<String, Market> contentResource = marketService.findContentResource();
+//
+//            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+//            List<Character> calculatedCharacterList = new ArrayList<>();
+//            for (Character character : characterList) {
+//                Character result = characterService.calculateDayTodo(character, contentResource);
+//                calculatedCharacterList.add(result);
+//            }
+//
+//            // Member 회원가입
+//            Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
+//
+//            // 결과 출력
+//            MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
+//            return new ResponseEntity(memberResponseDto, HttpStatus.OK);
+//        } finally {
+//            usernameLocks.remove(username);
+//        }
+//    }
 
-            // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
-            List<Character> characterList = lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian);
-
-            // 재련재료 데이터 리스트로 거래소 데이터 호출
-            Map<String, Market> contentResource = marketService.findContentResource();
-
-            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-            List<Character> calculatedCharacterList = new ArrayList<>();
-            for (Character character : characterList) {
-                Character result = characterService.calculateDayTodo(character, contentResource);
-                calculatedCharacterList.add(result);
-            }
-
-            // Member 회원가입
-            Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
-
-            // 결과 출력
-            MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
-            return new ResponseEntity(memberResponseDto, HttpStatus.OK);
-        } finally {
-            usernameLocks.remove(username);
-        }
-    }
-
-    @ApiOperation(value = "캐릭터 서버 리스트 불러오기")
-    @GetMapping("/characterList/server")
-    public ResponseEntity<Map<String, Long>> findGroupServerNameCount(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(characterService.findGroupServerNameCount(username), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
-            response = CharacterDto.class)
-    @GetMapping("/characterList-v3/{serverName}")
-    public ResponseEntity findCharacterListServerNameV3(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
-
-        //username, serverName -> characterList 조회
-        List<Character> characterList = characterService.findCharacterListServerName(username, serverName);
-
-        // 결과
-        List<CharacterDto> characterDtoList = characterList.stream()
-                .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
-                        .comparingInt(CharacterDto::getSortNumber)
-                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
-        Logs build = Logs.builder()
-                .memberId(characterList.get(0).getMember().getId())
-                .message(username+" 접속")
-                .build();
-        logsService.save(build);
-        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
-    }
+//    @ApiOperation(value = "캐릭터 서버 리스트 불러오기")
+//    @GetMapping("/characterList/server")
+//    public ResponseEntity<Map<String, Long>> findGroupServerNameCount(@AuthenticationPrincipal String username) {
+//        return new ResponseEntity<>(characterService.findGroupServerNameCount(username), HttpStatus.OK);
+//    }
+//
+//    @ApiOperation(value = "회원 캐릭터 리스트 조회 - 서버별 분리",
+//            response = CharacterDto.class)
+//    @GetMapping("/characterList-v3/{serverName}")
+//    public ResponseEntity findCharacterListServerNameV3(@AuthenticationPrincipal String username, @PathVariable("serverName") String serverName) {
+//
+//        //username, serverName -> characterList 조회
+//        List<Character> characterList = characterService.findCharacterListServerName(username, serverName);
+//
+//        // 결과
+//        List<CharacterDto> characterDtoList = characterList.stream()
+//                .filter(character -> character.getSettings().isShowCharacter())
+//                .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
+//                        .comparingInt(CharacterDto::getSortNumber)
+//                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
+//        Logs build = Logs.builder()
+//                .memberId(characterList.get(0).getMember().getId())
+//                .message(username+" 접속")
+//                .build();
+//        logsService.save(build);
+//        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+//    }
 
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
         notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
@@ -262,7 +262,7 @@ public class MemberApiController {
         if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
             throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
         }
-        if (member.getApiKey().equals(memberRequestDto.getApiKey())) {
+        if (member.getApiKey() != null && member.getApiKey().equals(memberRequestDto.getApiKey())) {
             throw new IllegalArgumentException("동일한 API KEY입니다.");
         }
 
