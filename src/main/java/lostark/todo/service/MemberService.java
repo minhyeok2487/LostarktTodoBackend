@@ -10,6 +10,7 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -248,5 +249,10 @@ public class MemberService {
 
     public void removeUser(Member member) {
         memberRepository.delete(member);
+    }
+
+    public List<Member> findTop20CharacterList() {
+        List<Member> top20Members = memberRepository.findTop20ByCharactersCount(PageRequest.of(0, 20));
+        return top20Members;
     }
 }

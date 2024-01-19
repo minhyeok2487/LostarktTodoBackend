@@ -15,8 +15,8 @@ import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import lostark.todo.event.entity.member.MemberEvent;
-import lostark.todo.event.entity.member.MemberEventType;
+import lostark.todo.event.entity.MemberEvent;
+import lostark.todo.event.entity.EventType;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,13 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static lostark.todo.event.entity.member.MemberEventType.signUp;
-
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/v3/auth")
-@Api(tags = {"인증(회원가입, 로그인, 로그아웃) API"})
+@Api(tags = {"인증(회원가입, 로그인, 로그아웃)"})
 public class AuthController {
 
     private final MemberService memberService;
@@ -71,7 +69,7 @@ public class AuthController {
         mailService.deleteAll(authSignupDto.getMail());
 
         // 이벤트 실행
-        MemberEventType eventType = MemberEventType.signUp;
+        EventType eventType = EventType.signUp;
         String message = eventType.getMessage() + "/ username : " + authSignupDto.getMail();
         eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
 
@@ -110,7 +108,7 @@ public class AuthController {
             Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
 
             // 이벤트 실행
-            MemberEventType eventType = MemberEventType.addCharacters;
+            EventType eventType = EventType.addCharacters;
             eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
 
             // 결과 출력

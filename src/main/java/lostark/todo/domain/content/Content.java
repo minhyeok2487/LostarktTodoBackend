@@ -11,7 +11,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-
 public abstract class Content {
 
     @Id

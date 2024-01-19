@@ -1,4 +1,4 @@
-package lostark.todo.event.entity.member;
+package lostark.todo.event.entity;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +9,13 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class MemberEvent extends ApplicationEvent {
 
-    private MemberEventType memberEventType;
+    private EventType eventType;
 
     private Member member;
 
-    public MemberEvent(Object source, Member member, MemberEventType memberEventType) {
+    public MemberEvent(Object source, Member member, EventType eventType) {
         super(source);
         this.member = member;
-        this.memberEventType = memberEventType;
+        this.eventType = eventType;
     }
 }

@@ -22,10 +22,10 @@ public class reset {
     @Test
     @Rollback(value = false)
     void resetTestUser() {
-        long memberId = 5726L;
-        String username = "repeater2487@naver.com";
-        Member member = memberService.findMember(username);
-        memberService.removeUser(member);
+//        long memberId = 5726L;
+//        String username = "repeater2487@naver.com";
+//        Member member = memberService.findMember(username);
+//        memberService.removeUser(member);
 //        characterService.removeUser(member);
     }
 }
