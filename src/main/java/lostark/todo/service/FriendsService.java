@@ -152,4 +152,13 @@ public class FriendsService {
         }
         return false;
     }
+
+    public boolean deleteByMember(Member member) {
+        int result = friendsRepository.deleteByMember(member, member.getId());
+        if (result != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
