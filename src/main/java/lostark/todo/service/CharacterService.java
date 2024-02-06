@@ -419,12 +419,13 @@ public class CharacterService {
     // 주간 레이드 골드 체크 업데이트 전 체크사항
     private void raidGoldCheckCount(Character character, boolean updateValue) {
         List<String> weekCategoryList = character.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.isGoldCheck())
                 .map(todoV2 -> todoV2.getWeekContent().getWeekCategory())
                 .distinct()
                 .collect(Collectors.toList());
 
-        // 등록된 골드획득 컨텐츠가 3개 초과 && 또다른 레이드를 골드획득 체크를 한다면(true)
-        if (weekCategoryList.size() > 3 && updateValue) {
+        // 등록된 골드획득 컨텐츠가 3개 이상 && 또다른 레이드를 골드획득 체크를 한다면(true)
+        if (weekCategoryList.size() >= 3 && updateValue) {
             throw new IllegalArgumentException("골드 획득은 3개까지 가능합니다.");
         }
     }
