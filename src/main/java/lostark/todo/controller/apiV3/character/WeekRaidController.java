@@ -4,8 +4,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.raid.RaidGoldCheckRequestDto;
+import lostark.todo.controller.dto.todoDto.raid.RaidGoldCheckReturnDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.service.CharacterService;
@@ -43,7 +45,7 @@ public class WeekRaidController {
         // 아이템 레벨보다 작은 컨텐츠 불러옴
         List<WeekContent> allByWeekContent = contentService.findAllWeekContent(character.getItemLevel());
 
-        List<WeekContentDto> result = allByWeekContent.stream()
+        List<WeekContentDto> returnWeekContent = allByWeekContent.stream()
                 .map(weekContent -> {
                     WeekContentDto weekContentDto = new WeekContentDto().toDto(weekContent);
                     if (!character.getTodoV2List().isEmpty()) {
@@ -59,6 +61,11 @@ public class WeekRaidController {
                 })
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        RaidGoldCheckReturnDto raidGoldCheckReturnDto = RaidGoldCheckReturnDto.builder()
+                .weekContentDtoList(returnWeekContent)
+                .characterDto(new CharacterDto().toDtoV2(character))
+                .build();
+
+        return new ResponseEntity<>(raidGoldCheckReturnDto, HttpStatus.OK);
     }
 }
