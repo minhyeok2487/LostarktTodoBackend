@@ -243,16 +243,7 @@ public class MemberService {
         return "???";
     }
 
-    public boolean existByUsername(String mail) {
-        return memberRepository.existsByUsername(mail);
-    }
-
-    public void removeUser(Member member) {
-        memberRepository.delete(member);
-    }
-
-    public List<Member> findTop20CharacterList() {
-        List<Member> top20Members = memberRepository.findTop20ByCharactersCount(PageRequest.of(0, 20));
-        return top20Members;
+    public boolean existByUsername(String username) {
+        return memberRepository.existsByUsername(username);
     }
 }

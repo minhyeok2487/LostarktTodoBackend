@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/v3/member/characterList")
+@RequestMapping("/v3/member/characters")
 @Api(tags = {"회원 캐릭터 리스트"})
 public class MemberCharacterListController {
 

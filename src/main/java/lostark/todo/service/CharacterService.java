@@ -10,13 +10,12 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lostark.todo.domain.todoV2.TodoV2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -399,14 +398,6 @@ public class CharacterService {
         return characterRepository.findById(characterId).orElseThrow(() -> new IllegalArgumentException("캐릭터 id 에러"));
     }
 
-    public void updateImage(Character character, String characterimageUrl) {
-        character.updateImageUrl(characterimageUrl);
-    }
-
-    public Page<Character> findAll100(int page) {
-        return characterRepository.findAll(PageRequest.of(page, 100));
-    }
-
     public List<Character> findCharacterListUsername(String username) {
         List<Character> characterList = characterRepository.findAllByUsername(username);
         if(characterList.isEmpty()) {
@@ -415,7 +406,44 @@ public class CharacterService {
         return characterList;
     }
 
-    public void removeUser(Member member) {
-        characterRepository.deleteByMember(member);
+    public boolean deleteByMember(Member member) {
+        int result = characterRepository.deleteByMember(member);
+        log.info("result = {}", result);
+        if (result != 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    // 캐릭터 주간 레이드 골드 체크 업데이트
+    // 주간 레이드 골드 체크 업데이트 전 체크사항
+    private void raidGoldCheckCount(Character character, boolean updateValue) {
+        List<String> weekCategoryList = character.getTodoV2List().stream()
+                .map(todoV2 -> todoV2.getWeekContent().getWeekCategory())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 등록된 골드획득 컨텐츠가 3개 초과 && 또다른 레이드를 골드획득 체크를 한다면(true)
+        if (weekCategoryList.size() > 3 && updateValue) {
+            throw new IllegalArgumentException("골드 획득은 3개까지 가능합니다.");
+        }
+    }
+
+    public void updateRaidGoldCheck(Character character, String weekCategory, boolean updateValue) {
+        raidGoldCheckCount(character, updateValue);
+        long count = character.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(weekCategory))
+                .peek(TodoV2::updateGoldCheck)
+                .count();
+
+        // 레이드를 등록한 다음 -> 골드 획득 지정
+        if (count == 0) {
+            throw new IllegalArgumentException("레이드를 먼저 등록해주십시오.");
+        }
+    }
+
+
+
+
 }

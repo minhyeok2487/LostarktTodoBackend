@@ -153,7 +153,9 @@ public class CharacterDto {
                                     exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
                                 }
                             }
-                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                            if (exited.isGoldCheck()) {
+                                exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                            }
                             exited.setTotalGate(todo.getWeekContent().getGate());
                             if(todo.isChecked()) {
                                 exited.setCurrentGate(todo.getWeekContent().getGate());
@@ -171,7 +173,8 @@ public class CharacterDto {
             }
 
             // 골드 획득 높은거에서 3개
-            maxThree(todoResponseDtoList);
+//            maxThree(todoResponseDtoList);
+
 
             //sortNumber 순서대로 출력
             todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));

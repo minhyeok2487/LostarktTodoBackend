@@ -63,8 +63,13 @@ public class ContentService {
      * 아이템 레벨보다 작은 주간 컨텐츠 조회
      */
     public List<WeekContent> findAllWeekContent(double itemLevel) {
-        return contentRepository.findAllWeekContent(itemLevel);
+        List<WeekContent> allWeekContent = contentRepository.findAllWeekContent(itemLevel);
+        if (allWeekContent.isEmpty()) {
+            throw new IllegalStateException("컨텐츠 불러오기 오류");
+        }
+        return allWeekContent;
     }
+
     public List<WeekContent> findAllByWeekContentWithItemLevel(double itemLevel) {
         return contentRepository.findAllByWeekContentWithItemLevel(itemLevel);
     }

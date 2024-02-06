@@ -9,9 +9,9 @@ import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
+import lostark.todo.controller.dto.todoDto.raid.RaidGoldCheckRequestDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
-import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ContentService;
@@ -36,7 +36,7 @@ public class WeekContentApiControllerV2 {
 
     @ApiOperation(value = "캐릭터 주간 숙제 추가폼")
     @GetMapping("/form/{characterId}/{characterName}")
-    public ResponseEntity getTodoForm(@AuthenticationPrincipal String username,
+    public ResponseEntity<?> getTodoForm(@AuthenticationPrincipal String username,
                                      @PathVariable long characterId, @PathVariable String characterName) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
@@ -45,26 +45,22 @@ public class WeekContentApiControllerV2 {
         // 아이템 레벨보다 작은 컨텐츠 불러옴
         List<WeekContent> allByWeekContent = contentService.findAllWeekContent(character.getItemLevel());
 
-        if(allByWeekContent.isEmpty()) {
-            throw new IllegalStateException("컨텐츠 불러오기 오류");
-        }
-
-        // 이미 등록된 컨텐츠면 true
         List<WeekContentDto> result = new ArrayList<>();
-
         for (WeekContent weekContent : allByWeekContent) {
             WeekContentDto weekContentDto = new WeekContentDto().toDto(weekContent);
             if(!character.getTodoV2List().isEmpty()) {
                 for (TodoV2 todo : character.getTodoV2List()) {
                     if (todo.getWeekContent().equals(weekContent)) {
-                        weekContentDto.setChecked(true);
+                        weekContentDto.setChecked(true); // 이미 등록된 컨텐츠면 true
+                        weekContentDto.setGoldCheck(todo.isGoldCheck());
                         break;
                     }
                 }
             }
             result.add(weekContentDto);
         }
-        return new ResponseEntity(result, HttpStatus.OK);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 추가/제거")

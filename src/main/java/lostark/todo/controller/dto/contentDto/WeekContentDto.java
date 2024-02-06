@@ -33,6 +33,8 @@ public class WeekContentDto {
 
     private int coolTime; //주기
 
+    private boolean goldCheck; //골드 획득
+
     public WeekContentDto toDto(WeekContent weekContent) {
         return WeekContentDto.builder()
                 .id(weekContent.getId())
@@ -44,6 +46,7 @@ public class WeekContentDto {
                 .gold(weekContent.getGold())
                 .name(weekContent.getName())
                 .coolTime(weekContent.getCoolTime())
+                .goldCheck(false)
                 .build();
     }
 }

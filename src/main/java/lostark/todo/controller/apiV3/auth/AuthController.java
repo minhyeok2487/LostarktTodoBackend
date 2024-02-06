@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
-import lostark.todo.controller.dto.auth.AuthResponseDto;
+import lostark.todo.controller.dto.auth.ResponseDto;
 import lostark.todo.controller.dto.auth.AuthSignupDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
@@ -50,7 +50,7 @@ public class AuthController {
     private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "1차 회원 가입",
-            notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponseDto.class)
+            notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = ResponseDto.class)
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody @Valid AuthSignupDto authSignupDto) {
         boolean auth = mailService.isAuth(authSignupDto);
@@ -73,7 +73,7 @@ public class AuthController {
         String message = eventType.getMessage() + "/ username : " + authSignupDto.getMail();
         eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
 
-        return new ResponseEntity<>(new AuthResponseDto(true, message), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseDto(true, message), HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "1차 회원가입 이후 캐릭터 추가",
@@ -140,18 +140,18 @@ public class AuthController {
     public ResponseEntity<?> logout(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
 
-        AuthResponseDto authResponseDto = null;
+        ResponseDto responseDto = null;
         if (member.getAuthProvider().equals("Google")) {
             try {
-                authResponseDto = authService.googleLogout(member);
+                responseDto = authService.googleLogout(member);
             } catch (Exception e) {
-                return new ResponseEntity<>(new AuthResponseDto(false, "구글 로그아웃 실패 : " + e.getMessage()), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ResponseDto(false, "구글 로그아웃 실패 : " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         }
         if (member.getAuthProvider().equals("none")) {
-            authResponseDto = new AuthResponseDto(true, "로그아웃 성공");
+            responseDto = new ResponseDto(true, "로그아웃 성공");
         }
 
-        return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

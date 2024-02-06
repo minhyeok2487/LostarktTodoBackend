@@ -44,6 +44,9 @@ public class TodoV2 extends BaseTimeEntity {
     @ColumnDefault("0")
     private int sortNumber;
 
+    @ColumnDefault("false")
+    private boolean goldCheck;
+
     public void updateCheck() {
         this.isChecked = !this.isChecked;
     }
@@ -73,5 +76,10 @@ public class TodoV2 extends BaseTimeEntity {
                 ", character=" + character.getId() +
                 ", coolTime=" + coolTime +
                 '}';
+    }
+
+    public TodoV2 updateGoldCheck() {
+        this.goldCheck = !this.goldCheck;
+        return this;
     }
 }

@@ -1,12 +1,11 @@
 package lostark.todo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.auth.AuthResponseDto;
+import lostark.todo.controller.dto.auth.ResponseDto;
 import lostark.todo.domain.member.Member;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -14,7 +13,7 @@ import java.net.URL;
 @Slf4j
 public class AuthService {
 
-    public AuthResponseDto googleLogout(Member member) throws Exception {
+    public ResponseDto googleLogout(Member member) throws Exception {
 
         // 토큰 취소 URL
         String revokeUrl = "https://accounts.google.com/o/oauth2/revoke";
@@ -41,6 +40,6 @@ public class AuthService {
         // 닫기
         connection.disconnect();
         log.info("구글 로그아웃 성공");
-        return new AuthResponseDto(true, "구글 로그아웃 성공");
+        return new ResponseDto(true, "구글 로그아웃 성공");
     }
 }

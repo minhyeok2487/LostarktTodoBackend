@@ -32,8 +32,11 @@ public class TodoResponseDto {
     private WeekContentCategory weekContentCategory;
 
     private int sortNumber;
+
+    private boolean goldCheck;
+
     public TodoResponseDto toDto(TodoV2 todo) {
-        return TodoResponseDto.builder()
+        TodoResponseDto build = TodoResponseDto.builder()
                 .id(todo.getId())
                 .check(false)
                 .name(todo.getWeekContent().getName()
@@ -46,16 +49,12 @@ public class TodoResponseDto {
                 .weekCategory(todo.getWeekContent().getWeekCategory())
                 .weekContentCategory(todo.getWeekContent().getWeekContentCategory())
                 .sortNumber(todo.getSortNumber())
+                .goldCheck(todo.isGoldCheck())
                 .build();
-    }
 
-    public TodoResponseDto toDto(Todo todo) {
-        return TodoResponseDto.builder()
-                .id(todo.getId())
-                .check(todo.isChecked())
-                .name(todo.getName())
-                .gold(todo.getGold())
-                .message(todo.getMessage())
-                .build();
+        if(!todo.isGoldCheck()) {
+            build.setGold(0);
+        }
+        return build;
     }
 }
