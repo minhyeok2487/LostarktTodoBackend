@@ -45,6 +45,9 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showCubeTicket;
 
+   @ColumnDefault("false")
+   private boolean goldCheckVersion;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -54,6 +57,7 @@ public class Settings {
       this.showWeekEpona = true;
       this.showSilmaelChange = true;
       this.showCubeTicket = true;
+      this.goldCheckVersion = false;
    }
 
    public void update(String name, boolean value) {

@@ -10,7 +10,6 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,9 +57,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
     }
 
-    /**
-     * 1차 회원가입
-     */
+    // 1차 회원가입
     public Member createMember(String mail, String password) {
         if (memberRepository.existsByUsername(mail)) {
             throw new IllegalArgumentException(mail + " 이미 존재하는 이메일 입니다.");
@@ -75,6 +72,17 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    // 유저 전환(구글 로그인 -> 일반 로그인)
+    public Member changeAuthProvider(String mail, String password) {
+        Member member = findMember(mail);
+        if (member.getAuthProvider().equals("none")) {
+            throw new IllegalArgumentException("소셜 로그인으로 가입된 회원이 아닙니다.");
+        }
+        member.changeAuthToNone(passwordEncoder.encode(password));
+
+        return member;
     }
 
     /**

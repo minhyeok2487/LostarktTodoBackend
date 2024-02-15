@@ -89,7 +89,7 @@ public class CommentsController {
             }
         }
 
-        eventPublisher.publishEvent(new CommentEvent(eventPublisher, member, "새로운 방명록이 작성되었습니다."));
+        eventPublisher.publishEvent(new CommentEvent(eventPublisher, member, commentRequestDto.getBody()));
 
         return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages, null), HttpStatus.OK);
     }

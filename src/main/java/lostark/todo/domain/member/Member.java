@@ -1,6 +1,5 @@
 package lostark.todo.domain.member;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
@@ -12,7 +11,6 @@ import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.notification.Notification;
 import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Getter
@@ -23,10 +21,7 @@ import java.util.stream.Collectors;
 @Entity
 public class Member extends BaseTimeEntity {
 
-    /**
-     * 회원 목록 테이블
-     */
-
+    // 회원 테이블
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -39,6 +34,7 @@ public class Member extends BaseTimeEntity {
     private String username;
 
     private String authProvider;
+
     private String accessKey;
 
     private String password;
@@ -72,5 +68,12 @@ public class Member extends BaseTimeEntity {
         characters.add(character);
         character.setMember(this);
         return character;
+    }
+
+    // 유저 전환(구글 로그인 -> 일반 로그인)
+    public Member changeAuthToNone(String encodePassword) {
+        this.authProvider = "none";
+        this.password = encodePassword;
+        return this;
     }
 }

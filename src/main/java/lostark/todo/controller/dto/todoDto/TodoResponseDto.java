@@ -1,9 +1,7 @@
 package lostark.todo.controller.dto.todoDto;
 
 import lombok.*;
-import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.content.WeekContentCategory;
-import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 
 @Data
@@ -35,7 +33,7 @@ public class TodoResponseDto {
 
     private boolean goldCheck;
 
-    public TodoResponseDto toDto(TodoV2 todo) {
+    public TodoResponseDto toDto(TodoV2 todo, boolean goldCheckVersion) {
         TodoResponseDto build = TodoResponseDto.builder()
                 .id(todo.getId())
                 .check(false)
@@ -52,7 +50,7 @@ public class TodoResponseDto {
                 .goldCheck(todo.isGoldCheck())
                 .build();
 
-        if(!todo.isGoldCheck()) {
+        if(goldCheckVersion && !todo.isGoldCheck()) {
             build.setGold(0);
         }
         return build;
