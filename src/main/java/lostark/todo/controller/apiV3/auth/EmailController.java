@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.auth.ResponseDto;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.controller.dto.mailDto.MailRequestDto;
-import lostark.todo.service.MailService;
+import lostark.todo.service.EmailService;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,9 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/v3/mail")
 @Api(tags = {"이메일 인증"})
-public class MailController {
+public class EmailController {
 
-    private final MailService mailService;
+    private final EmailService emailService;
     private final MemberService memberService;
 
     @ApiOperation(value = "이메일 인증번호 전송",
@@ -32,8 +32,7 @@ public class MailController {
         if (memberService.existByUsername(mailRequestDto.getMail())) {
             throw new IllegalArgumentException("이미 가입된 회원입니다.");
         }
-        int number = mailService.sendMail(mailRequestDto.getMail());
-        log.info("인증번호 전송이 정상처리 되었습니다. email={}, number={}", mailRequestDto.getMail(), number);
+        int number = emailService.sendMail(mailRequestDto.getMail());
         ResponseDto responseDto = new ResponseDto(true, "인증번호 전송이 정상처리 되었습니다.");
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -43,7 +42,7 @@ public class MailController {
             response = ResponseDto.class)
     @PostMapping("/auth")
     public ResponseEntity<?> authMail(@RequestBody MailCheckDto mailCheckDto) {
-        boolean auth = mailService.checkMail(mailCheckDto);
+        boolean auth = emailService.checkMail(mailCheckDto);
         if (auth) {
             log.info("이메일 인증번호 성공, email={}", mailCheckDto.getMail());
             return new ResponseEntity<>(new ResponseDto(true, "이메일 인증번호 성공"), HttpStatus.OK);

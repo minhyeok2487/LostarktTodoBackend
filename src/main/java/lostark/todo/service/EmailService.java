@@ -4,26 +4,29 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.auth.AuthSignupDto;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
-import lostark.todo.domain.redis.Mail;
-import lostark.todo.domain.redis.MailRepository;
+import lostark.todo.domain.authEmail.AuthMail;
+import lostark.todo.domain.authEmail.AuthMailRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
-public class MailService {
+public class EmailService {
 
     private final JavaMailSender javaMailSender;
-
-    private final MailRepository repository;
+    private final AuthMailRepository emailRepository;
     private static int number;
 
     @Value("${spring.mail.username}")
@@ -53,40 +56,30 @@ public class MailService {
         return message;
     }
 
-    public int sendMail(String mail){
-        MimeMessage message = createMail(mail);
+    public int sendMail(String email){
+        MimeMessage message = createMail(email);
         javaMailSender.send(message);
-        saveRedis(mail, number);
+        emailRepository.save(new AuthMail(email, number));
         return number;
     }
 
-    public void saveRedis(String mail, int number) {
-        Mail email = new Mail(mail, number);
-        repository.save(email);
-    }
-
-    public boolean checkMail(MailCheckDto mailCheckDto) {
-        List<Mail> allByMail = repository.findAllByMail(mailCheckDto.getMail());
-        log.info("인증번호 갯수 : {}", allByMail.size());
-        if (!allByMail.isEmpty()) {
-            for (Mail mail : allByMail) {
-                if (mail.getNumber() == mailCheckDto.getNumber()
-                        && Duration.between(mail.getRegDate(), LocalDateTime.now()).toMinutes() <= 3) {
-                    mail.setCheck(true);
-                    repository.save(mail);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public boolean isAuth(AuthSignupDto authSignupDto) {
-        return repository.findAllByMail(authSignupDto.getMail()).stream()
-                .anyMatch(mail -> mail.getNumber() == authSignupDto.getNumber() && mail.isCheck());
+        return emailRepository.findAllByMail(authSignupDto.getMail()).stream()
+                .anyMatch(mail -> mail.getNumber() == authSignupDto.getNumber() && mail.isAuth());
     }
 
     public void deleteAll(String mail) {
-        repository.deleteAll(repository.findAllByMail(mail));
+        emailRepository.deleteAllByMail(mail);
+    }
+
+    public boolean checkMail(MailCheckDto mailCheckDto) {
+        AuthMail authMail = emailRepository.findByMailAndNumber(mailCheckDto.getMail(), mailCheckDto.getNumber())
+                .orElseThrow(() -> new IllegalStateException("유효하지 않은 인증번호 입니다."));
+        if (authMail.getNumber() == mailCheckDto.getNumber()
+                && Duration.between(authMail.getCreatedDate(), LocalDateTime.now()).toMinutes() <= 3) {
+            authMail.setAuth(true);
+            return true;
+        }
+        return false;
     }
 }

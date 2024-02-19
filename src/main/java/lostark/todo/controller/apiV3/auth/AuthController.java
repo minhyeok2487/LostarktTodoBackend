@@ -40,7 +40,7 @@ public class AuthController {
 
     private final MemberService memberService;
     private final AuthService authService;
-    private final MailService mailService;
+    private final EmailService emailService;
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
@@ -53,7 +53,7 @@ public class AuthController {
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = ResponseDto.class)
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody @Valid AuthSignupDto authSignupDto) {
-        boolean auth = mailService.isAuth(authSignupDto);
+        boolean auth = emailService.isAuth(authSignupDto);
         if (!auth) {
             throw new IllegalStateException("이메일 인증이 실패하였습니다.");
         }
@@ -66,7 +66,7 @@ public class AuthController {
         Member signupMember = memberService.createMember(authSignupDto.getMail(), authSignupDto.getPassword());
 
         // 회원가입 완료시 Redis에 저장된 인증번호 모두 삭제
-        mailService.deleteAll(authSignupDto.getMail());
+        emailService.deleteAll(authSignupDto.getMail());
 
         // 이벤트 실행
         EventType eventType = EventType.signUp;
