@@ -51,7 +51,6 @@ public class NoticeController {
         Page<Notices> all = noticesService.findAll(page - 1, size);
         int totalPages = all.getTotalPages();
 
-        log.info("로스트아크 공지사항 리스트를 성공적으로 검색했습니다. Page: {}, Size: {}", page, size);
         return new ResponseEntity<>(new NoticesDto(all.getContent(), totalPages, page), HttpStatus.OK);
     }
 
