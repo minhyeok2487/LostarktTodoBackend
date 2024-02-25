@@ -37,4 +37,19 @@ public class WeekContent extends Content{
     private List<TodoV2> todoList;
 
     private int coolTime; //주기
+
+    @Override
+    public String toString() {
+        return "WeekContent{" +
+                "weekCategory='" + weekCategory + '\'' +
+                ", weekContentCategory=" + weekContentCategory +
+                ", gate=" + gate +
+                ", honorShard=" + honorShard +
+                ", leapStone=" + leapStone +
+                ", destructionStone=" + destructionStone +
+                ", guardianStone=" + guardianStone +
+                ", gold=" + gold +
+                ", coolTime=" + coolTime +
+                '}';
+    }
 }

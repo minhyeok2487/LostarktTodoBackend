@@ -139,12 +139,15 @@ public class CharacterDto {
         //주간레이드 entity -> dto
         if (!character.getTodoV2List().isEmpty()) {
             // dtoList 만들기
-            makeTodoResponseDtoList(character, todoResponseDtoList);
-
-            // 골드 획득 높은거에서 3개
-            if (!character.getSettings().isGoldCheckVersion()) {
+            // goldCheckVersion별 따로
+            if (character.getSettings().isGoldCheckVersion()) {
+                makeTodoResponseDtoListGoldCheckVerison(character, todoResponseDtoList);
+            } else {
+                // 골드 획득 높은거에서 3개
+                makeTodoResponseDtoListNotGoldCheckVerison(character, todoResponseDtoList);
                 maxThree(todoResponseDtoList);
             }
+
 
             //sortNumber 순서대로 출력
             todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));
@@ -177,44 +180,74 @@ public class CharacterDto {
         return characterDto;
     }
 
-    private static void makeTodoResponseDtoList(Character character, List<TodoResponseDto> todoResponseDtoList) {
-        character.getTodoV2List().stream()
-                .filter(todoV2 -> todoV2.getCoolTime() >= 1)
-                .sorted(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()))
-                .forEach(todoV2 -> {
-                    boolean exitedCheck = todoResponseDtoList.stream()
-                            .filter(exited -> exited.getWeekCategory().equals(todoV2.getWeekContent().getWeekCategory()))
-                            .peek(exited -> {
-                                if (exited.getWeekContentCategory().equals(todoV2.getWeekContent().getWeekContentCategory())) {
-                                    exited.setName(exited.getName() + " " +todoV2.getWeekContent().getGate());
-                                } else {
-                                    if (exited.getName().contains("하드") && exited.getName().contains("노말")) {
-                                        exited.setName(exited.getName() + " " + " "+todoV2.getWeekContent().getGate());
-                                    } else {
-                                        exited.setName(exited.getName() + " " + todoV2.getWeekContent().getWeekContentCategory()+ " " +todoV2.getWeekContent().getGate());
-                                    }
-                                }
-                            })
-                            .findFirst()
-                            .map(exited -> {
-                                if (character.getSettings().isGoldCheckVersion() && exited.isGoldCheck()) {
-                                    exited.setGold(exited.getGold() + todoV2.getWeekContent().getGold());
-                                } else {
-                                    exited.setGold(exited.getGold() + todoV2.getWeekContent().getGold());
-                                }
-                                exited.setTotalGate(todoV2.getWeekContent().getGate());
-                                if (todoV2.isChecked()) {
-                                    exited.setCurrentGate(todoV2.getWeekContent().getGate());
-                                }
-                                return true;
-                            })
-                            .orElse(false);
-
-                    if (!exitedCheck) {
-                        TodoResponseDto dto = new TodoResponseDto().toDto(todoV2, character.getSettings().isGoldCheckVersion());
-                        todoResponseDtoList.add(dto);
+    private void makeTodoResponseDtoListNotGoldCheckVerison(Character character, List<TodoResponseDto> todoResponseDtoList) {
+        character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
+        for (TodoV2 todo : character.getTodoV2List()) {
+            if(todo.getCoolTime()>=1) {
+                boolean exitedCheck = false;
+                for (TodoResponseDto exited : todoResponseDtoList) {
+                    if (exited.getWeekCategory().equals(todo.getWeekContent().getWeekCategory())) {
+                        if (exited.getWeekContentCategory().equals(todo.getWeekContent().getWeekContentCategory())) {
+                            exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
+                        } else {
+                            if (exited.getName().contains("하드") && exited.getName().contains("노말")) {
+                                exited.setName(exited.getName() + " " + " "+todo.getWeekContent().getGate());
+                            } else {
+                                exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
+                            }
+                        }
+                        exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        exited.setTotalGate(todo.getWeekContent().getGate());
+                        if(todo.isChecked()) {
+                            exited.setCurrentGate(todo.getWeekContent().getGate());
+                        }
+                        exitedCheck = true;
+                        break;
                     }
-                });
+                }
+                if (!exitedCheck) {
+                    TodoResponseDto dto = new TodoResponseDto().toDto(todo, character.getSettings().isGoldCheckVersion());
+                    todoResponseDtoList.add(dto);
+                }
+            }
+
+        }
+    }
+
+    private static void makeTodoResponseDtoListGoldCheckVerison(Character character, List<TodoResponseDto> todoResponseDtoList) {
+        character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
+        for (TodoV2 todo : character.getTodoV2List()) {
+            if(todo.getCoolTime()>=1) {
+                boolean exitedCheck = false;
+                for (TodoResponseDto exited : todoResponseDtoList) {
+                    if (exited.getWeekCategory().equals(todo.getWeekContent().getWeekCategory())) {
+                        if (exited.getWeekContentCategory().equals(todo.getWeekContent().getWeekContentCategory())) {
+                            exited.setName(exited.getName() + " " +todo.getWeekContent().getGate());
+                        } else {
+                            if (exited.getName().contains("하드") && exited.getName().contains("노말")) {
+                                exited.setName(exited.getName() + " " + " "+todo.getWeekContent().getGate());
+                            } else {
+                                exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
+                            }
+                        }
+                        if (exited.isGoldCheck()) {
+                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        }
+                        exited.setTotalGate(todo.getWeekContent().getGate());
+                        if(todo.isChecked()) {
+                            exited.setCurrentGate(todo.getWeekContent().getGate());
+                        }
+                        exitedCheck = true;
+                        break;
+                    }
+                }
+                if (!exitedCheck) {
+                    TodoResponseDto dto = new TodoResponseDto().toDto(todo, character.getSettings().isGoldCheckVersion());
+                    todoResponseDtoList.add(dto);
+                }
+            }
+
+        }
     }
 
     private static void maxThree(List<TodoResponseDto> todoResponseDtoList) {
