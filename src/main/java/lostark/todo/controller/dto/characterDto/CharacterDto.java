@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.character.goldCheckPolicy.GoldCheckPolicyEnum;
 import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.todoV2.TodoV2;
@@ -140,14 +141,8 @@ public class CharacterDto {
         if (!character.getTodoV2List().isEmpty()) {
             // dtoList 만들기
             // goldCheckVersion별 따로
-            if (character.getSettings().isGoldCheckVersion()) {
-                makeTodoResponseDtoListGoldCheckVerison(character, todoResponseDtoList);
-            } else {
-                // 골드 획득 높은거에서 3개
-                makeTodoResponseDtoListNotGoldCheckVerison(character, todoResponseDtoList);
-                maxThree(todoResponseDtoList);
-            }
-
+            GoldCheckPolicyEnum goldCheckPolicyEnum = character.getSettings().getGoldCheckPolicyEnum();
+            goldCheckPolicyEnum.getPolicy().calcTodoResponseDtoList(character, todoResponseDtoList);
 
             //sortNumber 순서대로 출력
             todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));
@@ -214,7 +209,7 @@ public class CharacterDto {
         }
     }
 
-    private static void makeTodoResponseDtoListGoldCheckVerison(Character character, List<TodoResponseDto> todoResponseDtoList) {
+    private void makeTodoResponseDtoListGoldCheckVerison(Character character, List<TodoResponseDto> todoResponseDtoList) {
         character.getTodoV2List().sort(Comparator.comparingLong(TodoV2 -> TodoV2.getWeekContent().getGate()));
         for (TodoV2 todo : character.getTodoV2List()) {
             if(todo.getCoolTime()>=1) {
@@ -246,11 +241,10 @@ public class CharacterDto {
                     todoResponseDtoList.add(dto);
                 }
             }
-
         }
     }
 
-    private static void maxThree(List<TodoResponseDto> todoResponseDtoList) {
+    private void maxThree(List<TodoResponseDto> todoResponseDtoList) {
         todoResponseDtoList.sort(Comparator.comparing(TodoResponseDto::getGold).reversed());
         for (int i = 0; i < todoResponseDtoList.size(); i++) {
             TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);

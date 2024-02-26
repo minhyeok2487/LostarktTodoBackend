@@ -445,7 +445,7 @@ public class CharacterService {
 
 
     public Character updateGoldCheckVersion(Character character) {
-        character.getSettings().update("goldCheckVersion", !character.getSettings().isGoldCheckVersion());
+        character.getSettings().updateGoldCheckVersion();
         return character;
     }
 }

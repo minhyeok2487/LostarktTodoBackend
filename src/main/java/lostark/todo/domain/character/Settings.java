@@ -1,18 +1,11 @@
 package lostark.todo.domain.character;
 
 import lombok.*;
-import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
-import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.character.goldCheckPolicy.GoldCheckPolicyEnum;
 import org.hibernate.annotations.ColumnDefault;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
 import java.lang.reflect.Field;
-import java.util.List;
 
 @Embeddable
 @Getter
@@ -48,6 +41,10 @@ public class Settings {
    @ColumnDefault("false")
    private boolean goldCheckVersion;
 
+   @Enumerated(EnumType.STRING)
+   @ColumnDefault("'TOP_THREE_POLICY'")
+   private GoldCheckPolicyEnum goldCheckPolicyEnum;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -58,6 +55,7 @@ public class Settings {
       this.showSilmaelChange = true;
       this.showCubeTicket = true;
       this.goldCheckVersion = false;
+      this.goldCheckPolicyEnum = GoldCheckPolicyEnum.TOP_THREE_POLICY;
    }
 
    public void update(String name, boolean value) {
@@ -67,6 +65,15 @@ public class Settings {
          field.set(this, value);
       } catch (Exception e) {
          throw new IllegalArgumentException("없는 필드 값 입니다.");
+      }
+   }
+
+   public void updateGoldCheckVersion() {
+      this.goldCheckVersion = !goldCheckVersion;
+      if (this.goldCheckPolicyEnum.equals(GoldCheckPolicyEnum.RAID_CHECK_POLICY)) {
+         this.goldCheckPolicyEnum = GoldCheckPolicyEnum.TOP_THREE_POLICY;
+      } else {
+         this.goldCheckPolicyEnum = GoldCheckPolicyEnum.RAID_CHECK_POLICY;
       }
    }
 }

@@ -66,11 +66,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
             "WHERE c.dayTodo.guardian = :dayContent")
     void updateDayContentPriceGuardian(@Param("dayContent") DayContent dayContent, @Param("price") Double price);
 
-    @Modifying
-    @Query(value = "UPDATE Character c SET c.challengeAbyss = true , c.challengeGuardian = true , c.weekTodo.weekEpona = 2, c.weekTodo.silmaelChange = true")
-    int beforeUpdate();
-
-
     List<Character> findAllByCharacterName(String characterName);
 
     @Query(value = "SELECT c.serverName, COUNT(c.id) FROM Character c WHERE c.member.username = :username GROUP BY c.serverName")
