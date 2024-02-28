@@ -218,13 +218,8 @@ public class CharacterService {
             character.getDayTodo().updateCheckChaosAll();
         }
         if(category.equals("guardian")) {
-            character.getDayTodo().updateCheckGuardianAll();
+            character.getDayTodo().updateCheckGuardian();
         }
-        return character;
-    }
-
-    public Character updateCheck(Character character, CharacterDayTodoDto characterDayTodoDto) {
-        character.getDayTodo().updateCheck(characterDayTodoDto);
         return character;
     }
 

@@ -117,19 +117,24 @@ public class SchedulerService {
 
         chaos.forEach((key, value) -> characterRepository.updateDayContentPriceChaos(key, value)); //카오스던전 계산
         guardian.forEach((key, value) -> characterRepository.updateDayContentPriceGuardian(key, value)); //가디언토벌 계산
+        // 휴식게이지 저장
+        characterRepository.updateDayTodoGauge();
     }
 
 
     /**
-     * 수요일 오전 6시 5분 주간 숙제 초기화
+     * 수요일 오전 6시 1분 주간 숙제 초기화
      */
-    @Scheduled(cron = "0 5 6 * * 3")
+    @Scheduled(cron = "0 1 6 * * 3")
     public void resetWeekTodo() {
         log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 
         log.info("todoV2Repository.resetTodoV2() = {}", todoV2Repository.resetTodoV2()); // 주간 레이드 초기화
 
         log.info("updateWeekContent = {}", characterRepository.updateWeekContent()); // 주간 숙제 초기화
+
+        // 일일 수익 주간 합 초기화
+        characterRepository.updateWeekDayTodoTotalGold();
     }
 
 

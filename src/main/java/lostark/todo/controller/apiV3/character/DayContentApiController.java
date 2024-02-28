@@ -58,9 +58,6 @@ public class DayContentApiController {
             updateCharacter = characterService.updateCheckAll(character, category);
         }
 
-        int chaosCheckValue = updateCharacter.getDayTodo().getChaosCheck();
-        int guardianCheckValue = updateCharacter.getDayTodo().getGuardianCheck();
-
         // 이벤트 발생
         eventPublisher.publishEvent(DayContentCheckEvent.builder()
                 .source(eventPublisher)
@@ -71,10 +68,6 @@ public class DayContentApiController {
                 .beforeCheck(beforeCheck)
                 .build());
 
-        if ((category.equals("chaos") && chaosCheckValue == 0) ||
-                (category.equals("guardian") && guardianCheckValue == 0)) {
-            throw new IllegalStateException("휴식게이지 재입력전까지 예상 수익이 다를 수 있습니다.");
-        }
         return new ResponseEntity<>(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
     }
 

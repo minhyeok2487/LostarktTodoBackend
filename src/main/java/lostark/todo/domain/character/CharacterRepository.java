@@ -79,4 +79,16 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
             "WHERE c.member.username = :username")
     List<Character> findAllByUsername(String username);
 
+    @Modifying
+    @Query(value = "UPDATE Character c SET c.dayTodo.weekTotalGold = 0 WHERE c.dayTodo.weekTotalGold > 0")
+    void updateWeekDayTodoTotalGold();
+
+    @Modifying
+    @Query(value = "UPDATE Character c SET c.dayTodo.beforeEponaGauge = c.dayTodo.eponaGauge, " +
+            "c.dayTodo.beforeChaosGauge = c.dayTodo.chaosGauge, " +
+            "c.dayTodo.beforeGuardianGauge = c.dayTodo.guardianGauge " +
+            "WHERE c.dayTodo.beforeEponaGauge != c.dayTodo.eponaGauge " +
+            "OR c.dayTodo.beforeChaosGauge != c.dayTodo.chaosGauge " +
+            "OR c.dayTodo.beforeGuardianGauge != c.dayTodo.guardianGauge")
+    int updateDayTodoGauge();
 }

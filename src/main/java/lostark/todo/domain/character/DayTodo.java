@@ -4,9 +4,9 @@ import lombok.*;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.content.DayContent;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
@@ -56,6 +56,17 @@ public class DayTodo {
     @Size(max = 100)
     private int eponaGauge;
 
+    @ColumnDefault("0")
+    private double weekTotalGold; // 이번주 일일 숙제 수익
+
+    @Size(max = 100)
+    private int beforeEponaGauge; //이전 에포나 휴식게이지(0~100)
+
+    @Size(max = 100)
+    private int beforeChaosGauge; //이전 카오스던전 휴식게이지(0~100)
+
+    @Size(max = 100)
+    private int beforeGuardianGauge; //이전 가디언토벌 휴식게이지(0~100)
 
     @Override
     public String toString() {
@@ -83,86 +94,23 @@ public class DayTodo {
         this.eponaCheck2 = characterCheckDto.getEponaCheck();
     }
 
-    /**
-     * 에포나의뢰 휴식게이지 계산 후 초기화
-     */
-    public void calculateEpona() {
-        for (int i = 0; i < eponaCheck2; i++) {
-            if (eponaGauge >= 20) {
-                eponaGauge = subtract(eponaGauge, 20);
-            }
-        }
-
-        for (int i = 0; i < 3-eponaCheck2; i++) {
-            eponaGauge = add(eponaGauge, 10);
-        }
-
-        eponaCheck2 = 0;
-    }
-
-    /**
-     * 카오스던전 휴식게이지 계산 후 초기화
-     */
-    public void calculateChaos() {
-        for (int i = 0; i < chaosCheck; i++) {
-            if (chaosGauge >= 20) {
-                chaosGauge = subtract(chaosGauge, 20);
-            }
-        }
-
-        for (int i = 0; i < 2-chaosCheck; i++) {
-            chaosGauge = add(chaosGauge, 10);
-        }
-        chaosCheck = 0;
-    }
-
-    /**
-     * 가디언토벌 휴식게이지 계산 후 초기화
-     */
-    public void calculateGuardian() {
-        for (int i = 0; i < guardianCheck; i++) {
-            if (guardianGauge >= 20) {
-                guardianGauge = subtract(guardianGauge, 20);
-            }
-        }
-
-        for (int i = 0; i < 1-guardianCheck; i++) {
-            guardianGauge = add(guardianGauge, 10);
-        }
-        this.guardianCheck = 0;
-    }
-
-    /**
-     * 휴식게이지 업데이트
-     */
-    public void updateGauge(CharacterDayTodoDto characterDayTodoDto) {
-        Integer dtoChaosGauge = characterDayTodoDto.getChaosGauge();
-        validateGauge(dtoChaosGauge); //검증
-        this.chaosGauge = dtoChaosGauge;
-
-        Integer dtoGuardianGauge = characterDayTodoDto.getGuardianGauge();
-        validateGauge(dtoGuardianGauge); //검증
-        this.guardianGauge = dtoGuardianGauge;
-
-        Integer dtoEponGauge = characterDayTodoDto.getEponaGauge();
-        validateGauge(dtoEponGauge);
-        this.eponaGauge = dtoEponGauge;
-    }
-
-    /**
-     * 휴식게이지 검증
-     */
-    private void validateGauge(Integer gauge) {
-        if (gauge < 0 || gauge > 100 || gauge % 10 != 0) {
-            throw new IllegalArgumentException("휴식게이지는 0~100 사이이며, 10단위여야 합니다.");
-        }
-    }
     public DayTodo createDayContent(List<DayContent> chaos, List<DayContent> guardian, double itemLevel) {
         this.chaosName = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get().getName();
         this.chaos = chaos.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
         this.guardianName = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get().getName();
         this.guardian = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
         return this;
+    }
+
+    private void addWeekTotalGold(double gold) {
+        this.weekTotalGold += gold;
+    }
+
+    private void subsWeekTotalGold(double gold) {
+        this.weekTotalGold -= gold;
+        if (this.weekTotalGold < 0) {
+            this.weekTotalGold = 0;
+        }
     }
 
     /**
@@ -176,12 +124,14 @@ public class DayTodo {
             }
         } else {
             eponaCheck2 = 0;
+            eponaGauge = beforeEponaGauge;
         }
     }
 
     public void updateCheckEponaAll() {
         if(eponaCheck2 == 3) {
             eponaCheck2 = 0;
+            eponaGauge = beforeEponaGauge;
         } else {
             while (eponaCheck2 < 3) {
                 eponaCheck2 += 1;
@@ -193,28 +143,49 @@ public class DayTodo {
     }
 
     public void updateCheckChaos() {
-        if(chaosCheck < 2) {
+        double gold = calculateChaosGold();
+
+        if (chaosCheck < 2) {
             chaosCheck += 1;
-            if(chaosGauge >= 20) {
+            if (chaosGauge >= 20) {
                 chaosGauge -= 20;
             }
+            addWeekTotalGold(gold);
         } else {
-            chaosCheck = 0;
+            resetChaos();
         }
     }
 
     public void updateCheckChaosAll() {
-        if(chaosCheck == 2) {
-            chaosCheck = 0;
-        } else {
+        if (chaosCheck != 2) {
             while (chaosCheck < 2) {
-                chaosCheck += 1;
-                if(chaosGauge>=20) {
-                    chaosGauge -= 20;
-                }
+                updateCheckChaos();
             }
+        } else {
+            resetChaos();
         }
     }
+
+    private double calculateChaosGold() {
+        double gold;
+        if (beforeChaosGauge >= 20 && beforeChaosGauge < 40) {
+            if (chaosGauge >= 20 && chaosGauge < 40) {
+                gold = this.chaosGold * 2 / 3;
+            } else {
+                gold = this.chaosGold / 3;
+            }
+        } else {
+            gold = this.chaosGold / 2;
+        }
+        return gold;
+    }
+
+    private void resetChaos() {
+        chaosCheck = 0;
+        subsWeekTotalGold(this.chaosGold);
+        chaosGauge = beforeChaosGauge;
+    }
+
 
     public void updateCheckGuardian() {
         if(guardianCheck < 1) {
@@ -222,54 +193,29 @@ public class DayTodo {
             if(guardianGauge >= 20) {
                 guardianGauge -= 20;
             }
+            addWeekTotalGold(this.guardianGold);
         } else {
             guardianCheck = 0;
-        }
-    }
-
-    public void updateCheckGuardianAll() {
-        if(guardianCheck < 1) {
-            guardianCheck += 1;
-            if(guardianGauge >= 20) {
-                guardianGauge -= 20;
+            if (beforeGuardianGauge >= 20) {
+                if (guardianGauge >= 20) {
+                    subsWeekTotalGold(this.guardianGold);
+                } else {
+                    subsWeekTotalGold(this.guardianGold * 2);
+                }
+            } else {
+                subsWeekTotalGold(this.guardianGold);
             }
-        } else {
-            guardianCheck = 0;
+            guardianGauge = beforeGuardianGauge;
         }
     }
-
-
-    public void updateCheck(CharacterDayTodoDto characterDayTodoDto) {
-        this.eponaCheck2 = characterDayTodoDto.getEponaCheck();
-        this.chaosCheck = characterDayTodoDto.getChaosCheck();
-        this.guardianCheck = characterDayTodoDto.getGuardianCheck();
-    }
-
-    // 두 숫자 더하기
-    // 단, 음수가 되면 0을 리턴하는 메서드
-    public int subtract(int a, int b) {
-        int result = a - b;
-        if (result < 0) {
-            result = 0;
-        }
-        return result;
-    }
-
-    // 두 숫자 빼기
-    // 단, 100이 넘으면 100을 리턴하는 메서드
-    public int add(int a, int b) {
-        int result = a + b;
-        if (result > 100) {
-            result = 100;
-        }
-        return result;
-    }
-
 
     public void updateDayContentGauge(CharacterDayTodoDto characterDayTodoDto, double chaosGold, double guardianGold) {
         this.chaosGauge = characterDayTodoDto.getChaosGauge();
+        this.beforeChaosGauge = chaosGauge;
         this.guardianGauge = characterDayTodoDto.getGuardianGauge();
+        this.beforeGuardianGauge = guardianGauge;
         this.eponaGauge = characterDayTodoDto.getEponaGauge();
+        this.beforeEponaGauge = eponaGauge;
         this.chaosGold = chaosGold;
         this.guardianGold = guardianGold;
     }
