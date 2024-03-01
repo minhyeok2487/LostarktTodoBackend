@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.DayContent;
@@ -442,5 +443,36 @@ public class CharacterService {
     public Character updateGoldCheckVersion(Character character) {
         character.getSettings().updateGoldCheckVersion();
         return character;
+    }
+
+    public List<CharacterDto> updateDtoSortedList(List<Character> characterList) {
+        return characterList.stream()
+                .map(character -> new CharacterDto().toDtoV2(character))
+                .sorted(Comparator
+                        .comparingInt(CharacterDto::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed()))
+                .collect(Collectors.toList());
+    }
+
+    // 일간 총 수익을 계산하는 메서드
+    public double calculateWeekTotalGold(List<Character> characterList) {
+        double weekTotalGold = 0;
+        for (Character character : characterList) {
+            if (!character.getTodoList().isEmpty()) {
+                for (TodoV2 todoV2 : character.getTodoV2List()) {
+                    if (todoV2.isChecked()) {
+                        weekTotalGold += todoV2.getGold();
+                    }
+                }
+            }
+        }
+        return weekTotalGold;
+    }
+
+    // 주간 레이드 수익을 계산하는 메서드
+    public double calculateDayTotalGold(List<Character> characterList) {
+        return characterList.stream()
+                .mapToDouble(character -> character.getDayTodo().getWeekTotalGold())
+                .sum();
     }
 }

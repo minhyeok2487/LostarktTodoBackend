@@ -21,4 +21,8 @@ public class HomeDto {
     private CharacterDto mainCharacter;
 
     private List<HomeRaidDto> homeRaidDtoList;
+
+    private double dayTotalGold;
+
+    private double weekTotalGold;
 }
