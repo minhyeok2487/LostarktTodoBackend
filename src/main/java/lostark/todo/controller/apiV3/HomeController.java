@@ -9,7 +9,6 @@ import lostark.todo.controller.dto.homeDto.HomeDto;
 import lostark.todo.controller.dto.homeDto.HomeRaidDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.service.CharacterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
