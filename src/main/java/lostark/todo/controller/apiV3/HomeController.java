@@ -6,18 +6,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.homeDto.HomeDto;
+import lostark.todo.controller.dto.homeDto.HomeFriendsDto;
 import lostark.todo.controller.dto.homeDto.HomeRaidDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.friends.Friends;
+import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
+import lostark.todo.service.FriendsService;
+import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,12 +34,15 @@ public class HomeController {
             "에키드나", "카멘", "상아탑", "일리아칸", "카양겔", "아브렐슈드", "쿠크세이튼", "비아키스", "발탄", "아르고스");
 
     private final CharacterService characterService;
+    private final MemberService memberService;
+    private final FriendsService friendsService;
 
     @ApiOperation(value = "메인 화면 데이터 호출", notes = "캐릭터 데이터, 숙제 현황")
     @GetMapping()
     public ResponseEntity<?> findAll(@AuthenticationPrincipal String username) {
         //1. 전체 캐릭터 데이터
-        List<Character> characterList = characterService.findCharacterListUsername(username);
+        Member member = memberService.findMember(username);
+        List<Character> characterList = member.getCharacters();
 
         //2. 전체 캐릭터 데이터 -> DtoSortedList
         List<CharacterDto> characterDtoList = characterService.updateDtoSortedList(characterList);
@@ -49,14 +55,45 @@ public class HomeController {
         double dayTotalGold = characterService.calculateDayTotalGold(characterList);
 
         //5. 숙제 현황
-        List<HomeRaidDto> homeRaidDtos = calculateRaidStatus(characterDtoList);
+        List<HomeRaidDto> homeRaidDtoList = calculateRaidStatus(characterDtoList);
+        
+        //6. 깐부 현황
+        //6-1. 일일 숙제
+        HomeFriendsDto build1 = HomeFriendsDto.builder()
+                .characterName(mainCharacter.getCharacterName())
+                .gold(dayTotalGold)
+                .build();
+        List<Friends> byFromMember = friendsService.findAllByFromMember(member);
+        List<HomeFriendsDto> friendsDayList = calculateFriendsDayTotalGold(byFromMember);
+        friendsDayList.add(build1);
+        friendsDayList.sort(Comparator.comparingDouble(HomeFriendsDto::getGold).reversed());
+
+        HomeFriendsDto build2 = HomeFriendsDto.builder()
+                .characterName(mainCharacter.getCharacterName())
+                .gold(weekTotalGold)
+                .build();
+        List<HomeFriendsDto> friendsWeekList = calculateFriendsWeekTotalGold(byFromMember);
+        friendsWeekList.add(build2);
+        friendsWeekList.sort(Comparator.comparingDouble(HomeFriendsDto::getGold).reversed());
+
+        HomeFriendsDto build3 = HomeFriendsDto.builder()
+                .characterName(mainCharacter.getCharacterName())
+                .gold(dayTotalGold + weekTotalGold)
+                .build();
+        List<HomeFriendsDto> friendsTotalList = calculateFriendsTotalGold(byFromMember);
+        friendsTotalList.add(build3);
+        friendsTotalList.sort(Comparator.comparingDouble(HomeFriendsDto::getGold).reversed());
+
 
         HomeDto build = HomeDto.builder()
-                .homeRaidDtoList(homeRaidDtos)
+                .homeRaidDtoList(homeRaidDtoList)
                 .characterDtoList(characterDtoList)
                 .mainCharacter(mainCharacter)
                 .weekTotalGold(weekTotalGold)
                 .dayTotalGold(dayTotalGold)
+                .friendsDayList(friendsDayList)
+                .friendsWeekList(friendsWeekList)
+                .friendsTotalList(friendsTotalList)
                 .build();
 
         return new ResponseEntity<>(build, HttpStatus.OK);
@@ -83,4 +120,43 @@ public class HomeController {
                 .collect(Collectors.toList());
     }
 
+    // 깐부 일일 숙제 주간 골드 합
+    public List<HomeFriendsDto> calculateFriendsDayTotalGold(List<Friends> friendsList) {
+        List<HomeFriendsDto> result = new ArrayList<>();
+        for (Friends friends : friendsList) {
+            double gold = characterService.calculateDayTotalGold(friends.getMember().getCharacters());
+            result.add(HomeFriendsDto.builder()
+                    .characterName(friends.getMember().getCharacters().get(0).getCharacterName())
+                    .gold(gold)
+                    .build());
+        }
+        return result;
+    }
+
+    // 깐부 주간 숙제 주간 골드 합
+    public List<HomeFriendsDto> calculateFriendsWeekTotalGold(List<Friends> friendsList) {
+        List<HomeFriendsDto> result = new ArrayList<>();
+        for (Friends friends : friendsList) {
+            double gold = characterService.calculateWeekTotalGold(friends.getMember().getCharacters());
+            result.add(HomeFriendsDto.builder()
+                    .characterName(friends.getMember().getCharacters().get(0).getCharacterName())
+                    .gold(gold)
+                    .build());
+        }
+        return result;
+    }
+
+    // 깐부 총 주간 골드 합
+    public List<HomeFriendsDto> calculateFriendsTotalGold(List<Friends> friendsList) {
+        List<HomeFriendsDto> result = new ArrayList<>();
+        for (Friends friends : friendsList) {
+            double dayTotalGold = characterService.calculateDayTotalGold(friends.getMember().getCharacters());
+            double weekTotalGold = characterService.calculateWeekTotalGold(friends.getMember().getCharacters());
+            result.add(HomeFriendsDto.builder()
+                    .characterName(friends.getMember().getCharacters().get(0).getCharacterName())
+                    .gold(dayTotalGold+weekTotalGold)
+                    .build());
+        }
+        return result;
+    }
 }

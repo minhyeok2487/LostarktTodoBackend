@@ -23,4 +23,10 @@ public class HomeDto {
     private double dayTotalGold;
 
     private double weekTotalGold;
+
+    private List<HomeFriendsDto> friendsDayList;
+
+    private List<HomeFriendsDto> friendsWeekList;
+
+    private List<HomeFriendsDto> friendsTotalList;
 }
