@@ -388,11 +388,11 @@ public class CharacterService {
                 .collect(Collectors.toList());
     }
 
-    // 일간 총 수익을 계산하는 메서드
+    // 주간 레이드 수익을 계산하는 메서드
     public double calculateWeekTotalGold(List<Character> characterList) {
         double weekTotalGold = 0;
         for (Character character : characterList) {
-            if (!character.getTodoList().isEmpty()) {
+            if (!character.getTodoV2List().isEmpty()) {
                 for (TodoV2 todoV2 : character.getTodoV2List()) {
                     if (todoV2.isChecked()) {
                         weekTotalGold += todoV2.getGold();
@@ -403,7 +403,7 @@ public class CharacterService {
         return weekTotalGold;
     }
 
-    // 주간 레이드 수익을 계산하는 메서드
+    // 일간 총 수익을 계산하는 메서드
     public double calculateDayTotalGold(List<Character> characterList) {
         return characterList.stream()
                 .mapToDouble(character -> character.getDayTodo().getWeekTotalGold())
