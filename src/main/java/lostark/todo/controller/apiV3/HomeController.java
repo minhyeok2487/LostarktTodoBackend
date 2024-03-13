@@ -58,12 +58,12 @@ public class HomeController {
         List<HomeRaidDto> homeRaidDtoList = calculateRaidStatus(characterDtoList);
         
         //6. 깐부 현황
-        //6-1. 일일 숙제
+        List<Friends> byFromMember = friendsService.findAllByFromMember(member);
+
         HomeFriendsDto build1 = HomeFriendsDto.builder()
                 .characterName(mainCharacter.getCharacterName())
                 .gold(dayTotalGold)
                 .build();
-        List<Friends> byFromMember = friendsService.findAllByFromMember(member);
         List<HomeFriendsDto> friendsDayList = calculateFriendsDayTotalGold(byFromMember);
         friendsDayList.add(build1);
         friendsDayList.sort(Comparator.comparingDouble(HomeFriendsDto::getGold).reversed());
@@ -108,17 +108,40 @@ public class HomeController {
         return RAID_SORT_ORDER.stream()
                 .map(key -> {
                     List<TodoResponseDto> todoResponseDtos = todoListGroupedByWeekCategory.get(key);
-                    int count = 0;
-                    int totalCount = 0;
-                    if (todoResponseDtos != null) {
-                        count = (int) todoResponseDtos.stream().filter(TodoResponseDto::isCheck).count();
-                        totalCount = todoResponseDtos.size();
+                    if (todoResponseDtos == null || todoResponseDtos.isEmpty()) {
+                        return null;
                     }
-                    return new HomeRaidDto(key, count, totalCount);
+                    long count = todoResponseDtos.stream().filter(TodoResponseDto::isCheck).count();
+                    long totalCount = todoResponseDtos.size();
+                    long dealerCount = todoResponseDtos.stream()
+                            .filter(dto -> isDealer(dto.getCharacterClassName()))
+                            .count();
+                    long supportCount = totalCount - dealerCount;
+
+                    return HomeRaidDto.builder()
+                            .name(key)
+                            .count((int) count)
+                            .dealerCount((int) dealerCount)
+                            .supportCount((int) supportCount)
+                            .totalCount((int) totalCount)
+                            .build();
                 })
-                .filter(dto -> dto.getTotalCount() > 0)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    // 딜러 서폿 구분하는 메서드
+    private boolean isDealer(String characterClassName) {
+        switch (characterClassName) {
+            case "도화가":
+            case "홀리나이트":
+            case "바드":
+                return false;
+            default:
+                return true;
+        }
+    }
+
 
     // 깐부 일일 숙제 주간 골드 합
     public List<HomeFriendsDto> calculateFriendsDayTotalGold(List<Friends> friendsList) {

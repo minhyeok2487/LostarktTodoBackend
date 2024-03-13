@@ -13,6 +13,10 @@ public class HomeRaidDto {
 
     private String name;
 
+    private int dealerCount;
+
+    private int supportCount;
+
     private int count;
 
     private int totalCount;

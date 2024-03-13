@@ -15,6 +15,8 @@ public class TodoResponseDto {
 
     private String name;
 
+    private String characterClassName;
+
     private int gold;
 
     private boolean check;
@@ -48,6 +50,7 @@ public class TodoResponseDto {
                 .weekContentCategory(todo.getWeekContent().getWeekContentCategory())
                 .sortNumber(todo.getSortNumber())
                 .goldCheck(todo.isGoldCheck())
+                .characterClassName(todo.getCharacter().getCharacterClassName())
                 .build();
 
         if(goldCheckVersion && !todo.isGoldCheck()) {
