@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.boardsDto.BoardUpdateDto;
 import lostark.todo.domain.boards.Boards;
+import lostark.todo.domain.boards.BoardsImagesRepository;
 import lostark.todo.domain.boards.BoardsRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

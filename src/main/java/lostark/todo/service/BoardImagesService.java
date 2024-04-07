@@ -2,6 +2,7 @@ package lostark.todo.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
@@ -11,6 +12,7 @@ import lostark.todo.domain.boards.BoardImages;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.boards.BoardsImagesRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -76,7 +82,9 @@ public class BoardImagesService {
         String originalFilename = image.getOriginalFilename(); //원본 파일 명
         String extention = originalFilename.substring(originalFilename.lastIndexOf(".")); //확장자 명
 
-        String s3FileName = UUID.randomUUID().toString().substring(0, 10) + originalFilename; //변경된 파일 명
+        String folderName = "boards/";
+        String s3FileName = folderName + UUID.randomUUID().toString().substring(0, 10) + originalFilename;
+
 
         InputStream is = image.getInputStream();
         byte[] bytes = IOUtils.toByteArray(is); //image를 byte[]로 변환
@@ -120,6 +128,37 @@ public class BoardImagesService {
         for (BoardImages boardImages : repository.findAllByFileNameIn(fileNameList)) {
             boards.addImages(boardImages);
         }
+    }
 
+    // 24시간 마다 등록이 안된 게시글 이미지 파일 제거
+    @Scheduled(cron = "0 */12 * * * *") // 매 12시간마다 실행
+    public void deleteNullImage() {
+        List<BoardImages> allByBoardsIsNull = repository.findAllByBoardsIsNull();
+        if (!allByBoardsIsNull.isEmpty()) {
+            for (BoardImages boardImages : allByBoardsIsNull) {
+                deleteImageFromS3(boardImages.getImageUrl());
+                repository.delete(boardImages);
+            }
+        }
+    }
+
+    // s3 이미지 삭제
+    public void deleteImageFromS3(String imageAddress){
+        String key = getKeyFromImageAddress(imageAddress);
+        try{
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+        }catch (Exception e){
+            throw new IllegalStateException("이미지 삭제 실패");
+        }
+    }
+
+    private String getKeyFromImageAddress(String imageAddress){
+        try{
+            URL url = new URL(imageAddress);
+            String decodingKey = URLDecoder.decode(url.getPath(), "UTF-8");
+            return decodingKey.substring(1); // 맨 앞의 '/' 제거
+        }catch (MalformedURLException | UnsupportedEncodingException e){
+            throw new IllegalStateException("이미지 삭제 실패");
+        }
     }
 }

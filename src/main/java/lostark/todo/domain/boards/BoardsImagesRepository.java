@@ -8,5 +8,7 @@ public interface BoardsImagesRepository extends JpaRepository<BoardImages, Long>
 
     List<BoardImages> findAllByFileNameIn(List<String> urls);
 
+    List<BoardImages> findAllByBoardsIsNull();
+
 
 }

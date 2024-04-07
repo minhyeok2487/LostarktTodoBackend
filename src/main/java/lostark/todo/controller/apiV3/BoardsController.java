@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 @Api(tags = {"사이트 공지사항"})
 public class BoardsController {
 
-    private final AmazonS3 amazonS3;
     private final MemberService memberService;
     private final BoardsService boardsService;
     private final BoardImagesService boardImagesService;
@@ -143,6 +142,12 @@ public class BoardsController {
         Member member = memberService.findMember(username);
 
         if (member.getRole().equals(Role.ADMIN)) {
+            Boards boards = boardsService.findById(id);
+            if (!boards.getBoardImages().isEmpty()) {
+                for (BoardImages boardImage : boards.getBoardImages()) {
+                    boardImagesService.deleteImageFromS3(boardImage.getImageUrl());
+                }
+            }
             boardsService.delete(id);
             log.info("사이트 공지사항을 성공적으로 삭제하였습니다. Id: {}, 수정자 : {}", id, username);
             return new ResponseEntity<>("ok", HttpStatus.OK);
