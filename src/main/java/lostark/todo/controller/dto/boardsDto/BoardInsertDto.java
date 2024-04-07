@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +20,6 @@ public class BoardInsertDto {
     @ApiModelProperty(notes = "내용")
     private String content;
 
+    @ApiModelProperty(notes = "이미지 name 리스트")
+    private List<String> fileNames;
 }

@@ -10,6 +10,7 @@ import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,6 +39,11 @@ public class Boards extends BaseTimeEntity {
 
     private int views;
 
+    @OneToMany(mappedBy = "boards", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @JsonManagedReference
+    private List<BoardImages> boardImages;
+
+
     @Override
     public String toString() {
         return "Boards{" +
@@ -53,6 +59,13 @@ public class Boards extends BaseTimeEntity {
     public Boards update(String title, String content) {
         this.title = title;
         this.content = content;
+        return this;
+    }
+
+    // board 엔티티에 boardImage 리스트 저장
+    public Boards addImages(BoardImages image) {
+        boardImages.add(image);
+        image.setBoards(this);
         return this;
     }
 }

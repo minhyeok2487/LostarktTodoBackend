@@ -1,14 +1,17 @@
 package lostark.todo.controller.apiV3;
 
+import com.amazonaws.services.s3.AmazonS3;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.boardsDto.*;
 import lostark.todo.domain.Role;
+import lostark.todo.domain.boards.BoardImages;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
 import lostark.todo.exhandler.exceptions.CustomIllegalArgumentException;
+import lostark.todo.service.BoardImagesService;
 import lostark.todo.service.BoardsService;
 import lostark.todo.service.MemberService;
 import org.springframework.data.domain.Page;
@@ -16,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +32,11 @@ import java.util.stream.Collectors;
 @Api(tags = {"사이트 공지사항"})
 public class BoardsController {
 
+    private final AmazonS3 amazonS3;
     private final MemberService memberService;
     private final BoardsService boardsService;
+    private final BoardImagesService boardImagesService;
+
 
     @ApiOperation(value = "사이트 공지사항 page, size 크기로 가져오기",
             notes = "sort : 작성일 최근순, page : 1부터 시작",
@@ -90,16 +98,19 @@ public class BoardsController {
     public ResponseEntity<?> save(@AuthenticationPrincipal String username,
                                   @RequestBody BoardInsertDto boardInsertDto) {
         Member member = memberService.findMember(username);
+        log.info(String.valueOf(boardInsertDto.getFileNames().size()));
 
         if (member.getRole().equals(Role.ADMIN)) {
             Boards entity = Boards.builder()
                     .member(member)
                     .title(boardInsertDto.getTitle())
                     .content(boardInsertDto.getContent())
+                    .boardImages(new ArrayList<>())
                     .views(0)
                     .build();
 
             Boards save = boardsService.save(entity);
+            boardImagesService.saveByfileNames(boardInsertDto.getFileNames(), save);
 
             log.info("사이트 공지사항을 성공적으로 저장하였습니다. Id: {}", save.getId());
             return new ResponseEntity<>(new BoardResponseDto().toDto(save), HttpStatus.CREATED);
@@ -140,4 +151,10 @@ public class BoardsController {
         }
     }
 
+    @ApiOperation(value = "이미지 업로드", response = BoardImageUrlDto.class)
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadImage(@RequestPart("image") MultipartFile image) {
+        BoardImages upload = boardImagesService.upload(image);
+        return new ResponseEntity<>(new BoardImageUrlDto(upload), HttpStatus.OK);
+    }
 }
