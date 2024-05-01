@@ -38,20 +38,6 @@ public class HomeController {
     private final FriendsService friendsService;
 
     @ApiOperation(value = "메인 화면 데이터 호출", notes = "캐릭터 데이터, 숙제 현황")
-    @GetMapping("/test")
-    public ResponseEntity<?> findAllTest() {
-        //1. 전체 캐릭터 데이터
-        System.out.println("호출 호출");
-        String username = "repeat2487@gmail.com";
-        Member member = memberService.findMember(username);
-        List<Character> characterList = member.getCharacters();
-        CharacterTestDto dto = CharacterTestDto.builder()
-                .characterName(characterList.get(0).getCharacterName())
-                .build();
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "메인 화면 데이터 호출", notes = "캐릭터 데이터, 숙제 현황")
     @GetMapping()
     public ResponseEntity<?> findAll(@AuthenticationPrincipal String username) {
         //1. 전체 캐릭터 데이터
