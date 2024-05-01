@@ -1,5 +1,6 @@
 package lostark.todo.domain.member;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
@@ -23,8 +24,19 @@ public class MemberRepositoryImpl implements MemberCustomRepository{
                                 character.characterImage, character.characterClassName, character.itemLevel)))
                 .from(member)
                 .leftJoin(character).on(character.member.eq(member))
-                .where(character.characterName.eq(member.mainCharacter))
+                .where(
+                        eqUsername(username),
+                        eqMainCharacter()
+                )
                 .fetchOne();
 
+    }
+
+    private static BooleanExpression eqUsername(String username) {
+        return member.username.eq(username);
+    }
+
+    private static BooleanExpression eqMainCharacter() {
+        return character.characterName.eq(member.mainCharacter);
     }
 }
