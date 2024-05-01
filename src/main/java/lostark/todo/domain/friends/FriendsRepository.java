@@ -21,4 +21,7 @@ public interface FriendsRepository extends JpaRepository<Friends, Long> {
     @Modifying
     @Query(value = "DELETE FROM Friends f WHERE f.member = :member OR f.fromMember = :memberId")
     int deleteByMember(@Param("member") Member member, @Param("memberId") long memberId);
+
+    @Query(value = "SELECT f FROM Friends f WHERE f.member.id = :memberId AND f.fromMember = :fromMemberId")
+    Optional<Friends> findFriend(long memberId, long fromMemberId);
 }

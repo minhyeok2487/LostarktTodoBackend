@@ -14,7 +14,6 @@ import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.friends.FriendSettings;
-import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
@@ -54,7 +53,7 @@ public class FriendsApiController {
         if (member.getCharacters().isEmpty()) {
             throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
         }
-        List<FriendsReturnDto> friends = friendsService.findFriends(member);
+        List<FriendsReturnDto> friends = friendsService.isFriend(member);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
@@ -72,7 +71,7 @@ public class FriendsApiController {
             for (Character character : characterList) {
                 if(toMember != character.getMember()) { //본인 제외
                     Member fromMember = memberService.findMember(character.getMember().getId());
-                    String weAreFriend = friendsService.findFriends(toMember,fromMember);
+                    String weAreFriend = friendsService.isFriend(toMember,fromMember);
                     FindCharacterWithFriendsDto dto = FindCharacterWithFriendsDto.builder()
                             .id(fromMember.getId())
                             .username(fromMember.getUsername())
@@ -100,7 +99,7 @@ public class FriendsApiController {
         Member fromMember = memberService.findMember(fromUser);
 
         friendsService.addFriendsRequest(toMember, fromMember);
-        List<FriendsReturnDto> friends = friendsService.findFriends(toMember);
+        List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
@@ -113,7 +112,7 @@ public class FriendsApiController {
         Member fromMember = memberService.findMember(fromUser);
 
         friendsService.updateFriendsRequest(toMember, fromMember, category);
-        List<FriendsReturnDto> friends = friendsService.findFriends(toMember);
+        List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 

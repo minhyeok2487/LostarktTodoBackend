@@ -39,6 +39,8 @@ public class Member extends BaseTimeEntity {
 
     private String password;
 
+    private String mainCharacter;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

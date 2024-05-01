@@ -4,13 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
-import lostark.todo.controller.dto.homeDto.HomeFriendsDto;
-import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
 import lostark.todo.domain.member.Member;
-import lostark.todo.domain.todoV2.TodoV2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +47,7 @@ public class FriendsService {
         friendsRepository.save(fromFriends);
     }
 
-    public String findFriends(Member toMember, Member fromMember) {
+    public String isFriend(Member toMember, Member fromMember) {
         if(friendsRepository.existsByMemberAndFromMember(toMember, fromMember.getId())) {
             boolean toFriends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).isAreWeFriend();
             boolean fromFriends = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).isAreWeFriend();
@@ -70,7 +67,7 @@ public class FriendsService {
         return "깐부 요청";
     }
 
-    public List<FriendsReturnDto> findFriends(Member member) {
+    public List<FriendsReturnDto> isFriend(Member member) {
         List<FriendsReturnDto> returnDtoList = new ArrayList<>();
         List<Friends> byMember = friendsRepository.findAllByMember(member);
         List<Friends> fromMember = friendsRepository.findAllByFromMember(member.getId());
@@ -169,32 +166,7 @@ public class FriendsService {
         }
     }
 
-    public List<HomeFriendsDto> calculateFriendsWeekTotalGold(Member member) {
-        List<HomeFriendsDto> homeFriendsDtoList = new ArrayList<>();
-        List<Friends> byFromMember = friendsRepository.findAllByFromMember(member.getId());
-        for (Friends friends : byFromMember) {
-            List<Character> characters = friends.getMember().getCharacters();
-            double gold = calculateWeekTotalGold(characters);
-            homeFriendsDtoList.add(
-                    HomeFriendsDto.builder()
-                    .characterName(friends.getMember().getCharacters().get(0).getCharacterName())
-                    .gold(gold)
-                    .build());
-        }
-        return homeFriendsDtoList;
-    }
-
-    public double calculateWeekTotalGold(List<Character> characterList) {
-        double weekTotalGold = 0;
-        for (Character character : characterList) {
-            if (!character.getTodoV2List().isEmpty()) {
-                for (TodoV2 todoV2 : character.getTodoV2List()) {
-                    if (todoV2.isChecked()) {
-                        weekTotalGold += todoV2.getGold();
-                    }
-                }
-            }
-        }
-        return weekTotalGold;
+    public Friends findFriend(Member member, Long friendId) {
+        return friendsRepository.findFriend(friendId, member.getId()).orElseThrow(() -> new IllegalArgumentException("잘못된 요청 입니다."));
     }
 }

@@ -158,8 +158,13 @@ public class BoardsController {
 
     @ApiOperation(value = "이미지 업로드", response = BoardImageUrlDto.class)
     @PostMapping("/image")
-    public ResponseEntity<?> uploadImage(@RequestPart("image") MultipartFile image) {
-        BoardImages upload = boardImagesService.upload(image);
-        return new ResponseEntity<>(new BoardImageUrlDto(upload), HttpStatus.OK);
+    public ResponseEntity<?> uploadImage(@AuthenticationPrincipal String username, @RequestPart("image") MultipartFile image) {
+        Member member = memberService.findMember(username);
+        if (member.getRole().equals(Role.ADMIN)) {
+            BoardImages upload = boardImagesService.upload(image);
+            return new ResponseEntity<>(new BoardImageUrlDto(upload), HttpStatus.OK);
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
     }
 }

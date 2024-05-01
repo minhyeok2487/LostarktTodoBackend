@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
+import lostark.todo.controller.dtoV2.member.EditMainCharacter;
+import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.Friends;
@@ -26,6 +28,17 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public MemberResponse get(String username) {
+        return memberRepository.findMemberResponse(username);
+    }
+
+    public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {
+        Member member = findMember(username);
+        member.setMainCharacter(editMainCharacter.getMainCharacter());
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     public Member login(MemberLoginDto memberloginDto) {
         String username = memberloginDto.getUsername();
