@@ -1,12 +1,15 @@
 package lostark.todo.controller.dtoV2.member;
 
-import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lostark.todo.domain.character.Character;
+import lostark.todo.domain.member.Member;
 
 import javax.validation.constraints.NotEmpty;
 
 @Data
+@NoArgsConstructor
 public class MemberResponse {
     @NotEmpty
     @ApiModelProperty(example = "회원 id")
@@ -20,10 +23,18 @@ public class MemberResponse {
     @ApiModelProperty(example = "대표 캐릭터")
     private MainCharacterResponse mainCharacter;
 
-    @QueryProjection
-    public MemberResponse(long memberId, String username, MainCharacterResponse mainCharacter) {
-        this.memberId = memberId;
-        this.username = username;
-        this.mainCharacter = mainCharacter;
+    public MemberResponse(Member member) {
+        this.memberId = member.getId();
+        this.username = member.getUsername();
+        this.mainCharacter = createMainCharacter(member);
+    }
+
+    private MainCharacterResponse createMainCharacter(Member member) {
+        for (Character character : member.getCharacters()) {
+            if (character.getCharacterName().equals(member.getMainCharacter())) {
+                return new MainCharacterResponse(character);
+            }
+        }
+        return new MainCharacterResponse();
     }
 }

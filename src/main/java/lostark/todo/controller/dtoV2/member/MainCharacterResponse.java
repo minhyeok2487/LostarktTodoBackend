@@ -1,12 +1,14 @@
 package lostark.todo.controller.dtoV2.member;
 
-import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lostark.todo.domain.character.Character;
 
 import javax.validation.constraints.NotEmpty;
 
 @Data
+@NoArgsConstructor
 public class MainCharacterResponse {
 
     @NotEmpty
@@ -29,12 +31,11 @@ public class MainCharacterResponse {
     @ApiModelProperty(example = "아이템 레벨")
     private double itemLevel;
 
-    @QueryProjection
-    public MainCharacterResponse(String serverName, String characterName, String characterImage, String characterClassName, double itemLevel) {
-        this.serverName = serverName;
-        this.characterName = characterName;
-        this.characterImage = characterImage;
-        this.characterClassName = characterClassName;
-        this.itemLevel = itemLevel;
+    public MainCharacterResponse(Character character) {
+        this.serverName = character.getServerName();
+        this.characterName = character.getCharacterName();
+        this.characterImage = character.getCharacterImage();
+        this.characterClassName = character.getCharacterClassName();
+        this.itemLevel = character.getItemLevel();
     }
 }

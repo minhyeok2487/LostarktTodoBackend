@@ -29,8 +29,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public MemberResponse get(String username) {
-        return memberRepository.findMemberResponse(username);
+    public MemberResponse findMemberResponse(String username) {
+        return new MemberResponse(findMember(username));
     }
 
     public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {
@@ -48,13 +48,6 @@ public class MemberService {
         } else {
             throw new IllegalArgumentException("이메일 또는 패스워드가 일치하지 않습니다.");
         }
-    }
-
-    /**
-     * ApiKey가 있는 회원 리스트
-     */
-    public List<Member> findAllByApiKeyNotNull() {
-        return memberRepository.findAllByApiKeyNotNull();
     }
 
     /**
@@ -140,50 +133,6 @@ public class MemberService {
     }
 
 
-    /**
-     * 캐릭터 업데이트 로직
-     * 업데이트, 추가, 삭제
-     */
-    public List<Character> updateCharacterList(Member member, List<Character> updateCharacterList) {
-        List<Character> beforeCharacterList = member.getCharacters();
-        // 캐릭터 정보 업데이트와 새로운 캐릭터 추가
-        for (Character updateCharacter : updateCharacterList) {
-            updateCharacter.setMember(member);
-            boolean found = false;
-
-            //기존에 있는 캐릭터는 업데이트
-            for (Character beforeCharacter : beforeCharacterList) {
-                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
-                    beforeCharacter.updateCharacter(updateCharacter); // 캐릭터 정보 업데이트
-                    found = true;
-                    break;
-                }
-            }
-
-            //기존에 존재하지 않는 캐릭터면 추가
-            if (!found) {
-                beforeCharacterList.add(updateCharacter);
-            }
-        }
-
-        // 삭제된 캐릭터 삭제
-        Iterator<Character> beforeCharacterIterator = beforeCharacterList.iterator();
-        while (beforeCharacterIterator.hasNext()) {
-            Character beforeCharacter = beforeCharacterIterator.next();
-            boolean found = false;
-            for (Character updateCharacter : updateCharacterList) {
-                if (beforeCharacter.getCharacterName().equals(updateCharacter.getCharacterName())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                beforeCharacterIterator.remove();
-            }
-        }
-        return beforeCharacterList;
-    }
-
     public Member updateSort(String username, List<CharacterSortDto> characterSortDtoList) {
         Member member = findMember(username);
         List<Character> beforeCharacterList = member.getCharacters();
@@ -234,34 +183,6 @@ public class MemberService {
         } else {
             throw new IllegalArgumentException("중복된 캐릭터가 없습니다.");
         }
-    }
-
-    public String findMemberFriend(Member toMember, Member fromMember) {
-        if(toMember.getFriends().isEmpty()) {
-            return "친구 요청";
-        } else {
-            for (Friends friend : toMember.getFriends()) {
-                if(friend.getFromMember() == fromMember.getId()) {
-                    for (Friends fromMemberFriend : fromMember.getFriends()) {
-                        if(fromMemberFriend.getFromMember() == friend.getId()) {
-                            if(friend.isAreWeFriend() && fromMemberFriend.isAreWeFriend()) {
-                                return "친구";
-                            }
-                            else if(friend.isAreWeFriend() && !fromMemberFriend.isAreWeFriend()) {
-                                return "친구 요청 진행중";
-                            }
-                            else if(!friend.isAreWeFriend() && fromMemberFriend.isAreWeFriend()) {
-                                return "친구 요청 받음";
-                            }
-                            else {
-                                return "친구 요청";
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return "???";
     }
 
     public boolean existByUsername(String username) {

@@ -7,6 +7,7 @@ import lostark.todo.domain.content.DayContent;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
@@ -22,11 +23,11 @@ public class DayTodo {
 
     private String chaosName;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chaos_id")
     private DayContent chaos;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guardian_id")
     private DayContent guardian;
 

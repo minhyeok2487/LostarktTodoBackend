@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static lostark.todo.Constant.TEST_USERNAME;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,18 +26,13 @@ public class MemberControllerV4 {
             response = MemberResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        MemberResponse memberResponse = memberService.get(username);
-        if(username.equals(TEST_USERNAME)) {
-            memberResponse.setUsername(null);
-        }
-        return new ResponseEntity<>(memberResponse, HttpStatus.OK);
+        return new ResponseEntity<>(memberService.findMemberResponse(username), HttpStatus.OK);
     }
 
     @ApiOperation(value = "대표 캐릭터 변경 API")
     @PatchMapping("/main-character")
     public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
                                                @RequestBody EditMainCharacter editMainCharacter) {
-        System.out.println("editMainCharacter = " + editMainCharacter.toString());
         memberService.editMainCharacter(username, editMainCharacter);
         return new ResponseEntity<>(HttpStatus.OK);
     }

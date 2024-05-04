@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class HomeController {
 
     private static final List<String> RAID_SORT_ORDER = Arrays.asList(
-            "에키드나", "카멘", "상아탑", "일리아칸", "카양겔", "아브렐슈드", "쿠크세이튼", "비아키스", "발탄", "아르고스");
+            "베히모스", "에키드나", "카멘", "상아탑", "일리아칸", "카양겔", "아브렐슈드", "쿠크세이튼", "비아키스", "발탄", "아르고스");
 
     private final CharacterService characterService;
     private final MemberService memberService;

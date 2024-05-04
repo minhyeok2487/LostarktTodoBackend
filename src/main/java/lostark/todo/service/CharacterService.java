@@ -8,7 +8,6 @@ import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
@@ -25,6 +24,10 @@ import java.util.stream.Collectors;
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
+
+    public List<Character> findCharacterListUsername(String username) {
+        return characterRepository.findAllByUsername(username);
+    }
 
     public List<Character> findAll() {
         return characterRepository.findAll();
@@ -309,13 +312,6 @@ public class CharacterService {
         character.getWeekTodo().updateCubeTicket(num);
     }
 
-    /**
-     * 주간 숙제 초기화
-     */
-    public int updateWeekContent() {
-        return updateWeekContent();
-    }
-
 
     /**
      * 캐릭터 검색(리스트)
@@ -326,14 +322,6 @@ public class CharacterService {
 
     public Character findCharacterById(long characterId) {
         return characterRepository.findById(characterId).orElseThrow(() -> new IllegalArgumentException("캐릭터 id 에러"));
-    }
-
-    public List<Character> findCharacterListUsername(String username) {
-        List<Character> characterList = characterRepository.findAllByUsername(username);
-        if(characterList.isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
-        return characterList;
     }
 
     public boolean deleteByMember(Member member) {
