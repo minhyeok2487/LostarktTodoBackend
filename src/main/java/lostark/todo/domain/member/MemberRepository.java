@@ -13,8 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
     Boolean existsByUsername(String username);
 
-    @Query("SELECT DISTINCT m FROM Member m " +
-            "LEFT JOIN FETCH m.characters c " +
-            "WHERE c.member.username = :username")
     Optional<Member> findByUsername(String username);
+
+
 }

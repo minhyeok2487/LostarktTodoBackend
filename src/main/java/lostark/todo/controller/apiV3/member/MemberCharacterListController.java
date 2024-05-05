@@ -37,7 +37,9 @@ public class MemberCharacterListController {
 
         // username -> characterList 조회
         List<Character> characterList = characterService.findCharacterListUsername(username);
-
+        if (characterList.isEmpty()) {
+            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
+        }
         // 결과
         Map<String, List<CharacterDto>> characterDtoMap = characterList.stream()
                 .filter(character -> character.getSettings().isShowCharacter())
