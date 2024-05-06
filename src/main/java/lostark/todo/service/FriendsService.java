@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
+import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
@@ -108,6 +110,58 @@ public class FriendsService {
                             .areWeFriend(areWeFriend)
                             .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
                             .characterList(characterDtoList)
+                            .toFriendSettings(friends.getFriendSettings())
+                            .fromFriendSettings(fromFriend.getFriendSettings())
+                            .build();
+
+                    returnDtoList.add(friendsReturnDto);
+                }
+            }
+        }
+        return returnDtoList;
+    }
+
+    public List<FriendsResponse> getFriendList(Member member) {
+        List<FriendsResponse> returnDtoList = new ArrayList<>();
+        List<Friends> byMember = friendsRepository.findAllByMember(member);
+        List<Friends> fromMember = friendsRepository.findAllByFromMember(member.getId());
+        for (Friends friends : byMember) {
+            boolean toFriends = friends.isAreWeFriend();
+            for (Friends fromFriend : fromMember) {
+                if(friends.getFromMember() == fromFriend.getMember().getId()) {
+                    boolean fromFriends = fromFriend.isAreWeFriend();
+                    String areWeFriend = "";
+                    if(toFriends && fromFriends) {
+                        areWeFriend = "깐부";
+                    }
+                    else if(toFriends) {
+                        areWeFriend = "깐부 요청 진행중";
+                    }
+                    else if(fromFriends) {
+                        areWeFriend = "깐부 요청 받음";
+                    }
+                    else {
+                        areWeFriend = "요청 거부";
+                    }
+
+                    //캐릭터 리스트
+                    List<CharacterResponse> characterResponseList = fromFriend.getMember().getCharacters().stream()
+                            .filter(character -> character.getSettings().isShowCharacter())
+                            .map(CharacterResponse::toDto)
+                            .collect(Collectors.toList());
+
+                    // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
+                    characterResponseList.sort(Comparator
+                            .comparingInt(CharacterResponse::getSortNumber)
+                            .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed())
+                    );
+
+                    FriendsResponse friendsReturnDto = FriendsResponse.builder()
+                            .friendId(friends.getId())
+                            .friendUsername(fromFriend.getMember().getUsername())
+                            .areWeFriend(areWeFriend)
+                            .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
+                            .characterList(characterResponseList)
                             .toFriendSettings(friends.getFriendSettings())
                             .fromFriendSettings(fromFriend.getFriendSettings())
                             .build();
