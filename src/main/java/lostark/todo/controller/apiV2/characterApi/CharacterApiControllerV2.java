@@ -49,6 +49,7 @@ public class CharacterApiControllerV2 {
                     dataTypeClass = String.class, paramType = "header")
     })
     @PatchMapping("/challenge")
+    //V4 변경
     public ResponseEntity updateChallenge(@AuthenticationPrincipal String username,
                                           @RequestBody CharacterChallengeRequestDto characterChallengeRequestDto) {
         // username -> member 조회

@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV4.member;
+package lostark.todo.controller.apiV4.member.characters;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
