@@ -9,6 +9,7 @@ import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.Settings;
 import lostark.todo.domain.character.goldCheckPolicy.GoldCheckPolicyEnum;
+import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.todoV2.TodoV2;
 
 import java.util.ArrayList;
@@ -41,8 +42,8 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "정렬 번호")
     private int sortNumber;
 
-    @ApiModelProperty(notes = "카오스 던전 이름")
-    private String chaosName;
+    @ApiModelProperty(notes = "카오스 컨텐츠")
+    private DayContent chaos;
 
     @ApiModelProperty(notes = "카오스던전 돌았는지 체크, 최소 0, 최대 2")
     private int chaosCheck;
@@ -53,8 +54,8 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "카오스던전 숙제 완료 시 예상 수익")
     private double chaosGold;
 
-    @ApiModelProperty(notes = "가디언토벌 컨텐츠 이름")
-    private String guardianName;
+    @ApiModelProperty(notes = "가디언토벌 컨텐츠")
+    private DayContent guardian;
 
     @ApiModelProperty(notes = "가디언토벌 돌았는지 체크, 최소 0, 최대 1, 1씩 증감")
     private int guardianCheck;
@@ -112,11 +113,11 @@ public class CharacterResponse {
                 .sortNumber(character.getSortNumber())
                 .chaosCheck(character.getDayTodo().getChaosCheck())
                 .chaosGauge(character.getDayTodo().getChaosGauge())
-                .chaosName(character.getDayTodo().getChaos().getName())
+                .chaos(character.getDayTodo().getChaos())
                 .chaosGold(character.getDayTodo().getChaosGold())
                 .guardianCheck(character.getDayTodo().getGuardianCheck())
                 .guardianGauge(character.getDayTodo().getGuardianGauge())
-                .guardianName(character.getDayTodo().getGuardian().getName())
+                .guardian(character.getDayTodo().getGuardian())
                 .guardianGold(character.getDayTodo().getGuardianGold())
                 .eponaCheck(character.getDayTodo().getEponaCheck2())
                 .eponaGauge(character.getDayTodo().getEponaGauge())
