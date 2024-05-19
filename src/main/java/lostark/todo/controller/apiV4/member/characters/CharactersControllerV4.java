@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,12 @@ public class CharactersControllerV4 {
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
         List<Character> characterList = characterService.findCharacterListUsername(username);
-        List<CharacterResponse> responseList = characterList.stream().map(CharacterResponse::toDto).collect(Collectors.toList());
+        List<CharacterResponse> responseList = characterList.stream()
+                .map(CharacterResponse::toDto)
+                .sorted(Comparator
+                        .comparingInt(CharacterResponse::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
+                .collect(Collectors.toList());
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 }
