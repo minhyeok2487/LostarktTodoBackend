@@ -1,5 +1,6 @@
 package lostark.todo.domain.friends;
 
+import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface FriendsRepository extends JpaRepository<Friends, Long> {
+public interface FriendsRepository extends JpaRepository<Friends, Long>, FriendsCustomRepository {
 
     boolean existsByMemberAndFromMember(Member member, long fromMember);
     Friends findByMemberAndFromMember(Member member, long fromMember);

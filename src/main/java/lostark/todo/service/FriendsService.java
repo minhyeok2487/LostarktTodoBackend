@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
+import lostark.todo.domain.character.Character;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
@@ -30,7 +31,7 @@ public class FriendsService {
 
     public void addFriendsRequest(Member toMember, Member fromMember) {
         Friends friends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
-        if(friends != null) {
+        if (friends != null) {
             throw new IllegalStateException("먼저 기존 요청을 삭제하여 주십시오.");
         }
         Friends toFriends = Friends.builder()
@@ -50,19 +51,16 @@ public class FriendsService {
     }
 
     public String isFriend(Member toMember, Member fromMember) {
-        if(friendsRepository.existsByMemberAndFromMember(toMember, fromMember.getId())) {
+        if (friendsRepository.existsByMemberAndFromMember(toMember, fromMember.getId())) {
             boolean toFriends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).isAreWeFriend();
             boolean fromFriends = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).isAreWeFriend();
-            if(toFriends && fromFriends) {
+            if (toFriends && fromFriends) {
                 return "깐부";
-            }
-            else if(toFriends) {
+            } else if (toFriends) {
                 return "깐부 요청 진행중";
-            }
-            else if(fromFriends) {
+            } else if (fromFriends) {
                 return "깐부 요청 받음";
-            }
-            else {
+            } else {
                 return "요청 거부";
             }
         }
@@ -76,19 +74,16 @@ public class FriendsService {
         for (Friends friends : byMember) {
             boolean toFriends = friends.isAreWeFriend();
             for (Friends fromFriend : fromMember) {
-                if(friends.getFromMember() == fromFriend.getMember().getId()) {
+                if (friends.getFromMember() == fromFriend.getMember().getId()) {
                     boolean fromFriends = fromFriend.isAreWeFriend();
                     String areWeFriend = "";
-                    if(toFriends && fromFriends) {
+                    if (toFriends && fromFriends) {
                         areWeFriend = "깐부";
-                    }
-                    else if(toFriends) {
+                    } else if (toFriends) {
                         areWeFriend = "깐부 요청 진행중";
-                    }
-                    else if(fromFriends) {
+                    } else if (fromFriends) {
                         areWeFriend = "깐부 요청 받음";
-                    }
-                    else {
+                    } else {
                         areWeFriend = "요청 거부";
                     }
 
@@ -128,19 +123,16 @@ public class FriendsService {
         for (Friends friends : byMember) {
             boolean toFriends = friends.isAreWeFriend();
             for (Friends fromFriend : fromMember) {
-                if(friends.getFromMember() == fromFriend.getMember().getId()) {
+                if (friends.getFromMember() == fromFriend.getMember().getId()) {
                     boolean fromFriends = fromFriend.isAreWeFriend();
                     String areWeFriend = "";
-                    if(toFriends && fromFriends) {
+                    if (toFriends && fromFriends) {
                         areWeFriend = "깐부";
-                    }
-                    else if(toFriends) {
+                    } else if (toFriends) {
                         areWeFriend = "깐부 요청 진행중";
-                    }
-                    else if(fromFriends) {
+                    } else if (fromFriends) {
                         areWeFriend = "깐부 요청 받음";
-                    }
-                    else {
+                    } else {
                         areWeFriend = "요청 거부";
                     }
 
@@ -174,11 +166,11 @@ public class FriendsService {
     }
 
     public void updateFriendsRequest(Member toMember, Member fromMember, String category) {
-        if(category.equals("ok")) {
+        if (category.equals("ok")) {
             friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).setAreWeFriend(true);
-        } else if(category.equals("reject")) {
+        } else if (category.equals("reject")) {
             friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).setAreWeFriend(false);
-        } else if(category.equals("delete")) {
+        } else if (category.equals("delete")) {
             Friends toMemberEntity = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
             Friends fromMemberEntity = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
             friendsRepository.delete(toMemberEntity);
@@ -196,16 +188,16 @@ public class FriendsService {
 
     public boolean checkSetting(Member fromMember, Member toMember, String content) {
         Friends memberAndFromMember = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
-        if(content.equals("dayContent")){
+        if (content.equals("dayContent")) {
             return memberAndFromMember.getFriendSettings().isCheckDayTodo();
         }
-        if(content.equals("raid")){
+        if (content.equals("raid")) {
             return memberAndFromMember.getFriendSettings().isCheckRaid();
         }
-        if(content.equals("weekTodo")){
+        if (content.equals("weekTodo")) {
             return memberAndFromMember.getFriendSettings().isCheckWeekTodo();
         }
-        if(content.equals("setting")){
+        if (content.equals("setting")) {
             return memberAndFromMember.getFriendSettings().isSetting();
         }
         return false;
@@ -222,5 +214,14 @@ public class FriendsService {
 
     public Friends findFriend(Member member, Long friendId) {
         return friendsRepository.findFriend(friendId, member.getId()).orElseThrow(() -> new IllegalArgumentException("잘못된 요청 입니다."));
+    }
+
+
+    public Character findFriendCharacter(String friendUsername, long characterId) {
+        return friendsRepository.findFriendCharacter(friendUsername, characterId);
+    }
+
+    public Friends findByFriendUsername(String friendUsername, String username) {
+        return friendsRepository.findByFriendUsername(friendUsername, username).orElseThrow(() -> new IllegalArgumentException("등록되지 않은 정보입니다."));
     }
 }
