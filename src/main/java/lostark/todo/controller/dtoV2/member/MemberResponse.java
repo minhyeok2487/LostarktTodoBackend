@@ -3,6 +3,7 @@ package lostark.todo.controller.dtoV2.member;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 
@@ -23,10 +24,15 @@ public class MemberResponse {
     @ApiModelProperty(example = "대표 캐릭터")
     private MainCharacterResponse mainCharacter;
 
+    @NotEmpty
+    @ApiModelProperty(example = "권한")
+    private Role role;
+
     public MemberResponse(Member member) {
         this.memberId = member.getId();
         this.username = member.getUsername();
         this.mainCharacter = createMainCharacter(member);
+        this.role = member.getRole();
     }
 
     private MainCharacterResponse createMainCharacter(Member member) {
