@@ -42,9 +42,6 @@ public class FriendsControllerV4 {
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
-        if (member.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
         List<FriendsResponse> friends = friendsService.getFriendList(member);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
