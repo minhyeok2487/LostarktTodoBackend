@@ -31,8 +31,8 @@ public class MemberSettingController {
     @DeleteMapping("/characters")
     public ResponseEntity<?> deleteCharacters(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
-        if (characterService.deleteByMember(member) &&
-            friendsService.deleteByMember(member)) {
+        if (characterService.deleteByMember(member)) {
+            friendsService.deleteByMember(member);
             return new ResponseEntity<>(new ResponseDto(true, "등록된 캐릭터가 정상적으로 삭제되었습니다."), HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
