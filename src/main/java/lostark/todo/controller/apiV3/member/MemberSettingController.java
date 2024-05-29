@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static lostark.todo.Constant.TEST_USERNAME;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +32,9 @@ public class MemberSettingController {
     @ApiOperation(value = "등록된 캐릭터 삭제", response = ResponseDto.class)
     @DeleteMapping("/characters")
     public ResponseEntity<?> deleteCharacters(@AuthenticationPrincipal String username) {
+        if (username.equals(TEST_USERNAME)) {
+            throw new IllegalArgumentException("테스트 계정은 삭제할 수 없습니다.");
+        }
         Member member = memberService.findMember(username);
         if (characterService.deleteByMember(member)) {
             friendsService.deleteByMember(member);
