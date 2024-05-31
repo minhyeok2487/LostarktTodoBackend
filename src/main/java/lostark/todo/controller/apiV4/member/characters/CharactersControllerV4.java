@@ -32,6 +32,7 @@ public class CharactersControllerV4 {
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
         List<Character> characterList = characterService.findCharacterListUsername(username);
         List<CharacterResponse> responseList = characterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
                 .map(CharacterResponse::toDto)
                 .sorted(Comparator
                         .comparingInt(CharacterResponse::getSortNumber)
