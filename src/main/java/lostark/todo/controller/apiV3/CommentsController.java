@@ -125,11 +125,11 @@ public class CommentsController {
     }
 
     @ApiOperation(value = "comment 삭제")
-    @DeleteMapping()
-    public ResponseEntity<?> deleteComments(@AuthenticationPrincipal String username, @RequestBody CommentRequestDto commentRequestDto) {
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> deleteComments(@AuthenticationPrincipal String username, @PathVariable int commentId) {
         Member member = memberService.findMember(username);
         Comments updateComments = Comments.builder()
-                .id(commentRequestDto.getId())
+                .id(commentId)
                 .member(member)
                 .build();
         commentsService.delete(updateComments); //삭제
