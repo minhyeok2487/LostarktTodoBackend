@@ -40,6 +40,6 @@ public class MemberControllerV4 {
     public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
                                                @RequestBody EditMainCharacter editMainCharacter) {
         memberService.editMainCharacter(username, editMainCharacter);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }

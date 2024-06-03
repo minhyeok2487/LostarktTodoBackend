@@ -28,13 +28,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @Transactional(readOnly = true)
     public MemberResponse findMemberResponse(String username) {
         Member member = memberRepository.findMemberAndMainCharacter(username);
         return new MemberResponse(member);
     }
 
+    @Transactional
     public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {
-        Member member = findMember(username);
+        Member member = memberRepository.findMemberAndMainCharacter(username);
         member.setMainCharacter(editMainCharacter.getMainCharacter());
     }
 
