@@ -13,7 +13,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Member findMemberAndMainCharacter(String username) {
+    public Member findMemberAndCharacters(String username) {
         return factory.select(member)
                 .from(member)
                 .leftJoin(member.characters, character).fetchJoin()

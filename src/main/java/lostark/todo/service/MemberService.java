@@ -6,7 +6,7 @@ import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dtoV2.member.EditMainCharacter;
-import lostark.todo.controller.dtoV2.member.MemberResponse;
+import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -29,15 +29,24 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Transactional(readOnly = true)
-    public MemberResponse findMemberResponse(String username) {
-        Member member = memberRepository.findMemberAndMainCharacter(username);
-        return new MemberResponse(member);
+    public Member findMemberAndCharacters(String username) {
+        return memberRepository.findMemberAndCharacters(username);
     }
 
     @Transactional
     public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {
-        Member member = memberRepository.findMemberAndMainCharacter(username);
+        Member member = findMemberAndCharacters(username);
         member.setMainCharacter(editMainCharacter.getMainCharacter());
+    }
+
+    // 유저 전환(소셜 로그인 -> 일반 로그인)
+    @Transactional
+    public void editProvider(String username, EditProvider editProvider) {
+        Member member = findMemberAndCharacters(username);
+        if (member.getAuthProvider().equals("none")) {
+            throw new IllegalArgumentException("소셜 로그인으로 가입된 회원이 아닙니다.");
+        }
+        member.changeAuthToNone(passwordEncoder.encode(editProvider.getPassword()));
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -80,17 +89,6 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member);
-    }
-
-    // 유저 전환(구글 로그인 -> 일반 로그인)
-    public Member changeAuthProvider(String mail, String password) {
-        Member member = findMember(mail);
-        if (member.getAuthProvider().equals("none")) {
-            throw new IllegalArgumentException("소셜 로그인으로 가입된 회원이 아닙니다.");
-        }
-        member.changeAuthToNone(passwordEncoder.encode(password));
-
-        return member;
     }
 
     /**

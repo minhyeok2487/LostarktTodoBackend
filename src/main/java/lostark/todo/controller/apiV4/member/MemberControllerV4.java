@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.member.EditMainCharacter;
+import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
+import lostark.todo.domain.member.Member;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,8 @@ public class MemberControllerV4 {
             response = MemberResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        MemberResponse memberResponse = memberService.findMemberResponse(username);
+        Member member = memberService.findMemberAndCharacters(username);
+        MemberResponse memberResponse = new MemberResponse(member);
         if (memberResponse.getUsername().equals(TEST_USERNAME)) {
             memberResponse.setUsername(null);
         }
@@ -40,6 +43,14 @@ public class MemberControllerV4 {
     public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
                                                @RequestBody EditMainCharacter editMainCharacter) {
         memberService.editMainCharacter(username, editMainCharacter);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
+    @PatchMapping("/provider")
+    public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
+                                          @RequestBody EditProvider editProvider) {
+        memberService.editProvider(username, editProvider);
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }
