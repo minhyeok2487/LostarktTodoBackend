@@ -9,7 +9,6 @@ import lostark.todo.controller.dtoV2.member.EditMainCharacter;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,7 +29,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public MemberResponse findMemberResponse(String username) {
-        return new MemberResponse(findMember(username));
+        Member member = memberRepository.findMemberAndMainCharacter(username);
+        return new MemberResponse(member);
     }
 
     public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {

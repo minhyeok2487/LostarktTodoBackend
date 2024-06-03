@@ -23,11 +23,11 @@ public class DayTodo {
 
     private String chaosName;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chaos_id")
     private DayContent chaos;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guardian_id")
     private DayContent guardian;
 
