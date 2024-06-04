@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CharacterRepository extends JpaRepository<Character, Long> {
+public interface CharacterRepository extends JpaRepository<Character, Long>, CharacterCustomRepository {
 
     @Query(value = "select DISTINCT c from Character c JOIN FETCH c.member " +
             "WHERE c.characterName = :characterName AND c.member.username = :username")
@@ -19,8 +19,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     @Query(value = "select DISTINCT c from Character c JOIN FETCH c.member " +
             "WHERE c.id = :characterId AND c.member.username = :username")
     Optional<Character> findCharacterWithMember(@Param("characterId") long characterId, @Param("username") String username);
-
-    int deleteByMember(Member member);
 
     int countByMemberAndServerNameAndGoldCharacterIsTrue(Member member, String serverName);
 

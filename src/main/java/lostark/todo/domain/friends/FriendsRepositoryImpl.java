@@ -5,6 +5,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.member.Member;
 
 import java.util.Optional;
 
@@ -36,6 +37,13 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
                 .leftJoin(member).on(friends.member.eq(member))
                 .where(member.username.eq(friendUsername).and(eqUsername(username)))
                 .fetchOne());
+    }
+
+    @Override
+    public long deleteByMember(Member member) {
+        return factory.delete(friends)
+                .where(friends.member.eq(member).or(friends.fromMember.eq(member.getId())))
+                .execute();
     }
 
     private BooleanExpression eqUsername(String username) {

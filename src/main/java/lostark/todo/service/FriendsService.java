@@ -204,7 +204,7 @@ public class FriendsService {
     }
 
     public boolean deleteByMember(Member member) {
-        int result = friendsRepository.deleteByMember(member, member.getId());
+        long result = friendsRepository.deleteByMember(member);
         if (result != 0) {
             return true;
         } else {

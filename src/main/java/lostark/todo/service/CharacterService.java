@@ -325,7 +325,7 @@ public class CharacterService {
     }
 
     public boolean deleteByMember(Member member) {
-        int result = characterRepository.deleteByMember(member);
+        long result = characterRepository.deleteByMember(member);
         if (result != 0) {
             return true;
         } else {

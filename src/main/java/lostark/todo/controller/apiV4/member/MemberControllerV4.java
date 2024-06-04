@@ -8,6 +8,8 @@ import lostark.todo.controller.dtoV2.member.EditMainCharacter;
 import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
+import lostark.todo.service.CharacterService;
+import lostark.todo.service.FriendsService;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import static lostark.todo.Constant.TEST_USERNAME;
 public class MemberControllerV4 {
 
     private final MemberService memberService;
+    private final CharacterService characterService;
+    private final FriendsService friendsService;
 
     @ApiOperation(value = "회원 정보 조회 API",
             response = MemberResponse.class)
@@ -50,7 +54,26 @@ public class MemberControllerV4 {
     @PatchMapping("/provider")
     public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
                                           @RequestBody EditProvider editProvider) {
+        if (username.equals(TEST_USERNAME)) {
+            throw new IllegalArgumentException("테스트 계정은 변경 할 수 없습니다.");
+        }
         memberService.editProvider(username, editProvider);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "등록 캐릭터 삭제")
+    @DeleteMapping("/characters")
+    public ResponseEntity<?> deleteCharacters(@AuthenticationPrincipal String username) {
+        if (username.equals(TEST_USERNAME)) {
+            throw new IllegalArgumentException("테스트 계정은 삭제할 수 없습니다.");
+        }
+        Member member = memberService.findMemberAndCharacters(username);
+
+        if (member.getCharacters().isEmpty()) {
+            throw new IllegalStateException("등록된 캐릭터가 없습니다.");
+        }
+        characterService.deleteByMember(member);
+        friendsService.deleteByMember(member);
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }

@@ -33,6 +33,7 @@ public class MemberService {
         return memberRepository.findMemberAndCharacters(username);
     }
 
+    // 대표 캐릭터 변경
     @Transactional
     public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {
         Member member = findMemberAndCharacters(username);
@@ -73,8 +74,8 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
     }
-
     // 1차 회원가입
+
     public Member createMember(String mail, String password) {
         if (memberRepository.existsByUsername(mail)) {
             throw new IllegalArgumentException(mail + " 이미 존재하는 이메일 입니다.");
