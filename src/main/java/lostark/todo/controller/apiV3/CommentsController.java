@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.commentsDto.CommentListDto;
 import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
-import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.domain.Role;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
 import lostark.todo.event.entity.CommentEvent;
@@ -36,7 +34,7 @@ public class CommentsController {
 
     @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
     @GetMapping()
-    public ResponseEntity<?> findComments(@AuthenticationPrincipal String username, @RequestParam(value="page", defaultValue = "5") int page) {
+    public ResponseEntity<?> findComments(@RequestParam(value="page", defaultValue = "5") int page) {
         Page<Comments> allComments = commentsService.findAllByParentIdIs0(page-1);
         int totalPages = allComments.getTotalPages();
 
@@ -51,16 +49,7 @@ public class CommentsController {
             }
         }
 
-        if(!username.equals("anonymousUser")) {
-            Member member = memberService.findMember(username);
-            MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(member);
-            if (member.getRole().equals(Role.ADMIN)) {
-                memberResponseDto.setUsername("관리자");
-            }
-            return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages, memberResponseDto), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
-        }
+        return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 저장")
@@ -91,7 +80,7 @@ public class CommentsController {
 
         eventPublisher.publishEvent(new CommentEvent(eventPublisher, member, commentRequestDto.getBody()));
 
-        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages, null), HttpStatus.OK);
+        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 수정")
@@ -121,7 +110,7 @@ public class CommentsController {
             }
         }
 
-        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages, null), HttpStatus.OK);
+        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 삭제")
@@ -148,6 +137,6 @@ public class CommentsController {
             }
         }
 
-        return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages, null), HttpStatus.OK);
+        return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
     }
 }
