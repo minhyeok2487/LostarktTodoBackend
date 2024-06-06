@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV3.member;
+package lostark.todo.controller.apiV3.d_member;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequestMapping("/v3/member/characters")
 @Api(tags = {"회원 캐릭터 리스트"})
-public class MemberCharacterListController {
+public class D_MemberCharacterListController {
 
     private final CharacterService characterService;
 

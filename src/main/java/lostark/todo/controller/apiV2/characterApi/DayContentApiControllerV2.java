@@ -44,7 +44,7 @@ public class DayContentApiControllerV2 {
 //        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
 //    }
 
-    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
+    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트")
     @PatchMapping({"/check/{category}", "/check/{category}/{all}"})
     public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
                                              @PathVariable("category") String category,
@@ -71,7 +71,7 @@ public class DayContentApiControllerV2 {
                 (category.equals("guardian") && guardianCheckValue == 0)) {
             throw new IllegalStateException("휴식게이지 재입력전까지 예상 수익이 다를 수 있습니다.");
         }
-        return ResponseEntity.ok(new CharacterDto().toDtoV2(updateCharacter));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

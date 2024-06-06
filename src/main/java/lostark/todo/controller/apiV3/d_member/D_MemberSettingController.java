@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV3.member;
+package lostark.todo.controller.apiV3.d_member;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,12 +23,13 @@ import static lostark.todo.Constant.TEST_USERNAME;
 @Slf4j
 @RequestMapping("/v3/member/setting")
 @Api(tags = {"회원 설정"})
-public class MemberSettingController {
+public class D_MemberSettingController {
 
     private final CharacterService characterService;
     private final FriendsService friendsService;
     private final MemberService memberService;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "등록된 캐릭터 삭제", response = ResponseDto.class)
     @DeleteMapping("/characters")
     public ResponseEntity<?> deleteCharacters(@AuthenticationPrincipal String username) {

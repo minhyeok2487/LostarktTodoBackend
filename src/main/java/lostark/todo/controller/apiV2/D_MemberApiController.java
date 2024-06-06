@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV4.characters;
+package lostark.todo.controller.apiV2;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.controller.dto.memberDto.MemberRequestDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.Category;
@@ -14,6 +15,7 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
+import lostark.todo.service.lostarkApi.LostarkApiService;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -26,50 +28,32 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-
 @RestController
-@RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/v4/characters")
-@Api(tags = {"회원 캐릭터 리스트"})
-public class CharactersControllerV4 {
+@RequiredArgsConstructor
+@RequestMapping("/member")
+@Api(tags = {"회원 API"})
+public class D_MemberApiController {
 
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
     private final MemberService memberService;
     private final LostarkCharacterService lostarkCharacterService;
+    private final LostarkApiService lostarkApiService;
+    private final LogsService logsService;
+    private final ConcurrentHashMap<String, Boolean> usernameLocks;
 
-    @ApiOperation(value = "캐릭터 + 숙제 정보 조회 API",
-            response = CharacterResponse.class)
-    @GetMapping()
-    public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        List<Character> characterList = characterService.findCharacterListUsername(username);
-        List<CharacterResponse> responseList = characterList.stream()
-                .map(CharacterResponse::toDto)
-                .sorted(Comparator
-                        .comparingInt(CharacterResponse::getSortNumber)
-                        .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
-    @PatchMapping("/sorting")
-    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
-                                     @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
-        memberService.updateSort(username, characterSortDtoList);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
+    //TODO 추후 삭제
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
-            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
-                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
-                    "캐릭터 추가 및 삭제 ",
-            response = CharacterDto.class)
-    @PutMapping("")
+        notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
+                "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
+                "캐릭터 추가 및 삭제 ",
+        response = CharacterDto.class)
+    @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
         Member member = memberService.findMember(username);
         List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
@@ -137,10 +121,59 @@ public class CharactersControllerV4 {
         Map<String, Market> contentResource = marketService.findContentResource();
 
         // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+        List<Character> calculatedCharacterList = new ArrayList<>();
         for (Character character : member.getCharacters()) {
-            characterService.calculateDayTodo(character, contentResource);
+            Character result = characterService.calculateDayTodo(character, contentResource);
+            calculatedCharacterList.add(result);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        // 결과
+        List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+                .filter(character -> character.getSettings().isShowCharacter())
+                .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
+                        .comparingInt(CharacterDto::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
+
+
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+    }
+
+    // TODO 추후 삭제
+    @ApiOperation(value = "회원과 연결된 캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
+    @PatchMapping("/characterList/sorting")
+    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
+                                     @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
+        Member member = memberService.updateSort(username, characterSortDtoList);
+
+        List<CharacterDto> characterDtoList = new ArrayList<>();
+        for (Character character : member.getCharacters()) {
+            // Character -> CharacterResponseDto 변경
+            CharacterDto characterDto = new CharacterDto().toDtoV2(character);
+            characterDtoList.add(characterDto);
+        }
+        return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+    }
+
+    // TODO 추후 삭제
+    @ApiOperation(value = "회원 API KEY 갱신")
+    @PatchMapping("/api-key")
+    public ResponseEntity updateApiKey(@AuthenticationPrincipal String username,
+                                       @RequestBody MemberRequestDto memberRequestDto) {
+        // 1. 검증
+        Member member = memberService.findMember(username);
+        if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
+            throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
+        }
+        if (member.getApiKey() != null && member.getApiKey().equals(memberRequestDto.getApiKey())) {
+            throw new IllegalArgumentException("동일한 API KEY입니다.");
+        }
+
+        // 2. API KEY 인증 확인
+        lostarkApiService.findEvents(memberRequestDto.getApiKey());
+
+        // 3. API KEY 업데이트
+        memberService.updateApiKey(member, memberRequestDto.getApiKey());
+
+        return new ResponseEntity(new MemberResponseDto().toDto(member), HttpStatus.OK);
     }
 }

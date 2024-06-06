@@ -4,6 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.memberDto.MemberRequestDto;
+import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.controller.dtoV2.member.EditMainCharacter;
 import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
@@ -11,6 +13,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.FriendsService;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.lostarkApi.LostarkApiService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +32,7 @@ public class MemberControllerV4 {
     private final MemberService memberService;
     private final CharacterService characterService;
     private final FriendsService friendsService;
+    private final LostarkApiService lostarkApiService;
 
     @ApiOperation(value = "회원 정보 조회 API",
             response = MemberResponse.class)
@@ -75,5 +79,27 @@ public class MemberControllerV4 {
         characterService.deleteByMember(member);
         friendsService.deleteByMember(member);
         return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "회원 API KEY 갱신")
+    @PatchMapping("/api-key")
+    public ResponseEntity<?> updateApiKey(@AuthenticationPrincipal String username,
+                                       @RequestBody MemberRequestDto memberRequestDto) {
+        // 1. 검증
+        Member member = memberService.findMember(username);
+        if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
+            throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
+        }
+        if (member.getApiKey() != null && member.getApiKey().equals(memberRequestDto.getApiKey())) {
+            throw new IllegalArgumentException("동일한 API KEY입니다.");
+        }
+
+        // 2. API KEY 인증 확인
+        lostarkApiService.findEvents(memberRequestDto.getApiKey());
+
+        // 3. API KEY 업데이트
+        memberService.updateApiKey(member, memberRequestDto.getApiKey());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
