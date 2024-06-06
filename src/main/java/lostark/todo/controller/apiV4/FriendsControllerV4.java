@@ -41,9 +41,7 @@ public class FriendsControllerV4 {
             response = FriendsResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
-        List<FriendsResponse> friends = friendsService.getFriendList(member);
-        return new ResponseEntity<>(friends, HttpStatus.OK);
+        return new ResponseEntity<>(friendsService.getFriendListV2(memberService.get(username).getId()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "깐부 캐릭터 주간 숙제 추가폼")
@@ -66,7 +64,7 @@ public class FriendsControllerV4 {
         List<WeekContentDto> result = new ArrayList<>();
         for (WeekContent weekContent : allByWeekContent) {
             WeekContentDto weekContentDto = new WeekContentDto().toDto(weekContent);
-            if(!character.getTodoV2List().isEmpty()) {
+            if (!character.getTodoV2List().isEmpty()) {
                 for (TodoV2 todo : character.getTodoV2List()) {
                     if (todo.getWeekContent().equals(weekContent)) {
                         weekContentDto.setChecked(true); // 이미 등록된 컨텐츠면 true

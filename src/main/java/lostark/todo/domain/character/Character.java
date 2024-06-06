@@ -1,6 +1,7 @@
 package lostark.todo.domain.character;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.content.WeekContent;
@@ -55,9 +56,11 @@ public class Character extends BaseTimeEntity {
     @Embedded WeekTodo weekTodo;
 
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
+    @JsonManagedReference
     private List<Todo> todoList;
 
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
+    @JsonManagedReference
     private List<TodoV2> todoV2List;
 
     private boolean goldCharacter; //골드 획득 지정 캐릭터

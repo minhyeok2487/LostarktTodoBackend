@@ -22,7 +22,7 @@ public class TodoV2 extends BaseTimeEntity {
     @Column(name = "todo_id")
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "content_id")
     @JsonBackReference
     private WeekContent weekContent;

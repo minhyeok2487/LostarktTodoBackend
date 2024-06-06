@@ -33,6 +33,11 @@ public class MemberService {
         return memberRepository.findMemberAndCharacters(username);
     }
 
+    @Transactional(readOnly = true)
+    public Member get(String username) {
+        return memberRepository.get(username);
+    }
+
     // 대표 캐릭터 변경
     @Transactional
     public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {

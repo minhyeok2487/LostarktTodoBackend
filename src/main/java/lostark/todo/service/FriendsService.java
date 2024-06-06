@@ -116,6 +116,55 @@ public class FriendsService {
         return returnDtoList;
     }
 
+    @Transactional(readOnly = true)
+    public List<FriendsResponse> getFriendListV2(long memberId) {
+        List<FriendsResponse> returnDtoList = new ArrayList<>();
+        List<Friends> friendList = friendsRepository.getFriendList(memberId);
+        List<Friends> byMember = friendList.stream().filter(friend -> friend.getMember().getId() == memberId).distinct().collect(Collectors.toList());
+        List<Friends> fromMember = friendList.stream().filter(friend -> friend.getFromMember() == memberId).distinct().collect(Collectors.toList());
+        for (Friends friends : byMember) {
+            boolean toFriends = friends.isAreWeFriend();
+            for (Friends fromFriend : fromMember) {
+                if (friends.getFromMember() == fromFriend.getMember().getId()) {
+                    boolean fromFriends = fromFriend.isAreWeFriend();
+                    String areWeFriend = "";
+                    if (toFriends && fromFriends) {
+                        areWeFriend = "깐부";
+                    } else if (toFriends) {
+                        areWeFriend = "깐부 요청 진행중";
+                    } else if (fromFriends) {
+                        areWeFriend = "깐부 요청 받음";
+                    } else {
+                        areWeFriend = "요청 거부";
+                    }
+
+                    //캐릭터 리스트
+                    List<CharacterResponse> characterResponseList = fromFriend.getMember().getCharacters().stream()
+                            .filter(character -> character.getSettings().isShowCharacter())
+                            .map(CharacterResponse::toDto)
+                            .sorted(Comparator
+                                    .comparingInt(CharacterResponse::getSortNumber)
+                                    .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
+                            .collect(Collectors.toList());
+
+                    FriendsResponse friendsReturnDto = FriendsResponse.builder()
+                            .friendId(friends.getId())
+                            .friendUsername(fromFriend.getMember().getUsername())
+                            .areWeFriend(areWeFriend)
+                            .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
+                            .characterList(characterResponseList)
+                            .toFriendSettings(friends.getFriendSettings())
+                            .fromFriendSettings(fromFriend.getFriendSettings())
+                            .build();
+
+                    returnDtoList.add(friendsReturnDto);
+                }
+            }
+        }
+        return returnDtoList;
+    }
+
+    @Transactional(readOnly = true)
     public List<FriendsResponse> getFriendList(Member member) {
         List<FriendsResponse> returnDtoList = new ArrayList<>();
         List<Friends> byMember = friendsRepository.findAllByMember(member);
