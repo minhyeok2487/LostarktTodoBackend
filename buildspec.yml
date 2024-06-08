@@ -7,7 +7,7 @@ phases:
   pre_build:
     commands:
       - REGION=ap-northeast-2
-      - REPOSITORY_URI=173796993047.dkr.ecr.ap-northeast-2.amazonaws.com/loatodo-main
+      - REPOSITORY_URI=173796993047.dkr.ecr.ap-northeast-2.amazonaws.com
       - IMAGE_NAME=loatodo-main
       - IMAGE_TAG=latest
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
