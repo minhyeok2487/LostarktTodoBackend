@@ -20,6 +20,12 @@ java {
 	sourceCompatibility = '11'
 }
 
+dependencyManagement {
+	imports {
+		mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.2")
+	}
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -44,6 +50,7 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+	implementation "io.awspring.cloud:spring-cloud-aws-starter-parameter-store"
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -74,6 +81,7 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-core:${queryDslVersion}"
+
 }
 
 //QueryDSL 플로그인 설정 START
