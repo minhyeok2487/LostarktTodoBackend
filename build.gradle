@@ -11,6 +11,7 @@ plugins {
 	id "com.gorylenko.gradle-git-properties" version '2.4.1'
 	//querydsl 플러그인 추가
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	id 'com.gorylenko.gradle-git-properties' version '2.0.0'
 }
 
 group = 'lostark'
