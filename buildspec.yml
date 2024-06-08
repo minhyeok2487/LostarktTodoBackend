@@ -32,6 +32,7 @@ phases:
       - docker push $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG
       - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG > imagedefinitions.json
       - cat imagedefinitions.json
+
 artifacts:
   files:
     - imagedefinitions.json
