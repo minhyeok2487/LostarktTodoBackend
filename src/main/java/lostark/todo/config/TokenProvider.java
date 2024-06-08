@@ -9,6 +9,10 @@ import lostark.todo.security.ApplicationOAuth2User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -18,17 +22,21 @@ import java.util.Date;
 @Slf4j
 public class TokenProvider {
 
-    @Value("${JWT-SECRET-KEY}")
-    private String secretKey;
+    @Value("${JWT-KEY}")
+    private String secret;
 
-
+    private Key getSigningKey(String secret) {
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
+        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS512.getJcaName());
+    }
 
     /**
      * 일반 로그인 JWT 생성
      */
     public String createToken(Member member) {
+        Key secretKey = getSigningKey(secret);
         return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS512) // 최신 방식
                 .setSubject(member.getUsername())
                 .setIssuer("LostarkTodo")
                 .setIssuedAt(new Date())
@@ -40,29 +48,26 @@ public class TokenProvider {
      */
     public String createToken(Authentication authentication, String key) {
         ApplicationOAuth2User userPrincipal = (ApplicationOAuth2User) authentication.getPrincipal();
-        // 기한 무제한
+        Key secretKey = getSigningKey(key);
         return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, key)
+                .signWith(secretKey, SignatureAlgorithm.HS512) // 최신 방식
                 .setSubject(userPrincipal.getName())
                 .setIssuer("LostarkTodo")
                 .setIssuedAt(new Date())
                 .compact();
     }
 
-
     /**
      * JWT 검증
      */
     public String validToken(String token) {
-        // parseClaimsJws메서드가 Base 64로 디코딩 및 파싱.
-        // 즉, 헤더와 페이로드를 setSigningKey로 넘어온 시크릿을 이용 해 서명 후, token의 서명 과 비교.
-        // 위조되지 않았다면 페이로드(Claims) 리턴, 위조라면 예외를 날림
-        Claims claims = Jwts.parser()
+        Key secretKey = getSigningKey(secret);
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
 
         return claims.getSubject();
-
     }
 }
