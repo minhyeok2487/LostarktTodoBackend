@@ -273,4 +273,12 @@ public class FriendsService {
     public Friends findByFriendUsername(String friendUsername, String username) {
         return friendsRepository.findByFriendUsername(friendUsername, username).orElseThrow(() -> new IllegalArgumentException("등록되지 않은 정보입니다."));
     }
+
+    @Transactional
+    public void deleteById(Member member, long friendId) {
+        Friends friends = friendsRepository.findByMemberAndId(member, friendId)
+                .orElseThrow(() -> new IllegalArgumentException("없는 깐부 입니다."));
+        friendsRepository.deleteByMemberFriend(friends.getMember().getId(), friends.getFromMember());
+        friendsRepository.deleteByMemberFriend(friends.getFromMember(), friends.getMember().getId());
+    }
 }

@@ -18,4 +18,6 @@ public interface FriendsRepository extends JpaRepository<Friends, Long>, Friends
 
     @Query(value = "SELECT f FROM Friends f WHERE f.member.id = :memberId AND f.fromMember = :fromMemberId")
     Optional<Friends> findFriend(long memberId, long fromMemberId);
+
+    Optional<Friends> findByMemberAndId(Member member, long friendId);
 }

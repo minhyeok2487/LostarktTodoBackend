@@ -6,7 +6,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
-import lostark.todo.domain.todoV2.QTodoV2;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +57,13 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                 .where(friends.member.id.eq(memberId).or(friends.fromMember.eq(memberId)))
                 .fetch();
+    }
+
+    @Override
+    public long deleteByMemberFriend(long id, long fromMember) {
+        return factory.delete(friends)
+                .where(friends.member.id.eq(id).and(friends.fromMember.eq(fromMember)))
+                .execute();
     }
 
     private BooleanExpression eqUsername(String username) {

@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV4;
+package lostark.todo.controller.apiV4.friends;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,10 +17,7 @@ import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +34,19 @@ public class FriendsControllerV4 {
     private final MemberService memberService;
     private final ContentService contentService;
 
-    @ApiOperation(value = "깐부 리스트 조회 API",
+    @ApiOperation(value = "깐부 리스트 조회",
             response = FriendsResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
         return new ResponseEntity<>(friendsService.getFriendListV2(memberService.get(username).getId()), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 삭제")
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal String username, @PathVariable long friendId) {
+        Member member = memberService.get(username);
+        friendsService.deleteById(member, friendId);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     @ApiOperation(value = "깐부 캐릭터 주간 숙제 추가폼")

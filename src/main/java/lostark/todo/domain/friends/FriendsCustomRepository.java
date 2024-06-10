@@ -15,4 +15,6 @@ public interface FriendsCustomRepository {
     long deleteByMember(@Param("member") Member member);
 
     List<Friends> getFriendList(long memberId);
+
+    long deleteByMemberFriend(long id, long fromMember);
 }
