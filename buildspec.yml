@@ -1,39 +1,36 @@
 version: 0.2
 
-env:
-  variables:
-    REGION: ap-northeast-2
-    REPOSITORY_URI: 173796993047.dkr.ecr.ap-northeast-2.amazonaws.com
-    IMAGE_NAME: loatodo-main
-    IMAGE_TAG: latest
-
 phases:
   install:
     runtime-versions:
       java: corretto17
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REPOSITORY_URI || exit 1
+      - REGION=ap-northeast-2
+      - REPOSITORY_URI=173796993047.dkr.ecr.ap-northeast-2.amazonaws.com
+      - IMAGE_NAME=loatodo-main
+      - IMAGE_TAG=latest
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - BUILD_TAG=${COMMIT_HASH:=latest}
+      - CONTAINER_NAME=loatodo-main
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
   build:
     commands:
       - echo Start gradle bootJar...
-      - ./gradlew clean bootJar || exit 1
+      - ./gradlew clean bootJar
       - echo End gradle bootJar...
       - echo Start Docker image build...
-      - docker build -t $IMAGE_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_NAME:$IMAGE_TAG $REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG
-      - docker tag $IMAGE_NAME:$IMAGE_TAG $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG
+      - docker build -t $REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG
       - echo End Docker image build...
   post_build:
     commands:
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG || exit 1
-      - docker push $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG || exit 1
-      - printf '[{"name":"%s","imageUri":"%s"}]' $IMAGE_NAME $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG > imagedefinitions.json
+      - docker push $REPOSITORY_URI/$IMAGE_NAME:$IMAGE_TAG
+      - docker push $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $REPOSITORY_URI/$IMAGE_NAME:$BUILD_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 
 artifacts:
