@@ -92,6 +92,23 @@ public class SwaggerConfiguration {
                 .securitySchemes(Arrays.asList(apiKey()));
     }
 
+    @Bean
+    public Docket v4() {
+        version = "v4";
+        title = "로스트아크 일정 관리 REST API";
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(title, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV4"))
+                .build()
+                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Arrays.asList(apiKey()));
+    }
+
     /**
      * Method 순으로 정렬
      */
