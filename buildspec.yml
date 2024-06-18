@@ -12,7 +12,7 @@ phases:
       - IMAGE_TAG=latest
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - BUILD_TAG=${COMMIT_HASH:=latest}
-      - CONTAINER_NAME=loatodo-main
+      - CONTAINER_NAME=loatodo
       - echo Logging in to Amazon ECR...
       - aws --version
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
