@@ -49,7 +49,7 @@ public class SchedulerService {
     /**
      * 매일 오전 0시 거래소 데이터 갱신
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
     public void updateMarketData() {
         List<Market> marketList = lostarkMarketService.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
         marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
@@ -58,7 +58,7 @@ public class SchedulerService {
     /**
      * 매일 오전 6시 일일 숙제 초기화
      */
-    @Scheduled(cron = "0 0 6 * * ?")
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
     public void resetDayTodo() {
         log.info("updateDayContentGauge() = {}",characterRepository.updateDayContentGauge()); //휴식게이지 계산
         log.info("updateDayContentCheck() = {}",characterRepository.updateDayContentCheck()); //체크 초기화
@@ -123,7 +123,7 @@ public class SchedulerService {
     /**
      * 수요일 오전 6시 1분 주간 숙제 초기화
      */
-    @Scheduled(cron = "0 1 6 * * 3")
+    @Scheduled(cron = "0 1 6 * * 3", zone = "Asia/Seoul")
     public void resetWeekTodo() {
         log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 
@@ -137,7 +137,7 @@ public class SchedulerService {
 
 
     /*로스트아크 새로운 공지사항 가져와서 저장 (매 정각에 자동 실행)*/
-    @Scheduled(cron = "10 0 * * * *")
+    @Scheduled(cron = "10 0 * * * *", zone = "Asia/Seoul")
     public void getLostarkNotice() {
         List<Notices> noticesList = newsService.getNoticeList(apiKey3);
         for (Notices notices : noticesList) {
