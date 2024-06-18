@@ -10,6 +10,6 @@ public class CheckController {
 
     @GetMapping("/")
     public String check() {
-        return "LostarkTodo server is running, 240618";
+        return "LostarkTodo server is running, CI/CD TEST";
     }
 }
