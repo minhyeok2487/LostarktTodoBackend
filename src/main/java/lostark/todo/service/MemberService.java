@@ -2,6 +2,7 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.adminDto.DashboardMemberResponse;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
@@ -193,5 +194,10 @@ public class MemberService {
 
     public boolean existByUsername(String username) {
         return memberRepository.existsByUsername(username);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DashboardMemberResponse> searchDashBoard(int limit) {
+        return memberRepository.searchDashBoard(limit);
     }
 }

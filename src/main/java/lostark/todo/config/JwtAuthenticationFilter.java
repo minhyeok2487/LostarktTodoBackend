@@ -2,8 +2,10 @@ package lostark.todo.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.Role;
+import lostark.todo.domain.member.Member;
+import lostark.todo.service.MemberService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * JWT 인증 처리
@@ -32,6 +32,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
+    private final MemberService memberService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -53,6 +54,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 securityContext.setAuthentication(authentication);
                 SecurityContextHolder.setContext(securityContext);
+
+                // Admin 권한 체크
+                // memberService를 통해 사용자 정보 가져오기
+                Member member = memberService.get(username);
+                if (request.getRequestURI().startsWith("/admin")) {
+                    if (member.getRole() != Role.ADMIN) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.getWriter().write("관리자 권한이 필요합니다.");
+                        return;
+                    }
+                }
             }
         } catch (Exception e) {
             log.error("Auth Error = {}", e.getMessage());
