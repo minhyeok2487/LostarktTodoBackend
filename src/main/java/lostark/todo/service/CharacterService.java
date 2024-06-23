@@ -3,6 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
@@ -396,5 +397,9 @@ public class CharacterService {
         return characterList.stream()
                 .mapToDouble(character -> character.getDayTodo().getWeekTotalGold())
                 .sum();
+    }
+
+    public List<DashboardResponse> searchCharactersDashBoard(int limit) {
+        return characterRepository.searchCharactersDashBoard(limit);
     }
 }

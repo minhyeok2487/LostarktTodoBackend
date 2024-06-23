@@ -2,7 +2,7 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.adminDto.DashboardMemberResponse;
+import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
@@ -197,7 +197,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<DashboardMemberResponse> searchDashBoard(int limit) {
-        return memberRepository.searchDashBoard(limit);
+    public List<DashboardResponse> searchMemberDashBoard(int limit) {
+        return memberRepository.searchMemberDashBoard(limit);
     }
+
 }

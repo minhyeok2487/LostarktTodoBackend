@@ -6,8 +6,8 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.adminDto.DashboardMemberResponse;
-import lostark.todo.controller.adminDto.QDashboardMemberResponse;
+import lostark.todo.controller.adminDto.DashboardResponse;
+import lostark.todo.controller.adminDto.QDashboardResponse;
 import org.springframework.util.StringUtils;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     }
 
     @Override
-    public List<DashboardMemberResponse> searchDashBoard(int limit) {
+    public List<DashboardResponse> searchMemberDashBoard(int limit) {
         StringTemplate dateTemplate = Expressions.stringTemplate(
                 "DATE_FORMAT({0}, {1})",
                 member.createdDate,
@@ -45,7 +45,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
         );
 
         return factory
-                .select(new QDashboardMemberResponse(
+                .select(new QDashboardResponse(
                         dateTemplate,
                         member.id.count().intValue()))
                 .from(member)

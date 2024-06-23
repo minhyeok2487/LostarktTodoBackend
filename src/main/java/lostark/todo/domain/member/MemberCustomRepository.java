@@ -1,6 +1,6 @@
 package lostark.todo.domain.member;
 
-import lostark.todo.controller.adminDto.DashboardMemberResponse;
+import lostark.todo.controller.adminDto.DashboardResponse;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ public interface MemberCustomRepository {
 
     Member get(String username);
 
-    List<DashboardMemberResponse> searchDashBoard(int limit);
+    List<DashboardResponse> searchMemberDashBoard(int limit);
 }

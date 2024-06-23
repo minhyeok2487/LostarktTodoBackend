@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class DashboardMemberResponse {
+public class DashboardResponse {
 
     @ApiModelProperty(example = "날짜")
     private String date;
@@ -14,7 +14,7 @@ public class DashboardMemberResponse {
     private int count;
 
     @QueryProjection
-    public DashboardMemberResponse(String date, int count) {
+    public DashboardResponse(String date, int count) {
         this.date = date;
         this.count = count;
     }
