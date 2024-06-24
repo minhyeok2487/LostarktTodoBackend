@@ -29,6 +29,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .leftJoin(character.member, member).fetchJoin()
                 .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                .leftJoin(character.todoV2List, todoV2).fetchJoin()
                 .where(
                         eqMember(username),
                         eqCharacterId(characterId)
