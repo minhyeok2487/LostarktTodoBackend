@@ -4,12 +4,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
-import lostark.todo.domain.market.Market;
 import lostark.todo.event.entity.character.DayContentCheckEvent;
 import lostark.todo.event.entity.EventType;
 import lostark.todo.service.CharacterService;
@@ -21,7 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +28,6 @@ import java.util.Map;
 public class DayContentApiController {
 
     private final CharacterService characterService;
-    private final MarketService marketService;
     private final ApplicationEventPublisher eventPublisher;
 
     // TODO 추후 삭제
@@ -71,26 +67,6 @@ public class DayContentApiController {
 
         return new ResponseEntity<>(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
     }
-
-    @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
-            response = CharacterDto.class)
-    @PatchMapping("/gauge")
-    public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,
-                                             @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
-        // 로그인한 아이디에 등록된 캐릭터인지 검증
-        // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(
-                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
-
-        // 재련재료 데이터 리스트로 거래소 데이터 호출
-        Map<String, Market> contentResource = marketService.findContentResource();
-
-        // 휴식게이지 업데이트 후 예상 수익 계산
-        Character updateCharacter = characterService.updateGauge(character, characterDayTodoDto, contentResource);
-
-        return new ResponseEntity(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
-    }
-
 
     private int getBeforeGauge(DayTodo dayTodo, String category) {
         switch (category) {

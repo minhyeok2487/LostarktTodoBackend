@@ -14,7 +14,6 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -176,11 +175,6 @@ public class CharacterService {
 
         // 가디언 토벌 계산
         double guardianGold = calculateGuardianV2(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, dtoGuardianGauge);
-
-//        character.getDayTodo().updateGauge(characterDayTodoDto);
-//
-//        // 업데이트된 휴식게이지로 예상 수익 계산
-//        calculateDayTodo(character, contentResource);
 
         character.getDayTodo().updateDayContentGauge(characterDayTodoDto, chaosGold, guardianGold);
         return character;
@@ -459,5 +453,11 @@ public class CharacterService {
         }
 
         return character;
+    }
+
+    public Character updateGauge(String username, CharacterDayTodoDto characterDayTodoDto, Map<String, Market> contentResource) {
+        Character character = findCharacter(
+                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
+        return updateGauge(character, characterDayTodoDto, contentResource);
     }
 }

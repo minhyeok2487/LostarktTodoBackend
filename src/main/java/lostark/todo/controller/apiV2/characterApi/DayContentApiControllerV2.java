@@ -28,7 +28,7 @@ public class DayContentApiControllerV2 {
     private final CharacterService characterService;
     private final MarketService marketService;
 
-
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
             response = CharacterDto.class)
     @PatchMapping("/gauge")
