@@ -7,6 +7,7 @@ import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.domain.character.ChallengeContentEnum;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
@@ -420,5 +421,13 @@ public class CharacterService {
 
     public List<DashboardResponse> searchCharactersDashBoard(int limit) {
         return characterRepository.searchCharactersDashBoard(limit);
+    }
+
+    @Transactional
+    public Character updateSetting(String username, SettingRequestDto settingRequestDto) {
+        Character character = findCharacter(
+                settingRequestDto.getCharacterId(), settingRequestDto.getCharacterName(), username);
+        character.getSettings().update(settingRequestDto.getName(), settingRequestDto.isValue());
+        return character;
     }
 }

@@ -42,6 +42,7 @@ public class CharacterApiControllerV2 {
         return new ResponseEntity<>(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 출력 내용 수정")
     @PatchMapping("/settings")
     public ResponseEntity<?> updateSettings(@AuthenticationPrincipal String username, @RequestBody SettingRequestDto settingRequestDto) {

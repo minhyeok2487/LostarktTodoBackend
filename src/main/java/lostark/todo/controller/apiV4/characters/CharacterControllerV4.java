@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
+import lostark.todo.controller.dto.characterDto.CharacterSettingDto;
+import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.CharacterService;
@@ -29,5 +31,12 @@ public class CharacterControllerV4 {
                                                             @RequestBody CharacterDefaultDto characterDefaultDto) {
         Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, username);
         return new ResponseEntity<>(CharacterResponse.toDto(resultCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 출력 내용 수정")
+    @PatchMapping("/settings")
+    public ResponseEntity<?> updateSettings(@AuthenticationPrincipal String username, @RequestBody SettingRequestDto settingRequestDto) {
+        Character updateCharacter = characterService.updateSetting(username, settingRequestDto);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 }
