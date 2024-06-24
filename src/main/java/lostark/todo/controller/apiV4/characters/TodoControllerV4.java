@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/v4/characters/todo")
-@Api(tags = {"회원 숙제 Api"})
+@Api(tags = {"원정대 숙제 Api"})
 public class TodoControllerV4 {
 
     private final CharacterService characterService;

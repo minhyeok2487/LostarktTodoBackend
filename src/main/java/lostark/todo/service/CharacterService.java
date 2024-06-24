@@ -8,13 +8,13 @@ import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
-import lostark.todo.domain.character.ChallengeContentEnum;
+import lostark.todo.domain.character.*;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -193,9 +193,7 @@ public class CharacterService {
     }
 
 
-    /**
-     * 일일컨텐츠 체크 업데이트
-     */
+    // 일일 컨텐츠 체크 업데이트
     public Character updateCheck(Character character, String category) {
         if(category.equals("epona")) {
             character.getDayTodo().updateCheckEpona();
@@ -428,6 +426,38 @@ public class CharacterService {
         Character character = findCharacter(
                 settingRequestDto.getCharacterId(), settingRequestDto.getCharacterName(), username);
         character.getSettings().update(settingRequestDto.getName(), settingRequestDto.isValue());
+        return character;
+    }
+
+    // 일일 컨텐츠 체크 업데이트
+    @Transactional
+    public Character updateDayTodoCheck(String username, CharacterDefaultDto characterDefaultDto,
+                                        DayTodoCategoryEnum category, boolean updateAll) {
+
+        Character character = findCharacter(
+                characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
+
+        DayTodo dayTodo = character.getDayTodo();
+
+        switch (category) {
+            case epona -> {
+                if (updateAll) {
+                    dayTodo.updateCheckEponaAll();
+                } else {
+                    dayTodo.updateCheckEpona();
+                }
+            }
+            case chaos -> {
+                if (updateAll) {
+                    dayTodo.updateCheckChaosAll();
+                } else {
+                    dayTodo.updateCheckChaos();
+                }
+            }
+            case guardian -> dayTodo.updateCheckGuardian();
+            default -> throw new IllegalArgumentException("Invalid day todo category: " + category);
+        }
+
         return character;
     }
 }

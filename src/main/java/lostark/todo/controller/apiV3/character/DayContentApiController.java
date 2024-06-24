@@ -34,6 +34,7 @@ public class DayContentApiController {
     private final MarketService marketService;
     private final ApplicationEventPublisher eventPublisher;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
     @PatchMapping({"/check/{category}", "/check/{category}/{all}"})
     public ResponseEntity<?> updateDayTodoCheck(@AuthenticationPrincipal String username,
