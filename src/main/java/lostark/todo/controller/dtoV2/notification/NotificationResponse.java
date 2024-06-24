@@ -1,0 +1,35 @@
+package lostark.todo.controller.dtoV2.notification;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lostark.todo.domain.notification.Notification;
+
+import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
+
+@Data
+public class NotificationResponse {
+
+    @NotEmpty
+    @ApiModelProperty(example = "알림 id")
+    private long id;
+
+    @NotEmpty
+    @ApiModelProperty(example = "생성 일자")
+    private LocalDateTime createdDate;
+
+    @NotEmpty
+    @ApiModelProperty(example = "내용")
+    private String content;
+
+    @NotEmpty
+    @ApiModelProperty(example = "클릭 링크")
+    private String url;
+
+    public NotificationResponse(Notification notification) {
+        this.id = notification.getId();
+        this.createdDate = notification.getCreatedDate();
+        this.content = notification.getContent();
+        this.url = notification.getRelatedUrl();
+    }
+}

@@ -81,6 +81,8 @@ dependencies {
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-core:${queryDslVersion}"
 
+	//cache
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 //QueryDSL 플로그인 설정 START

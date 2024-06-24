@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface BoardsRepository extends JpaRepository<Boards, Long> {
+public interface BoardsRepository extends JpaRepository<Boards, Long>, BoardsCustomRepository {
 
     @Query("SELECT b FROM Boards b WHERE b.isNotice = false ORDER BY b.createdDate DESC")
     Page<Boards> findAllByNoticeFalse(Pageable pageable);
@@ -17,5 +17,4 @@ public interface BoardsRepository extends JpaRepository<Boards, Long> {
 
     @Query("SELECT b FROM Boards b WHERE b.isNotice = true ORDER BY b.createdDate DESC")
     List<Boards> findAllByNoticeIsTrue();
-
 }

@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.boardsDto.BoardUpdateDto;
 import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.boards.BoardsImagesRepository;
 import lostark.todo.domain.boards.BoardsRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class BoardsService {
         return boardsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 게시글 입니다."));
     }
 
+    @Transactional
+    @CacheEvict(value = "boardStore", allEntries=true)
     public Boards save(Boards boards) {
         return boardsRepository.save(boards);
     }
@@ -49,5 +52,11 @@ public class BoardsService {
 
     public void delete(long id) {
         boardsRepository.delete(findById(id));
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "boardStore")
+    public List<Boards> search() {
+        return boardsRepository.search();
     }
 }
