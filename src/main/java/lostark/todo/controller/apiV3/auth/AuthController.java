@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static lostark.todo.Constant.TEST_USERNAME;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -83,6 +85,9 @@ public class AuthController {
     public ResponseEntity<?> saveCharacter(
             @AuthenticationPrincipal String username,
             @RequestBody MemberRequestDto memberDto) {
+        if (username.equals(TEST_USERNAME)) {
+            throw new IllegalStateException("테스트 계정은 캐릭터 등록이 불가능 합니다.");
+        }
         if (usernameLocks.putIfAbsent(username, true) != null) {
             throw new IllegalStateException("이미 진행중입니다.");
         }
