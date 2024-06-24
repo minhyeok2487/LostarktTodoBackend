@@ -115,14 +115,13 @@ public class Character extends BaseTimeEntity {
         return this;
     }
 
-    public Character updateChallenge(String content) {
-        if (content.equals("Guardian")) {
+    public void updateChallenge(ChallengeContentEnum content) {
+        if (content == ChallengeContentEnum.Guardian) {
             this.challengeGuardian = !this.challengeGuardian;
         }
-        if (content.equals("Abyss")) {
+        if (content == ChallengeContentEnum.Abyss) {
             this.challengeAbyss = !this.challengeAbyss;
         }
-        return this;
     }
 
     public void changeCharacter(Character before) {

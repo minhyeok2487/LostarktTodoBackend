@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotEmpty;
+import lostark.todo.domain.character.ChallengeContentEnum;
 
 @Data
 @NoArgsConstructor
@@ -21,5 +20,5 @@ public class CharacterChallengeRequestDto {
     private String serverName;
 
     @ApiModelProperty(notes = "콘텐츠 분류", value = "Guardian, Abyss")
-    private String content;
+    private ChallengeContentEnum content;
 }

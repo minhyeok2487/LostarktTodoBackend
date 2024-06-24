@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.adminDto.QDashboardResponse;
 import lostark.todo.domain.member.Member;
-
 import java.util.List;
+import java.util.Optional;
 
 import static lostark.todo.domain.character.QCharacter.character;
+import static lostark.todo.domain.content.QDayContent.dayContent;
+import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domain.todo.QTodo.todo;
 import static lostark.todo.domain.todoV2.QTodoV2.todoV2;
 
@@ -20,6 +22,19 @@ import static lostark.todo.domain.todoV2.QTodoV2.todoV2;
 public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     private final JPAQueryFactory factory;
+
+    @Override
+    public Optional<Character> findCharacterWithMember(long characterId, String username) {
+        return Optional.ofNullable(factory.selectFrom(character)
+                .leftJoin(character.member, member).fetchJoin()
+                .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
+                .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                .where(
+                        eqMember(username),
+                        eqCharacterId(characterId)
+                )
+                .fetchFirst());
+    }
 
     @Override
     public long deleteByMember(Member member) {
@@ -58,4 +73,13 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
     private BooleanExpression eqMember(Member member) {
         return character.member.eq(member);
     }
+
+    private BooleanExpression eqMember(String username) {
+        return character.member.username.eq(username);
+    }
+
+    private BooleanExpression eqCharacterId(long characterId) {
+        return character.id.eq(characterId);
+    }
+
 }

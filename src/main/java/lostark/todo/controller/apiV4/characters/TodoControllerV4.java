@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.character.ChallengeContentEnum;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.MemberService;
@@ -27,9 +28,9 @@ public class TodoControllerV4 {
     @PatchMapping("/challenge/{serverName}/{content}")
     public ResponseEntity<?> updateChallenge(@AuthenticationPrincipal String username,
                                              @PathVariable String serverName,
-                                             @PathVariable String content) {
+                                             @PathVariable ChallengeContentEnum content) {
         // username -> member 조회
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
 
         // 도전 어비스, 가디언 업데이트
         characterService.updateChallenge(member, serverName, content);

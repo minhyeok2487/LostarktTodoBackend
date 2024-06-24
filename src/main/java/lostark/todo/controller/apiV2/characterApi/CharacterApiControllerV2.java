@@ -28,11 +28,11 @@ public class CharacterApiControllerV2 {
     private final CharacterService characterService;
     private final MemberService memberService;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterDto.class)
     @PatchMapping("/gold-character")
-    public ResponseEntity<CharacterDto> updateGoldCharacter(@AuthenticationPrincipal String username, @RequestBody CharacterDefaultDto characterDefaultDto) {
-        // 로그인한 아이디에 등록된 캐릭터인지 검증
-        // 다른 아이디면 자동으로 Exception 처리
+    public ResponseEntity<CharacterDto> updateGoldCharacter(@AuthenticationPrincipal String username,
+                                                            @RequestBody CharacterDefaultDto characterDefaultDto) {
         Character character = characterService.findCharacter(
                 characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
 
@@ -40,26 +40,6 @@ public class CharacterApiControllerV2 {
         Character resultCharacter = characterService.updateGoldCharacter(character);
 
         return new ResponseEntity<>(new CharacterDto().toDtoV2(resultCharacter), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "원정대 주간 숙제(도전어비스, 도전가디언) 수정",
-            response = CharacterDto.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "JWT Bearer 토큰", required = true,
-                    dataTypeClass = String.class, paramType = "header")
-    })
-    @PatchMapping("/challenge")
-    //V4 변경
-    public ResponseEntity updateChallenge(@AuthenticationPrincipal String username,
-                                          @RequestBody CharacterChallengeRequestDto characterChallengeRequestDto) {
-        // username -> member 조회
-        Member member = memberService.findMember(username);
-
-        // 도전 어비스, 가디언 업데이트
-        List<Character> characterList = characterService.updateChallenge(
-                member, characterChallengeRequestDto.getServerName(), characterChallengeRequestDto.getContent());
-
-        return new ResponseEntity<>(new CharacterDto().toDtoList(characterList), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 출력 내용 수정")

@@ -57,8 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // Admin 권한 체크
                 // memberService를 통해 사용자 정보 가져오기
-                Member member = memberService.get(username);
                 if (request.getRequestURI().startsWith("/admin")) {
+                    Member member = memberService.get(username);
                     if (member.getRole() != Role.ADMIN) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         response.getWriter().write("관리자 권한이 필요합니다.");

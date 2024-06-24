@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
+import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.domain.character.ChallengeContentEnum;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.DayContent;
@@ -34,9 +36,10 @@ public class CharacterService {
         return characterRepository.findAll();
     }
 
-    /**
-     * 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
-     */
+
+    // 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
+    // 로그인한 아이디에 등록된 캐릭터인지 검증
+    @Transactional(readOnly = true)
     public Character findCharacter(long characterId, String characterName, String username) {
         return characterRepository.findCharacterWithMember(characterId, username).orElseThrow(
                 () -> new IllegalArgumentException("characterName = "+characterName+" / username = " + username + " : 존재하지 않는 캐릭터"));
@@ -233,11 +236,27 @@ public class CharacterService {
         return character.updateGoldCharacter();
     }
 
+    @Transactional
+    public Character updateGoldCharacter(CharacterDefaultDto characterDefaultDto, String username) {
+        Character character = findCharacter(
+                characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
+
+        // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
+        int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
+                character.getMember(), character.getServerName());
+
+        //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
+        if (!character.isGoldCharacter() && goldCharacter >= 6) {
+            throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
+        }
+        return character.updateGoldCharacter();
+    }
+
     public List<Character> findCharacterListServerName(Member member, String serverName) {
         return characterRepository.findCharacterListServerName(member, serverName);
     }
 
-    public List<Character> updateChallenge(Member member, String serverName, String content) {
+    public List<Character> updateChallenge(Member member, String serverName, ChallengeContentEnum content) {
         List<Character> characterList = findCharacterListServerName(member, serverName);
         for (Character character : characterList) {
             character.updateChallenge(content);
