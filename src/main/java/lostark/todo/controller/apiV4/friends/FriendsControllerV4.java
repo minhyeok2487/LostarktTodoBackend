@@ -46,7 +46,7 @@ public class FriendsControllerV4 {
     public ResponseEntity<?> delete(@AuthenticationPrincipal String username, @PathVariable long friendId) {
         Member member = memberService.get(username);
         friendsService.deleteById(member, friendId);
-        return new ResponseEntity<>("ok", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "깐부 캐릭터 주간 숙제 추가폼")
