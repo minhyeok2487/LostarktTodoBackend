@@ -34,7 +34,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                         eqMember(username),
                         eqCharacterId(characterId)
                 )
-                .fetchFirst());
+                .fetchOne());
     }
 
     @Override
