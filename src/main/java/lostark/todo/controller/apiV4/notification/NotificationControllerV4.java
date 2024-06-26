@@ -12,6 +12,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationType;
 import lostark.todo.service.BoardsService;
+import lostark.todo.service.CommentsService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.NotificationService;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class NotificationControllerV4 {
     private final NotificationService notificationService;
     private final BoardsService boardsService;
     private final MemberService memberService;
+    private final CommentsService commentsService;
 
     @ApiOperation(value = "알림 조회 API", response = SearchNotificationResponse.class)
     @GetMapping()
@@ -55,6 +57,22 @@ public class NotificationControllerV4 {
                 .build();
         notificationService.updateRead(request);
         GetNotificationResponse result = new GetNotificationResponse("/boards/"+boardId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "알림 확인 - 공지사항 이동", response = SearchNotificationResponse.class)
+    @GetMapping("/comments/{commentId}")
+    public ResponseEntity<?> getCommentNotice(@AuthenticationPrincipal String username, @PathVariable long commentId) {
+        GetNotificationRequest request = GetNotificationRequest.builder()
+                .username(username)
+                .notificationType(NotificationType.COMMENT)
+                .commentId(commentId)
+                .build();
+        notificationService.updateRead(request);
+
+        int page = commentsService.findCommentPage(commentId);
+
+        GetNotificationResponse result = new GetNotificationResponse("/comments/?page=" + page);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

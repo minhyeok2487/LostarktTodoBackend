@@ -51,4 +51,10 @@ public class CommentsService {
     public Comments findById(long id) {
         return commentsRepository.findById(id).orElse(null);
     }
+
+    @Transactional(readOnly = true)
+    public int findCommentPage(long commentId) {
+        int commentIndex = commentsRepository.findCommentIndex(commentId);
+        return (commentIndex / 5) + 1;
+    }
 }

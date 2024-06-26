@@ -32,12 +32,14 @@ public class Notification extends BaseTimeEntity {
 
     private long boardId;
 
+    private long commentId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @JsonBackReference //순환참조 방지
     private Member receiver;
 
     public void updateRead() {
-        this.isRead = !this.isRead;
+        this.isRead = true;
     }
 }

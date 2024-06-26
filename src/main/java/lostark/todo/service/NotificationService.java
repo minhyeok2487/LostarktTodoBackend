@@ -58,6 +58,7 @@ public class NotificationService {
                 .relatedUrl("/comments/" + comments.getId())
                 .isRead(false)
                 .notificationType(NotificationType.COMMENT)
+                .commentId(comments.getId())
                 .receiver(comments.getMember())
                 .build();
         notificationRepository.save(notification);

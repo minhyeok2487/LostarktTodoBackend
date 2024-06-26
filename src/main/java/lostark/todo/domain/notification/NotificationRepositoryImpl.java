@@ -40,7 +40,8 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
                 .where(
                         eqUsername(request.getUsername()),
                         eqType(request.getNotificationType()),
-                        eqBoardId(request.getBoardId())
+                        eqBoardId(request.getBoardId()),
+                        eqCommentId(request.getCommentId())
                 )
                 .orderBy(notification.createdDate.desc())
                 .fetchOne();
@@ -59,7 +60,17 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     }
 
     private BooleanExpression eqBoardId(long boardId) {
+        if (boardId == 0) {
+            return null;
+        }
         return notification.boardId.eq(boardId);
+    }
+
+    private BooleanExpression eqCommentId(long commentId) {
+        if (commentId == 0) {
+            return null;
+        }
+        return notification.commentId.eq(commentId);
     }
 
 }

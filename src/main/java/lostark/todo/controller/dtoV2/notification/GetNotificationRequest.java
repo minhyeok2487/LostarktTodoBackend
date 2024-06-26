@@ -20,6 +20,9 @@ public class GetNotificationRequest {
     @ApiModelProperty(example = "알림 타입")
     private NotificationType notificationType;
 
-    @ApiModelProperty(example = "공지사항 Id")
+    @ApiModelProperty(example = "공지사항 Id / 공지사항 타입이 아니면 0")
     private long boardId = 0;
+
+    @ApiModelProperty(example = "방명록 Id / 방명록 타입이 아니면 0")
+    private long commentId = 0;
 }
