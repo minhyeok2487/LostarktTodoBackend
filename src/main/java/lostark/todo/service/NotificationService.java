@@ -68,8 +68,8 @@ public class NotificationService {
         String fromCharacterName = getMainCharacterName(fromMember);
         String toCharacterName = getMainCharacterName(toMember);
 
-        createAndSaveNotification(toMember, fromCharacterName + "님에게 깐부요청중 이에요.", "/friends/" + toMember.getId() + "/" + fromMember.getId());
-        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 보냈어요.", "/friends/" + fromMember.getId() + "/" + toMember.getId());
+        createAndSaveNotification(toMember, fromCharacterName + "님에게 깐부요청중 이에요.", "/friends/" + fromMember.getUsername());
+        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 보냈어요.", "/friends/" + toMember.getUsername());
     }
 
     @Transactional
