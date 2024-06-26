@@ -3,12 +3,12 @@ package lostark.todo.domain.notification;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.dtoV2.notification.GetNotificationRequest;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.QMember;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static lostark.todo.domain.notification.QNotification.notification;
 
@@ -34,43 +34,28 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     }
 
     @Override
-    public Notification get(GetNotificationRequest request) {
-        return factory.selectFrom(notification)
+    public Optional<Notification> get(long notificationId, String username) {
+        Notification result = factory.selectFrom(notification)
                 .leftJoin(notification.receiver, QMember.member).fetchJoin()
                 .where(
-                        eqUsername(request.getUsername()),
-                        eqType(request.getNotificationType()),
-                        eqBoardId(request.getBoardId()),
-                        eqCommentId(request.getCommentId())
+                        eqId(notificationId),
+                        eqUsername(username)
                 )
-                .orderBy(notification.createdDate.desc())
                 .fetchOne();
+        return Optional.ofNullable(result);
     }
 
     private BooleanExpression betweenDate(LocalDateTime beforeDate, LocalDateTime afterDate) {
         return notification.createdDate.between(beforeDate, afterDate);
     }
 
+    private BooleanExpression eqId(long id) {
+        return notification.id.eq(id);
+    }
+
+
     private BooleanExpression eqUsername(String username) {
         return notification.receiver.username.eq(username);
-    }
-
-    private BooleanExpression eqType(NotificationType type) {
-        return notification.notificationType.eq(type);
-    }
-
-    private BooleanExpression eqBoardId(long boardId) {
-        if (boardId == 0) {
-            return null;
-        }
-        return notification.boardId.eq(boardId);
-    }
-
-    private BooleanExpression eqCommentId(long commentId) {
-        if (commentId == 0) {
-            return null;
-        }
-        return notification.commentId.eq(commentId);
     }
 
 }

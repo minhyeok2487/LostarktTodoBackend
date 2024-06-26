@@ -2,7 +2,6 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.notification.GetNotificationRequest;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
@@ -101,8 +100,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public void updateRead(GetNotificationRequest request) {
-        Notification notification = notificationRepository.get(request);
+    public Notification updateRead(long notificationId, String username) {
+        Notification notification = notificationRepository.get(notificationId, username).orElseThrow(() -> new IllegalArgumentException("없는 알림 입니다."));
         notification.updateRead();
+        return notification;
     }
 }

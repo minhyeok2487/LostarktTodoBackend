@@ -4,13 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.notification.GetNotificationRequest;
 import lostark.todo.controller.dtoV2.notification.GetNotificationResponse;
 import lostark.todo.controller.dtoV2.notification.SearchNotificationResponse;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notification.Notification;
-import lostark.todo.domain.notification.NotificationType;
 import lostark.todo.service.BoardsService;
 import lostark.todo.service.CommentsService;
 import lostark.todo.service.MemberService;
@@ -47,32 +45,22 @@ public class NotificationControllerV4 {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "알림 확인 - 공지사항 이동", response = SearchNotificationResponse.class)
-    @GetMapping("/boards/{boardId}")
-    public ResponseEntity<?> getBoardNotice(@AuthenticationPrincipal String username, @PathVariable long boardId) {
-        GetNotificationRequest request = GetNotificationRequest.builder()
-                .username(username)
-                .notificationType(NotificationType.BOARD)
-                .boardId(boardId)
-                .build();
-        notificationService.updateRead(request);
-        GetNotificationResponse result = new GetNotificationResponse("/boards/"+boardId);
+    @ApiOperation(value = "알림 확인", response = GetNotificationResponse.class)
+    @GetMapping("/{notificationId}")
+    public ResponseEntity<GetNotificationResponse> get(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
+        Notification notification = notificationService.updateRead(notificationId, username);
+        GetNotificationResponse result =
+                switch (notification.getNotificationType()) {
+                    case BOARD -> new GetNotificationResponse("/boards/" + notification.getBoardId());
+                    case COMMENT -> {
+                        int page = commentsService.findCommentPage(notification.getCommentId());
+                        yield new GetNotificationResponse("/comments/?page=" + page);
+                    }
+                    case FRIEND -> new GetNotificationResponse("/friends");
+                };
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "알림 확인 - 공지사항 이동", response = SearchNotificationResponse.class)
-    @GetMapping("/comments/{commentId}")
-    public ResponseEntity<?> getCommentNotice(@AuthenticationPrincipal String username, @PathVariable long commentId) {
-        GetNotificationRequest request = GetNotificationRequest.builder()
-                .username(username)
-                .notificationType(NotificationType.COMMENT)
-                .commentId(commentId)
-                .build();
-        notificationService.updateRead(request);
 
-        int page = commentsService.findCommentPage(commentId);
-
-        GetNotificationResponse result = new GetNotificationResponse("/comments/?page=" + page);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
 }
