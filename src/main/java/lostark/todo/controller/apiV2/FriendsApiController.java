@@ -44,6 +44,7 @@ public class FriendsApiController {
     private final TodoServiceV2 todoServiceV2;
     private final MarketService marketService;
     private final ContentService contentService;
+    private final NotificationService notificationService;
     private final LostarkCharacterService lostarkCharacterService;
 
     @ApiOperation(value = "친구 리스트")
@@ -99,6 +100,10 @@ public class FriendsApiController {
         Member fromMember = memberService.findMember(fromUser);
 
         friendsService.addFriendsRequest(toMember, fromMember);
+
+        // 보낸 사랑 알림, 받는 사람 알림
+        notificationService.saveAddFriendRequest(toMember, fromMember);
+
         List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
@@ -112,6 +117,13 @@ public class FriendsApiController {
         Member fromMember = memberService.findMember(fromUser);
 
         friendsService.updateFriendsRequest(toMember, fromMember, category);
+        if (category.equals("ok")) {
+            notificationService.saveUpdateFriendRequestOk(toMember, fromMember);
+        } else if (category.equals("reject")) {
+            notificationService.saveUpdateFriendRequestReject(toMember, fromMember);
+        } else {
+            throw new IllegalStateException("잘못된 요청입니다.");
+        }
         List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }

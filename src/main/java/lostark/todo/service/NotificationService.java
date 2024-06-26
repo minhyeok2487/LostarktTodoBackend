@@ -41,7 +41,7 @@ public class NotificationService {
     public Notification createBoardNotification(long boardId, Member receiver) {
         Notification notification = Notification.builder()
                 .content("읽지 않은 공지사항이 있어요!")
-                .relatedUrl("/boards/"+boardId)
+                .relatedUrl("/boards/" + boardId)
                 .isRead(false)
                 .notificationType(NotificationType.BOARD)
                 .boardId(boardId)
@@ -54,10 +54,46 @@ public class NotificationService {
     public void saveComment(Comments comments) {
         Notification notification = Notification.builder()
                 .content("내가 쓴 방명록에 댓글이 달렸어요.")
-                .relatedUrl("/comments/"+comments.getId())
+                .relatedUrl("/comments/" + comments.getId())
                 .isRead(false)
                 .notificationType(NotificationType.COMMENT)
                 .receiver(comments.getMember())
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void saveAddFriendRequest(Member toMember, Member fromMember) {
+        String fromCharacterName = getMainCharacterName(fromMember);
+        String toCharacterName = getMainCharacterName(toMember);
+
+        createAndSaveNotification(toMember, fromCharacterName + "님에게 깐부요청중 이에요.", "/friends/" + toMember.getId() + "/" + fromMember.getId());
+        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 보냈어요.", "/friends/" + fromMember.getId() + "/" + toMember.getId());
+    }
+
+    @Transactional
+    public void saveUpdateFriendRequestOk(Member toMember, Member fromMember) {
+        String toCharacterName = getMainCharacterName(toMember);
+        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 수락했어요.", "/friends/" + fromMember.getId() + "/" + toMember.getId() + "/ok");
+    }
+
+    @Transactional
+    public void saveUpdateFriendRequestReject(Member toMember, Member fromMember) {
+        String toCharacterName = getMainCharacterName(toMember);
+        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 거절했어요.", "/friends/" + fromMember.getId() + "/" + toMember.getId() + "/reject");
+    }
+
+    private String getMainCharacterName(Member member) {
+        return member.getMainCharacter() != null ? member.getMainCharacter() : member.getCharacters().get(0).getCharacterName();
+    }
+
+    private void createAndSaveNotification(Member receiver, String content, String relatedUrl) {
+        Notification notification = Notification.builder()
+                .content(content)
+                .relatedUrl(relatedUrl)
+                .isRead(false)
+                .notificationType(NotificationType.FRIEND)
+                .receiver(receiver)
                 .build();
         notificationRepository.save(notification);
     }
