@@ -3,6 +3,7 @@ package lostark.todo.domain.notification;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.controller.dtoV2.notification.GetNotificationRequest;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.QMember;
 
@@ -26,17 +27,39 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
                 .leftJoin(notification.receiver, QMember.member).fetchJoin()
                 .where(
                         betweenDate(oneMonthAgo, now),
-                        eqUsername(member)
+                        eqUsername(member.getUsername())
                 )
                 .orderBy(notification.createdDate.desc())
                 .fetch();
+    }
+
+    @Override
+    public Notification get(GetNotificationRequest request) {
+        return factory.selectFrom(notification)
+                .leftJoin(notification.receiver, QMember.member).fetchJoin()
+                .where(
+                        eqUsername(request.getUsername()),
+                        eqType(request.getNotificationType()),
+                        eqBoardId(request.getBoardId())
+                )
+                .orderBy(notification.createdDate.desc())
+                .fetchOne();
     }
 
     private BooleanExpression betweenDate(LocalDateTime beforeDate, LocalDateTime afterDate) {
         return notification.createdDate.between(beforeDate, afterDate);
     }
 
-    private BooleanExpression eqUsername(Member member) {
-        return notification.receiver.eq(member);
+    private BooleanExpression eqUsername(String username) {
+        return notification.receiver.username.eq(username);
     }
+
+    private BooleanExpression eqType(NotificationType type) {
+        return notification.notificationType.eq(type);
+    }
+
+    private BooleanExpression eqBoardId(long boardId) {
+        return notification.boardId.eq(boardId);
+    }
+
 }

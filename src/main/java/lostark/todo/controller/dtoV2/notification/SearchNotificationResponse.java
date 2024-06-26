@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Data
-public class NotificationResponse {
+public class SearchNotificationResponse {
 
     @NotEmpty
     @ApiModelProperty(example = "알림 id")
@@ -26,7 +26,7 @@ public class NotificationResponse {
     @ApiModelProperty(example = "클릭 링크")
     private String url;
 
-    public NotificationResponse(Notification notification) {
+    public SearchNotificationResponse(Notification notification) {
         this.id = notification.getId();
         this.createdDate = notification.getCreatedDate();
         this.content = notification.getContent();

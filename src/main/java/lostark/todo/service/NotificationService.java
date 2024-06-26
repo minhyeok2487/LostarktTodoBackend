@@ -2,6 +2,7 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dtoV2.notification.GetNotificationRequest;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
@@ -96,5 +97,11 @@ public class NotificationService {
                 .receiver(receiver)
                 .build();
         notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void updateRead(GetNotificationRequest request) {
+        Notification notification = notificationRepository.get(request);
+        notification.updateRead();
     }
 }
