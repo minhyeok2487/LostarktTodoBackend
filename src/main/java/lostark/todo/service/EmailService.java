@@ -7,7 +7,6 @@ import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.domain.authEmail.AuthMail;
 import lostark.todo.domain.authEmail.AuthMailRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +15,6 @@ import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +63,14 @@ public class EmailService {
     public boolean isAuth(AuthSignupDto authSignupDto) {
         return emailRepository.findAllByMail(authSignupDto.getMail()).stream()
                 .anyMatch(mail -> mail.getNumber() == authSignupDto.getNumber() && mail.isAuth());
+    }
+
+    public void isAuthV2(AuthSignupDto authSignupDto) {
+        boolean auth = emailRepository.findAllByMail(authSignupDto.getMail()).stream()
+                .anyMatch(mail -> mail.getNumber() == authSignupDto.getNumber() && mail.isAuth());
+        if (!auth) {
+            throw new IllegalStateException("이메일 인증이 실패하였습니다.");
+        }
     }
 
     public void deleteAll(String mail) {

@@ -51,6 +51,7 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final ApplicationEventPublisher eventPublisher;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "1차 회원 가입",
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = ResponseDto.class)
     @PostMapping("/signup")
