@@ -3,6 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.boards.Boards;
+import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationRepository;
@@ -23,7 +24,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional()
-    public List<Notification> search(Member member, List<Boards> searchBoard) {
+    public List<Notification> searchBoard(Member member, List<Boards> searchBoard) {
         List<Notification> notifications = notificationRepository.search(member);
 
         for (Boards boards : searchBoard) {
@@ -47,5 +48,17 @@ public class NotificationService {
                 .receiver(receiver)
                 .build();
         return notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void saveComment(Comments comments) {
+        Notification notification = Notification.builder()
+                .content("내가 쓴 방명록에 댓글이 달렸어요.")
+                .relatedUrl("/comments/"+comments.getId())
+                .isRead(false)
+                .notificationType(NotificationType.COMMENT)
+                .receiver(comments.getMember())
+                .build();
+        notificationRepository.save(notification);
     }
 }

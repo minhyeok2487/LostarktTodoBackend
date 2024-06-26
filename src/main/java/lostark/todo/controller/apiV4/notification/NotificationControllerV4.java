@@ -36,7 +36,7 @@ public class NotificationControllerV4 {
     public ResponseEntity<?> search(@AuthenticationPrincipal String username) {
         Member member = memberService.get(username);
         List<Boards> searchBoard = boardsService.search();
-        List<Notification> notifications = notificationService.search(member, searchBoard);
+        List<Notification> notifications = notificationService.searchBoard(member, searchBoard);
         List<NotificationResponse> result = notifications.stream().map(NotificationResponse::new).toList();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

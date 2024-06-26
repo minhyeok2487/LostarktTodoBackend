@@ -30,6 +30,7 @@ public class CommentsController {
 
     private final CommentsService commentsService;
     private final MemberService memberService;
+    private final NotificationService notificationService;
     private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
@@ -64,23 +65,14 @@ public class CommentsController {
                 .build();
         commentsService.save(updateComments);
 
-        Page<Comments> allComments = commentsService.findAllByParentIdIs0(0);
-        int totalPages = allComments.getTotalPages();
-
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-        for (Comments comment : allComments.getContent()) {
-            List<Comments> commentList = commentsService.findAllByParentId(comment.getId());
-            commentResponseDtoList.add(new CommentResponseDto().createResponseDto(comment));
-            if(!commentList.isEmpty()) {
-                for (Comments reply : commentList) {
-                    commentResponseDtoList.add(new CommentResponseDto().createResponseDto(reply));
-                }
-            }
+        // 루트 코멘트가 아닐때 알림에 추가
+        if (commentRequestDto.getParentId() != 0) {
+            Comments comments = commentsService.findById(commentRequestDto.getParentId());
+            notificationService.saveComment(comments);
         }
-
         eventPublisher.publishEvent(new CommentEvent(eventPublisher, member, commentRequestDto.getBody()));
 
-        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "comment 수정")
