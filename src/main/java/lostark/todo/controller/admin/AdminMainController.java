@@ -1,5 +1,6 @@
 package lostark.todo.controller.admin;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.adminDto.DashboardResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin")
+@Api(tags = {"어드민 메인(회원 정보, 대시보드) API"})
 @RequiredArgsConstructor
 public class AdminMainController {
 
