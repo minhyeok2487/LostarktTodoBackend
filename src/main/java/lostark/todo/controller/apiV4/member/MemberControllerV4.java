@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
-import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.controller.dtoV2.member.EditMainCharacter;
 import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.controller.dtoV2.member.MemberResponse;

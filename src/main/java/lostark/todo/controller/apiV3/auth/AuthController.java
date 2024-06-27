@@ -80,8 +80,7 @@ public class AuthController {
     }
 
     @ApiOperation(value = "1차 회원가입 이후 캐릭터 추가",
-            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장",
-            response = MemberResponseDto.class)
+            notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장")
     @PostMapping("/character")
     public ResponseEntity<?> saveCharacter(
             @AuthenticationPrincipal String username,
@@ -111,15 +110,9 @@ public class AuthController {
             }
 
             // Member 회원가입
-            Member signupMember = memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
+            memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
 
-            // 이벤트 실행
-            EventType eventType = EventType.addCharacters;
-            eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
-
-            // 결과 출력
-            MemberResponseDto memberResponseDto = new MemberResponseDto().toDto(signupMember);
-            return new ResponseEntity<>(memberResponseDto, HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } finally {
             usernameLocks.remove(username);
         }
