@@ -6,12 +6,16 @@ import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
+import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
+import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.controller.dtoV2.member.EditMainCharacter;
 import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -201,4 +205,8 @@ public class MemberService {
         return memberRepository.searchMemberDashBoard(limit);
     }
 
+    @Transactional(readOnly = true)
+    public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
+        return memberRepository.searchAdminMember(request, pageRequest);
+    }
 }

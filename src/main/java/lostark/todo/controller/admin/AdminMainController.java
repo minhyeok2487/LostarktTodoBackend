@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
-import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
@@ -24,12 +23,10 @@ public class AdminMainController {
     private final CharacterService characterService;
 
     @ApiOperation(value = "어드민 회원 정보",
-            response = DashboardResponse.class)
+            response = MemberResponse.class)
     @GetMapping("/member")
     public ResponseEntity<?> getMember(@AuthenticationPrincipal String username) {
-        Member member = memberService.get(username);
-        MemberResponse memberResponse = new MemberResponse(member);
-        return new ResponseEntity<>(memberResponse, HttpStatus.OK);
+        return new ResponseEntity<>(new MemberResponse(memberService.get(username)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "일일 가입자 수 통계 호출",
