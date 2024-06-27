@@ -1,7 +1,5 @@
 package lostark.todo.domain.content;
 
-import lostark.todo.domain.character.Character;
-import lostark.todo.domain.todoV2.TodoV2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ContentRepository extends JpaRepository<Content, Long> {
+public interface ContentRepository extends JpaRepository<Content, Long>, ContentCustomRepository {
 
     Optional<Content> findContentByName(String name);
 

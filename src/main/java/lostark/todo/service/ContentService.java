@@ -1,6 +1,7 @@
 package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
+import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 import lostark.todo.domain.content.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,5 +94,10 @@ public class ContentService {
      */
     public CubeContent findCubeContent(String name) {
         return contentRepository.findByName(name).orElseThrow(()->new IllegalArgumentException(name + "은 없는 컨텐츠 입니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<RaidCategoryResponse> getScheduleRaidCategory() {
+        return contentRepository.getScheduleRaidCategory();
     }
 }

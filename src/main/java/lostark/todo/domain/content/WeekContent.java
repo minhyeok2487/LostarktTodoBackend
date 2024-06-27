@@ -2,9 +2,7 @@ package lostark.todo.domain.content;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import lostark.todo.domain.todoV2.TodoV2;
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
@@ -31,8 +29,9 @@ public class WeekContent extends Content{
 
     private int gold; //골드
 
-    @OneToMany(mappedBy = "weekContent", cascade = {CascadeType.ALL}, orphanRemoval=true)
-    private List<TodoV2> todoList;
+//    @OneToMany(mappedBy = "weekContent", cascade = {CascadeType.ALL}, orphanRemoval=true)
+//    @JsonManagedReference
+//    private List<TodoV2> todoList;
 
     private int coolTime; //주기
 
