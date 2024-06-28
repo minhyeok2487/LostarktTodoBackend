@@ -2,7 +2,7 @@ package lostark.todo.domain.content;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.dtoV2.content.QScheduleRaidCategoryResponse;
+import lostark.todo.controller.dtoV2.content.QRaidCategoryResponse;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class ContentRepositoryImpl implements ContentCustomRepository {
 
     @Override
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
-        return factory.select(new QScheduleRaidCategoryResponse(
+        return factory.select(new QRaidCategoryResponse(
                     weekContent.id, weekContent.name, weekContent.weekContentCategory, weekContent.level
                 ))
                 .from(weekContent)
