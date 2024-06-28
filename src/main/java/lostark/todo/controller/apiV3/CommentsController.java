@@ -75,6 +75,7 @@ public class CommentsController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "comment 수정")
     @PatchMapping()
     public ResponseEntity<?> updateComments(@AuthenticationPrincipal String username,
