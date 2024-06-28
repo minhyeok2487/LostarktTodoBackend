@@ -11,6 +11,7 @@ import lostark.todo.domain.notification.NotificationType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,5 +105,10 @@ public class NotificationService {
         Notification notification = notificationRepository.get(notificationId, username).orElseThrow(() -> new IllegalArgumentException("없는 알림 입니다."));
         notification.updateRead();
         return notification;
+    }
+
+    @Transactional(readOnly = true)
+    public LocalDateTime getRecent(String username) {
+        return notificationRepository.getRecent(username);
     }
 }

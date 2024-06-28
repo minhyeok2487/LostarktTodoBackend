@@ -45,6 +45,17 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
         return Optional.ofNullable(result);
     }
 
+    @Override
+    public LocalDateTime getRecent(String username) {
+        return factory.select(notification.createdDate)
+                .from(notification)
+                .where(
+                        eqUsername(username)
+                )
+                .orderBy(notification.createdDate.desc())
+                .fetchFirst();
+    }
+
     private BooleanExpression betweenDate(LocalDateTime beforeDate, LocalDateTime afterDate) {
         return notification.createdDate.between(beforeDate, afterDate);
     }

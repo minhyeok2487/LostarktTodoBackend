@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -43,6 +44,12 @@ public class NotificationControllerV4 {
         List<Notification> notifications = notificationService.searchBoard(member, searchBoard);
         List<SearchNotificationResponse> result = notifications.stream().map(SearchNotificationResponse::new).toList();
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "가장 최근 알림 날짜 조회 API", response = LocalDateTime.class)
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecent(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(notificationService.getRecent(username), HttpStatus.OK);
     }
 
     @ApiOperation(value = "알림 확인", response = GetNotificationResponse.class)
