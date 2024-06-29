@@ -121,8 +121,6 @@ public class FriendsApiController {
             notificationService.saveUpdateFriendRequestOk(toMember, fromMember);
         } else if (category.equals("reject")) {
             notificationService.saveUpdateFriendRequestReject(toMember, fromMember);
-        } else {
-            throw new IllegalStateException("잘못된 요청입니다.");
         }
         List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
         return new ResponseEntity<>(friends, HttpStatus.OK);
