@@ -27,7 +27,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class SchedulerService {
+public class SchedulingService {
     private final LostarkMarketService lostarkMarketService;
     private final MarketService marketService;
     private final TodoV2Repository todoV2Repository;
