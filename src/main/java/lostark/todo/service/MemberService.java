@@ -6,6 +6,7 @@ import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
+import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.controller.dtoV2.member.EditMainCharacter;
@@ -105,11 +106,12 @@ public class MemberService {
     /**
      * 회원가입 캐릭터 추가
      */
-    public Member createCharacter(String username, String apiKey, List<Character> characterList) {
-        Member member = findMember(username);
+    @Transactional
+    public void createCharacter(String username, MemberRequestDto dto, List<Character> characterList) {
+        Member member = findMemberAndCharacters(username);
         characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
-        member.setApiKey(apiKey);
-        return member;
+        member.setApiKey(dto.getApiKey());
+        member.setMainCharacter(dto.getCharacterName());
     }
 
 

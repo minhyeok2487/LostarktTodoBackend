@@ -110,7 +110,7 @@ public class AuthController {
             }
 
             // Member 회원가입
-            memberService.createCharacter(username, memberDto.getApiKey(), calculatedCharacterList);
+            memberService.createCharacter(username, memberDto, calculatedCharacterList);
 
             return new ResponseEntity<>(HttpStatus.OK);
         } finally {
