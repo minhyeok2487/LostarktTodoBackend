@@ -66,4 +66,9 @@ public class ScheduleService {
     public List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId) {
         return scheduleRepository.getLeaderScheduleId(leaderScheduleId);
     }
+
+    @Transactional
+    public void remove(Member member, long scheduleId) {
+        scheduleRepository.remove(member, scheduleId);
+    }
 }

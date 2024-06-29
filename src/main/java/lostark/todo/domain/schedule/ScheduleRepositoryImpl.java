@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.schedule.*;
+import lostark.todo.domain.member.Member;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +61,15 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .where(
                         eqLeaderScheduleId(leaderScheduleId)
                 ).fetch();
+    }
+
+    @Override
+    public void remove(Member member, long scheduleId) {
+        factory.delete(schedule)
+                .where(
+                        eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))
+                )
+                .execute();
     }
 
     private BooleanExpression betweenDate(LocalDateTime startDate, LocalDateTime endDate) {
