@@ -4,10 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
-import lostark.todo.controller.dtoV2.schedule.GetWeekScheduleRequest;
-import lostark.todo.controller.dtoV2.schedule.WeekScheduleResponse;
+import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -31,6 +30,17 @@ public class ScheduleController {
             @AuthenticationPrincipal String username) {
         Member member = memberService.findMemberAndCharacters(username);
         return new ResponseEntity<>(scheduleService.getWeek(member, request), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
+        Member member = memberService.findMemberAndCharacters(username);
+        GetScheduleResponse getScheduleResponse = scheduleService.get(scheduleId);
+        if(getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
+            getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(scheduleId));
+        }
+        return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
     }
 
     @ApiOperation(value = "스케줄 저장 API")

@@ -44,8 +44,10 @@ public class Schedule extends BaseTimeEntity {
 
     private boolean leader;
 
+    private long leaderScheduleId;
 
-    public static Schedule toEntity(CreateScheduleRequest request, Long characterId, boolean isLeader) {
+
+    public static Schedule toEntity(CreateScheduleRequest request, Long characterId, Long leaderScheduleId, boolean isLeader) {
         return Schedule.builder()
                 .characterId(characterId)
                 .scheduleRaidCategory(request.getScheduleRaidCategory())
@@ -56,6 +58,7 @@ public class Schedule extends BaseTimeEntity {
                 .memo(request.getMemo())
                 .repeatDay(request.getRepeatDay())
                 .leader(isLeader)
+                .leaderScheduleId(leaderScheduleId)
                 .build();
     }
 }

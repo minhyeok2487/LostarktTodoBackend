@@ -2,9 +2,7 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
-import lostark.todo.controller.dtoV2.schedule.GetWeekScheduleRequest;
-import lostark.todo.controller.dtoV2.schedule.WeekScheduleResponse;
+import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.schedule.Schedule;
@@ -36,11 +34,11 @@ public class ScheduleService {
         validateTime(request.getTime());
 
         List<Schedule> schedules = new ArrayList<>();
-        schedules.add(Schedule.toEntity(request, leaderCharacter.getId(), true));
+        Schedule leader = scheduleRepository.save(Schedule.toEntity(request, leaderCharacter.getId(), 0L, true));
 
         if (request.getScheduleCategory() == ScheduleCategory.PARTY) {
             request.getFriendCharacterIdList().forEach(friendCharacterId ->
-                    schedules.add(Schedule.toEntity(request, friendCharacterId, false))
+                    schedules.add(Schedule.toEntity(request, friendCharacterId, leader.getId(), false))
             );
         }
 
@@ -57,5 +55,15 @@ public class ScheduleService {
     public List<WeekScheduleResponse> getWeek(Member member, GetWeekScheduleRequest request) {
         List<Long> characterList = member.getCharacters().stream().map(Character::getId).toList();
         return scheduleRepository.getWeek(characterList, request);
+    }
+
+    @Transactional(readOnly = true)
+    public GetScheduleResponse get(long scheduleId) {
+        return scheduleRepository.get(scheduleId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId) {
+        return scheduleRepository.getLeaderScheduleId(leaderScheduleId);
     }
 }
