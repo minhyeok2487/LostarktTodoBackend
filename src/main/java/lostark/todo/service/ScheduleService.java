@@ -3,6 +3,8 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
+import lostark.todo.controller.dtoV2.schedule.GetWeekScheduleRequest;
+import lostark.todo.controller.dtoV2.schedule.WeekScheduleResponse;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.schedule.Schedule;
@@ -49,5 +51,11 @@ public class ScheduleService {
         if (time.getMinute() % 10 != 0) {
             throw new IllegalArgumentException("시간대는 10분 단위여야 합니다.");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<WeekScheduleResponse> getWeek(Member member, GetWeekScheduleRequest request) {
+        List<Long> characterList = member.getCharacters().stream().map(Character::getId).toList();
+        return scheduleRepository.getWeek(characterList, request);
     }
 }

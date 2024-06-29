@@ -5,16 +5,15 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
+import lostark.todo.controller.dtoV2.schedule.GetWeekScheduleRequest;
+import lostark.todo.controller.dtoV2.schedule.WeekScheduleResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +24,14 @@ public class ScheduleController {
 
     private final MemberService memberService;
     private final ScheduleService scheduleService;
+
+    @ApiOperation(value = "주간 일정 리스트 출력 API", response = WeekScheduleResponse.class)
+    @GetMapping()
+    public ResponseEntity<?> getWeek(GetWeekScheduleRequest request,
+            @AuthenticationPrincipal String username) {
+        Member member = memberService.findMemberAndCharacters(username);
+        return new ResponseEntity<>(scheduleService.getWeek(member, request), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "스케줄 저장 API")
     @PostMapping()
