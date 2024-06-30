@@ -71,4 +71,12 @@ public class ScheduleService {
     public void remove(Member member, long scheduleId) {
         scheduleRepository.remove(member, scheduleId);
     }
+
+    @Transactional
+    public void edit(Member member, EditScheduleRequest request, long scheduleId) {
+        List<Schedule> scheduleList = scheduleRepository.getAll(request, scheduleId);
+        for (Schedule schedule : scheduleList) {
+            schedule.edit(request);
+        }
+    }
 }

@@ -72,6 +72,14 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .execute();
     }
 
+    @Override
+    public List<Schedule> getAll(EditScheduleRequest request, long scheduleId) {
+        return factory.selectFrom(schedule)
+                .where(
+                        eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))
+                ).fetch();
+    }
+
     private BooleanExpression betweenDate(LocalDateTime startDate, LocalDateTime endDate) {
         return schedule.time.between(startDate, endDate);
     }

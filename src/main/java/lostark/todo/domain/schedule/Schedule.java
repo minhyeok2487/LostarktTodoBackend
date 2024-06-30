@@ -2,6 +2,7 @@ package lostark.todo.domain.schedule;
 
 import lombok.*;
 import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
+import lostark.todo.controller.dtoV2.schedule.EditScheduleRequest;
 import lostark.todo.domain.BaseTimeEntity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -60,5 +61,10 @@ public class Schedule extends BaseTimeEntity {
                 .leader(isLeader)
                 .leaderScheduleId(leaderScheduleId)
                 .build();
+    }
+
+    public void edit(EditScheduleRequest request) {
+        this.time = request.getTime();
+        this.memo = request.getMemo();
     }
 }
