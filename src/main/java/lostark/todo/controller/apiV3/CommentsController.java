@@ -116,20 +116,6 @@ public class CommentsController {
                 .build();
         commentsService.delete(updateComments); //삭제
 
-        Page<Comments> allComments = commentsService.findAllByParentIdIs0(0);
-        int totalPages = allComments.getTotalPages();
-
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-        for (Comments comment : allComments.getContent()) {
-            List<Comments> commentList = commentsService.findAllByParentId(comment.getId());
-            commentResponseDtoList.add(new CommentResponseDto().createResponseDto(comment));
-            if(!commentList.isEmpty()) {
-                for (Comments reply : commentList) {
-                    commentResponseDtoList.add(new CommentResponseDto().createResponseDto(reply));
-                }
-            }
-        }
-
-        return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
