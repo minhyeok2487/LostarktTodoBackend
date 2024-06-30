@@ -63,6 +63,21 @@ public class Schedule extends BaseTimeEntity {
                 .build();
     }
 
+    public static Schedule toEntityOfMain(Schedule main, Long characterId) {
+        return Schedule.builder()
+                .characterId(characterId)
+                .scheduleRaidCategory(main.getScheduleRaidCategory())
+                .scheduleCategory(main.getScheduleCategory())
+                .raidName(main.getRaidName())
+                .raidLevel(main.getRaidLevel())
+                .time(main.getTime())
+                .memo(main.getMemo())
+                .repeatDay(main.getRepeatDay())
+                .leader(false)
+                .leaderScheduleId(main.id)
+                .build();
+    }
+
     public void edit(EditScheduleRequest request) {
         this.time = request.getTime();
         this.memo = request.getMemo();

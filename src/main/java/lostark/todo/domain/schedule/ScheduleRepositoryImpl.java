@@ -73,7 +73,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     }
 
     @Override
-    public List<Schedule> getAll(EditScheduleRequest request, long scheduleId) {
+    public List<Schedule> getAll(long scheduleId) {
         return factory.selectFrom(schedule)
                 .where(
                         eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))

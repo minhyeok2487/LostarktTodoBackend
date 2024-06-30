@@ -53,7 +53,7 @@ public class ScheduleController {
     }
 
     @ApiOperation(value = "스케줄 수정 API")
-    @DeleteMapping("/{scheduleId}")
+    @PatchMapping("/{scheduleId}")
     public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
                                   @RequestBody EditScheduleRequest request,
                                   @PathVariable long scheduleId) {
@@ -67,6 +67,15 @@ public class ScheduleController {
     public ResponseEntity<?> remove(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
         Member member = memberService.findMemberAndCharacters(username);
         scheduleService.remove(member, scheduleId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "일정 깐부 추가/삭제 API")
+    @PostMapping("/{scheduleId}/friend")
+    public ResponseEntity<?> editFriend(@AuthenticationPrincipal String username,
+                                       @RequestBody EditScheduleFriendRequest request, @PathVariable long scheduleId) {
+        Member member = memberService.findMemberAndCharacters(username);
+        scheduleService.editFriend(member, request, scheduleId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

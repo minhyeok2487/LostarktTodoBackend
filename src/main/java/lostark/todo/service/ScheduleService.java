@@ -74,9 +74,37 @@ public class ScheduleService {
 
     @Transactional
     public void edit(Member member, EditScheduleRequest request, long scheduleId) {
-        List<Schedule> scheduleList = scheduleRepository.getAll(request, scheduleId);
+        List<Schedule> scheduleList = scheduleRepository.getAll(scheduleId);
         for (Schedule schedule : scheduleList) {
             schedule.edit(request);
         }
     }
+
+    @Transactional
+    public void editFriend(Member member, EditScheduleFriendRequest request, long scheduleId) {
+        List<Schedule> scheduleList = scheduleRepository.getAll(scheduleId);
+        Schedule main = scheduleList.stream()
+                .filter(Schedule::isLeader)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("없는 일정입니다."));
+
+        removeFriendsFromSchedule(scheduleList, request.getRemoveFriendCharacterIdList());
+        addFriendsToSchedule(main, request.getAddFriendCharacterIdList());
+    }
+
+    private void removeFriendsFromSchedule(List<Schedule> scheduleList, List<Long> removeFriendCharacterIdList) {
+        if (removeFriendCharacterIdList != null && !removeFriendCharacterIdList.isEmpty()) {
+            scheduleList.removeIf(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()));
+        }
+    }
+
+    private void addFriendsToSchedule(Schedule main, List<Long> addFriendCharacterIdList) {
+        if (addFriendCharacterIdList != null && !addFriendCharacterIdList.isEmpty()) {
+            addFriendCharacterIdList.forEach(id -> {
+                Schedule schedule = Schedule.toEntityOfMain(main, id);
+                scheduleRepository.save(schedule);
+            });
+        }
+    }
+
 }

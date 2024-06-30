@@ -15,5 +15,5 @@ public interface ScheduleCustomRepository {
 
     void remove(Member member, long scheduleId);
 
-    List<Schedule> getAll(EditScheduleRequest request, long scheduleId);
+    List<Schedule> getAll(long scheduleId);
 }
