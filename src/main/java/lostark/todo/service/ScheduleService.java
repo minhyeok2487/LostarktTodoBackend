@@ -95,31 +95,32 @@ public class ScheduleService {
         }
     }
 
-//    @Transactional
-//    public void editFriend(String username, EditScheduleFriendRequest request, long scheduleId) {
-//        List<Schedule> scheduleList = scheduleRepository.search(scheduleId, username);
-//        Schedule main = scheduleList.stream()
-//                .filter(Schedule::isLeader)
-//                .findFirst()
-//                .orElseThrow(() -> new IllegalArgumentException("없는 일정입니다."));
-//
-//        removeFriendsFromSchedule(scheduleList, request.getRemoveFriendCharacterIdList());
-//        addFriendsToSchedule(main, request.getAddFriendCharacterIdList());
-//    }
-//
-//    private void removeFriendsFromSchedule(List<Schedule> scheduleList, List<Long> removeFriendCharacterIdList) {
-//        if (removeFriendCharacterIdList != null && !removeFriendCharacterIdList.isEmpty()) {
-//            scheduleList.removeIf(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()));
-//        }
-//    }
-//
-//    private void addFriendsToSchedule(Schedule main, List<Long> addFriendCharacterIdList) {
-//        if (addFriendCharacterIdList != null && !addFriendCharacterIdList.isEmpty()) {
-//            addFriendCharacterIdList.forEach(id -> {
-//                Schedule schedule = Schedule.toEntityOfMain(main, id);
-//                scheduleRepository.save(schedule);
-//            });
-//        }
-//    }
+    @Transactional
+    public void editFriend(String username, EditScheduleFriendRequest request, long scheduleId) {
+        Schedule main = get(scheduleId, username);
+        if (main.isLeader()) {
+            List<Schedule> scheduleList = scheduleRepository.searchFriend(scheduleId);
+            removeFriendsFromSchedule(scheduleList, request.getRemoveFriendCharacterIdList());
+            addFriendsToSchedule(main, request.getAddFriendCharacterIdList());
+        } else {
+            throw new IllegalStateException("파티장만 수정이 가능합니다.");
+        }
+
+    }
+
+    private void removeFriendsFromSchedule(List<Schedule> scheduleList, List<Long> removeFriendCharacterIdList) {
+        if (removeFriendCharacterIdList != null && !removeFriendCharacterIdList.isEmpty()) {
+            scheduleList.removeIf(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()));
+        }
+    }
+
+    private void addFriendsToSchedule(Schedule main, List<Long> addFriendCharacterIdList) {
+        if (addFriendCharacterIdList != null && !addFriendCharacterIdList.isEmpty()) {
+            addFriendCharacterIdList.forEach(id -> {
+                Schedule schedule = Schedule.toEntityOfMain(main, id);
+                scheduleRepository.save(schedule);
+            });
+        }
+    }
 
 }

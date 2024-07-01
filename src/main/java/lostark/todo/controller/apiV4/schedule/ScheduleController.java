@@ -66,13 +66,13 @@ public class ScheduleController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @ApiOperation(value = "일정 깐부 추가/삭제 API")
-//    @PostMapping("/{scheduleId}/friend")
-//    public ResponseEntity<?> editFriend(@AuthenticationPrincipal String username,
-//                                       @RequestBody EditScheduleFriendRequest request, @PathVariable long scheduleId) {
-//        scheduleService.editFriend(username, request, scheduleId);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
+    @ApiOperation(value = "일정 깐부 추가/삭제 API")
+    @PostMapping("/{scheduleId}/friend")
+    public ResponseEntity<?> editFriend(@AuthenticationPrincipal String username,
+                                       @RequestBody EditScheduleFriendRequest request, @PathVariable long scheduleId) {
+        scheduleService.editFriend(username, request, scheduleId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }
