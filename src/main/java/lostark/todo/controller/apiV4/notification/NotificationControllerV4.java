@@ -50,7 +50,7 @@ public class NotificationControllerV4 {
     }
 
     @ApiOperation(value = "알림 확인 API", response = GetNotificationResponse.class)
-    @PostMapping("/{notificationId}")
+    @GetMapping("/{notificationId}")
     public ResponseEntity<GetNotificationResponse> get(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
         Notification notification = notificationService.updateRead(notificationId, username);
         GetNotificationResponse result =
@@ -60,7 +60,7 @@ public class NotificationControllerV4 {
                         int page = commentsService.findCommentPage(notification.getCommentId());
                         yield new GetNotificationResponse().toComment(notification.getCommentId(), page);
                     }
-                    case FRIEND -> new GetNotificationResponse().toFriend();
+                    case FRIEND -> new GetNotificationResponse().toFriend(notification);
                 };
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

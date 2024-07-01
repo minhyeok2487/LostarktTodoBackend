@@ -2,6 +2,7 @@ package lostark.todo.controller.dtoV2.notification;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationType;
 import org.json.simple.JSONObject;
 
@@ -31,9 +32,12 @@ public class GetNotificationResponse {
         return this;
     }
 
-    public GetNotificationResponse toFriend() {
+    public GetNotificationResponse toFriend(Notification notification) {
         this.notificationType = NotificationType.FRIEND;
-        this.data = null;
+        JSONObject object = new JSONObject();
+        object.put("friendId", notification.getFriendId());
+        object.put("friendUsername", notification.getFriendUsername());
+        this.data = object;
         return this;
     }
 }

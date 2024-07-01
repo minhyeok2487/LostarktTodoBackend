@@ -22,14 +22,9 @@ public class SearchNotificationResponse {
     @ApiModelProperty(example = "내용")
     private String content;
 
-    @NotEmpty
-    @ApiModelProperty(example = "클릭 링크")
-    private String url;
-
     public SearchNotificationResponse(Notification notification) {
         this.id = notification.getId();
         this.createdDate = notification.getCreatedDate();
         this.content = notification.getContent();
-        this.url = notification.getRelatedUrl();
     }
 }

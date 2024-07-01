@@ -22,8 +22,6 @@ public class Notification extends BaseTimeEntity {
 
     private String content;
 
-    private String relatedUrl;
-
     private boolean isRead;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +31,10 @@ public class Notification extends BaseTimeEntity {
     private long boardId;
 
     private long commentId;
+
+    private long friendId;
+
+    private String friendUsername;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
