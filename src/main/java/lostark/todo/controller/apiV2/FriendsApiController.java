@@ -104,8 +104,7 @@ public class FriendsApiController {
         // 보낸 사랑 알림, 받는 사람 알림
         notificationService.saveAddFriendRequest(toMember, fromMember);
 
-        List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
-        return new ResponseEntity<>(friends, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "친구 요청 수락/거부/삭제")
