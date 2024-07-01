@@ -121,8 +121,7 @@ public class FriendsApiController {
         } else if (category.equals("reject")) {
             notificationService.saveUpdateFriendRequestReject(toMember, fromMember);
         }
-        List<FriendsReturnDto> friends = friendsService.isFriend(toMember);
-        return new ResponseEntity<>(friends, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "깐부 권한 수정")
