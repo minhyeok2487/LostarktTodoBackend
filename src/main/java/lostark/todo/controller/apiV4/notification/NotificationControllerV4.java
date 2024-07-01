@@ -61,11 +61,10 @@ public class NotificationControllerV4 {
                     case BOARD -> new GetNotificationResponse("/boards/" + notification.getBoardId());
                     case COMMENT -> {
                         int page = commentsService.findCommentPage(notification.getCommentId());
-                        yield new GetNotificationResponse("/comments/?page=" + page);
+                        yield new GetNotificationResponse("/comments?page=" + page);
                     }
                     case FRIEND -> new GetNotificationResponse("/friends");
                 };
-
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
