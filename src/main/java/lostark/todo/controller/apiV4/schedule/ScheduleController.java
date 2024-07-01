@@ -28,22 +28,20 @@ public class ScheduleController {
     @GetMapping()
     public ResponseEntity<?> getWeek(GetWeekScheduleRequest request,
             @AuthenticationPrincipal String username) {
-        Member member = memberService.findMemberAndCharacters(username);
-        return new ResponseEntity<>(scheduleService.getWeek(member, request), HttpStatus.OK);
+        return new ResponseEntity<>(scheduleService.getWeek(username, request), HttpStatus.OK);
     }
 
     @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
     @GetMapping("/{scheduleId}")
     public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
-        Member member = memberService.findMemberAndCharacters(username);
-        GetScheduleResponse getScheduleResponse = scheduleService.get(scheduleId);
+        GetScheduleResponse getScheduleResponse = scheduleService.getResponse(scheduleId, username);
         if(getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
             getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(scheduleId));
         }
         return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "스케줄 저장 API")
+    @ApiOperation(value = "일정 저장 API")
     @PostMapping()
     public ResponseEntity<?> create(@AuthenticationPrincipal String username,
                                     @RequestBody CreateScheduleRequest request) {
@@ -52,32 +50,29 @@ public class ScheduleController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "스케줄 수정 API")
+    @ApiOperation(value = "일정 수정 API")
     @PatchMapping("/{scheduleId}")
     public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
                                   @RequestBody EditScheduleRequest request,
                                   @PathVariable long scheduleId) {
-        Member member = memberService.findMemberAndCharacters(username);
-        scheduleService.edit(member, request, scheduleId);
+        scheduleService.edit(username, request, scheduleId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "스케줄 삭제 API")
+    @ApiOperation(value = "일정 삭제 API")
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<?> remove(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
-        Member member = memberService.findMemberAndCharacters(username);
-        scheduleService.remove(member, scheduleId);
+        scheduleService.remove(username, scheduleId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "일정 깐부 추가/삭제 API")
-    @PostMapping("/{scheduleId}/friend")
-    public ResponseEntity<?> editFriend(@AuthenticationPrincipal String username,
-                                       @RequestBody EditScheduleFriendRequest request, @PathVariable long scheduleId) {
-        Member member = memberService.findMemberAndCharacters(username);
-        scheduleService.editFriend(member, request, scheduleId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @ApiOperation(value = "일정 깐부 추가/삭제 API")
+//    @PostMapping("/{scheduleId}/friend")
+//    public ResponseEntity<?> editFriend(@AuthenticationPrincipal String username,
+//                                       @RequestBody EditScheduleFriendRequest request, @PathVariable long scheduleId) {
+//        scheduleService.editFriend(username, request, scheduleId);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
 
 }

@@ -4,12 +4,13 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.schedule.*;
-import lostark.todo.domain.member.Member;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static lostark.todo.domain.character.QCharacter.character;
+import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domain.schedule.QSchedule.schedule;
 
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public List<WeekScheduleResponse> getWeek(List<Long> characterList, GetWeekScheduleRequest request) {
+    public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
         return factory
                 .select(new QWeekScheduleResponse(
                         schedule.id,
@@ -27,16 +28,17 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 ))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
+                .leftJoin(member).on(character.member.eq(member))
                 .where(
                         betweenDate(request.getStartDate().atStartOfDay(), request.getEndDate().atStartOfDay()),
-                        containCharacterIdList(characterList)
+                        eqUsername(username)
                 )
                 .fetch();
     }
 
     @Override
-    public GetScheduleResponse get(long scheduleId) {
-        return factory.select(new QGetScheduleResponse(
+    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username) {
+        GetScheduleResponse response = factory.select(new QGetScheduleResponse(
                         schedule.id, schedule.scheduleCategory, schedule.scheduleRaidCategory,
                         schedule.raidName, schedule.time, schedule.memo, schedule.repeatDay,
                         new QScheduleCharacterResponse(
@@ -46,9 +48,40 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 ))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
+                .leftJoin(member).on(character.member.eq(member))
                 .where(
-                        eqId(scheduleId)
+                        eqId(scheduleId),
+                        eqUsername(username)
                 ).fetchOne();
+
+        return Optional.ofNullable(response);
+    }
+
+    @Override
+    public Optional<Schedule> get(long scheduleId, String username) {
+        Schedule response =  factory.selectFrom(schedule)
+                .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
+                .leftJoin(member).on(character.member.eq(member))
+                .where(
+                        eqId(scheduleId),eqUsername(username)
+                ).fetchOne();
+        return Optional.ofNullable(response);
+    }
+
+    @Override
+    public List<Schedule> searchFriend(long scheduleId) {
+        return factory.selectFrom(schedule)
+                .where(
+                        eqLeaderScheduleId(scheduleId)
+                ).fetch();
+    }
+
+    @Override
+    public void remove(long scheduleId) {
+        factory.delete(schedule)
+                .where(
+                        eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))
+                ).execute();
     }
 
     @Override
@@ -63,29 +96,8 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 ).fetch();
     }
 
-    @Override
-    public void remove(Member member, long scheduleId) {
-        factory.delete(schedule)
-                .where(
-                        eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))
-                )
-                .execute();
-    }
-
-    @Override
-    public List<Schedule> getAll(long scheduleId) {
-        return factory.selectFrom(schedule)
-                .where(
-                        eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))
-                ).fetch();
-    }
-
     private BooleanExpression betweenDate(LocalDateTime startDate, LocalDateTime endDate) {
         return schedule.time.between(startDate, endDate);
-    }
-
-    private BooleanExpression containCharacterIdList(List<Long> characterList) {
-        return schedule.characterId.in(characterList);
     }
 
     private BooleanExpression eqId(long scheduleId) {
@@ -94,6 +106,10 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     private BooleanExpression eqLeaderScheduleId(long leaderScheduleId) {
         return schedule.leaderScheduleId.eq(leaderScheduleId);
+    }
+
+    private BooleanExpression eqUsername(String username) {
+        return member.username.eq(username);
     }
 
 }

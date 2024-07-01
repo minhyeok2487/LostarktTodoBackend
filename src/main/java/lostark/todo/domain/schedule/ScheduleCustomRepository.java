@@ -1,19 +1,21 @@
 package lostark.todo.domain.schedule;
 
 import lostark.todo.controller.dtoV2.schedule.*;
-import lostark.todo.domain.member.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ScheduleCustomRepository {
 
-    List<WeekScheduleResponse> getWeek(List<Long> characterList, GetWeekScheduleRequest request);
-
-    GetScheduleResponse get(long scheduleId);
+    List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request);
 
     List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId);
 
-    void remove(Member member, long scheduleId);
+    Optional<GetScheduleResponse> getResponse(long scheduleId, String username);
 
-    List<Schedule> getAll(long scheduleId);
+    Optional<Schedule> get(long scheduleId, String username);
+
+    List<Schedule> searchFriend(long scheduleId);
+
+    void remove(long scheduleId);
 }

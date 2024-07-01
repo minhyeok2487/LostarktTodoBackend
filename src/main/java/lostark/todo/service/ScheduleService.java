@@ -23,6 +23,9 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    private Schedule get(long scheduleId, String username) {
+        return scheduleRepository.get(scheduleId, username).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
+    }
 
     @Transactional
     public void create(Member member, CreateScheduleRequest request) {
@@ -52,14 +55,13 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<WeekScheduleResponse> getWeek(Member member, GetWeekScheduleRequest request) {
-        List<Long> characterList = member.getCharacters().stream().map(Character::getId).toList();
-        return scheduleRepository.getWeek(characterList, request);
+    public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
+        return scheduleRepository.getWeek(username, request);
     }
 
     @Transactional(readOnly = true)
-    public GetScheduleResponse get(long scheduleId) {
-        return scheduleRepository.get(scheduleId);
+    public GetScheduleResponse getResponse(long scheduleId, String username) {
+        return scheduleRepository.getResponse(scheduleId, username).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
     }
 
     @Transactional(readOnly = true)
@@ -68,43 +70,56 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void remove(Member member, long scheduleId) {
-        scheduleRepository.remove(member, scheduleId);
-    }
-
-    @Transactional
-    public void edit(Member member, EditScheduleRequest request, long scheduleId) {
-        List<Schedule> scheduleList = scheduleRepository.getAll(scheduleId);
-        for (Schedule schedule : scheduleList) {
+    public void edit(String username, EditScheduleRequest request, long scheduleId) {
+        Schedule schedule = get(scheduleId, username);
+        if (schedule.isLeader()) {
             schedule.edit(request);
+            if (schedule.getScheduleCategory() == ScheduleCategory.PARTY) {
+                List<Schedule> friendSchedules = scheduleRepository.searchFriend(scheduleId);
+                for (Schedule friendSchedule : friendSchedules) {
+                    friendSchedule.edit(request);
+                }
+            }
+        } else {
+            throw new IllegalStateException("파티장만 수정이 가능합니다.");
         }
     }
 
     @Transactional
-    public void editFriend(Member member, EditScheduleFriendRequest request, long scheduleId) {
-        List<Schedule> scheduleList = scheduleRepository.getAll(scheduleId);
-        Schedule main = scheduleList.stream()
-                .filter(Schedule::isLeader)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("없는 일정입니다."));
-
-        removeFriendsFromSchedule(scheduleList, request.getRemoveFriendCharacterIdList());
-        addFriendsToSchedule(main, request.getAddFriendCharacterIdList());
-    }
-
-    private void removeFriendsFromSchedule(List<Schedule> scheduleList, List<Long> removeFriendCharacterIdList) {
-        if (removeFriendCharacterIdList != null && !removeFriendCharacterIdList.isEmpty()) {
-            scheduleList.removeIf(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()));
+    public void remove(String username, long scheduleId) {
+        Schedule schedule = get(scheduleId, username);
+        if (schedule.isLeader()) {
+            scheduleRepository.remove(scheduleId);
+        } else {
+            scheduleRepository.delete(schedule);
         }
     }
 
-    private void addFriendsToSchedule(Schedule main, List<Long> addFriendCharacterIdList) {
-        if (addFriendCharacterIdList != null && !addFriendCharacterIdList.isEmpty()) {
-            addFriendCharacterIdList.forEach(id -> {
-                Schedule schedule = Schedule.toEntityOfMain(main, id);
-                scheduleRepository.save(schedule);
-            });
-        }
-    }
+//    @Transactional
+//    public void editFriend(String username, EditScheduleFriendRequest request, long scheduleId) {
+//        List<Schedule> scheduleList = scheduleRepository.search(scheduleId, username);
+//        Schedule main = scheduleList.stream()
+//                .filter(Schedule::isLeader)
+//                .findFirst()
+//                .orElseThrow(() -> new IllegalArgumentException("없는 일정입니다."));
+//
+//        removeFriendsFromSchedule(scheduleList, request.getRemoveFriendCharacterIdList());
+//        addFriendsToSchedule(main, request.getAddFriendCharacterIdList());
+//    }
+//
+//    private void removeFriendsFromSchedule(List<Schedule> scheduleList, List<Long> removeFriendCharacterIdList) {
+//        if (removeFriendCharacterIdList != null && !removeFriendCharacterIdList.isEmpty()) {
+//            scheduleList.removeIf(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()));
+//        }
+//    }
+//
+//    private void addFriendsToSchedule(Schedule main, List<Long> addFriendCharacterIdList) {
+//        if (addFriendCharacterIdList != null && !addFriendCharacterIdList.isEmpty()) {
+//            addFriendCharacterIdList.forEach(id -> {
+//                Schedule schedule = Schedule.toEntityOfMain(main, id);
+//                scheduleRepository.save(schedule);
+//            });
+//        }
+//    }
 
 }
