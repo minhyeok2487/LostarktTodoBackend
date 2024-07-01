@@ -16,10 +16,7 @@ import lostark.todo.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,18 +49,18 @@ public class NotificationControllerV4 {
         return new ResponseEntity<>(notificationService.getRecent(username), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "알림 확인", response = GetNotificationResponse.class)
-    @GetMapping("/{notificationId}")
+    @ApiOperation(value = "알림 확인 API", response = GetNotificationResponse.class)
+    @PostMapping("/{notificationId}")
     public ResponseEntity<GetNotificationResponse> get(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
         Notification notification = notificationService.updateRead(notificationId, username);
         GetNotificationResponse result =
                 switch (notification.getNotificationType()) {
-                    case BOARD -> new GetNotificationResponse("/boards/" + notification.getBoardId());
+                    case BOARD -> new GetNotificationResponse().toBoard(notification.getBoardId());
                     case COMMENT -> {
                         int page = commentsService.findCommentPage(notification.getCommentId());
-                        yield new GetNotificationResponse("/comments?page=" + page);
+                        yield new GetNotificationResponse().toComment(notification.getCommentId(), page);
                     }
-                    case FRIEND -> new GetNotificationResponse("/friends");
+                    case FRIEND -> new GetNotificationResponse().toFriend();
                 };
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

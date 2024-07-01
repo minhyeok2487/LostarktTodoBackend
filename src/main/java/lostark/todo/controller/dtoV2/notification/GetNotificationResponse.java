@@ -1,16 +1,39 @@
 package lostark.todo.controller.dtoV2.notification;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import javax.validation.constraints.NotEmpty;
+import lostark.todo.domain.notification.NotificationType;
+import org.json.simple.JSONObject;
 
 @Data
-@AllArgsConstructor
 public class GetNotificationResponse {
 
-    @NotEmpty
-    @ApiModelProperty(example = "클릭 링크")
-    private String url;
+    @ApiModelProperty(example = "타입")
+    private NotificationType notificationType;
 
+    @ApiModelProperty(example = "데이터")
+    private JSONObject data;
+
+    public GetNotificationResponse toBoard(long boardId) {
+        this.notificationType = NotificationType.BOARD;
+        JSONObject object = new JSONObject();
+        object.put("boardId", boardId);
+        this.data = object;
+        return this;
+    }
+
+    public GetNotificationResponse toComment(long commentId, int page) {
+        this.notificationType = NotificationType.COMMENT;
+        JSONObject object = new JSONObject();
+        object.put("commentId", commentId);
+        object.put("page", page);
+        this.data = object;
+        return this;
+    }
+
+    public GetNotificationResponse toFriend() {
+        this.notificationType = NotificationType.FRIEND;
+        this.data = null;
+        return this;
+    }
 }
