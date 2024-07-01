@@ -121,17 +121,14 @@ public class WeekContentApiControllerV2 {
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정",
             response = TodoResponseDto.class)
     @PatchMapping("/message")
-    public ResponseEntity updateWeekMessage(@AuthenticationPrincipal String username,
+    public ResponseEntity<?> updateWeekMessage(@AuthenticationPrincipal String username,
                                             @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.findCharacter(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
         TodoV2 todo = todoServiceV2.updateWeekMessage(todoDto);
-        TodoResponseDto todoResponseDto = TodoResponseDto.builder()
-                .id(todo.getId())
-                .message(todo.getMessage())
-                .build();
-        return new ResponseEntity(todoResponseDto, HttpStatus.OK);
+        TodoResponseDto todoResponseDto = new TodoResponseDto().toDto(todo, character.getSettings().isGoldCheckVersion());
+        return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 순서 변경")
