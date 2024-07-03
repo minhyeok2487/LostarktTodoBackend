@@ -64,23 +64,18 @@ public class NotificationService {
 
     @Transactional
     public void saveAddFriendRequest(Member toMember, Member fromMember) {
-        String fromCharacterName = getMainCharacterName(fromMember);
-        String toCharacterName = getMainCharacterName(toMember);
-
-        createAndSaveNotification(toMember, fromCharacterName + "님에게 깐부요청중 이에요.", fromMember);
-        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 보냈어요.", toMember);
+        createAndSaveNotification(toMember, "님에게 깐부요청중 이에요.", fromMember);
+        createAndSaveNotification(fromMember, "님이 깐부요청을 보냈어요.", toMember);
     }
 
     @Transactional
     public void saveUpdateFriendRequestOk(Member toMember, Member fromMember) {
-        String toCharacterName = getMainCharacterName(toMember);
-        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 수락했어요.", toMember);
+        createAndSaveNotification(fromMember, "님이 깐부요청을 수락했어요.", toMember);
     }
 
     @Transactional
     public void saveUpdateFriendRequestReject(Member toMember, Member fromMember) {
-        String toCharacterName = getMainCharacterName(toMember);
-        createAndSaveNotification(fromMember, toCharacterName + "님이 깐부요청을 거절했어요.", toMember);
+        createAndSaveNotification(fromMember, "님이 깐부요청을 거절했어요.", toMember);
     }
 
     private String getMainCharacterName(Member member) {
@@ -94,6 +89,7 @@ public class NotificationService {
                 .notificationType(NotificationType.FRIEND)
                 .friendId(friend.getId())
                 .friendUsername(friend.getUsername())
+                .friendCharacterName(getMainCharacterName(friend))
                 .receiver(receiver)
                 .build();
         notificationRepository.save(notification);

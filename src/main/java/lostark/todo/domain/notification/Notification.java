@@ -36,6 +36,8 @@ public class Notification extends BaseTimeEntity {
 
     private String friendUsername;
 
+    private String friendCharacterName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @JsonBackReference //순환참조 방지

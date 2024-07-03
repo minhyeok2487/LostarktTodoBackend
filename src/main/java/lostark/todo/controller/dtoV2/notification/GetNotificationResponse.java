@@ -37,6 +37,7 @@ public class GetNotificationResponse {
         JSONObject object = new JSONObject();
         object.put("friendId", notification.getFriendId());
         object.put("friendUsername", notification.getFriendUsername());
+        object.put("friendCharacterName", notification.getFriendCharacterName());
         this.data = object;
         return this;
     }
