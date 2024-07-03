@@ -3,6 +3,7 @@ package lostark.todo.controller.dtoV2.notification;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lostark.todo.domain.notification.Notification;
+import lostark.todo.domain.notification.NotificationType;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
@@ -22,9 +23,14 @@ public class SearchNotificationResponse {
     @ApiModelProperty(example = "내용")
     private String content;
 
+    @NotEmpty
+    @ApiModelProperty(example = "타입")
+    private NotificationType notificationType;
+
     public SearchNotificationResponse(Notification notification) {
         this.id = notification.getId();
         this.createdDate = notification.getCreatedDate();
         this.content = notification.getContent();
+        this.notificationType = notification.getNotificationType();
     }
 }
