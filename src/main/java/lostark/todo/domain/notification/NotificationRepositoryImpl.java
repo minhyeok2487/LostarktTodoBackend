@@ -56,6 +56,22 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
                 .fetchFirst();
     }
 
+    @Override
+    public long getUnreadCount(String username) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneMonthAgo = now.minusMonths(1);
+
+        return factory.select(notification.id.count())
+                .from(notification)
+                .where(
+                        eqUsername(username),
+                        betweenDate(oneMonthAgo, now),
+                        eqUnread()
+                )
+                .orderBy(notification.createdDate.desc())
+                .fetchCount();
+    }
+
     private BooleanExpression betweenDate(LocalDateTime beforeDate, LocalDateTime afterDate) {
         return notification.createdDate.between(beforeDate, afterDate);
     }
@@ -68,5 +84,10 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     private BooleanExpression eqUsername(String username) {
         return notification.receiver.username.eq(username);
     }
+
+    private BooleanExpression eqUnread() {
+        return notification.isRead.eq(false);
+    }
+
 
 }

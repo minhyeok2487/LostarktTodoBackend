@@ -13,4 +13,6 @@ public interface NotificationCustomRepository {
     Optional<Notification> get(long notificationId, String username);
 
     LocalDateTime getRecent(String username);
+
+    long getUnreadCount(String username);
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.controller.dtoV2.notification.SearchNotificationResponse;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
@@ -17,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -75,10 +74,10 @@ public class NotificationControllerV4 {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "가장 최근 알림 날짜 조회 API", response = LocalDateTime.class)
-    @GetMapping("/recent")
+    @ApiOperation(value = "가장 최근 알림 날짜 조회 API", response = NotificationStatusResponse.class)
+    @GetMapping("/status")
     public ResponseEntity<?> getRecent(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(notificationService.getRecent(username), HttpStatus.OK);
+        return new ResponseEntity<>(notificationService.getStatus(username), HttpStatus.OK);
     }
 
     @ApiOperation(value = "알림 확인 API")

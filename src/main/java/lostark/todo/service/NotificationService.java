@@ -2,6 +2,7 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
@@ -24,7 +25,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    @Transactional()
+    @Transactional
     public List<Notification> searchBoard(Member member, List<Boards> searchBoard) {
         List<Notification> notifications = notificationRepository.search(member);
 
@@ -102,7 +103,9 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public LocalDateTime getRecent(String username) {
-        return notificationRepository.getRecent(username);
+    public NotificationStatusResponse getStatus(String username) {
+        LocalDateTime latestCreatedDate = notificationRepository.getRecent(username);
+        long unreadCount = notificationRepository.getUnreadCount(username);
+        return new NotificationStatusResponse(latestCreatedDate, unreadCount);
     }
 }
