@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.notification.GetNotificationResponse;
 import lostark.todo.controller.dtoV2.notification.SearchNotificationResponse;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
@@ -13,6 +12,7 @@ import lostark.todo.service.BoardsService;
 import lostark.todo.service.CommentsService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.NotificationService;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,11 +35,43 @@ public class NotificationControllerV4 {
 
     @ApiOperation(value = "알림 조회 API", response = SearchNotificationResponse.class)
     @GetMapping()
-    public ResponseEntity<?> search(@AuthenticationPrincipal String username) {
+    public ResponseEntity<List<SearchNotificationResponse>> search(@AuthenticationPrincipal String username) {
+        // 멤버 정보 가져오기
         Member member = memberService.get(username);
+
+        // 게시물 검색
         List<Boards> searchBoard = boardsService.search();
+
+        // 알림 검색
         List<Notification> notifications = notificationService.searchBoard(member, searchBoard);
-        List<SearchNotificationResponse> result = notifications.stream().map(SearchNotificationResponse::new).toList();
+
+        // 알림을 응답 객체로 변환
+        List<SearchNotificationResponse> result = notifications.stream().map(notification -> {
+            JSONObject object = new JSONObject();
+
+            // 알림 타입에 따라 NotificationData 생성
+            switch (notification.getNotificationType()) {
+                case BOARD -> {
+                    object.put("boardId", notification.getBoardId());
+                }
+                case COMMENT -> {
+                    int page = commentsService.findCommentPage(notification.getCommentId());
+                    object.put("commentId", notification.getCommentId());
+                    object.put("page", page);
+                }
+                case FRIEND -> {
+                    object.put("friendId", notification.getFriendId());
+                    object.put("friendUsername", notification.getFriendUsername());
+                    object.put("friendCharacterName", notification.getFriendCharacterName());
+                }
+                default -> throw new IllegalArgumentException("Unknown notification type: " + notification.getNotificationType());
+            }
+
+            // SearchNotificationResponse 객체 생성 및 추가
+            return new SearchNotificationResponse(notification, object);
+        }).toList();
+
+        // 응답 반환
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -49,20 +81,11 @@ public class NotificationControllerV4 {
         return new ResponseEntity<>(notificationService.getRecent(username), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "알림 확인 API", response = GetNotificationResponse.class)
-    @GetMapping("/{notificationId}")
-    public ResponseEntity<GetNotificationResponse> get(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
-        Notification notification = notificationService.updateRead(notificationId, username);
-        GetNotificationResponse result =
-                switch (notification.getNotificationType()) {
-                    case BOARD -> new GetNotificationResponse().toBoard(notification.getBoardId());
-                    case COMMENT -> {
-                        int page = commentsService.findCommentPage(notification.getCommentId());
-                        yield new GetNotificationResponse().toComment(notification.getCommentId(), page);
-                    }
-                    case FRIEND -> new GetNotificationResponse().toFriend(notification);
-                };
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @ApiOperation(value = "알림 확인 API")
+    @PostMapping("/{notificationId}")
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
+        notificationService.updateRead(notificationId, username);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

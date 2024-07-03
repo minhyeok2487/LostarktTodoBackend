@@ -96,10 +96,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public Notification updateRead(long notificationId, String username) {
+    public void updateRead(long notificationId, String username) {
         Notification notification = notificationRepository.get(notificationId, username).orElseThrow(() -> new IllegalArgumentException("없는 알림 입니다."));
         notification.updateRead();
-        return notification;
     }
 
     @Transactional(readOnly = true)

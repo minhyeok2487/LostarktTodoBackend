@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationType;
+import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
@@ -27,10 +28,14 @@ public class SearchNotificationResponse {
     @ApiModelProperty(example = "타입")
     private NotificationType notificationType;
 
-    public SearchNotificationResponse(Notification notification) {
+    @ApiModelProperty(example = "데이터")
+    private JSONObject data;
+
+    public SearchNotificationResponse(Notification notification, JSONObject data) {
         this.id = notification.getId();
         this.createdDate = notification.getCreatedDate();
         this.content = notification.getContent();
         this.notificationType = notification.getNotificationType();
+        this.data = data;
     }
 }
