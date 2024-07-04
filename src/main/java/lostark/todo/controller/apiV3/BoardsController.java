@@ -84,7 +84,6 @@ public class BoardsController {
         if (id < 0) {
             throw new CustomIllegalArgumentException("사이트 공지사항 id로 가져오기 에러", "id는 0보다 커야합니다.", null);
         }
-        log.info("사이트 공지사항을 성공적으로 검색했습니다. Id: {}", id);
         return new ResponseEntity<>(new BoardResponseDto().toDto(boardsService.findById(id)), HttpStatus.OK);
     }
 
