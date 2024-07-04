@@ -120,4 +120,8 @@ public class ScheduleService {
         }
     }
 
+    @Transactional
+    public long checkSchedule() {
+        return scheduleRepository.checkSchedule();
+    }
 }

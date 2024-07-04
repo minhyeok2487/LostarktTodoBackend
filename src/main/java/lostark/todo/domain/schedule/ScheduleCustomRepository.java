@@ -18,4 +18,6 @@ public interface ScheduleCustomRepository {
     List<Schedule> searchFriend(long scheduleId);
 
     void remove(long scheduleId);
+
+    long checkSchedule();
 }

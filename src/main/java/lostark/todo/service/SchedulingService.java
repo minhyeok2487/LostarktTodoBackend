@@ -36,6 +36,7 @@ public class SchedulingService {
     private final LostarkNewsService newsService;
     private final NoticesService noticesService;
     private final WebHookService webHookService;
+    private final ScheduleService scheduleService;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -149,5 +150,11 @@ public class SchedulingService {
                         .setColor(Color.GREEN), noticeUrl);
             }
         }
+    }
+
+    // 10분 마다 해당 시간 이전 일정 체크
+    @Scheduled(cron = "0 */10 * * * *", zone = "Asia/Seoul")
+    public void checkSchedule() {
+        log.info("스케줄 일정 체크 = {}", scheduleService.checkSchedule());
     }
 }

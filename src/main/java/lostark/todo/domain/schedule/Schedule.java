@@ -50,6 +50,7 @@ public class Schedule extends BaseTimeEntity {
 
     private long leaderScheduleId;
 
+    private boolean checked;
 
     public static Schedule toEntity(CreateScheduleRequest request, Long characterId, Long leaderScheduleId, boolean isLeader) {
         return Schedule.builder()

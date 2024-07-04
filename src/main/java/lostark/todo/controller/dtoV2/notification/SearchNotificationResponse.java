@@ -28,6 +28,9 @@ public class SearchNotificationResponse {
     @ApiModelProperty(example = "타입")
     private NotificationType notificationType;
 
+    @ApiModelProperty(example = "읽음 여부")
+    private boolean isRead;
+
     @ApiModelProperty(example = "데이터")
     private JSONObject data;
 
@@ -36,6 +39,7 @@ public class SearchNotificationResponse {
         this.createdDate = notification.getCreatedDate();
         this.content = notification.getContent();
         this.notificationType = notification.getNotificationType();
+        this.isRead = notification.isRead();
         this.data = data;
     }
 }

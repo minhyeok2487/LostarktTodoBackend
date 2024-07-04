@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.schedule.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,4 +122,29 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
         return member.username.eq(username);
     }
 
+    @Override
+    public long checkSchedule() {
+        return factory.update(schedule)
+                .set(schedule.checked, true)
+                .where(
+                        unChecked(),
+                        eqDayOfWeek(),
+                        isCurrentWeekSchedule()
+                ).execute();
+    }
+
+    private BooleanExpression unChecked() {
+        return schedule.checked.eq(false);
+    }
+
+    private BooleanExpression eqDayOfWeek() {
+        LocalDate today = LocalDate.now();
+        return schedule.dayOfWeek.eq(today.getDayOfWeek());
+    }
+
+    private BooleanExpression isCurrentWeekSchedule() {
+        return schedule.repeatWeek.eq(true).or(
+                schedule.repeatWeek.eq(false).and(schedule.createdDate.before(LocalDateTime.now()))
+        );
+    }
 }
