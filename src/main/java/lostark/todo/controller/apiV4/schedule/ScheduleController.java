@@ -50,14 +50,14 @@ public class ScheduleController {
         return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
     }
 
-//    @ApiOperation(value = "일정 수정 API")
-//    @PatchMapping("/{scheduleId}")
-//    public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
-//                                  @RequestBody EditScheduleRequest request,
-//                                  @PathVariable long scheduleId) {
-//        scheduleService.edit(username, request, scheduleId);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
+    @ApiOperation(value = "일정 수정 API")
+    @PatchMapping("/{scheduleId}")
+    public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
+                                  @RequestBody EditScheduleRequest request,
+                                  @PathVariable long scheduleId) {
+        scheduleService.edit(username, request, scheduleId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 //
 //    @ApiOperation(value = "일정 삭제 API")
 //    @DeleteMapping("/{scheduleId}")

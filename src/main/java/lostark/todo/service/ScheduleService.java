@@ -1,6 +1,5 @@
 package lostark.todo.service;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
@@ -29,7 +28,7 @@ public class ScheduleService {
     @Transactional
     public void create(Character character, CreateScheduleRequest request) {
 
-        validate(character, request);
+        validate(request);
 
         Schedule leader = scheduleRepository.save(Schedule.toEntity(request, character.getId(), 0L, true));
         if (!CollectionUtils.isEmpty(request.getFriendCharacterIdList())){
@@ -40,7 +39,7 @@ public class ScheduleService {
         }
     }
 
-    private void validate(Character character, CreateScheduleRequest request) {
+    private void validate(CreateScheduleRequest request) {
         if (request.getTime().getMinute() % 10 != 0) {
             throw new IllegalArgumentException("시간대는 10분 단위여야 합니다.");
         }
@@ -49,9 +48,6 @@ public class ScheduleService {
         }
         if (request.getScheduleCategory() == ScheduleCategory.ALONE && !CollectionUtils.isEmpty(request.getFriendCharacterIdList())) {
             throw new IllegalArgumentException("내 일정일 경우 깐부가 없어야 합니다.");
-        }
-        if (scheduleRepository.existsByCharacterAndTime(character.getId(), request.getTime(), request.getDayOfWeek())) {
-            throw new DuplicateRequestException("해당 요일 및 시간에 일정이 존재합니다");
         }
     }
 

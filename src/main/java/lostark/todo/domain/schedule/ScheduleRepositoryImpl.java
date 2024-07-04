@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.schedule.*;
 
 import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,18 +97,6 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     }
 
     @Override
-    public Boolean existsByCharacterAndTime(long characterId, LocalTime time, DayOfWeek dayOfWeek) {
-        return factory.selectFrom(schedule)
-                .where(
-                        eqCharacterId(characterId),
-                        eqTime(time),
-                        eqDayOfWeek(dayOfWeek)
-                )
-                .fetchCount() > 0;
-    }
-
-
-    @Override
     public List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId) {
         return factory.select(new QScheduleCharacterResponse(
                         character.id, character.characterName, character.characterClassName,
@@ -119,18 +106,6 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .where(
                         eqLeaderScheduleId(leaderScheduleId)
                 ).fetch();
-    }
-
-    private BooleanExpression eqCharacterId(long characterId) {
-        return schedule.characterId.eq(characterId);
-    }
-
-    private BooleanExpression eqTime(LocalTime time) {
-        return schedule.time.eq(time);
-    }
-
-    private BooleanExpression eqDayOfWeek(DayOfWeek dayOfWeek) {
-        return schedule.dayOfWeek.eq(dayOfWeek);
     }
 
     private BooleanExpression eqId(long scheduleId) {

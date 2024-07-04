@@ -83,7 +83,14 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public void edit(EditScheduleRequest request) {
-        this.time = request.getTime();
-        this.memo = request.getMemo();
+        if (request.getDayOfWeek() != null) {
+            this.dayOfWeek = request.getDayOfWeek();
+        }
+        if (request.getTime() != null) {
+            this.time = request.getTime();
+        }
+        if (request.getMemo() != null) {
+            this.memo = request.getMemo();
+        }
     }
 }
