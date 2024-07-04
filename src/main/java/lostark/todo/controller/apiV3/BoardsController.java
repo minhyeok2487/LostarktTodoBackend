@@ -1,6 +1,5 @@
 package lostark.todo.controller.apiV3;
 
-import com.amazonaws.services.s3.AmazonS3;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +56,6 @@ public class BoardsController {
         int totalPages = all.getTotalPages();
 
         BoardsDto boardsDto = new BoardsDto().toDto(boardResponseDtoList, totalPages, page);
-        log.info("사이트 공지사항 리스트를 성공적으로 검색했습니다. Page: {}, Size: {}", page, size);
         return new ResponseEntity<>(boardsDto, HttpStatus.OK);
     }
 

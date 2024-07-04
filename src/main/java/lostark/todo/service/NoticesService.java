@@ -2,7 +2,6 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.notices.NoticesRepository;
 import lostark.todo.domain.notices.Notices;
 import org.springframework.data.domain.Page;
@@ -23,10 +22,8 @@ public class NoticesService {
         boolean existsed = noticesRepository.existsByLinkContains(noticeId);
         if (!existsed) {
             noticesRepository.save(newNotice);
-            log.info("로스트아크 새로운 공지사항 저장");
             return true;
         } else {
-            log.info("새로운 공지사항이 아닙니다.");
             return false;
         }
     }
