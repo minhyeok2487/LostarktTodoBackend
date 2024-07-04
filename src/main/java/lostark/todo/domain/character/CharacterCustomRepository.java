@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface CharacterCustomRepository  {
 
-    Optional<Character> findCharacterWithMember(long characterId, String username);
+    Optional<Character> getByIdAndUsername(long characterId, String username);
 
     long deleteByMember(Member member);
 

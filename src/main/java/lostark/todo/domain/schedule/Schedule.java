@@ -5,7 +5,8 @@ import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
 import lostark.todo.controller.dtoV2.schedule.EditScheduleRequest;
 import lostark.todo.domain.BaseTimeEntity;
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -36,12 +37,14 @@ public class Schedule extends BaseTimeEntity {
 
     private String raidLevel;
 
-    private LocalDateTime time;
+    private DayOfWeek dayOfWeek;
+
+    private LocalTime time;
 
     @Column(length = 300)
     private String memo;
 
-    private int repeatDay;
+    private boolean repeatWeek;
 
     private boolean leader;
 
@@ -55,9 +58,10 @@ public class Schedule extends BaseTimeEntity {
                 .scheduleCategory(request.getScheduleCategory())
                 .raidName(request.getRaidName())
                 .raidLevel(request.getRaidLevel())
+                .dayOfWeek(request.getDayOfWeek())
                 .time(request.getTime())
                 .memo(request.getMemo())
-                .repeatDay(request.getRepeatDay())
+                .repeatWeek(request.isRepeatWeek())
                 .leader(isLeader)
                 .leaderScheduleId(leaderScheduleId)
                 .build();
@@ -72,7 +76,7 @@ public class Schedule extends BaseTimeEntity {
                 .raidLevel(main.getRaidLevel())
                 .time(main.getTime())
                 .memo(main.getMemo())
-                .repeatDay(main.getRepeatDay())
+                .repeatWeek(main.isRepeatWeek())
                 .leader(false)
                 .leaderScheduleId(main.id)
                 .build();

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.adminDto.QDashboardResponse;
 import lostark.todo.domain.member.Member;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Optional<Character> findCharacterWithMember(long characterId, String username) {
+    public Optional<Character> getByIdAndUsername(long characterId, String username) {
         return Optional.ofNullable(factory.selectFrom(character)
                 .leftJoin(character.member, member).fetchJoin()
                 .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()

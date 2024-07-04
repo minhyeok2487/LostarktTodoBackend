@@ -1,18 +1,17 @@
 package lostark.todo.service;
 
+import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.member.Member;
 import lostark.todo.domain.schedule.Schedule;
 import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.domain.schedule.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,29 +27,31 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void create(Member member, CreateScheduleRequest request) {
-        Character leaderCharacter = member.getCharacters().stream()
-                .filter(character -> character.getId() == request.getLeaderCharacterId())
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("등록된 캐릭터가 아닙니다."));
+    public void create(Character character, CreateScheduleRequest request) {
 
-        validateTime(request.getTime());
+        validate(character, request);
 
-        List<Schedule> schedules = new ArrayList<>();
-        Schedule leader = scheduleRepository.save(Schedule.toEntity(request, leaderCharacter.getId(), 0L, true));
-
-        if (request.getScheduleCategory() == ScheduleCategory.PARTY) {
-            request.getFriendCharacterIdList().forEach(friendCharacterId ->
-                    schedules.add(Schedule.toEntity(request, friendCharacterId, leader.getId(), false))
-            );
+        Schedule leader = scheduleRepository.save(Schedule.toEntity(request, character.getId(), 0L, true));
+        if (!CollectionUtils.isEmpty(request.getFriendCharacterIdList())){
+            List<Schedule> schedules = request.getFriendCharacterIdList().stream()
+                    .map(friendCharacterId -> Schedule.toEntity(request, friendCharacterId, leader.getId(), false))
+                    .toList();
+            scheduleRepository.saveAll(schedules);
         }
-
-        scheduleRepository.saveAll(schedules);
     }
 
-    private void validateTime(LocalDateTime time) {
-        if (time.getMinute() % 10 != 0) {
+    private void validate(Character character, CreateScheduleRequest request) {
+        if (request.getTime().getMinute() % 10 != 0) {
             throw new IllegalArgumentException("시간대는 10분 단위여야 합니다.");
+        }
+        if (request.getScheduleCategory() == ScheduleCategory.PARTY && CollectionUtils.isEmpty(request.getFriendCharacterIdList())) {
+            throw new IllegalArgumentException("파티 일정일 경우 깐부를 추가하셔야 합니다.");
+        }
+        if (request.getScheduleCategory() == ScheduleCategory.ALONE && !CollectionUtils.isEmpty(request.getFriendCharacterIdList())) {
+            throw new IllegalArgumentException("내 일정일 경우 깐부가 없어야 합니다.");
+        }
+        if (scheduleRepository.existsByCharacterAndTime(character.getId(), request.getTime(), request.getDayOfWeek())) {
+            throw new DuplicateRequestException("해당 요일 및 시간에 일정이 존재합니다");
         }
     }
 
@@ -59,10 +60,10 @@ public class ScheduleService {
         return scheduleRepository.getWeek(username, request);
     }
 
-    @Transactional(readOnly = true)
-    public GetScheduleResponse getResponse(long scheduleId, String username) {
-        return scheduleRepository.getResponse(scheduleId, username).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
-    }
+//    @Transactional(readOnly = true)
+//    public GetScheduleResponse getResponse(long scheduleId, String username) {
+//        return scheduleRepository.getResponse(scheduleId, username).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
+//    }
 
     @Transactional(readOnly = true)
     public List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId) {

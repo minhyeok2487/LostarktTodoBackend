@@ -1,15 +1,15 @@
 package lostark.todo.controller.dtoV2.schedule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.domain.schedule.ScheduleRaidCategory;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -30,14 +30,17 @@ public class CreateScheduleRequest {
     @ApiModelProperty(example = "레이드 레벨")
     private String raidLevel;
 
-    @ApiModelProperty(example = "일정 시간 / 10분 단위")
+    @ApiModelProperty(example = "요일 / 1(월요일) - 7(일요일)")
     @NotNull
-    private LocalDateTime time;
+    private DayOfWeek dayOfWeek;
 
-    @ApiModelProperty(example = "반복 날짜 / 반복 없으면 null")
-    @Max(7)
-    @Min(1)
-    private int repeatDay;
+    @ApiModelProperty(example = "일정 시간 (10분 단위) ex) 19:00")
+    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    private LocalTime time;
+
+    @ApiModelProperty(example = "주간 반복")
+    private boolean repeatWeek;
 
     @ApiModelProperty(example = "메모")
     private String memo;

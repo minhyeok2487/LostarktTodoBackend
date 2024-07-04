@@ -41,8 +41,14 @@ public class CharacterService {
     // 로그인한 아이디에 등록된 캐릭터인지 검증
     @Transactional(readOnly = true)
     public Character findCharacter(long characterId, String characterName, String username) {
-        return characterRepository.findCharacterWithMember(characterId, username).orElseThrow(
+        return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
                 () -> new IllegalArgumentException("characterName = "+characterName+" / username = " + username + " : 존재하지 않는 캐릭터"));
+    }
+
+    @Transactional(readOnly = true)
+    public Character getByIdAndUsername(long characterId, String username) {
+        return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 캐릭터"));
     }
 
     /**

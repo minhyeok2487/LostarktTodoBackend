@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -12,7 +12,7 @@ public class EditScheduleRequest {
 
     @ApiModelProperty(example = "일정 시간 / 10분 단위")
     @NotNull
-    private LocalDateTime time;
+    private LocalTime time;
 
     @ApiModelProperty(example = "메모")
     private String memo;

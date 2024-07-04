@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.domain.schedule.ScheduleRaidCategory;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 public class WeekScheduleResponse {
@@ -22,13 +22,13 @@ public class WeekScheduleResponse {
     private String raidName;
 
     @ApiModelProperty(example = "일정 시간 / 10분 단위")
-    private LocalDateTime time;
+    private LocalTime time;
 
     @ApiModelProperty(example = "캐릭터 이름")
     private String characterName;
 
     @QueryProjection
-    public WeekScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory, String raidName, LocalDateTime time, String characterName) {
+    public WeekScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory, String raidName, LocalTime time, String characterName) {
         this.scheduleId = scheduleId;
         this.scheduleCategory = scheduleCategory;
         this.scheduleRaidCategory = scheduleRaidCategory;
