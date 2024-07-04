@@ -49,26 +49,26 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
         );
     }
 
-//    @Override
-//    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username) {
-//        GetScheduleResponse response = factory.select(new QGetScheduleResponse(
-//                        schedule.id, schedule.scheduleCategory, schedule.scheduleRaidCategory,
-//                        schedule.raidName, schedule.time, schedule.memo, schedule.repeatDay,
-//                        new QScheduleCharacterResponse(
-//                                character.id, character.characterName, character.characterClassName,
-//                                character.itemLevel, character.characterImage
-//                        )
-//                ))
-//                .from(schedule)
-//                .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
-//                .leftJoin(member).on(character.member.eq(member))
-//                .where(
-//                        eqId(scheduleId),
-//                        eqUsername(username)
-//                ).fetchOne();
-//
-//        return Optional.ofNullable(response);
-//    }
+    @Override
+    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username) {
+        GetScheduleResponse response = factory.select(new QGetScheduleResponse(
+                        schedule.id, schedule.scheduleCategory, schedule.scheduleRaidCategory,
+                        schedule.raidName, schedule.time, schedule.memo, schedule.repeatWeek,
+                        new QScheduleCharacterResponse(
+                                character.id, character.characterName, character.characterClassName,
+                                character.itemLevel, character.characterImage
+                        )
+                ))
+                .from(schedule)
+                .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
+                .leftJoin(member).on(character.member.eq(member))
+                .where(
+                        eqId(scheduleId),
+                        eqUsername(username)
+                ).fetchOne();
+
+        return Optional.ofNullable(response);
+    }
 
     @Override
     public Optional<Schedule> get(long scheduleId, String username) {

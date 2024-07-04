@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.service.CharacterService;
 import lostark.todo.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -39,16 +40,16 @@ public class ScheduleController {
         return new ResponseEntity<>(scheduleService.getWeek(username, request), HttpStatus.OK);
     }
 
-//    @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
-//    @GetMapping("/{scheduleId}")
-//    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
-//        GetScheduleResponse getScheduleResponse = scheduleService.getResponse(scheduleId, username);
-//        if(getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
-//            getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(scheduleId));
-//        }
-//        return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
-//    }
-//
+    @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
+        GetScheduleResponse getScheduleResponse = scheduleService.getResponse(scheduleId, username);
+        if(getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
+            getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(scheduleId));
+        }
+        return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
+    }
+
 //    @ApiOperation(value = "일정 수정 API")
 //    @PatchMapping("/{scheduleId}")
 //    public ResponseEntity<?> edit(@AuthenticationPrincipal String username,

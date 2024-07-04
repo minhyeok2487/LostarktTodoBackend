@@ -60,10 +60,10 @@ public class ScheduleService {
         return scheduleRepository.getWeek(username, request);
     }
 
-//    @Transactional(readOnly = true)
-//    public GetScheduleResponse getResponse(long scheduleId, String username) {
-//        return scheduleRepository.getResponse(scheduleId, username).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
-//    }
+    @Transactional(readOnly = true)
+    public GetScheduleResponse getResponse(long scheduleId, String username) {
+        return scheduleRepository.getResponse(scheduleId, username).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
+    }
 
     @Transactional(readOnly = true)
     public List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId) {

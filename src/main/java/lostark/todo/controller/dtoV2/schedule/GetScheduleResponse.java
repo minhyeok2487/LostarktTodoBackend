@@ -29,8 +29,8 @@ public class GetScheduleResponse {
     @ApiModelProperty(example = "메모")
     private String memo;
 
-    @ApiModelProperty(example = "반복 날짜")
-    private int repeatDay;
+    @ApiModelProperty(example = "주간 반복 여부")
+    private boolean repeatWeek;
 
     @ApiModelProperty(example = "등록된 캐릭터")
     private ScheduleCharacterResponse character;
@@ -40,14 +40,14 @@ public class GetScheduleResponse {
 
     @QueryProjection
     public GetScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory,
-                               String raidName, LocalTime time, String memo, int repeatDay, ScheduleCharacterResponse character) {
+                               String raidName, LocalTime time, String memo, boolean repeatWeek, ScheduleCharacterResponse character) {
         this.scheduleId = scheduleId;
         this.scheduleCategory = scheduleCategory;
         this.scheduleRaidCategory = scheduleRaidCategory;
         this.raidName = raidName;
         this.time = time;
         this.memo = memo;
-        this.repeatDay = repeatDay;
+        this.repeatWeek = repeatWeek;
         this.character = character;
     }
 }
