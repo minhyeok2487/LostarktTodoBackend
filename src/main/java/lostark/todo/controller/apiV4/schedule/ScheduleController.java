@@ -32,13 +32,13 @@ public class ScheduleController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @ApiOperation(value = "주간 일정 리스트 출력 API", response = WeekScheduleResponse.class)
-//    @GetMapping()
-//    public ResponseEntity<?> getWeek(GetWeekScheduleRequest request,
-//            @AuthenticationPrincipal String username) {
-//        return new ResponseEntity<>(scheduleService.getWeek(username, request), HttpStatus.OK);
-//    }
-//
+    @ApiOperation(value = "주간 일정 리스트 출력 API", response = WeekScheduleResponse.class)
+    @GetMapping()
+    public ResponseEntity<?> getWeek(GetWeekScheduleRequest request,
+            @AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(scheduleService.getWeek(username, request), HttpStatus.OK);
+    }
+
 //    @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
 //    @GetMapping("/{scheduleId}")
 //    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {

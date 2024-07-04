@@ -25,16 +25,28 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .select(new QWeekScheduleResponse(
                         schedule.id,
                         schedule.scheduleCategory, schedule.scheduleRaidCategory,
-                        schedule.raidName, schedule.time, character.characterName
+                        schedule.raidName, schedule.dayOfWeek, schedule.time, character.characterName
                 ))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
                 .leftJoin(member).on(character.member.eq(member))
-//                .where(
-//                        betweenDate(request.getStartDate().atStartOfDay(), request.getEndDate().atStartOfDay()),
-//                        eqUsername(username)
-//                )
+                .where(
+                        eqUsername(username),
+                        isCurrentWeekSchedule(request)
+                )
                 .fetch();
+    }
+
+    private BooleanExpression isCurrentWeekSchedule(GetWeekScheduleRequest request) {
+        // 반복이 없는 건 날짜가 포함된 주 것만, 반복이 있으면 다
+        return schedule.repeatWeek.eq(true).or(
+                schedule.repeatWeek.eq(false).and(
+                        schedule.createdDate.between(
+                                request.getDate().with(DayOfWeek.MONDAY).atStartOfDay(),
+                                request.getDate().with(DayOfWeek.SUNDAY).plusDays(1).atStartOfDay()
+                        )
+                )
+        );
     }
 
 //    @Override
@@ -119,10 +131,6 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     private BooleanExpression eqDayOfWeek(DayOfWeek dayOfWeek) {
         return schedule.dayOfWeek.eq(dayOfWeek);
-    }
-
-    private BooleanExpression betweenDate(LocalTime startDate, LocalTime endDate) {
-        return schedule.time.between(startDate, endDate);
     }
 
     private BooleanExpression eqId(long scheduleId) {

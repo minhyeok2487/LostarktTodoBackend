@@ -10,13 +10,8 @@ import java.time.LocalDate;
 @Data
 public class GetWeekScheduleRequest {
 
-    @ApiModelProperty(example = "시작 날짜")
+    @ApiModelProperty(example = "날짜(해당 날짜가 포함된 주의 스케줄을 가져옴. 단, 주간 반복 스케줄을 가져옴)")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull
-    private LocalDate startDate;
-
-    @ApiModelProperty(example = "끝 날짜")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull
-    private LocalDate endDate;
+    private LocalDate date = LocalDate.now();
 }
