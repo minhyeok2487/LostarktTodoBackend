@@ -82,8 +82,16 @@ public class NotificationControllerV4 {
 
     @ApiOperation(value = "알림 확인 API")
     @PostMapping("/{notificationId}")
-    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
+    public ResponseEntity<?> updateRead(@AuthenticationPrincipal String username, @PathVariable long notificationId) {
         notificationService.updateRead(notificationId, username);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "알림 일괄 확인 API")
+    @PostMapping("/all")
+    public ResponseEntity<?> updateReadAll(@AuthenticationPrincipal String username) {
+        Member member = memberService.get(username);
+        notificationService.updateReadAll(member);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

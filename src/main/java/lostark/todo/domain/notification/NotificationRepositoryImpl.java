@@ -72,6 +72,14 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
                 .fetchCount();
     }
 
+    @Override
+    public void updateReadAll(Member member) {
+        factory.update(notification)
+                .set(notification.isRead, true)
+                .where(notification.receiver.eq(member))
+                .execute();
+    }
+
     private BooleanExpression betweenDate(LocalDateTime beforeDate, LocalDateTime afterDate) {
         return notification.createdDate.between(beforeDate, afterDate);
     }
@@ -79,7 +87,6 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     private BooleanExpression eqId(long id) {
         return notification.id.eq(id);
     }
-
 
     private BooleanExpression eqUsername(String username) {
         return notification.receiver.username.eq(username);

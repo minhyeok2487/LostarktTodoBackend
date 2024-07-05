@@ -15,4 +15,6 @@ public interface NotificationCustomRepository {
     LocalDateTime getRecent(String username);
 
     long getUnreadCount(String username);
+
+    void updateReadAll(Member member);
 }

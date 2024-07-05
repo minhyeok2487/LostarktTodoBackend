@@ -108,4 +108,8 @@ public class NotificationService {
         long unreadCount = notificationRepository.getUnreadCount(username);
         return new NotificationStatusResponse(latestCreatedDate, unreadCount);
     }
+
+    public void updateReadAll(Member member) {
+        notificationRepository.updateReadAll(member);
+    }
 }
