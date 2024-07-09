@@ -160,10 +160,17 @@ public class TodoServiceV2 {
 
     public void updateWeekRaidCheckAll(Character character, String weekCategory) {
         List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
+        // 전체 체크 상태가 아니라면 전체 체크, 아니면 전체 체크 해제
+        List<TodoV2> checked = todoV2List.stream().filter(TodoV2::isChecked).toList();
         for (TodoV2 todoV2 : todoV2List) {
-            if (todoV2.getCoolTime() != 0) { //2주기 레이드 체크 방지
-                todoV2.updateCheck();
+            if (checked.size() == todoV2List.size()) {
+                if (todoV2.getCoolTime() != 0) { //2주기 레이드 체크 방지
+                    todoV2.setChecked(false);
+                }
+            } else {
+                todoV2.setChecked(true);
             }
+
         }
     }
 
