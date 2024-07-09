@@ -52,9 +52,30 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
+    // TODO 추후 최적화
     public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
-        return scheduleRepository.getWeek(username, request);
+        return scheduleRepository.getWeek(username, request).stream()
+                .peek(response -> {
+                    if (response.getScheduleCategory().equals(ScheduleCategory.PARTY)) {
+                        if (response.getIsLeader()) {
+                            response.setFriendCharacterNames(
+                                    scheduleRepository.getLeaderScheduleId(response.getScheduleId())
+                                            .stream()
+                                            .map(ScheduleCharacterResponse::getCharacterName)
+                                            .toList());
+                        } else {
+                            response.setFriendCharacterNames(
+                                    scheduleRepository.getLeaderScheduleId(response.getLeaderScheduleId())
+                                            .stream()
+                                            .map(ScheduleCharacterResponse::getCharacterName)
+                                            .toList());
+                        }
+
+                    }
+                })
+                .toList();
     }
+
 
     @Transactional(readOnly = true)
     public GetScheduleResponse getResponse(long scheduleId, String username) {

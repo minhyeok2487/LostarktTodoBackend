@@ -1,9 +1,11 @@
 package lostark.todo.domain.schedule;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.schedule.*;
+import lostark.todo.domain.character.QCharacter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -20,17 +22,26 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     private final JPAQueryFactory factory;
 
+
     @Override
     public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
+        QSchedule ls = new QSchedule("ls");
+        QCharacter lc = new QCharacter("lc");
+
         return factory
                 .select(new QWeekScheduleResponse(
                         schedule.id,
                         schedule.scheduleCategory, schedule.scheduleRaidCategory,
-                        schedule.raidName, schedule.dayOfWeek, schedule.time, character.characterName
-                ))
+                        schedule.raidName, schedule.dayOfWeek, schedule.time, schedule.memo,
+                        schedule.leader, schedule.leaderScheduleId,
+                        character.characterName,
+                        new CaseBuilder().when(schedule.leader.eq(true)).then(character.characterName)
+                                .otherwise(lc.characterName).as("leaderCharacterName")))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
                 .leftJoin(member).on(character.member.eq(member))
+                .leftJoin(ls).on(schedule.leaderScheduleId.eq(ls.id))
+                .leftJoin(lc).on(ls.characterId.eq(lc.id))
                 .where(
                         eqUsername(username),
                         isCurrentWeekSchedule(request)
@@ -49,6 +60,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 )
         );
     }
+
 
     @Override
     public Optional<GetScheduleResponse> getResponse(long scheduleId, String username) {
