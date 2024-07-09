@@ -151,7 +151,7 @@ public class FriendsService {
                             .friendId(friends.getId())
                             .friendUsername(fromFriend.getMember().getUsername())
                             .areWeFriend(areWeFriend)
-                            .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
+                            .nickName(getMainCharacterName(fromFriend.getMember()))
                             .characterList(characterResponseList)
                             .toFriendSettings(friends.getFriendSettings())
                             .fromFriendSettings(fromFriend.getFriendSettings())
@@ -162,6 +162,10 @@ public class FriendsService {
             }
         }
         return returnDtoList;
+    }
+
+    private String getMainCharacterName(Member member) {
+        return member.getMainCharacter() != null ? member.getMainCharacter() : member.getCharacters().get(0).getCharacterName();
     }
 
     @Transactional(readOnly = true)
