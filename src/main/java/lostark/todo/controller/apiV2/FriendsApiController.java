@@ -325,93 +325,94 @@ public class FriendsApiController {
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username,
                                               @RequestBody FriendsReturnDto dto) {
-        Member toMember = memberService.findMember(username);
-        Member member = memberService.findMember(dto.getFriendUsername());
-        boolean setting = friendsService.checkSetting(member, toMember, "setting");
-
-        if(setting) {
-            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
-            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
-
-            List<Character> removeList = new ArrayList<>();
-            // 비교 : 캐릭터 이름, 아이템레벨, 클래스
-            for (Character character : member.getCharacters()) {
-                JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
-                if (jsonObject == null) {
-                    log.info("delete character name : {}", character.getCharacterName());
-                    //삭제 리스트에 추가
-                    removeList.add(character);
-                } else {
-                    double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
-
-                    // 데이터 변경
-                    if (itemMaxLevel >= 1415.0) {
-                        Character newCharacter = Character.builder()
-                                .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
-                                .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
-                                .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
-                                .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-                                .itemLevel(itemMaxLevel)
-                                .dayTodo(new DayTodo().createDayContent(chaos, guardian, itemMaxLevel))
-                                .build();
-                        characterService.updateCharacter(character, newCharacter);
-                    } else {
-                        //삭제 리스트에 추가
-                        removeList.add(character);
-                    }
-                }
-            }
-
-            // 삭제
-            if (!removeList.isEmpty()) {
-                for (Character character : removeList) {
-                    characterService.deleteCharacter(member.getCharacters(), character);
-                }
-            }
-
-            // 추가 리스트
-            List<Character> addList = new ArrayList<>();
-            List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
-                    member.getCharacters().get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
-            for (Character character : updateCharacterList) {
-                boolean contain = false;
-                for (Character before : member.getCharacters()) {
-                    if (before.getCharacterName().equals(character.getCharacterName())) {
-                        contain = true;
-                        break;
-                    }
-                }
-                if (!contain) {
-                    addList.add(character);
-                }
-            }
-
-            //추가 하면서 캐릭터 닉네임 변경감지
-            if (!addList.isEmpty()) {
-                characterService.addCharacterList(addList, removeList, member);
-            }
-
-            // 재련재료 데이터 리스트로 거래소 데이터 호출
-            Map<String, Market> contentResource = marketService.findContentResource();
-
-            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-            List<Character> calculatedCharacterList = new ArrayList<>();
-            for (Character character : member.getCharacters()) {
-                Character result = characterService.calculateDayTodo(character, contentResource);
-                calculatedCharacterList.add(result);
-            }
-
-            // 결과
-            List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
-                    .filter(character -> character.getSettings().isShowCharacter())
-                    .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
-                            .comparingInt(CharacterDto::getSortNumber)
-                            .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
-
-
-            return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
-        } else {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
+//        Member toMember = memberService.findMember(username);
+//        Member member = memberService.findMember(dto.getFriendUsername());
+//        boolean setting = friendsService.checkSetting(member, toMember, "setting");
+//
+//        if(setting) {
+//            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+//            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+//
+//            List<Character> removeList = new ArrayList<>();
+//            // 비교 : 캐릭터 이름, 아이템레벨, 클래스
+//            for (Character character : member.getCharacters()) {
+//                JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
+//                if (jsonObject == null) {
+//                    log.info("delete character name : {}", character.getCharacterName());
+//                    //삭제 리스트에 추가
+//                    removeList.add(character);
+//                } else {
+//                    double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+//
+//                    // 데이터 변경
+//                    if (itemMaxLevel >= 1415.0) {
+//                        Character newCharacter = Character.builder()
+//                                .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
+//                                .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
+//                                .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
+//                                .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
+//                                .itemLevel(itemMaxLevel)
+//                                .dayTodo(new DayTodo().createDayContent(chaos, guardian, itemMaxLevel))
+//                                .build();
+//                        characterService.updateCharacter(character, newCharacter);
+//                    } else {
+//                        //삭제 리스트에 추가
+//                        removeList.add(character);
+//                    }
+//                }
+//            }
+//
+//            // 삭제
+//            if (!removeList.isEmpty()) {
+//                for (Character character : removeList) {
+//                    characterService.deleteCharacter(member.getCharacters(), character);
+//                }
+//            }
+//
+//            // 추가 리스트
+//            List<Character> addList = new ArrayList<>();
+//            List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
+//                    member.getCharacters().get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
+//            for (Character character : updateCharacterList) {
+//                boolean contain = false;
+//                for (Character before : member.getCharacters()) {
+//                    if (before.getCharacterName().equals(character.getCharacterName())) {
+//                        contain = true;
+//                        break;
+//                    }
+//                }
+//                if (!contain) {
+//                    addList.add(character);
+//                }
+//            }
+//
+//            //추가 하면서 캐릭터 닉네임 변경감지
+//            if (!addList.isEmpty()) {
+//                characterService.addCharacterList(addList, removeList, member);
+//            }
+//
+//            // 재련재료 데이터 리스트로 거래소 데이터 호출
+//            Map<String, Market> contentResource = marketService.findContentResource();
+//
+//            // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+//            List<Character> calculatedCharacterList = new ArrayList<>();
+//            for (Character character : member.getCharacters()) {
+//                Character result = characterService.calculateDayTodo(character, contentResource);
+//                calculatedCharacterList.add(result);
+//            }
+//
+//            // 결과
+//            List<CharacterDto> characterDtoList = calculatedCharacterList.stream()
+//                    .filter(character -> character.getSettings().isShowCharacter())
+//                    .map(character -> new CharacterDto().toDtoV2(character)).sorted(Comparator
+//                            .comparingInt(CharacterDto::getSortNumber)
+//                            .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())).collect(Collectors.toList());
+//
+//
+//            return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+//        } else {
+//            throw new IllegalArgumentException("권한이 없습니다.");
+//        }
+        throw new IllegalArgumentException("로스트아크 API 쪽이 달라져서 현재 수정 중입니다.");
     }
 }
