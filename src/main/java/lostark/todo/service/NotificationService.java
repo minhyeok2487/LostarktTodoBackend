@@ -64,6 +64,18 @@ public class NotificationService {
     }
 
     @Transactional
+    public void saveCommentAdmin(Comments comments) {
+        Notification notification = Notification.builder()
+                .content("새로운 방명록이 달렸어요")
+                .isRead(false)
+                .notificationType(NotificationType.COMMENT)
+                .commentId(comments.getId())
+                .receiver(comments.getMember())
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
     public void saveAddFriendRequest(Member toMember, Member fromMember) {
         createAndSaveNotification(toMember, "님에게 깐부요청중 이에요.", fromMember);
         createAndSaveNotification(fromMember, "님이 깐부요청을 보냈어요.", toMember);

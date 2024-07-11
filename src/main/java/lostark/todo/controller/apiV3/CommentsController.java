@@ -9,9 +9,7 @@ import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.member.Member;
-import lostark.todo.event.entity.CommentEvent;
 import lostark.todo.service.*;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +29,6 @@ public class CommentsController {
     private final CommentsService commentsService;
     private final MemberService memberService;
     private final NotificationService notificationService;
-    private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
     @GetMapping()
@@ -65,12 +62,13 @@ public class CommentsController {
                 .build();
         commentsService.save(updateComments);
 
-        // 루트 코멘트가 아닐때 알림에 추가
-        if (commentRequestDto.getParentId() != 0) {
+        if (commentRequestDto.getParentId() != 0) { // 루트 코멘트가 아닐때 알림에 추가
             Comments comments = commentsService.findById(commentRequestDto.getParentId());
             notificationService.saveComment(comments);
         }
-        eventPublisher.publishEvent(new CommentEvent(eventPublisher, member, commentRequestDto.getBody()));
+        // 어드민 알림 추가
+        updateComments.setMember(memberService.get("repeat2487@gmail.com"));
+        notificationService.saveCommentAdmin(updateComments);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
