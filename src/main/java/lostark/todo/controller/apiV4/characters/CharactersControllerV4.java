@@ -86,7 +86,7 @@ public class CharactersControllerV4 {
 
             if (find.isPresent()) { // 이름 같은게 있으면 업데이트
                 Character character = find.get();
-                character.updateCharacter(dto, dayContent, contentResource);
+                characterService.updateCharacter(character, dto, dayContent, contentResource);
             } else { // 이름 같은게 없으면 추가
                 Character character = characterService.addCharacter(dto, dayContent, member);
                 member.getCharacters().add(character);

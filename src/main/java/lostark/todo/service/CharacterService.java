@@ -486,4 +486,9 @@ public class CharacterService {
         character.createImage(dto.getCharacterImage());
         return characterRepository.save(character);
     }
+
+    @Transactional
+    public void updateCharacter(Character character, CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
+        character.updateCharacter(dto, dayContent, contentResource);
+    }
 }
