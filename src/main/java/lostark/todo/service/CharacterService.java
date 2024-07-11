@@ -484,6 +484,6 @@ public class CharacterService {
         character.setTodoList(new ArrayList<>());
         character.setTodoV2List(new ArrayList<>());
         character.createImage(dto.getCharacterImage());
-        return character;
+        return characterRepository.save(character);
     }
 }
