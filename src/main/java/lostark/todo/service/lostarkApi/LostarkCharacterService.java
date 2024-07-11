@@ -46,9 +46,8 @@ public class LostarkCharacterService {
     public List<Character> findCharacterList(String characterName, String apiKey, List<DayContent> chaos, List<DayContent> guardian) {
         try {
             JSONArray jsonArray = findCharacters(characterName, apiKey);
-            JSONArray imageList = getCharacterImage(jsonArray,apiKey);
             List<Character> characterList = new ArrayList<>();
-            for (Object o : imageList) {
+            for (Object o : jsonArray) {
                 JSONObject jsonObject = (JSONObject) o;
 
                 Character character = Character.builder()
@@ -63,7 +62,7 @@ public class LostarkCharacterService {
                 character.setSettings(new Settings());
                 character.setTodoList(new ArrayList<>());
                 character.setTodoV2List(new ArrayList<>());
-                character.createImage(jsonObject.get("CharacterImage"));
+                character.setCharacterImage(getCharacterImageUrl(character.getCharacterName(), apiKey));
                 character.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
                 characterList.add(character);
             }
