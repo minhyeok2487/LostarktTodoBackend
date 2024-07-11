@@ -7,11 +7,7 @@ import lostark.todo.domain.market.MarketRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -26,38 +22,19 @@ public class MarketService {
     }
 
     /**
-     * 해당 카테고리 데이터가
-     * DB에 이미 있는지 확인
-     */
-    public boolean checkMarketItemList(int categoryCode) {
-        if (categoryCode != 0) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 거래소 데이터 저장 메소드
-     */
-    public List<Market> createMarketItemList(List<Market> marketList) {
-        exception(marketList);
-        return marketRepository.saveAll(marketList);
-    }
-
-    /**
      * 거래소 데이터 업데이트 메소드
      */
     public List<Market> updateMarketItemList(List<Market> marketList, int categoryCode) {
         exception(marketList);
         List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
-        oldList.forEach(old -> {
-            List<Market> matchingNews = marketList.stream()
-                    .filter(news -> old.getName().equals(news.getName()))
-                    .collect(Collectors.toList());
-            if (!matchingNews.isEmpty()) {
-                old.changeData(matchingNews.get(0));
+        for (Market market : marketList) {
+            Optional<Market> find = oldList.stream().filter(item -> item.getLostarkMarketId() == market.getLostarkMarketId()).findFirst();
+            if (find.isPresent()) {
+                find.get().changeData(market);
+            } else {
+                marketRepository.save(market);
             }
-        });
+        }
         return oldList;
     }
 
