@@ -1,8 +1,10 @@
 package lostark.todo.service.lostarkApi;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.memberDto.MemberRequestDto;
+import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.character.Settings;
@@ -44,10 +46,7 @@ public class LostarkCharacterService {
     public List<Character> findCharacterList(String characterName, String apiKey, List<DayContent> chaos, List<DayContent> guardian) {
         try {
             JSONArray jsonArray = findCharacters(characterName, apiKey);
-            // 1415이상만 필터링
-            JSONArray filteredArray = filterLevel(jsonArray);
-
-            JSONArray imageList = getCharacterImage(filteredArray,apiKey);
+            JSONArray imageList = getCharacterImage(jsonArray,apiKey);
             List<Character> characterList = new ArrayList<>();
             for (Object o : imageList) {
                 JSONObject jsonObject = (JSONObject) o;
@@ -91,12 +90,47 @@ public class LostarkCharacterService {
     /**
      * 캐릭터 리스트 출력
      */
-    public JSONArray findCharacters(String characterName, String apiKey) throws IOException, ParseException {
+    public JSONArray findCharacters(String characterName, String apiKey) {
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
         InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
         JSONParser parser = new JSONParser();
-        return (JSONArray) parser.parse(inputStreamReader);
+        try {
+            JSONArray parse = (JSONArray) parser.parse(inputStreamReader);
+            return filterLevel(parse);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<CharacterJsonDto> getCharacterJsonDtoList(String characterName, String apiKey) {
+        String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+        String url = "https://developer-lostark.game.onstove.com/characters/" + encodedCharacterName + "/siblings";
+
+        try (InputStreamReader reader = apiService.lostarkGetApi(url, apiKey)) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<CharacterJsonDto> characterList = objectMapper.readValue(
+                    reader,
+                    new TypeReference<List<CharacterJsonDto>>() {}
+            );
+
+            return characterList.stream()
+                    .filter(this::isItemLevelAboveThreshold)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException("Error fetching character list", e);
+        }
+    }
+
+    private boolean isItemLevelAboveThreshold(CharacterJsonDto dto) {
+        try {
+            double itemLevel = dto.getItemMaxLevel();
+            return itemLevel >= 1415.00;
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException(e.getMessage());
+        }
     }
 
     // 1415이상만 필터링 메소드
@@ -140,14 +174,17 @@ public class LostarkCharacterService {
         return result;
     }
 
-    public JSONObject findCharacter(String characterName, String apiKey) {
+    public String getCharacterImageUrl(String characterName, String apiKey) {
         try {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
             InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
-            JSONObject result = (JSONObject) parser.parse(inputStreamReader);
-            return result;
+            JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
+            if (profile != null && profile.get("CharacterImage") != null) {
+                return profile.get("CharacterImage").toString();
+            }
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

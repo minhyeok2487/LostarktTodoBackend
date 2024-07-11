@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
+import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.domain.character.*;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.DayContent;
@@ -465,5 +466,24 @@ public class CharacterService {
         Character character = findCharacter(
                 characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
         return updateGauge(character, characterDayTodoDto, contentResource);
+    }
+
+    @Transactional
+    public Character addCharacter(CharacterJsonDto dto, DayTodo dayContent, Member member) {
+        Character character = Character.builder()
+                .member(member)
+                .characterName(dto.getCharacterName())
+                .characterLevel(dto.getCharacterLevel())
+                .characterClassName(dto.getCharacterClassName())
+                .serverName(dto.getServerName())
+                .itemLevel(dto.getItemMaxLevel())
+                .dayTodo(dayContent)
+                .weekTodo(new WeekTodo())
+                .build();
+        character.setSettings(new Settings());
+        character.setTodoList(new ArrayList<>());
+        character.setTodoV2List(new ArrayList<>());
+        character.createImage(dto.getCharacterImage());
+        return character;
     }
 }

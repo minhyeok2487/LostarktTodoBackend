@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
+import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
@@ -15,17 +16,13 @@ import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
-import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -71,76 +68,30 @@ public class CharactersControllerV4 {
             response = CharacterDto.class)
     @PutMapping("")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username) {
-//        Member member = memberService.findMember(username);
-//        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
-//        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
-//
-//        List<Character> removeList = new ArrayList<>();
-//        // 비교 : 캐릭터 이름, 아이템레벨, 클래스
-//        for (Character character : member.getCharacters()) {
-//            JSONObject jsonObject = lostarkCharacterService.findCharacter(character.getCharacterName(), member.getApiKey());
-//            if (jsonObject == null) {
-//                log.info("delete character name : {}", character.getCharacterName());
-//                //삭제 리스트에 추가
-//                removeList.add(character);
-//            } else {
-//                double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
-//
-//                // 데이터 변경
-//                if (itemMaxLevel >= 1415.0) {
-//                    Character newCharacter = Character.builder()
-//                            .characterName(jsonObject.get("CharacterName") != null ? jsonObject.get("CharacterName").toString() : null)
-//                            .characterClassName(jsonObject.get("CharacterClassName") != null ? jsonObject.get("CharacterClassName").toString() : null)
-//                            .characterImage(jsonObject.get("CharacterImage") != null ? jsonObject.get("CharacterImage").toString() : null)
-//                            .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-//                            .itemLevel(itemMaxLevel)
-//                            .dayTodo(new DayTodo().createDayContent(chaos, guardian, itemMaxLevel))
-//                            .build();
-//                    characterService.updateCharacter(character, newCharacter);
-//                } else {
-//                    //삭제 리스트에 추가
-//                    removeList.add(character);
-//                }
-//            }
-//        }
-//
-//        // 삭제
-//        if (!removeList.isEmpty()) {
-//            for (Character character : removeList) {
-//                characterService.deleteCharacter(member.getCharacters(), character);
-//            }
-//        }
-//
-//        // 추가 리스트
-//        List<Character> addList = new ArrayList<>();
-//        List<Character> updateCharacterList = lostarkCharacterService.findCharacterList(
-//                member.getCharacters().get(0).getCharacterName(), member.getApiKey(), chaos, guardian);
-//        for (Character character : updateCharacterList) {
-//            boolean contain = false;
-//            for (Character before : member.getCharacters()) {
-//                if (before.getCharacterName().equals(character.getCharacterName())) {
-//                    contain = true;
-//                    break;
-//                }
-//            }
-//            if (!contain) {
-//                addList.add(character);
-//            }
-//        }
-//
-//        //추가 하면서 캐릭터 닉네임 변경감지
-//        if (!addList.isEmpty()) {
-//            characterService.addCharacterList(addList, removeList, member);
-//        }
-//
-//        // 재련재료 데이터 리스트로 거래소 데이터 호출
-//        Map<String, Market> contentResource = marketService.findContentResource();
-//
-//        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-//        for (Character character : member.getCharacters()) {
-//            characterService.calculateDayTodo(character, contentResource);
-//        }
-        throw new IllegalArgumentException("로스트아크 API 쪽이 달라져서 현재 수정 중입니다.");
-//        return new ResponseEntity<>(HttpStatus.OK);
+        Member member = memberService.get(username);
+        String mainCharacter = member.getMainCharacter() != null ? member.getMainCharacter() :
+                member.getCharacters().get(0).getCharacterName();
+        Map<String, Market> contentResource = marketService.findContentResource();
+        List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
+        List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
+
+        List<CharacterJsonDto> characterJsonDtoList = lostarkCharacterService.getCharacterJsonDtoList(mainCharacter, member.getApiKey());
+        for (CharacterJsonDto dto : characterJsonDtoList) {
+            dto.setCharacterImage(lostarkCharacterService.getCharacterImageUrl(dto.getCharacterName(), member.getApiKey()));
+
+            Optional<Character> find = member.getCharacters().stream()
+                    .filter(character -> character.getCharacterName().equals(dto.getCharacterName())).findFirst();
+
+            DayTodo dayContent = new DayTodo().createDayContent(chaos, guardian, dto.getItemMaxLevel());
+
+            if (find.isPresent()) { // 이름 같은게 있으면 업데이트
+                Character character = find.get();
+                character.updateCharacter(dto, dayContent, contentResource);
+            } else { // 이름 같은게 없으면 추가
+                Character character = characterService.addCharacter(dto, dayContent, member);
+                member.getCharacters().add(character);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
