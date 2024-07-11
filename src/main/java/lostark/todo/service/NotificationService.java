@@ -64,13 +64,13 @@ public class NotificationService {
     }
 
     @Transactional
-    public void saveCommentAdmin(Comments comments) {
+    public void saveCommentAdmin(Comments comments, Member admin) {
         Notification notification = Notification.builder()
                 .content("새로운 방명록이 달렸어요")
                 .isRead(false)
                 .notificationType(NotificationType.COMMENT)
                 .commentId(comments.getId())
-                .receiver(comments.getMember())
+                .receiver(admin)
                 .build();
         notificationRepository.save(notification);
     }

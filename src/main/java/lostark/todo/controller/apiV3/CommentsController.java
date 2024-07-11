@@ -67,8 +67,8 @@ public class CommentsController {
             notificationService.saveComment(comments);
         }
         // 어드민 알림 추가
-        updateComments.setMember(memberService.get("repeat2487@gmail.com"));
-        notificationService.saveCommentAdmin(updateComments);
+        Member admin = memberService.get("repeat2487@gmail.com");
+        notificationService.saveCommentAdmin(updateComments, admin);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
