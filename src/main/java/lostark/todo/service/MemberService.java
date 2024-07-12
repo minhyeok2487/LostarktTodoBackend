@@ -211,4 +211,10 @@ public class MemberService {
     public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
         return memberRepository.searchAdminMember(request, pageRequest);
     }
+
+    @Transactional
+    public void removeMember(String name) {
+        Member member = memberRepository.get(name);
+        memberRepository.delete(member);
+    }
 }
