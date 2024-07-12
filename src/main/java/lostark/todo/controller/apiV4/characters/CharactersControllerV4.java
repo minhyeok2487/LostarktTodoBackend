@@ -89,6 +89,7 @@ public class CharactersControllerV4 {
                 characterService.updateCharacter(character, dto, dayContent, contentResource);
             } else { // 이름 같은게 없으면 추가
                 Character character = characterService.addCharacter(dto, dayContent, member);
+                characterService.calculateDayTodo(character, contentResource);
                 member.getCharacters().add(character);
             }
         }

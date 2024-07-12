@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static lostark.todo.Constant.LEVEL_UP_RESOURCES;
 
 @Service
 @Slf4j
@@ -47,38 +50,15 @@ public class MarketService {
         }
     }
 
-    /**
-     * 거래소 데이터 호출
-     */
+    // 거래소 데이터 호출
+    public Map<String, Market> findContentResource() {
+        List<Market> marketByNames = findByNameIn(LEVEL_UP_RESOURCES);
+        return marketByNames.stream()
+                .collect(Collectors.toMap(Market::getName, market -> market));
+    }
+
     public List<Market> findByNameIn(List<String> names) {
         return marketRepository.findByNameIn(names);
-    }
-
-    public Map<String, Market> findContentResource() {
-        List<Market> marketByNames = findByNameIn(dayContentResource());
-
-        Map<String , Market> contentResourceDtoHashMap = new HashMap<>();
-        for (Market marketByName : marketByNames) {
-            contentResourceDtoHashMap.put(marketByName.getName(), marketByName);
-        }
-        return contentResourceDtoHashMap;
-    }
-
-    public List<String> dayContentResource() {
-        List<String> dayContentResource = new ArrayList<>();
-        dayContentResource.add("정제된 파괴강석");
-        dayContentResource.add("정제된 수호강석");
-        dayContentResource.add("찬란한 명예의 돌파석");
-
-        dayContentResource.add("파괴강석");
-        dayContentResource.add("수호강석");
-        dayContentResource.add("경이로운 명예의 돌파석");
-
-        dayContentResource.add("파괴석 결정");
-        dayContentResource.add("수호석 결정");
-        dayContentResource.add("위대한 명예의 돌파석");
-        dayContentResource.add("1레벨");
-        return dayContentResource;
     }
 
 

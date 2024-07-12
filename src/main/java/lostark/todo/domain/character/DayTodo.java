@@ -1,13 +1,11 @@
 package lostark.todo.domain.character;
 
 import lombok.*;
-import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.content.DayContent;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
@@ -34,8 +32,8 @@ public class DayTodo {
     @Size(max = 2)
     private int chaosCheck; //일일숙제 카오스던전 돌았는지 체크(0, 1, 2)
 
-    @Size(max = 100)
-    private int chaosGauge; //카오스던전 휴식게이지(0~100)
+    @Size(max = 200)
+    private int chaosGauge; //카오스던전 휴식게이지(0~200)
 
     private double chaosGold; // 예상골드
 
@@ -84,15 +82,6 @@ public class DayTodo {
                 ", eponaCheck2=" + eponaCheck2 +
                 ", eponaGauge=" + eponaGauge +
                 '}';
-    }
-
-    /**
-     * 일일컨텐츠 업데이트 메서드
-     */
-    public void updateDayContent(CharacterCheckDto characterCheckDto) {
-        this.chaosCheck = characterCheckDto.getChaosCheck();
-        this.guardianCheck = characterCheckDto.getGuardianCheck();
-        this.eponaCheck2 = characterCheckDto.getEponaCheck();
     }
 
     public DayTodo createDayContent(List<DayContent> chaos, List<DayContent> guardian, double itemLevel) {
@@ -210,14 +199,12 @@ public class DayTodo {
         }
     }
 
-    public void updateDayContentGauge(CharacterDayTodoDto characterDayTodoDto, double chaosGold, double guardianGold) {
+    public void updateDayContentGauge(CharacterDayTodoDto characterDayTodoDto) {
         this.chaosGauge = characterDayTodoDto.getChaosGauge();
         this.beforeChaosGauge = chaosGauge;
         this.guardianGauge = characterDayTodoDto.getGuardianGauge();
         this.beforeGuardianGauge = guardianGauge;
         this.eponaGauge = characterDayTodoDto.getEponaGauge();
         this.beforeEponaGauge = eponaGauge;
-        this.chaosGold = chaosGold;
-        this.guardianGold = guardianGold;
     }
 }

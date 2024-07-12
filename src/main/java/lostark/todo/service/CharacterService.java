@@ -11,7 +11,6 @@ import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.domain.character.*;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
@@ -52,146 +51,36 @@ public class CharacterService {
                 () -> new IllegalArgumentException("존재하지 않는 캐릭터"));
     }
 
-    /**
-     * 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
-     */
+
+    // 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
+    @Transactional
     public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {
-        Market jewelry = contentResource.get("1레벨");
-        Market destruction;
-        Market guardian;
-        Market leapStone;
-        if (character.getItemLevel() >= 1415 && character.getItemLevel() < 1540) {
-            destruction = contentResource.get("파괴석 결정");
-            guardian = contentResource.get("수호석 결정");
-            leapStone = contentResource.get("위대한 명예의 돌파석");
-        } else if (character.getItemLevel() >= 1540 && character.getItemLevel() < 1580) {
-            destruction = contentResource.get("파괴강석");
-            guardian = contentResource.get("수호강석");
-            leapStone = contentResource.get("경이로운 명예의 돌파석");
-        } else {
-            destruction = contentResource.get("정제된 파괴강석");
-            guardian = contentResource.get("정제된 수호강석");
-            leapStone = contentResource.get("찬란한 명예의 돌파석");
-        }
-        // 카오스 던전 계산
-        calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry, character);
-
-        // 가디언 토벌 계산
-        calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, character);
-
-        return character;
+        return character.calculateDayTodo(character, contentResource);
     }
 
-    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry, Character character) {
-        double price = 0;
-        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += jewelry.getRecentPrice() * dayContent.getJewelry();
-
-        int chaosGauge = character.getDayTodo().getChaosGauge();
-        if (chaosGauge >= 40) {
-            price = price*4;
-        } else if (chaosGauge >= 20) {
-            price = price*3;
-        } else {
-            price = price*2;
-        }
-        price = Math.round(price * 100.0) / 100.0;
-        character.getDayTodo().setChaosGold(price);
-    }
-
-    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone, Character character) {
-        double price = 0;
-        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
-
-        int guardianGauge = character.getDayTodo().getGuardianGauge();
-        if (guardianGauge >= 20) {
-            price = price*2;
-        }
-
-        price = Math.round(price * 100.0) / 100.0;
-        character.getDayTodo().setGuardianGold(price);
-    }
-
-    private double calculateChaosV2(DayContent dayContent, Market destruction, Market guardian, Market jewelry, int chaosGauge) {
-        double price = 0;
-        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += jewelry.getRecentPrice() * dayContent.getJewelry();
-
-        if (chaosGauge >= 40) {
-            price = price*4;
-        } else if (chaosGauge >= 20) {
-            price = price*3;
-        } else {
-            price = price*2;
-        }
-
-        price = Math.round(price * 100.0) / 100.0;
-        return price;
-    }
-
-    private double calculateGuardianV2(DayContent dayContent, Market destruction, Market guardian, Market leapStone, int guardianGauge) {
-        double price = 0;
-        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
-
-        if (guardianGauge >= 20) {
-            price = price*2;
-        }
-
-        price = Math.round(price * 100.0) / 100.0;
-        return price;
-    }
-
-    /**
-     * 일일컨텐츠 휴식게이지 업데이트
-     */
+    // 일일컨텐츠 휴식게이지 업데이트
+    @Transactional
     public Character updateGauge(Character character, CharacterDayTodoDto characterDayTodoDto, Map<String, Market> contentResource) {
         Integer dtoChaosGauge = characterDayTodoDto.getChaosGauge();
-        validateGauge(dtoChaosGauge); //검증
+        validateGauge(dtoChaosGauge, 200); //검증
 
         Integer dtoGuardianGauge = characterDayTodoDto.getGuardianGauge();
-        validateGauge(dtoGuardianGauge); //검증
+        validateGauge(dtoGuardianGauge, 100); //검증
 
         Integer dtoEponGauge = characterDayTodoDto.getEponaGauge();
-        validateGauge(dtoEponGauge); //검증
+        validateGauge(dtoEponGauge, 100); //검증
 
-        Market jewelry = contentResource.get("1레벨");
-        Market destruction;
-        Market guardian;
-        Market leapStone;
-        if (character.getItemLevel() >= 1415 && character.getItemLevel() < 1540) {
-            destruction = contentResource.get("파괴석 결정");
-            guardian = contentResource.get("수호석 결정");
-            leapStone = contentResource.get("위대한 명예의 돌파석");
-        } else if (character.getItemLevel() >= 1540 && character.getItemLevel() < 1580) {
-            destruction = contentResource.get("파괴강석");
-            guardian = contentResource.get("수호강석");
-            leapStone = contentResource.get("경이로운 명예의 돌파석");
-        } else {
-            destruction = contentResource.get("정제된 파괴강석");
-            guardian = contentResource.get("정제된 수호강석");
-            leapStone = contentResource.get("찬란한 명예의 돌파석");
-        }
-        // 카오스 던전 계산
-        double chaosGold = calculateChaosV2(character.getDayTodo().getChaos(), destruction, guardian, jewelry, dtoChaosGauge);
+        character.getDayTodo().updateDayContentGauge(characterDayTodoDto);
 
-        // 가디언 토벌 계산
-        double guardianGold = calculateGuardianV2(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, dtoGuardianGauge);
-
-        character.getDayTodo().updateDayContentGauge(characterDayTodoDto, chaosGold, guardianGold);
-        return character;
+        return character.calculateDayTodo(character, contentResource);
     }
 
-    private void validateGauge(Integer gauge) {
-        if (gauge < 0 || gauge > 100 || gauge % 10 != 0) {
-            throw new IllegalArgumentException("휴식게이지는 0~100 사이이며, 10단위여야 합니다.");
+    private void validateGauge(Integer gauge, int max) {
+        if (gauge < 0 || gauge > max || gauge % 10 != 0) {
+            throw new IllegalArgumentException(String.format("휴식게이지는 0~%d 사이이며, 10단위여야 합니다.", max));
         }
     }
+
 
 
     // 일일 컨텐츠 체크 업데이트
@@ -221,21 +110,6 @@ public class CharacterService {
         return character;
     }
 
-    /**
-     * 골드 획득 지정캐릭터확인
-     */
-    public Character updateGoldCharacter(Character character) {
-        // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
-        int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
-                character.getMember(), character.getServerName());
-
-        //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
-        if (!character.isGoldCharacter() && goldCharacter >= 6) {
-            throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
-        }
-        return character.updateGoldCharacter();
-    }
-
     @Transactional
     public Character updateGoldCharacter(CharacterDefaultDto characterDefaultDto, String username) {
         Character character = findCharacter(
@@ -262,53 +136,6 @@ public class CharacterService {
             character.updateChallenge(content);
         }
         return characterList;
-    }
-
-    public void updateSetting(Character character, String name, boolean value) {
-        character.getSettings().update(name, value);
-    }
-
-    /**
-     * 캐릭터 데이터 업데이트
-     */
-    public Character updateCharacter(Character character, Character newCharacter) {
-        return character.updateCharacter(newCharacter);
-    }
-
-    /**
-     * 캐릭터 삭제
-     */
-    public void deleteCharacter(List<Character> beforeCharacterList, Character character) {
-        beforeCharacterList.remove(character);
-    }
-
-    /**
-     * 캐릭터 리스트 추가
-     */
-    public void addCharacterList(List<Character> addList, List<Character> removeList, Member member) {
-        for (Character addCharacter : addList) {
-            if (addCharacter.getCharacterImage() != null) { //이미지가 null이 아니면 => 캐릭터 닉네임이 바뀐 경우가 존재
-                String characterImageId = extracted(addCharacter.getCharacterImage()); //이미지 url속 캐릭터 id(addList)
-                for (Character before : removeList) { //삭제된 리스트 중에서
-                    if (before.getCharacterImage() != null) { //이미지가 null이 아닌
-                        String beforeCharacterImageId = extracted(before.getCharacterImage()); //이미지 url속 캐릭터 id(removeList)
-                        if(beforeCharacterImageId.equals(characterImageId)) { //만약 id가 같다면
-                            log.info("change characterName {} to {}", before.getCharacterName(), addCharacter.getCharacterName());
-                            addCharacter.changeCharacter(before);
-                        }
-                    }
-                }
-            }
-            member.addCharacter(addCharacter);
-        }
-    }
-
-
-    private static String extracted(String url) {
-        // URL에서 원하는 부분을 추출
-        int startIndex = url.lastIndexOf('/') + 1; // '/' 다음 인덱스부터 시작
-        int endIndex = url.indexOf(".png"); // ".png" 이전까지
-        return url.substring(startIndex, endIndex);
     }
 
     /**
