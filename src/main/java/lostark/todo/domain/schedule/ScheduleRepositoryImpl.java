@@ -66,7 +66,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     public Optional<GetScheduleResponse> getResponse(long scheduleId, String username) {
         GetScheduleResponse response = factory.select(new QGetScheduleResponse(
                         schedule.id, schedule.scheduleCategory, schedule.scheduleRaidCategory,
-                        schedule.raidName, schedule.time, schedule.memo, schedule.repeatWeek,
+                        schedule.raidName, schedule.time, schedule.memo, schedule.dayOfWeek, schedule.repeatWeek,
                         new QScheduleCharacterResponse(
                                 character.id, character.characterName, character.characterClassName,
                                 character.itemLevel, character.characterImage

@@ -6,6 +6,7 @@ import lombok.Data;
 import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.domain.schedule.ScheduleRaidCategory;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class GetScheduleResponse {
     @ApiModelProperty(example = "메모")
     private String memo;
 
+    @ApiModelProperty(example = "요일")
+    private DayOfWeek dayOfWeek;
+
     @ApiModelProperty(example = "주간 반복 여부")
     private boolean repeatWeek;
 
@@ -40,13 +44,14 @@ public class GetScheduleResponse {
 
     @QueryProjection
     public GetScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory,
-                               String raidName, LocalTime time, String memo, boolean repeatWeek, ScheduleCharacterResponse character) {
+                               String raidName, LocalTime time, String memo, DayOfWeek dayOfWeek, boolean repeatWeek, ScheduleCharacterResponse character) {
         this.scheduleId = scheduleId;
         this.scheduleCategory = scheduleCategory;
         this.scheduleRaidCategory = scheduleRaidCategory;
         this.raidName = raidName;
         this.time = time;
         this.memo = memo;
+        this.dayOfWeek = dayOfWeek;
         this.repeatWeek = repeatWeek;
         this.character = character;
     }
