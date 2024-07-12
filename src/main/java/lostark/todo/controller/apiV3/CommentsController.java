@@ -73,37 +73,6 @@ public class CommentsController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // TODO 추후 삭제
-    @ApiOperation(value = "comment 수정")
-    @PatchMapping()
-    public ResponseEntity<?> updateComments(@AuthenticationPrincipal String username,
-                                            @RequestBody CommentRequestDto commentRequestDto,
-                                            @RequestParam(value="page") int page) {
-        Member member = memberService.findMember(username);
-        Comments updateComments = Comments.builder()
-                .id(commentRequestDto.getId())
-                .body(commentRequestDto.getBody())
-                .member(member)
-                .build();
-        commentsService.update(updateComments); //업데이트
-
-        Page<Comments> allComments = commentsService.findAllByParentIdIs0(page-1);
-        int totalPages = allComments.getTotalPages();
-
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-        for (Comments comment : allComments.getContent()) {
-            List<Comments> commentList = commentsService.findAllByParentId(comment.getId());
-            commentResponseDtoList.add(new CommentResponseDto().createResponseDto(comment));
-            if(!commentList.isEmpty()) {
-                for (Comments reply : commentList) {
-                    commentResponseDtoList.add(new CommentResponseDto().createResponseDto(reply));
-                }
-            }
-        }
-
-        return new ResponseEntity<>( new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
-    }
-
     @ApiOperation(value = "comment 삭제")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComments(@AuthenticationPrincipal String username, @PathVariable int commentId) {

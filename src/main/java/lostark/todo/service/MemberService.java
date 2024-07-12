@@ -3,7 +3,6 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.adminDto.DashboardResponse;
-import lostark.todo.controller.dto.characterDto.CharacterCheckDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
@@ -115,32 +114,6 @@ public class MemberService {
     }
 
 
-    /**
-     * 캐릭터 Todo 업데이트
-     */
-    public List<CharacterCheckDto> updateTodo(String username, List<CharacterCheckDto> characterCheckDtoList) {
-        List<Character> characterList = findMember(username).getCharacters();
-
-        List<CharacterCheckDto> resultDtoList = new ArrayList<>();
-        for (Character character : characterList) {
-            for (CharacterCheckDto characterCheckDto : characterCheckDtoList) {
-                if (character.getCharacterName().equals(characterCheckDto.getCharacterName())) {
-                    character.getDayTodo().updateDayContent(characterCheckDto);
-
-                    CharacterCheckDto result = CharacterCheckDto.builder()
-                            .characterName(character.getCharacterName())
-                            .chaosCheck(character.getDayTodo().getChaosCheck())
-                            .guardianCheck(character.getDayTodo().getGuardianCheck())
-                            .build();
-
-                    resultDtoList.add(result);
-                }
-            }
-        }
-        return resultDtoList;
-    }
-
-
     public List<Member> findAll() {
         return memberRepository.findAll();
     }
@@ -164,38 +137,6 @@ public class MemberService {
      */
     public void updateApiKey(Member member, String apiKey) {
         member.setApiKey(apiKey);
-    }
-
-    /**
-     * 회원 중복된 캐릭터 삭제
-     */
-    public void removeDuplicateCharacters(Member member) {
-        boolean duplicate = false;
-        List<Character> characters = member.getCharacters();
-        Set<String> characterNames = new HashSet<>();
-        List<Character> charactersToRemove = new ArrayList<>();
-
-        for (Character character : characters) {
-            String characterName = character.getCharacterName();
-
-            if (characterNames.contains(characterName)) {
-                duplicate = true;
-                charactersToRemove.add(character);
-            } else {
-                characterNames.add(characterName);
-            }
-        }
-
-        for (Character characterToRemove : charactersToRemove) {
-            characters.remove(characterToRemove);
-        }
-
-        if(duplicate) {
-            log.info("중복 존재 - id: {}, username: {}", member.getId(), member.getUsername());
-            log.info("삭제된 캐릭터 : {}", charactersToRemove);
-        } else {
-            throw new IllegalArgumentException("중복된 캐릭터가 없습니다.");
-        }
     }
 
     public boolean existByUsername(String username) {

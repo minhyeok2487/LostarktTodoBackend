@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.auth.ResponseDto;
-import lostark.todo.controller.dto.auth.AuthSignupDto;
 import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
@@ -15,11 +14,8 @@ import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
-import lostark.todo.event.entity.MemberEvent;
-import lostark.todo.event.entity.EventType;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,42 +38,12 @@ public class AuthController {
 
     private final MemberService memberService;
     private final AuthService authService;
-    private final EmailService emailService;
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
     private final LostarkCharacterService lostarkCharacterService;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
     private final TokenProvider tokenProvider;
-    private final ApplicationEventPublisher eventPublisher;
-
-    // TODO 추후 삭제
-    @ApiOperation(value = "1차 회원 가입",
-            notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = ResponseDto.class)
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody @Valid AuthSignupDto authSignupDto) {
-        boolean auth = emailService.isAuth(authSignupDto);
-        if (!auth) {
-            throw new IllegalStateException("이메일 인증이 실패하였습니다.");
-        }
-
-        if (!authSignupDto.getPassword().equals(authSignupDto.getEqualPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
-        // Member 회원가입
-        Member signupMember = memberService.createMember(authSignupDto.getMail(), authSignupDto.getPassword());
-
-        // 회원가입 완료시 Redis에 저장된 인증번호 모두 삭제
-        emailService.deleteAll(authSignupDto.getMail());
-
-        // 이벤트 실행
-        EventType eventType = EventType.signUp;
-        String message = eventType.getMessage() + "/ username : " + authSignupDto.getMail();
-        eventPublisher.publishEvent(new MemberEvent(eventPublisher, signupMember, eventType));
-
-        return new ResponseEntity<>(new ResponseDto(true, message), HttpStatus.CREATED);
-    }
 
     @ApiOperation(value = "1차 회원가입 이후 캐릭터 추가",
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장")
