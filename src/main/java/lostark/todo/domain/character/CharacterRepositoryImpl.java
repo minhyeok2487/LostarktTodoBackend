@@ -2,12 +2,14 @@ package lostark.todo.domain.character;
 
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.adminDto.QDashboardResponse;
+import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.member.Member;
 
 import java.util.List;
@@ -70,6 +72,77 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .orderBy(dateTemplate.desc())
                 .limit(limit)
                 .fetch();
+    }
+
+    @Override
+    public long updateDayContentGauge() {
+        return factory.update(character)
+                .set(character.dayTodo.eponaGauge,
+                        new CaseBuilder()
+                                .when(character.dayTodo.eponaGauge.add(
+                                        character.dayTodo.eponaCheck2.multiply(10).negate().add(30)).gt(100))
+                                .then(100)
+                                .otherwise(character.dayTodo.eponaGauge.add(
+                                        character.dayTodo.eponaCheck2.multiply(10).negate().add(30))))
+                .set(character.dayTodo.chaosGauge,
+                        new CaseBuilder()
+                                .when(character.dayTodo.chaosGauge.add(
+                                        character.dayTodo.chaosCheck.multiply(10).negate().add(20)).gt(200))
+                                .then(200)
+                                .otherwise(character.dayTodo.chaosGauge.add(
+                                        character.dayTodo.chaosCheck.multiply(10).negate().add(20))))
+                .set(character.dayTodo.guardianGauge,
+                        new CaseBuilder()
+                                .when(character.dayTodo.guardianGauge.add(
+                                        character.dayTodo.guardianCheck.multiply(10).negate().add(10)).gt(100))
+                                .then(100)
+                                .otherwise(character.dayTodo.guardianGauge.add(
+                                        character.dayTodo.guardianCheck.multiply(10).negate().add(10))))
+                .execute();
+    }
+
+    @Override
+    public long saveBeforeGauge() {
+        return factory.update(character)
+                .set(character.dayTodo.beforeEponaGauge, character.dayTodo.eponaGauge)
+                .set(character.dayTodo.beforeChaosGauge, character.dayTodo.chaosGauge)
+                .set(character.dayTodo.beforeGuardianGauge, character.dayTodo.guardianGauge)
+                .where(character.dayTodo.beforeEponaGauge.ne(character.dayTodo.eponaGauge)
+                        .or(character.dayTodo.beforeChaosGauge.ne(character.dayTodo.chaosGauge))
+                        .or(character.dayTodo.beforeGuardianGauge.ne(character.dayTodo.guardianGauge)))
+                .execute();
+    }
+
+    @Override
+    public long updateDayContentCheck() {
+        return factory.update(character)
+                .set(character.dayTodo.eponaCheck2, 0)
+                .set(character.dayTodo.chaosCheck, 0)
+                .set(character.dayTodo.guardianCheck, 0)
+                .execute();
+    }
+
+    @Override
+    public void updateDayContentPriceChaos(DayContent dayContent, Double price) {
+        factory.update(character)
+                .set(character.dayTodo.chaosGold,
+                        new CaseBuilder()
+                                .when(character.dayTodo.chaosGauge.goe(40)).then(price * 4.0)
+                                .when(character.dayTodo.chaosGauge.goe(20)).then(price * 3.0)
+                                .otherwise(price * 2.0))
+                .where(character.dayTodo.chaos.eq(dayContent))
+                .execute();
+    }
+
+    @Override
+    public void updateDayContentPriceGuardian(DayContent dayContent, Double price) {
+        factory.update(character)
+                .set(character.dayTodo.guardianGold,
+                        new CaseBuilder()
+                                .when(character.dayTodo.guardianGauge.goe(20)).then(price * 2.0)
+                                .otherwise(price))
+                .where(character.dayTodo.guardian.eq(dayContent))
+                .execute();
     }
 
     private BooleanExpression eqMember(Member member) {

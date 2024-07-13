@@ -147,9 +147,9 @@ public class Character extends BaseTimeEntity {
 
     private Market getMarketItem(double itemLevel, Map<String, Market> contentResource,
                                  String level1Item, String level2Item, String level3Item, String level4Item) {
-        if (itemLevel >= 1415 && itemLevel < 1540) {
+        if (itemLevel >= 1415 && itemLevel < 1490) {
             return contentResource.get(level1Item);
-        } else if (itemLevel >= 1540 && itemLevel < 1580) {
+        } else if (itemLevel >= 1490 && itemLevel < 1580) {
             return contentResource.get(level2Item);
         } else if (itemLevel >= 1580 && itemLevel < 1640) {
             return contentResource.get(level3Item);
