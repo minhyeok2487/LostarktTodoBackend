@@ -148,8 +148,16 @@ public class DayTodo {
 
     public void updateCheckChaosAll() {
         if (chaosCheck != 2) {
-            while (chaosCheck < 2) {
-                updateCheckChaos();
+            if (chaos.getLevel() < 1640) {
+                while (chaosCheck < 2) {
+                    updateCheckChaos();
+                }
+            } else {
+                // 쿠르잔 전선은 휴게 계산 따로
+                chaosCheck = 2;
+                if (chaosGauge >= 40) {
+                    chaosGauge -= 40;
+                }
             }
         } else {
             resetChaos();
