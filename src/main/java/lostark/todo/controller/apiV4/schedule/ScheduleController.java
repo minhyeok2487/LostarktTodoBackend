@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -42,10 +44,13 @@ public class ScheduleController {
 
     @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable long scheduleId) {
-        GetScheduleResponse getScheduleResponse = scheduleService.getResponse(scheduleId, username);
-        if(getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
-            getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(scheduleId));
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username,
+                                 @PathVariable long scheduleId,
+                                 @RequestParam(required = false) Long leaderId) {
+        GetScheduleResponse getScheduleResponse = scheduleService.getResponseIsReader(scheduleId, username, leaderId);
+        if (getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
+            Long idToUse = Optional.ofNullable(leaderId).orElse(scheduleId);
+            getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(idToUse));
         }
         return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
     }

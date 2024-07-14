@@ -61,12 +61,11 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
         );
     }
 
-
     @Override
-    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username) {
+    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username, Long leaderId) {
         GetScheduleResponse response = factory.select(new QGetScheduleResponse(
                         schedule.id, schedule.scheduleCategory, schedule.scheduleRaidCategory,
-                        schedule.raidName, schedule.time, schedule.memo, schedule.dayOfWeek, schedule.repeatWeek,
+                        schedule.raidName, schedule.time, schedule.memo, schedule.dayOfWeek, schedule.repeatWeek, schedule.leader,
                         new QScheduleCharacterResponse(
                                 character.id, character.characterName, character.characterClassName,
                                 character.itemLevel, character.characterImage
@@ -76,8 +75,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
                 .leftJoin(member).on(character.member.eq(member))
                 .where(
-                        eqId(scheduleId),
-                        eqUsername(username)
+                        isLeaderOrNot(username, scheduleId, leaderId)
                 ).fetchOne();
 
         return Optional.ofNullable(response);
@@ -124,6 +122,14 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     private BooleanExpression eqId(long scheduleId) {
         return schedule.id.eq(scheduleId);
+    }
+
+    private BooleanExpression isLeaderOrNot(String username, long scheduleId, Long leaderScheduleId) {
+        if(leaderScheduleId == null) {
+            return eqId(scheduleId).and(eqUsername(username));
+        } else {
+            return eqId(leaderScheduleId);
+        }
     }
 
     private BooleanExpression eqLeaderScheduleId(long leaderScheduleId) {

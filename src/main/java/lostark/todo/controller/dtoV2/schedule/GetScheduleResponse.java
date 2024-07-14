@@ -36,6 +36,9 @@ public class GetScheduleResponse {
     @ApiModelProperty(example = "주간 반복 여부")
     private boolean repeatWeek;
 
+    @ApiModelProperty(example = "리더")
+    private boolean isLeader;
+
     @ApiModelProperty(example = "등록된 캐릭터")
     private ScheduleCharacterResponse character;
 
@@ -44,7 +47,7 @@ public class GetScheduleResponse {
 
     @QueryProjection
     public GetScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory,
-                               String raidName, LocalTime time, String memo, DayOfWeek dayOfWeek, boolean repeatWeek, ScheduleCharacterResponse character) {
+                               String raidName, LocalTime time, String memo, DayOfWeek dayOfWeek, boolean repeatWeek, boolean isLeader, ScheduleCharacterResponse character) {
         this.scheduleId = scheduleId;
         this.scheduleCategory = scheduleCategory;
         this.scheduleRaidCategory = scheduleRaidCategory;
@@ -53,6 +56,7 @@ public class GetScheduleResponse {
         this.memo = memo;
         this.dayOfWeek = dayOfWeek;
         this.repeatWeek = repeatWeek;
+        this.isLeader = isLeader;
         this.character = character;
     }
 }
