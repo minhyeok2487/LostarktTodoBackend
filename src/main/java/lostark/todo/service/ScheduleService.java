@@ -128,9 +128,12 @@ public class ScheduleService {
 
     private void removeFriendsFromSchedule(List<Schedule> scheduleList, List<Long> removeFriendCharacterIdList) {
         if (removeFriendCharacterIdList != null && !removeFriendCharacterIdList.isEmpty()) {
-            scheduleList.removeIf(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()));
+            scheduleList.stream()
+                    .filter(schedule -> removeFriendCharacterIdList.contains(schedule.getCharacterId()))
+                    .forEach(scheduleRepository::delete);
         }
     }
+
 
     private void addFriendsToSchedule(Schedule main, List<Long> addFriendCharacterIdList) {
         if (addFriendCharacterIdList != null && !addFriendCharacterIdList.isEmpty()) {
