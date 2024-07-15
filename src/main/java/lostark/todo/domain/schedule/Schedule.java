@@ -75,6 +75,7 @@ public class Schedule extends BaseTimeEntity {
                 .scheduleCategory(main.getScheduleCategory())
                 .raidName(main.getRaidName())
                 .raidLevel(main.getRaidLevel())
+                .dayOfWeek(main.getDayOfWeek())
                 .time(main.getTime())
                 .memo(main.getMemo())
                 .repeatWeek(main.isRepeatWeek())
