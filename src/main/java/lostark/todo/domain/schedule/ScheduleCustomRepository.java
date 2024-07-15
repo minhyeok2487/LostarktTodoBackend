@@ -11,7 +11,7 @@ public interface ScheduleCustomRepository {
 
     List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId);
 
-    Optional<GetScheduleResponse> getResponse(long scheduleId, String username, Long leaderId);
+    Optional<GetScheduleResponse> getResponse(long scheduleId, String username, Long leaderScheduleId);
 
     Optional<Schedule> get(long scheduleId, String username);
 

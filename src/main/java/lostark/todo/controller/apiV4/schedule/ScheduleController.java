@@ -46,10 +46,10 @@ public class ScheduleController {
     @GetMapping("/{scheduleId}")
     public ResponseEntity<?> get(@AuthenticationPrincipal String username,
                                  @PathVariable long scheduleId,
-                                 @RequestParam(required = false) Long leaderId) {
-        GetScheduleResponse getScheduleResponse = scheduleService.getResponseIsReader(scheduleId, username, leaderId);
+                                 @RequestParam(required = false) Long leaderScheduleId) {
+        GetScheduleResponse getScheduleResponse = scheduleService.getResponseIsReader(scheduleId, username, leaderScheduleId);
         if (getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
-            Long idToUse = Optional.ofNullable(leaderId).orElse(scheduleId);
+            Long idToUse = Optional.ofNullable(leaderScheduleId).orElse(scheduleId);
             getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(idToUse));
         }
         return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);

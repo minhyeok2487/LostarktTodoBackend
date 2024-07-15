@@ -78,8 +78,8 @@ public class ScheduleService {
 
 
     @Transactional(readOnly = true)
-    public GetScheduleResponse getResponseIsReader(long scheduleId, String username, Long leaderId) {
-        return scheduleRepository.getResponse(scheduleId, username, leaderId).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
+    public GetScheduleResponse getResponseIsReader(long scheduleId, String username, Long leaderScheduleId) {
+        return scheduleRepository.getResponse(scheduleId, username, leaderScheduleId).orElseThrow(() -> new IllegalArgumentException("없는 일정 입니다."));
     }
 
     @Transactional(readOnly = true)

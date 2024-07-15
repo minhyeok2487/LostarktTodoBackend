@@ -62,7 +62,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     }
 
     @Override
-    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username, Long leaderId) {
+    public Optional<GetScheduleResponse> getResponse(long scheduleId, String username, Long leaderScheduleId) {
         GetScheduleResponse response = factory.select(new QGetScheduleResponse(
                         schedule.id, schedule.scheduleCategory, schedule.scheduleRaidCategory,
                         schedule.raidName, schedule.time, schedule.memo, schedule.dayOfWeek, schedule.repeatWeek, schedule.leader,
@@ -75,7 +75,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
                 .leftJoin(member).on(character.member.eq(member))
                 .where(
-                        isLeaderOrNot(username, scheduleId, leaderId)
+                        isLeaderOrNot(username, scheduleId, leaderScheduleId)
                 ).fetchOne();
 
         return Optional.ofNullable(response);
