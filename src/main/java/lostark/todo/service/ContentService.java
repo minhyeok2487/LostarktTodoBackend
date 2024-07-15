@@ -71,22 +71,8 @@ public class ContentService {
         return allWeekContent;
     }
 
-    public List<WeekContent> findAllByWeekContentWithItemLevel(double itemLevel) {
-        return contentRepository.findAllByWeekContentWithItemLevel(itemLevel);
-    }
-    public List<WeekContent> findAllByWeekContentWithItemLevelV2(double itemLevel) {
-        return contentRepository.findAllByWeekContentWithItemLevelV2(itemLevel);
-    }
-
-
-
     public List<WeekContent> findAllByCategoryAndWeekCategory(double itemLevel, String weekCategory, WeekContentCategory weekContentCategory) {
         return contentRepository.findAllWeekContent(itemLevel, weekCategory, weekContentCategory);
-    }
-
-    public WeekContent findByWeekContent(String weekCategory, int currentGate) {
-        return contentRepository.findByWeekCategoryAndGate(weekCategory, currentGate)
-                .orElseThrow(() -> new IllegalArgumentException(""));
     }
 
     /**

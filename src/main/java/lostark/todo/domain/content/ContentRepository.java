@@ -14,15 +14,6 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
     @Query("SELECT w FROM WeekContent w")
     List<WeekContent> findAllByWeekContent();
 
-    @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.coolTime <= 2 ORDER BY w.level ASC, w.gate ASC")
-    List<WeekContent> findAllWeekContent(@Param("itemLevel") double itemLevel);
-
-    @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.id BETWEEN 17 AND 70")
-    List<WeekContent> findAllByWeekContentWithItemLevelV2(@Param("itemLevel") double itemLevel);
-
-    @Query("SELECT w FROM WeekContent w WHERE w.level <= :itemLevel AND w.id >= 71")
-    List<WeekContent> findAllByWeekContentWithItemLevel(@Param("itemLevel") double itemLevel);
-
     List<DayContent> findDayContentByCategoryOrderByLevelDesc(@Param("category") Category category);
 
     @Query("SELECT w FROM WeekContent w " +
@@ -32,10 +23,6 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
     List<WeekContent> findAllWeekContent(@Param("itemLevel") double itemLevel,
                                          @Param("weekCategory") String weekCategory,
                                          @Param("weekContentCategory") WeekContentCategory weekContentCategory);
-
-    @Query("SELECT w FROM WeekContent w WHERE w.weekCategory = :weekCategory AND w.gate = :gate")
-    Optional<WeekContent> findByWeekCategoryAndGate(@Param("weekCategory") String weekCategory,
-                                                    @Param("gate") int gate);
 
     Optional<CubeContent> findByName(String name);
 

@@ -7,4 +7,6 @@ import java.util.List;
 public interface ContentCustomRepository {
 
     List<RaidCategoryResponse> getScheduleRaidCategory();
+
+    List<WeekContent> findAllWeekContent(double itemLevel);
 }
