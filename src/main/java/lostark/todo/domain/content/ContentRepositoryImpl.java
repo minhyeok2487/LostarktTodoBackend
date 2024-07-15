@@ -41,7 +41,7 @@ public class ContentRepositoryImpl implements ContentCustomRepository {
         return factory.selectFrom(weekContent)
                 .where(weekContent.level.loe(itemLevel)
                         .and(weekContent.coolTime.loe(2)))
-                .orderBy(weekContent.level.asc(), categoryOrder.asc(), weekContent.gate.asc())
+                .orderBy(weekContent.level.desc(), categoryOrder.asc(), weekContent.gate.asc())
                 .fetch();
     }
 }
