@@ -12,7 +12,6 @@ import lostark.todo.domain.boards.BoardImages;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.boards.BoardsImagesRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,18 +126,6 @@ public class BoardImagesService {
     public void saveByfileNames(List<String> fileNameList, Boards boards) {
         for (BoardImages boardImages : repository.findAllByFileNameIn(fileNameList)) {
             boards.addImages(boardImages);
-        }
-    }
-
-    // 24시간 마다 등록이 안된 게시글 이미지 파일 제거
-    @Scheduled(cron = "0 */12 * * * *") // 매 12시간마다 실행
-    public void deleteNullImage() {
-        List<BoardImages> allByBoardsIsNull = repository.findAllByBoardsIsNull();
-        if (!allByBoardsIsNull.isEmpty()) {
-            for (BoardImages boardImages : allByBoardsIsNull) {
-                deleteImageFromS3(boardImages.getImageUrl());
-                repository.delete(boardImages);
-            }
         }
     }
 
