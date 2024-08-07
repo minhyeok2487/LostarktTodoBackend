@@ -9,6 +9,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.controller.dtoV2.character.UpdateMemoParams;
 import lostark.todo.domain.character.*;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.market.Market;
@@ -46,11 +47,10 @@ public class CharacterService {
     }
 
     @Transactional(readOnly = true)
-    public Character getByIdAndUsername(long characterId, String username) {
+    public Character get(long characterId, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 캐릭터"));
+                () -> new IllegalArgumentException("캐릭터가 존재하지 않습니다. ID: " + characterId + ", 사용자 이름: " + username));
     }
-
 
     // 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
     @Transactional
@@ -317,5 +317,11 @@ public class CharacterService {
     @Transactional
     public void updateCharacter(Character character, CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
         character.updateCharacter(dto, dayContent, contentResource);
+    }
+
+    @Transactional
+    public Character updateMemo(String username, UpdateMemoParams updateMemoParams) {
+        Character character = get(updateMemoParams.getCharacterId(), username);
+        return character.updateMemo(updateMemoParams.getMemo());
     }
 }

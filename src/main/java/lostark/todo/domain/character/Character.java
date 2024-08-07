@@ -10,6 +10,8 @@ import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,9 @@ public class Character extends BaseTimeEntity {
     private double itemLevel; //아이템레벨
 
     private int sortNumber; //정렬용
+
+    @Column(length = 100)
+    private String memo; //캐릭터 별 메모
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -190,4 +195,10 @@ public class Character extends BaseTimeEntity {
         price = Math.round(price * 100.0) / 100.0;
         character.getDayTodo().setGuardianGold(price);
     }
+
+    public Character updateMemo(String memo) {
+        this.memo = StringUtils.hasText(memo) ? memo : null;
+        return this;
+    }
+
 }

@@ -102,6 +102,9 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "주간 숙제 리스트")
     private List<TodoResponseDto> todoList;
 
+    @ApiModelProperty(notes = "캐릭터 메모")
+    private String memo;
+
     public static CharacterResponse toDto(Character character) {
         CharacterResponse characterResponse = CharacterResponse.builder()
                 .characterId(character.getId())

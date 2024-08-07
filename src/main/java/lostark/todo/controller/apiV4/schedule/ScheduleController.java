@@ -30,7 +30,7 @@ public class ScheduleController {
     @PostMapping()
     public ResponseEntity<?> create(@AuthenticationPrincipal String username,
                                     @RequestBody CreateScheduleRequest request) {
-        Character character = characterService.getByIdAndUsername(request.getLeaderCharacterId(), username);
+        Character character = characterService.get(request.getLeaderCharacterId(), username);
         scheduleService.create(character, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
