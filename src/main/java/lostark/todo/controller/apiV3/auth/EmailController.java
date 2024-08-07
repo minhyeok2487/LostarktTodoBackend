@@ -39,7 +39,7 @@ public class EmailController {
     }
 
     @ApiOperation(value = "비밀번호 변경 인증번호 전송")
-    @PostMapping("/reset-password")
+    @PostMapping("/password")
     public ResponseEntity<?> sendResetPasswordMail(@RequestBody @Valid MailRequestDto mailRequestDto) {
         Member member = memberService.get(mailRequestDto.getMail());
         if (!member.getAuthProvider().equals("none")) {
