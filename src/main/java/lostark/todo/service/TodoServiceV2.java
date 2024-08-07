@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -35,11 +34,27 @@ public class TodoServiceV2 {
         return findById(todoDto.getTodoId()).updateMessage(todoDto.getMessage());
     }
 
-    /**
-     * 주간 레이드 추가/삭제(1개씩)
-     */
+    //주간 레이드 추가/삭제(1개씩)
+    @Transactional
     public void updateWeekRaid(Character character, WeekContent weekContent) {
-        TodoV2 todoV2 = TodoV2.builder()
+        TodoV2 existingTodo = findExistingTodo(character, weekContent);
+
+        if (existingTodo == null) {
+            createNewTodo(character, weekContent);
+        } else {
+            deleteTodo(character, existingTodo, weekContent);
+        }
+    }
+
+    private TodoV2 findExistingTodo(Character character, WeekContent weekContent) {
+        return character.getTodoV2List().stream()
+                .filter(todo -> todo.getWeekContent().getId() == weekContent.getId())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void createNewTodo(Character character, WeekContent weekContent) {
+        TodoV2 newTodo = TodoV2.builder()
                 .weekContent(weekContent)
                 .character(character)
                 .isChecked(false)
@@ -48,56 +63,72 @@ public class TodoServiceV2 {
                 .sortNumber(999)
                 .build();
 
-        //weekContent (아브렐슈드, 일리아칸 등)별로 이미 존재 하면 지움
-        Optional<TodoV2> existingTodo = todoV2Repository.findByCharacterAndWeekContent(character, weekContent);
-
-        if (existingTodo.isPresent()) {
-            character.getTodoV2List().remove(existingTodo.get());
-            todoV2Repository.delete(existingTodo.get());
-        } else {
-            boolean categoryAndGate = true;
-            boolean beforeGate = false;
-            if (character.getTodoV2List().isEmpty()) {
-                //첫번째 관문이 아니라면 Exception
-                if (todoV2.getWeekContent().getGate() == 1) {
-                    character.getTodoV2List().add(todoV2);
-                    todoV2Repository.save(todoV2);
-                } else {
-                    throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
-                }
+        if (character.getTodoV2List().isEmpty()) {
+            if (weekContent.getGate() == 1) {
+                character.getTodoV2List().add(newTodo);
+                todoV2Repository.save(newTodo);
             } else {
-                for (TodoV2 exited : character.getTodoV2List()) {
-                    // 같은 weekContent, 같은 gate가 있다면 변경 (노말 <-> 하드)
-                    if (exited.getWeekContent().getWeekCategory().equals(todoV2.getWeekContent().getWeekCategory())
-                            && exited.getWeekContent().getGate() == todoV2.getWeekContent().getGate()) {
-                        exited.updateWeekContent(weekContent);
-                        categoryAndGate = false;
-                        break;
-                    }
-
-                    // 선택시 이전 관문이 선택 되어있어야함
-                    if (todoV2.getWeekContent().getGate() >= 2
-                            && exited.getWeekContent().getGate() == todoV2.getWeekContent().getGate() - 1) {
-                        beforeGate = true;
-                    }
-                    // 첫번째 관문은 이전 관문 상관없이 선택 가능
-                    if (todoV2.getWeekContent().getGate() == 1) {
-                        beforeGate = true;
-                    }
-                }
-
-                // 같은 weekContent, 같은 gate가 있는게 아니고 이전 관문이 있다면 더함
-                if (categoryAndGate && beforeGate) {
-                    character.getTodoV2List().add(todoV2);
-                    todoV2Repository.save(todoV2);
-                }
-                // 이전 관문이 없으면 Exception
-                if (categoryAndGate && !beforeGate) {
-                    throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
-                }
+                throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
             }
+        } else {
+            handleExistingTodo(character, newTodo);
         }
     }
+
+    private void handleExistingTodo(Character character, TodoV2 newTodo) {
+        boolean hasCategoryAndGate = false;
+        boolean hasPreviousGate = false;
+
+        for (TodoV2 existingTodo : character.getTodoV2List()) {
+            if (isSameCategoryAndGate(existingTodo, newTodo)) {
+                // 같은 weekContent, 같은 gate가 있다면 변경 (노말 <-> 하드)
+                existingTodo.updateWeekContent(newTodo.getWeekContent());
+                hasCategoryAndGate = true;
+                break;
+            }
+
+            if (isPreviousGate(existingTodo, newTodo)) {
+                //이전 관문 있는지 확인
+                hasPreviousGate = true;
+            }
+        }
+
+        if (!hasCategoryAndGate && hasPreviousGate) {
+            character.getTodoV2List().add(newTodo);
+            todoV2Repository.save(newTodo);
+        } else if (!hasPreviousGate) {
+            throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
+        }
+    }
+
+    private boolean isSameCategoryAndGate(TodoV2 existingTodo, TodoV2 newTodo) {
+        return existingTodo.getWeekContent().getWeekCategory().equals(newTodo.getWeekContent().getWeekCategory())
+                && existingTodo.getWeekContent().getGate() == newTodo.getWeekContent().getGate();
+    }
+
+    private boolean isPreviousGate(TodoV2 existingTodo, TodoV2 newTodo) {
+        return (existingTodo.getWeekContent().getWeekCategory().equals(newTodo.getWeekContent().getWeekCategory())
+                && newTodo.getWeekContent().getGate() >= 2
+                && existingTodo.getWeekContent().getGate() == newTodo.getWeekContent().getGate() - 1)
+                || newTodo.getWeekContent().getGate() == 1;
+    }
+
+    private void deleteTodo(Character character, TodoV2 existingTodo, WeekContent weekContent) {
+        // 상위 관문이 존재하는지 확인
+        boolean hasHigherGate = character.getTodoV2List().stream()
+                .anyMatch(todo -> todo.getWeekContent().getWeekCategory().equals(weekContent.getWeekCategory()) &&
+                        todo.getWeekContent().getGate() > weekContent.getGate());
+
+        if (hasHigherGate) {
+            throw new IllegalStateException("상위 관문을 먼저 제거하여 주십이오.");
+        }
+
+        // 상위 관문이 존재하지 않으면 해당 TodoV2 삭제
+        character.getTodoV2List().remove(existingTodo);
+        todoV2Repository.delete(existingTodo);
+    }
+
+
 
 
     /**

@@ -1,14 +1,15 @@
 package lostark.todo.domain.friends;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domain.member.QMember;
 
 import java.util.List;
 import java.util.Optional;
+
 import static lostark.todo.domain.character.QCharacter.character;
 import static lostark.todo.domain.content.QDayContent.dayContent;
 import static lostark.todo.domain.friends.QFriends.friends;
@@ -33,11 +34,18 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
 
     @Override
     public Optional<Friends> findByFriendUsername(String friendUsername, String username) {
-        return Optional.ofNullable(factory.select(friends)
-                .from(friends)
-                .leftJoin(member).on(friends.member.eq(member))
-                .where(member.username.eq(friendUsername).and(eqUsername(username)))
-                .fetchOne());
+        QMember friendMember = new QMember("friendMember");
+        return Optional.ofNullable(
+                factory.select(friends)
+                        .from(friends)
+                        .join(friends.member, member).fetchJoin()
+                        .join(member.characters, character).fetchJoin()
+                        .join(character.dayTodo.chaos, dayContent).fetchJoin()
+                        .join(character.dayTodo.guardian, dayContent).fetchJoin()
+                        .join(friendMember).on(friends.fromMember.eq(friendMember.id))
+                        .where(member.username.eq(friendUsername)
+                                .and(friendMember.username.eq(username)))
+                        .fetchOne());
     }
 
     @Override
@@ -66,9 +74,6 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
                 .execute();
     }
 
-    private BooleanExpression eqUsername(String username) {
-        return friends.fromMember.eq(JPAExpressions.select(member.id).from(member).where(member.username.eq(username)));
-    }
 
     private BooleanExpression eqFriendUsername(String friendUsername) {
         return friends.member.username.eq(friendUsername);
