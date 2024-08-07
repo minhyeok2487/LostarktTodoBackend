@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/v4/friends")
-@Api(tags = {"깐부 리스트"})
+@Api(tags = {"깐부 API"})
 public class FriendsControllerV4 {
 
     private final FriendsService friendsService;
