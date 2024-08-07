@@ -5,7 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
-import lostark.todo.controller.dto.auth.AuthSignupDto;
+import lostark.todo.controller.dtoV2.auth.ResetPasswordParams;
+import lostark.todo.controller.dtoV2.auth.SignUpParams;
 import lostark.todo.controller.dtoV2.auth.AuthResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.EmailService;
@@ -24,7 +25,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/v4/auth")
 @Api(tags = {"인증(회원가입, 로그인, 로그아웃) API"})
-public class SignUpController {
+public class AuthControllerV4 {
 
     private final MemberService memberService;
     private final EmailService emailService;
@@ -33,22 +34,36 @@ public class SignUpController {
     @ApiOperation(value = "1차 회원 가입",
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponse.class)
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody @Valid AuthSignupDto authSignupDto) {
+    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpParams params) {
 
-        if (!authSignupDto.getPassword().equals(authSignupDto.getEqualPassword())) {
+        if (!params.getPassword().equals(params.getEqualPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        emailService.isAuthV2(authSignupDto);
+        emailService.isAuth(params.getMail(), params.getNumber());
 
         // Member 회원가입
-        Member signupMember = memberService.createMember(authSignupDto.getMail(), authSignupDto.getPassword());
+        Member signupMember = memberService.createMember(params.getMail(), params.getPassword());
 
         // 회원가입 완료시 auth_mail에 저장된 인증번호 모두 삭제
-        emailService.deleteAll(authSignupDto.getMail());
+        emailService.deleteAll(params.getMail());
 
         String token = tokenProvider.createToken(signupMember);
 
         return new ResponseEntity<>(new AuthResponse().toDto(signupMember, token), HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value = "비밀번호 변경")
+    @PostMapping("/password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid ResetPasswordParams params) {
+
+        emailService.isAuth(params.getMail(), params.getNumber());
+
+        memberService.updatePassword(params.getMail(), params.getNewPassword());
+
+        // 비밀번호 변경 완료시 auth_mail에 저장된 인증번호 모두 삭제
+        emailService.deleteAll(params.getMail());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

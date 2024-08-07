@@ -2,7 +2,6 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.auth.AuthSignupDto;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.domain.authEmail.AuthMail;
 import lostark.todo.domain.authEmail.AuthMailRepository;
@@ -33,14 +32,14 @@ public class EmailService {
         number = (int)(Math.random() * (90000)) + 100000;
     }
 
-    public MimeMessage createMail(String mail){
+    public MimeMessage createSignUpMail(String email){
         createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
             message.setFrom(senderEmail);
-            message.setRecipients(MimeMessage.RecipientType.TO, mail);
-            message.setSubject("이메일 인증");
+            message.setRecipients(MimeMessage.RecipientType.TO, email);
+            message.setSubject("[LOA TODO] 이메일 인증");
             String body = "";
             body += "<h1>LoaTodo에 가입해주셔서 감사합니다.</h3>";
             body += "<h3>" + "인증 번호입니다." + "</h3>";
@@ -53,21 +52,16 @@ public class EmailService {
         return message;
     }
 
-    public int sendMail(String email){
-        MimeMessage message = createMail(email);
+    public int sendSignUpMail(String email){
+        MimeMessage message = createSignUpMail(email);
         javaMailSender.send(message);
         emailRepository.save(new AuthMail(email, number));
         return number;
     }
 
-    public boolean isAuth(AuthSignupDto authSignupDto) {
-        return emailRepository.findAllByMail(authSignupDto.getMail()).stream()
-                .anyMatch(mail -> mail.getNumber() == authSignupDto.getNumber() && mail.isAuth());
-    }
-
-    public void isAuthV2(AuthSignupDto authSignupDto) {
-        boolean auth = emailRepository.findAllByMail(authSignupDto.getMail()).stream()
-                .anyMatch(mail -> mail.getNumber() == authSignupDto.getNumber() && mail.isAuth());
+    public void isAuth(String email, Integer number) {
+        boolean auth = emailRepository.findAllByMail(email).stream()
+                .anyMatch(mail -> mail.getNumber().equals(number) && mail.isAuth());
         if (!auth) {
             throw new IllegalStateException("이메일 인증이 실패하였습니다.");
         }
@@ -86,5 +80,32 @@ public class EmailService {
             return true;
         }
         return false;
+    }
+
+    public MimeMessage createResetPasswordMail(String email) {
+        createNumber();
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        try {
+            message.setFrom(senderEmail);
+            message.setRecipients(MimeMessage.RecipientType.TO, email);
+            message.setSubject("[LOA TODO] 이메일 인증");
+            String body = "";
+            body += "<h1>LoaTodo에 이용해주셔서 감사합니다.</h3>";
+            body += "<h3>" + "인증 번호입니다." + "</h3>";
+            body += "<p>" + "3분내로 입력해주세요." + "</p>";
+            body += "<h4> 인증번호 : " + number + "</h4>";
+            message.setText(body,"UTF-8", "html");
+        } catch (MessagingException e) {
+            log.error(e.toString());
+        }
+        return message;
+    }
+
+
+    public void sendResetPasswordMail(String email) {
+        MimeMessage message = createResetPasswordMail(email);
+        javaMailSender.send(message);
+        emailRepository.save(new AuthMail(email, number));
     }
 }

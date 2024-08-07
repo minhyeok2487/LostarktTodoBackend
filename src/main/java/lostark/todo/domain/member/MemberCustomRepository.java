@@ -7,11 +7,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberCustomRepository {
     Member findMemberAndCharacters(String username);
 
-    Member get(String username);
+    Optional<Member> get(String username);
 
     List<DashboardResponse> searchMemberDashBoard(int limit);
 

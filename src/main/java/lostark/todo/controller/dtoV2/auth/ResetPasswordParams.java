@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.auth;
+package lostark.todo.controller.dtoV2.auth;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthSignupDto {
+public class ResetPasswordParams {
 
     @NotEmpty
     @ApiModelProperty(example = "회원 이메일")
@@ -24,10 +26,8 @@ public class AuthSignupDto {
     private int number;
 
     @NotEmpty
-    @ApiModelProperty(example = "비밀번호")
-    private String password;
-
-    @NotEmpty
-    @ApiModelProperty(example = "비밀번호 확인")
-    private String equalPassword;
+    @Size(min = 8, max = 20)
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "비밀번호는 영문자와 숫자로만 구성되어야 합니다.")
+    @ApiModelProperty(example = "새로운 비밀번호")
+    private String newPassword;
 }

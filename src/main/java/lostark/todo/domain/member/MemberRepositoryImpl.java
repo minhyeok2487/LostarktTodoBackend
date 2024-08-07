@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static lostark.todo.domain.character.QCharacter.character;
 import static lostark.todo.domain.content.QDayContent.dayContent;
@@ -38,8 +39,8 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     }
 
     @Override
-    public Member get(String username) {
-        return factory.selectFrom(member).where(eqUsername(username)).fetchOne();
+    public Optional<Member> get(String username) {
+        return Optional.ofNullable(factory.selectFrom(member).where(eqUsername(username)).fetchOne());
     }
 
     @Override

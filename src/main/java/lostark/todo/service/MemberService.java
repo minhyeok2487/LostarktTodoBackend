@@ -40,7 +40,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Member get(String username) {
-        return memberRepository.get(username);
+        return memberRepository.get(username).orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
     }
 
     // 대표 캐릭터 변경
@@ -155,7 +155,13 @@ public class MemberService {
 
     @Transactional
     public void removeMember(String name) {
-        Member member = memberRepository.get(name);
+        Member member = get(name);
         memberRepository.delete(member);
+    }
+
+    @Transactional
+    public void updatePassword(String mail, String newPassword) {
+        Member member = get(mail);
+        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 }
