@@ -11,7 +11,6 @@ import lostark.todo.domain.todoV2.TodoV2Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -136,41 +135,37 @@ public class TodoServiceV2 {
      */
     public void updateWeekRaidAll(Character character, List<WeekContent> weekContentList) {
         WeekContent weekContent = weekContentList.get(0);
-        List<TodoV2> updatedTodoV2List = new ArrayList<>();
-        List<TodoV2> removedList = new ArrayList<>();
-        boolean check = false;
-        // 하나라도 선택 되어 있으면 삭제
-        for (TodoV2 todoV2 : character.getTodoV2List()) {
-            if (todoV2.getWeekContent().getWeekCategory().equals(weekContent.getWeekCategory())) {
-                removedList.add(todoV2);
-                check = true;
-            }
-        }
+        String weekCategory = weekContent.getWeekCategory();
 
-        if(!removedList.isEmpty()) {
-            for (TodoV2 todoV2 : removedList) {
+        // 삭제할 목록 찾기
+        List<TodoV2> removedList = character.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(weekCategory))
+                .toList();
+
+        // 삭제할 항목 제거
+        if (!removedList.isEmpty()) {
+            removedList.forEach(todoV2 -> {
                 character.getTodoV2List().remove(todoV2);
                 todoV2Repository.delete(todoV2);
-            }
-        }
+            });
+        } else {
+            // 추가할 항목 생성 및 추가
+            List<TodoV2> updatedTodoV2List = weekContentList.stream()
+                    .map(content -> TodoV2.builder()
+                            .weekContent(content)
+                            .character(character)
+                            .isChecked(false)
+                            .gold(content.getGold())
+                            .coolTime(2)
+                            .sortNumber(999)
+                            .build())
+                    .toList();
 
-        // 하나도 없으면 전체 추가
-        if(!check) {
-            for (WeekContent content : weekContentList) {
-                TodoV2 todoV2 = TodoV2.builder()
-                        .weekContent(content)
-                        .character(character)
-                        .isChecked(false)
-                        .gold(content.getGold())
-                        .coolTime(2)
-                        .sortNumber(999)
-                        .build();
-                updatedTodoV2List.add(todoV2);
-                todoV2Repository.save(todoV2);
-            }
             character.getTodoV2List().addAll(updatedTodoV2List);
+            todoV2Repository.saveAll(updatedTodoV2List);
         }
     }
+
 
 
     public void updateWeekRaidCheck(Character character, String weekCategory, int currentGate, int totalGate) {

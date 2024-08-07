@@ -102,27 +102,18 @@ public class FriendsControllerV4 {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 캐릭터 입니다."));
 
-        WeekContent weekContent = (WeekContent) contentService.findById(params.getWeekContentId());
-        todoServiceV2.updateWeekRaid(character, weekContent);
+        List<WeekContent> weekContentList = contentService.findAllByIdWeekContent(params.getWeekContentIdList())
+                .stream()
+                .map(content -> (WeekContent) content)
+                .toList();
+
+        if (weekContentList.size() == 1) {
+            todoServiceV2.updateWeekRaid(character, weekContentList.get(0));
+        } else {
+            todoServiceV2.updateWeekRaidAll(character, weekContentList);
+        }
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-//    @ApiOperation(value = "깐부 캐릭터 주간 레이드 전체 추가/제거 all")
-//    @PostMapping("/raid/{characterId}/{characterName}/all")
-//    public ResponseEntity updateWeekRaidAll(@AuthenticationPrincipal String username,
-//                                            @PathVariable long characterId,
-//                                            @PathVariable("characterName") String characterName,
-//                                            @RequestBody List<WeekContentDto> weekContentDtoList) {
-//        // 로그인한 아이디에 등록된 캐릭터인지 검증
-//        // 다른 아이디면 자동으로 Exception 처리
-//        Character character = characterService.findCharacter(characterId, characterName, username);
-//        List<WeekContent> weekContentList = contentService.findAllByCategoryAndWeekCategory(character.getItemLevel(),
-//                weekContentDtoList.get(0).getWeekCategory(), weekContentDtoList.get(0).getWeekContentCategory());
-//
-//        todoServiceV2.updateWeekRaidAll(character, weekContentList);
-//
-//        return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
-//    }
 }
