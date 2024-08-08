@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class EditProvider {
+public class EditProviderParams {
 
     @NotEmpty
     @ApiModelProperty(example = "패스워드")

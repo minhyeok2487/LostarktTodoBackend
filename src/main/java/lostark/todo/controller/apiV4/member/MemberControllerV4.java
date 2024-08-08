@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dtoV2.member.EditMainCharacterParams;
-import lostark.todo.controller.dtoV2.member.EditProvider;
+import lostark.todo.controller.dtoV2.member.EditProviderParams;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
@@ -56,12 +56,9 @@ public class MemberControllerV4 {
     @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
     @PatchMapping("/provider")
     public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
-                                          @RequestBody EditProvider editProvider) {
-        if (username.equals(TEST_USERNAME)) {
-            throw new IllegalArgumentException("테스트 계정은 변경 할 수 없습니다.");
-        }
-        memberService.editProvider(username, editProvider);
-        return new ResponseEntity<>("ok", HttpStatus.OK);
+                                          @RequestBody EditProviderParams params) {
+        memberService.editProvider(username, params.getPassword());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "등록 캐릭터 전체 삭제")

@@ -10,8 +10,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static lostark.todo.constants.ErrorMessages.EMAIL_ALREADY_EXISTS;
-import static lostark.todo.constants.ErrorMessages.MEMBER_CHARACTER_NOT_FOUND;
+import static lostark.todo.Constant.TEST_USERNAME;
+import static lostark.todo.constants.ErrorMessages.*;
 
 @SpringBootTest
 @Transactional
@@ -86,5 +86,52 @@ class MemberServiceTest {
         Assertions.assertThat(thrown)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(MEMBER_CHARACTER_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("소셜 회원 -> 일반 회원 전환 성공")
+    void editProvider_Success() {
+        // given
+        String username = "repeat2487@gmail.com";
+        String newPassword = "1234";
+
+        // when
+        memberService.editProvider(username, newPassword);
+
+        // then
+        Member updatedMember = memberRepository.get(username).orElseThrow();
+        Assertions.assertThat(updatedMember.getAuthProvider()).isEqualTo("none");
+        Assertions.assertThat(updatedMember.getPassword()).isNotEqualTo(newPassword);
+    }
+
+    @Test
+    @DisplayName("소셜 회원 -> 일반 회원 전환 실패 - 테스트 회원")
+    void editProvider_Fail_TestMember() {
+        // given
+        String newPassword = "1234";
+
+        // when
+        Throwable thrown = Assertions.catchThrowable(() -> memberService.editProvider(TEST_USERNAME, newPassword));
+
+        // then
+        Assertions.assertThat(thrown)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(TEST_MEMBER_NOT_ACCESS);
+    }
+
+    @Test
+    @DisplayName("소셜 회원 -> 일반 회원 전환 실패 - 소셜 회원 아님")
+    void editProvider_Fail_Not_SocialMember() {
+        // given
+        String username = "repeater2487@naver.com";
+        String newPassword = "1234";
+
+        // when
+        Throwable thrown = Assertions.catchThrowable(() -> memberService.editProvider(username, newPassword));
+
+        // then
+        Assertions.assertThat(thrown)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(MEMBER_NOT_SOCIAL);
     }
 }

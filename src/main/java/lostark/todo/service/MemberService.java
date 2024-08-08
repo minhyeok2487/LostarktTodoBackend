@@ -8,7 +8,6 @@ import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
-import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static lostark.todo.Constant.TEST_USERNAME;
 import static lostark.todo.constants.ErrorMessages.*;
 
 @Service
@@ -75,15 +75,20 @@ public class MemberService {
 
     // 유저 전환(소셜 로그인 -> 일반 로그인)
     @Transactional
-    public void editProvider(String username, EditProvider editProvider) {
-        Member member = get(username);
-        if (member.getAuthProvider().equals("none")) {
-            throw new IllegalArgumentException("소셜 로그인으로 가입된 회원이 아닙니다.");
+    public void editProvider(String username, String newPassword) {
+        if (username.equals(TEST_USERNAME)) {
+            throw new IllegalArgumentException(TEST_MEMBER_NOT_ACCESS);
         }
-        member.changeAuthToNone(passwordEncoder.encode(editProvider.getPassword()));
+
+        Member member = get(username);
+
+        if (member.getAuthProvider().equals("none")) {
+            throw new IllegalArgumentException(MEMBER_NOT_SOCIAL);
+        }
+
+        member.changeAuthToNone(passwordEncoder.encode(newPassword));
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
 
     public Member login(MemberLoginDto memberloginDto) {
         String username = memberloginDto.getUsername();
