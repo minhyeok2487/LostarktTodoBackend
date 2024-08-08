@@ -132,6 +132,7 @@ public class CharacterResponse {
                 .cubeTicket(character.getWeekTodo().getCubeTicket())
                 .settings(character.getSettings())
                 .weekDayTodoGold(character.getDayTodo().getWeekTotalGold())
+                .memo(character.getMemo())
                 .build();
 
         List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
