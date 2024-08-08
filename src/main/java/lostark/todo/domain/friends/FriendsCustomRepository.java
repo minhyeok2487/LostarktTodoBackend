@@ -5,6 +5,7 @@ import lostark.todo.domain.member.Member;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface FriendsCustomRepository {
@@ -17,4 +18,6 @@ public interface FriendsCustomRepository {
     List<Friends> getFriendList(long memberId);
 
     long deleteByMemberFriend(long id, long fromMember);
+
+    void updateSort(Map<Long, Integer> idOrderingMap);
 }

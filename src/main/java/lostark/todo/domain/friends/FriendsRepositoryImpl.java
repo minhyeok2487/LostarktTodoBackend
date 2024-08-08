@@ -7,7 +7,9 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.QMember;
 
+import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static lostark.todo.domain.character.QCharacter.character;
@@ -19,6 +21,7 @@ import static lostark.todo.domain.member.QMember.member;
 public class FriendsRepositoryImpl implements FriendsCustomRepository {
 
     private final JPAQueryFactory factory;
+    private final EntityManager em;
 
     @Override
     public Character findFriendCharacter(String friendUsername, long characterId) {
@@ -72,6 +75,28 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
         return factory.delete(friends)
                 .where(friends.member.id.eq(id).and(friends.fromMember.eq(fromMember)))
                 .execute();
+    }
+
+    @Override
+    public void updateSort(Map<Long, Integer> idOrderingMap) {
+        StringBuilder caseStatement = new StringBuilder();
+        for (Map.Entry<Long, Integer> entry : idOrderingMap.entrySet()) {
+            caseStatement.append("WHEN ").append(entry.getKey()).append(" THEN ").append(entry.getValue()).append(" ");
+        }
+
+        // Construct the full query
+        String query = "UPDATE Friends " +
+                "SET ordering = CASE id " +
+                caseStatement +
+                "END " +
+                "WHERE id IN :idList";
+
+        // Execute the query
+        em.createQuery(query)
+                .setParameter("idList", idOrderingMap.keySet())
+                .executeUpdate();
+        em.flush();
+        em.close();
     }
 
 

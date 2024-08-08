@@ -30,6 +30,8 @@ public class Friends extends BaseTimeEntity {
 
     private boolean areWeFriend;
 
+    private int ordering;
+
     @Embedded
     private FriendSettings friendSettings;
 

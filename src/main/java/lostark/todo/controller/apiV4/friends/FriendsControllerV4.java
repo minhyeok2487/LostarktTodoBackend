@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.controller.dtoV2.firend.UpdateFriendWeekRaidParams;
+import lostark.todo.controller.dtoV2.firend.UpdateSortParams;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.friends.Friends;
@@ -49,6 +50,16 @@ public class FriendsControllerV4 {
     public ResponseEntity<?> delete(@AuthenticationPrincipal String username, @PathVariable long friendId) {
         Member member = memberService.get(username);
         friendsService.deleteById(member, friendId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 순서 변경")
+    @PutMapping("/sort")
+    public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,
+                                        @RequestBody UpdateSortParams updateSortParams) {
+        Member member = memberService.get(username);
+        friendsService.updateSort(member, updateSortParams.getFriendIdList());
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

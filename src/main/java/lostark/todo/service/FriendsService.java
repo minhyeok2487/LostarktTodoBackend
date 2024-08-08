@@ -11,6 +11,7 @@ import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
 import lostark.todo.domain.member.Member;
+import lostark.todo.utils.GlobalMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,12 +40,14 @@ public class FriendsService {
                 .fromMember(fromMember.getId())
                 .areWeFriend(true)
                 .friendSettings(new FriendSettings())
+                .ordering(0)
                 .build();
         Friends fromFriends = Friends.builder()
                 .member(fromMember)
                 .fromMember(toMember.getId())
                 .areWeFriend(false)
                 .friendSettings(new FriendSettings())
+                .ordering(0)
                 .build();
         friendsRepository.save(toFriends);
         friendsRepository.save(fromFriends);
@@ -152,6 +155,7 @@ public class FriendsService {
                             .friendUsername(fromFriend.getMember().getUsername())
                             .areWeFriend(areWeFriend)
                             .nickName(getMainCharacterName(fromFriend.getMember()))
+                            .ordering(friends.getOrdering())
                             .characterList(characterResponseList)
                             .toFriendSettings(friends.getFriendSettings())
                             .fromFriendSettings(fromFriend.getFriendSettings())
@@ -215,7 +219,7 @@ public class FriendsService {
                 }
             }
         }
-        return returnDtoList;
+        return returnDtoList.stream().sorted(Comparator.comparingInt(FriendsResponse::getOrdering)).toList();
     }
 
     public void updateFriendsRequest(Member toMember, Member fromMember, String category) {
@@ -284,5 +288,17 @@ public class FriendsService {
                 .orElseThrow(() -> new IllegalArgumentException("없는 깐부 입니다."));
         friendsRepository.deleteByMemberFriend(friends.getMember().getId(), friends.getFromMember());
         friendsRepository.deleteByMemberFriend(friends.getFromMember(), friends.getMember().getId());
+    }
+
+    @Transactional
+    public void updateSort(Member member, List<Long> friendIdList) {
+        GlobalMethod.compareLists(member.getFriends().stream().map(Friends::getId).toList(),
+                friendIdList, "깐부 리스트가 일치하지 않습니다.");
+        Map<Long, Integer> idOrderingMap = new HashMap<>();
+        int start = 1;
+        for (Long param : friendIdList) {
+            idOrderingMap.put(param, start++);
+        }
+        friendsRepository.updateSort(idOrderingMap);
     }
 }

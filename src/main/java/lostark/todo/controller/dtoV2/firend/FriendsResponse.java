@@ -23,6 +23,8 @@ public class FriendsResponse {
 
     private String nickName;
 
+    private int ordering;
+
     private List<CharacterResponse> characterList;
 
     private FriendSettings toFriendSettings;
