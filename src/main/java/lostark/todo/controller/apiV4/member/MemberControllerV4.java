@@ -64,7 +64,7 @@ public class MemberControllerV4 {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
-    @ApiOperation(value = "등록 캐릭터 삭제")
+    @ApiOperation(value = "등록 캐릭터 전체 삭제")
     @DeleteMapping("/characters")
     public ResponseEntity<?> deleteCharacters(@AuthenticationPrincipal String username) {
         if (username.equals(TEST_USERNAME)) {

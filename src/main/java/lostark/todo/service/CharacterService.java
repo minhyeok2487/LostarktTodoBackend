@@ -324,4 +324,10 @@ public class CharacterService {
         Character character = get(updateMemoParams.getCharacterId(), username);
         return character.updateMemo(updateMemoParams.getMemo());
     }
+
+    @Transactional
+    public void delete(Long characterId, String username) {
+        Character character = get(characterId, username);
+        characterRepository.delete(character);
+    }
 }

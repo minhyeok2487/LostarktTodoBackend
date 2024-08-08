@@ -10,6 +10,7 @@ import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoParams;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.CharacterService;
+import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,5 +48,13 @@ public class CharacterControllerV4 {
     public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username, @RequestBody @Valid UpdateMemoParams updateMemoParams) {
         Character updateCharacter = characterService.updateMemo(username, updateMemoParams);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "등록 캐릭터 단일 삭제")
+    @DeleteMapping("/{characterId}")
+    public ResponseEntity<?> deleteCharacter(@AuthenticationPrincipal String username, @PathVariable Long characterId) {
+        characterService.delete(characterId, username);
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 }
