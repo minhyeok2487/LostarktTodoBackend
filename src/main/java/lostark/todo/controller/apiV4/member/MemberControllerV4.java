@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
-import lostark.todo.controller.dtoV2.member.EditMainCharacter;
+import lostark.todo.controller.dtoV2.member.EditMainCharacterParams;
 import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
@@ -37,7 +37,7 @@ public class MemberControllerV4 {
             response = MemberResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMemberAndCharacters(username);
+        Member member = memberService.get(username);
         MemberResponse memberResponse = new MemberResponse(member);
         if (memberResponse.getUsername().equals(TEST_USERNAME)) {
             memberResponse.setUsername(null);
@@ -48,9 +48,9 @@ public class MemberControllerV4 {
     @ApiOperation(value = "대표 캐릭터 변경 API")
     @PatchMapping("/main-character")
     public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
-                                               @RequestBody EditMainCharacter editMainCharacter) {
-        memberService.editMainCharacter(username, editMainCharacter);
-        return new ResponseEntity<>("ok", HttpStatus.OK);
+                                               @RequestBody EditMainCharacterParams params) {
+        memberService.editMainCharacter(username, params.getMainCharacter());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
@@ -70,7 +70,7 @@ public class MemberControllerV4 {
         if (username.equals(TEST_USERNAME)) {
             throw new IllegalArgumentException("테스트 계정은 삭제할 수 없습니다.");
         }
-        Member member = memberService.findMemberAndCharacters(username);
+        Member member = memberService.get(username);
 
         if (member.getCharacters().isEmpty()) {
             throw new IllegalStateException("등록된 캐릭터가 없습니다.");

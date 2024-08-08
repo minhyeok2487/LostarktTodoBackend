@@ -65,6 +65,11 @@ public class Member extends BaseTimeEntity {
     private List<Notification> notifications;
 
 
+    // 대표캐릭터 변경
+    public void editMainCharacter(String mainCharacter) {
+        this.mainCharacter = mainCharacter;
+    }
+
     // user 엔티티에 character 리스트 저장
     public Character addCharacter(Character character) {
         characters.add(character);

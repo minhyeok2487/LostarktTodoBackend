@@ -28,19 +28,16 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Member findMemberAndCharacters(String username) {
-        return factory.select(member)
-                .from(member)
-                .leftJoin(member.characters, character).fetchJoin()
-                .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
-                .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
-                .where(eqUsername(username))
-                .fetchOne();
-    }
-
-    @Override
     public Optional<Member> get(String username) {
-        return Optional.ofNullable(factory.selectFrom(member).where(eqUsername(username)).fetchOne());
+        return Optional.ofNullable(
+                factory.select(member)
+                        .from(member)
+                        .leftJoin(member.characters, character).fetchJoin()
+                        .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
+                        .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                        .where(eqUsername(username))
+                        .fetchOne()
+        );
     }
 
     @Override

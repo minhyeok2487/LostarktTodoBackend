@@ -8,7 +8,6 @@ import lostark.todo.controller.dto.memberDto.MemberLoginDto;
 import lostark.todo.controller.dto.memberDto.MemberRequestDto;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
-import lostark.todo.controller.dtoV2.member.EditMainCharacter;
 import lostark.todo.controller.dtoV2.member.EditProvider;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.character.Character;
@@ -16,13 +15,14 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static lostark.todo.constants.ErrorMessages.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,29 +31,52 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
-    @Transactional(readOnly = true)
-    public Member findMemberAndCharacters(String username) {
-        return memberRepository.findMemberAndCharacters(username);
-    }
-
+    // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
     public Member get(String username) {
-        return memberRepository.get(username).orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+        return memberRepository.get(username).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
     }
 
-    // 대표 캐릭터 변경
+    // 1차 회원가입 - Test Code 작성완료
     @Transactional
-    public void editMainCharacter(String username, EditMainCharacter editMainCharacter) {
-        Member member = findMemberAndCharacters(username);
-        member.setMainCharacter(editMainCharacter.getMainCharacter());
+    public Member createMember(String mail, String password) {
+        if (memberRepository.existsByUsername(mail)) {
+            throw new IllegalArgumentException(EMAIL_ALREADY_EXISTS);
+        }
+
+        Member member = Member.builder()
+                .username(mail)
+                .password(passwordEncoder.encode(password))
+                .characters(new ArrayList<>())
+                .authProvider("none")
+                .role(Role.USER)
+                .build();
+
+        return memberRepository.save(member);
     }
+
+    // 대표 캐릭터 변경 - Test Code 작성완료
+    @Transactional
+    public void editMainCharacter(String username, String mainCharacter) {
+        Member member = get(username);
+        boolean characterExists = member.getCharacters().stream()
+                .map(Character::getCharacterName)
+                .anyMatch(characterName -> characterName.equals(mainCharacter));
+
+        if (characterExists) {
+            member.editMainCharacter(mainCharacter);
+        } else {
+            throw new IllegalArgumentException(MEMBER_CHARACTER_NOT_FOUND);
+        }
+    }
+
 
     // 유저 전환(소셜 로그인 -> 일반 로그인)
     @Transactional
     public void editProvider(String username, EditProvider editProvider) {
-        Member member = findMemberAndCharacters(username);
+        Member member = get(username);
         if (member.getAuthProvider().equals("none")) {
             throw new IllegalArgumentException("소셜 로그인으로 가입된 회원이 아닙니다.");
         }
@@ -84,30 +107,13 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
     }
-    // 1차 회원가입
-
-    public Member createMember(String mail, String password) {
-        if (memberRepository.existsByUsername(mail)) {
-            throw new IllegalArgumentException(mail + " 이미 존재하는 이메일 입니다.");
-        }
-
-        Member member = Member.builder()
-                .username(mail)
-                .password(passwordEncoder.encode(password))
-                .characters(new ArrayList<>())
-                .authProvider("none")
-                .role(Role.USER)
-                .build();
-
-        return memberRepository.save(member);
-    }
 
     /**
      * 회원가입 캐릭터 추가
      */
     @Transactional
     public void createCharacter(String username, MemberRequestDto dto, List<Character> characterList) {
-        Member member = findMemberAndCharacters(username);
+        Member member = get(username);
         characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
         member.setApiKey(dto.getApiKey());
         member.setMainCharacter(dto.getCharacterName());
@@ -123,10 +129,10 @@ public class MemberService {
         Member member = findMember(username);
         List<Character> beforeCharacterList = member.getCharacters();
         beforeCharacterList.stream().peek(
-                character -> characterSortDtoList.stream()
-                        .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
-                        .findFirst()
-                        .ifPresent(characterSortDto -> character.setSortNumber(characterSortDto.getSortNumber())))
+                        character -> characterSortDtoList.stream()
+                                .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
+                                .findFirst()
+                                .ifPresent(characterSortDto -> character.setSortNumber(characterSortDto.getSortNumber())))
                 .collect(Collectors.toList());
 
         return member;

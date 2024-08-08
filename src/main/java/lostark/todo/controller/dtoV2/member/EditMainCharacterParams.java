@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class EditMainCharacter {
+public class EditMainCharacterParams {
 
     @NotEmpty
     @ApiModelProperty(example = "변경할 캐릭터 이름")

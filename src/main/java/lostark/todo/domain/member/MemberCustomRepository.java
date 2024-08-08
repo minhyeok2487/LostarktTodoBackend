@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberCustomRepository {
-    Member findMemberAndCharacters(String username);
 
     Optional<Member> get(String username);
 
