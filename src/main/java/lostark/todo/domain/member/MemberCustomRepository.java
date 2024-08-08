@@ -13,6 +13,8 @@ public interface MemberCustomRepository {
 
     Optional<Member> get(String username);
 
+    Optional<Member> get(Long id);
+
     List<DashboardResponse> searchMemberDashBoard(int limit);
 
     PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest);

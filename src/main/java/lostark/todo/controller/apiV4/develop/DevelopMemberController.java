@@ -28,7 +28,7 @@ public class DevelopMemberController {
     @DeleteMapping("/{name}")
     public ResponseEntity<?> get(@AuthenticationPrincipal String username, @PathVariable String name) {
         if (name.equals(DEVELOP_USERNAME)) {
-            memberService.removeMember(name);
+            memberService.deleteMember(name);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         throw new IllegalArgumentException("삭제가 불가능한 회원 이메일 입니다.");

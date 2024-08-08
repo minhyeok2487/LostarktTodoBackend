@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ResetPasswordParams {
+public class ResetPasswordRequest {
 
     @NotEmpty
     @ApiModelProperty(example = "회원 이메일")

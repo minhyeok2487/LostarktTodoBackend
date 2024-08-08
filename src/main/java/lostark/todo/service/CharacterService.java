@@ -9,7 +9,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
-import lostark.todo.controller.dtoV2.character.UpdateMemoParams;
+import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.*;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.market.Market;
@@ -320,9 +320,9 @@ public class CharacterService {
     }
 
     @Transactional
-    public Character updateMemo(String username, UpdateMemoParams updateMemoParams) {
-        Character character = get(updateMemoParams.getCharacterId(), username);
-        return character.updateMemo(updateMemoParams.getMemo());
+    public Character updateMemo(String username, UpdateMemoRequest updateMemoRequest) {
+        Character character = get(updateMemoRequest.getCharacterId(), username);
+        return character.updateMemo(updateMemoRequest.getMemo());
     }
 
     @Transactional

@@ -5,8 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
-import lostark.todo.controller.dtoV2.auth.ResetPasswordParams;
-import lostark.todo.controller.dtoV2.auth.SignUpParams;
+import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
+import lostark.todo.controller.dtoV2.auth.SignUpRequest;
 import lostark.todo.controller.dtoV2.auth.AuthResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.EmailService;
@@ -34,19 +34,19 @@ public class AuthControllerV4 {
     @ApiOperation(value = "1차 회원 가입",
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponse.class)
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpParams params) {
+    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request) {
 
-        if (!params.getPassword().equals(params.getEqualPassword())) {
+        if (!request.getPassword().equals(request.getEqualPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        emailService.isAuth(params.getMail(), params.getNumber());
+        emailService.isAuth(request.getMail(), request.getNumber());
 
         // Member 회원가입
-        Member signupMember = memberService.createMember(params.getMail(), params.getPassword());
+        Member signupMember = memberService.createMember(request.getMail(), request.getPassword());
 
         // 회원가입 완료시 auth_mail에 저장된 인증번호 모두 삭제
-        emailService.deleteAll(params.getMail());
+        emailService.deleteAll(request.getMail());
 
         String token = tokenProvider.createToken(signupMember);
 
@@ -55,14 +55,14 @@ public class AuthControllerV4 {
 
     @ApiOperation(value = "비밀번호 변경")
     @PostMapping("/password")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid ResetPasswordParams params) {
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid ResetPasswordRequest request) {
 
-        emailService.isAuth(params.getMail(), params.getNumber());
+        emailService.isAuth(request.getMail(), request.getNumber());
 
-        memberService.updatePassword(params.getMail(), params.getNewPassword());
+        memberService.updatePassword(request.getMail(), request.getNewPassword());
 
         // 비밀번호 변경 완료시 auth_mail에 저장된 인증번호 모두 삭제
-        emailService.deleteAll(params.getMail());
+        emailService.deleteAll(request.getMail());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

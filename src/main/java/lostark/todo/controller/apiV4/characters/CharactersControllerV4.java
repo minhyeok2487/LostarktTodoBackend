@@ -57,7 +57,7 @@ public class CharactersControllerV4 {
     @PatchMapping("/sorting")
     public ResponseEntity updateSort(@AuthenticationPrincipal String username,
                                      @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
-        memberService.updateSort(username, characterSortDtoList);
+        memberService.editSort(username, characterSortDtoList);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

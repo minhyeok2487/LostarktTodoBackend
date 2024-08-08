@@ -6,13 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberRequestDto {
+public class SaveCharacterRequest {
 
     @ApiModelProperty(example = "로스트아크 api 키")
     private String apiKey;

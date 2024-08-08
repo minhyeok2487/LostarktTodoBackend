@@ -7,4 +7,5 @@ public class ErrorMessages {
     public static final String MEMBER_CHARACTER_NOT_FOUND = "회원에 등록되지 않은 캐릭터 입니다.";
     public static final String TEST_MEMBER_NOT_ACCESS = "테스트 회원은 사용 할 수 없습니다.";
     public static final String MEMBER_NOT_SOCIAL = "소셜 로그인으로 가입된 회원이 아닙니다.";
+    public static final String LOGIN_FAIL = "이메일 또는 패스워드가 일치하지 않습니다.";
 }

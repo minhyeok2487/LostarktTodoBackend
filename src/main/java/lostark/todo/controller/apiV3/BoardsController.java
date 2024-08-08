@@ -93,7 +93,7 @@ public class BoardsController {
     @PostMapping()
     public ResponseEntity<?> save(@AuthenticationPrincipal String username,
                                   @RequestBody BoardInsertDto boardInsertDto) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
         log.info(String.valueOf(boardInsertDto.getFileNames().size()));
 
         if (member.getRole().equals(Role.ADMIN)) {
@@ -120,7 +120,7 @@ public class BoardsController {
             response = BoardResponseDto.class)
     @PatchMapping()
     public ResponseEntity<?> update(String username, BoardUpdateDto boardUpdateDto) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
 
         if (member.getRole().equals(Role.ADMIN)) {
             Boards update = boardsService.update(boardUpdateDto);
@@ -136,7 +136,7 @@ public class BoardsController {
             response = BoardResponseDto.class)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal String username, @PathVariable long id) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
 
         if (member.getRole().equals(Role.ADMIN)) {
             Boards boards = boardsService.findById(id);
@@ -156,7 +156,7 @@ public class BoardsController {
     @ApiOperation(value = "이미지 업로드", response = BoardImageUrlDto.class)
     @PostMapping("/image")
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal String username, @RequestPart("image") MultipartFile image) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
         if (member.getRole().equals(Role.ADMIN)) {
             BoardImages upload = boardImagesService.upload(image);
             return new ResponseEntity<>(new BoardImageUrlDto(upload), HttpStatus.OK);

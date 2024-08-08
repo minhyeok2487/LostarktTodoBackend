@@ -54,7 +54,7 @@ public class CommentsController {
     @PostMapping()
     public ResponseEntity<?> saveComments(@AuthenticationPrincipal String username,
                                        @RequestBody CommentRequestDto commentRequestDto) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
         Comments updateComments = Comments.builder()
                 .body(commentRequestDto.getBody())
                 .member(member)
@@ -76,7 +76,7 @@ public class CommentsController {
     @ApiOperation(value = "comment 삭제")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComments(@AuthenticationPrincipal String username, @PathVariable int commentId) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
         Comments updateComments = Comments.builder()
                 .id(commentId)
                 .member(member)

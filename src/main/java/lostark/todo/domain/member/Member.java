@@ -2,6 +2,7 @@ package lostark.todo.domain.member;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.Boards;
@@ -64,26 +65,34 @@ public class Member extends BaseTimeEntity {
     @JsonManagedReference
     private List<Notification> notifications;
 
+    // 유저 전환(구글 로그인 -> 일반 로그인)
+    public void changeAuthToNone(String encodePassword) {
+        this.authProvider = "none";
+        this.password = encodePassword;
+    }
 
     // 대표캐릭터 변경
     public void editMainCharacter(String mainCharacter) {
         this.mainCharacter = mainCharacter;
     }
 
-    // user 엔티티에 character 리스트 저장
-    public Character addCharacter(Character character) {
-        characters.add(character);
-        character.setMember(this);
-        return character;
+
+    // 회원가입 캐릭터 추가
+    public void createCharacter(List<Character> characterList, SaveCharacterRequest request) {
+        characterList.stream()
+                .peek(character -> character.setMember(this))
+                .forEach(characters::add);
+
+        this.apiKey = request.getApiKey();
+        this.mainCharacter = request.getCharacterName();
     }
 
-    // 유저 전환(구글 로그인 -> 일반 로그인)
-    public Member changeAuthToNone(String encodePassword) {
-        this.authProvider = "none";
-        this.password = encodePassword;
-        return this;
+    // 회원 API KEY 수정
+    public void editApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
+    // 비밀번호 변경 - Test Code 작성
     public void updatePassword(String encodePassword) {
         this.password = encodePassword;
     }

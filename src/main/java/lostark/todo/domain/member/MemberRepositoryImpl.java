@@ -41,6 +41,19 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     }
 
     @Override
+    public Optional<Member> get(Long id) {
+        return Optional.ofNullable(
+                factory.select(member)
+                        .from(member)
+                        .leftJoin(member.characters, character).fetchJoin()
+                        .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
+                        .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                        .where(member.id.eq(id))
+                        .fetchOne()
+        );
+    }
+
+    @Override
     public List<DashboardResponse> searchMemberDashBoard(int limit) {
         StringTemplate dateTemplate = Expressions.stringTemplate(
                 "DATE_FORMAT({0}, {1})",

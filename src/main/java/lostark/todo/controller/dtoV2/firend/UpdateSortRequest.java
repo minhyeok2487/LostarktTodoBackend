@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateSortParams {
+public class UpdateSortRequest {
 
     private List<Long> friendIdList;
 }

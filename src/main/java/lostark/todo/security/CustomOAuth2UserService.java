@@ -6,18 +6,15 @@ import lostark.todo.controller.dto.auth.OAuthAttributes;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
@@ -53,7 +50,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             member = memberRepository.save(member);
             log.info("{} Signup Success", attributes.getEmail());
         } else {
-            member = memberRepository.findByUsername(attributes.getEmail()).orElseThrow();
+            member = memberRepository.get(attributes.getEmail()).orElseThrow();
             member.setAccessKey(userRequest.getAccessToken().getTokenValue());
             log.info("{} Login Success", attributes.getEmail());
         }

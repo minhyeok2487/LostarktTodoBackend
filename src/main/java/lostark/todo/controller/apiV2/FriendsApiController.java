@@ -19,7 +19,6 @@ import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
-import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -48,7 +46,7 @@ public class FriendsApiController {
     @ApiOperation(value = "친구 리스트")
     @GetMapping()
     public ResponseEntity getFriends(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
         if (member.getCharacters().isEmpty()) {
             throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
         }
@@ -63,13 +61,13 @@ public class FriendsApiController {
         if(characterName.isEmpty()) {
             throw new IllegalArgumentException("캐릭터명을 입력하여주십시오.");
         }
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
         List<Character> characterList = characterService.findCharacter(characterName);
         if(!characterList.isEmpty()) {
             List<FindCharacterWithFriendsDto> dtoList = new ArrayList<>();
             for (Character character : characterList) {
                 if(toMember != character.getMember()) { //본인 제외
-                    Member fromMember = memberService.findMember(character.getMember().getId());
+                    Member fromMember = memberService.get(character.getMember().getId());
                     String weAreFriend = friendsService.isFriend(toMember,fromMember);
                     FindCharacterWithFriendsDto dto = FindCharacterWithFriendsDto.builder()
                             .id(fromMember.getId())
@@ -91,11 +89,11 @@ public class FriendsApiController {
     @PostMapping("/{fromUser}")
     public ResponseEntity addFriendsRequest(@AuthenticationPrincipal String username,
                                             @PathVariable String fromUser) {
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
         if (toMember.getCharacters().isEmpty()) {
             throw new IllegalArgumentException("등록된 캐릭터가 존재하지 않아 깐부 요청이 불가능합니다.");
         }
-        Member fromMember = memberService.findMember(fromUser);
+        Member fromMember = memberService.get(fromUser);
 
         friendsService.addFriendsRequest(toMember, fromMember);
 
@@ -110,8 +108,8 @@ public class FriendsApiController {
     public ResponseEntity updateFriendsRequest(@AuthenticationPrincipal String username,
                                                @PathVariable("fromUser") String fromUser,
                                                @PathVariable("category") String category) {
-        Member toMember = memberService.findMember(username);
-        Member fromMember = memberService.findMember(fromUser);
+        Member toMember = memberService.get(username);
+        Member fromMember = memberService.get(fromUser);
 
         friendsService.updateFriendsRequest(toMember, fromMember, category);
         if (category.equals("ok")) {
@@ -141,7 +139,7 @@ public class FriendsApiController {
                                              @RequestBody @Valid CharacterDefaultDto characterDefaultDto) {
         Character friendCharacter = characterService.findCharacterById(characterDefaultDto.getCharacterId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean dayContent = friendsService.checkSetting(fromMember, toMember, "dayContent");
 
@@ -163,7 +161,7 @@ public class FriendsApiController {
                                              @RequestBody @Valid CharacterDayTodoDto characterDayTodoDto) {
         Character friendCharacter = characterService.findCharacterById(characterDayTodoDto.getCharacterId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean dayContent = friendsService.checkSetting(fromMember, toMember, "dayContent");
         if(dayContent) {
@@ -184,7 +182,7 @@ public class FriendsApiController {
                                               @RequestBody TodoDto todoDto) {
         Character friendCharacter = characterService.findCharacterById(todoDto.getCharacterId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean raid = friendsService.checkSetting(fromMember, toMember, "raid");
 
@@ -207,7 +205,7 @@ public class FriendsApiController {
                                                    @RequestBody CharacterDto characterDto) {
         Character friendCharacter = characterService.findCharacterById(characterDto.getId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
@@ -231,7 +229,7 @@ public class FriendsApiController {
                                         @RequestBody CharacterDto characterDto) {
         Character friendCharacter = characterService.findCharacterById(characterDto.getId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
@@ -259,7 +257,7 @@ public class FriendsApiController {
 
         Character friendCharacter = characterService.findCharacterById(characterDto.getId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
@@ -278,7 +276,7 @@ public class FriendsApiController {
 
         Character friendCharacter = characterService.findCharacterById(characterChallengeRequestDto.getCharacterId());
         Member fromMember = friendCharacter.getMember();
-        Member toMember = memberService.findMember(username);
+        Member toMember = memberService.get(username);
 
         boolean weekTodo = friendsService.checkSetting(fromMember, toMember, "weekTodo");
 
@@ -300,12 +298,12 @@ public class FriendsApiController {
     public ResponseEntity updateSort(@AuthenticationPrincipal String username,
                                      @PathVariable("fromUser") String fromUser,
                                      @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
-        Member toMember = memberService.findMember(username);
-        Member fromMember = memberService.findMember(fromUser);
+        Member toMember = memberService.get(username);
+        Member fromMember = memberService.get(fromUser);
         boolean setting = friendsService.checkSetting(fromMember, toMember, "setting");
 
         if(setting) {
-            Member member = memberService.updateSort(fromUser, characterSortDtoList);
+            Member member = memberService.editSort(fromUser, characterSortDtoList);
 
             List<CharacterDto> characterDtoList = new ArrayList<>();
             for (Character character : member.getCharacters()) {
@@ -323,8 +321,8 @@ public class FriendsApiController {
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username,
                                               @RequestBody FriendsReturnDto friendsReturnDto) {
-        Member toMember = memberService.findMember(username);
-        Member member = memberService.findMember(friendsReturnDto.getFriendUsername());
+        Member toMember = memberService.get(username);
+        Member member = memberService.get(friendsReturnDto.getFriendUsername());
         boolean setting = friendsService.checkSetting(member, toMember, "setting");
 
         if(setting) {

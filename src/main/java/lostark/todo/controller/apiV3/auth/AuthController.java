@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.config.TokenProvider;
 import lostark.todo.controller.dto.auth.ResponseDto;
-import lostark.todo.controller.dto.memberDto.MemberLoginDto;
-import lostark.todo.controller.dto.memberDto.MemberRequestDto;
+import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
+import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.Category;
@@ -50,7 +50,7 @@ public class AuthController {
     @PostMapping("/character")
     public ResponseEntity<?> saveCharacter(
             @AuthenticationPrincipal String username,
-            @RequestBody MemberRequestDto memberDto) {
+            @RequestBody SaveCharacterRequest request) {
         if (username.equals(TEST_USERNAME)) {
             throw new IllegalStateException("테스트 계정은 캐릭터 등록이 불가능 합니다.");
         }
@@ -63,7 +63,7 @@ public class AuthController {
             List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
 
             // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
-            List<Character> characterList = lostarkCharacterService.findCharacterList(memberDto.getCharacterName(), memberDto.getApiKey(), chaos, guardian);
+            List<Character> characterList = lostarkCharacterService.findCharacterList(request.getCharacterName(), request.getApiKey(), chaos, guardian);
 
             // 재련재료 데이터 리스트로 거래소 데이터 호출
             Map<String, Market> contentResource = marketService.findContentResource();
@@ -76,7 +76,7 @@ public class AuthController {
             }
 
             // Member 회원가입
-            memberService.createCharacter(username, memberDto, calculatedCharacterList);
+            memberService.createCharacter(username, request, calculatedCharacterList);
 
             return new ResponseEntity<>(HttpStatus.OK);
         } finally {
@@ -87,8 +87,8 @@ public class AuthController {
     @ApiOperation(value = "일반 로그인",
             notes="JWT", response = MemberResponseDto.class)
     @PostMapping("/login")
-    public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginDto memberloginDto) {
-        Member member = memberService.login(memberloginDto);
+    public ResponseEntity<?> loginMember(@RequestBody @Valid LoginMemberRequest request) {
+        Member member = memberService.login(request);
         String token = tokenProvider.createToken(member);
 
         MemberResponseDto responseDto = MemberResponseDto.builder()
@@ -103,7 +103,7 @@ public class AuthController {
             response = String.class)
     @GetMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal String username) {
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
 
         ResponseDto responseDto = null;
         if (member.getAuthProvider().equals("Google")) {

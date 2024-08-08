@@ -7,10 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.controller.dtoV2.character.UpdateMemoParams;
+import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,8 +44,8 @@ public class CharacterControllerV4 {
 
     @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
     @PostMapping("/memo")
-    public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username, @RequestBody @Valid UpdateMemoParams updateMemoParams) {
-        Character updateCharacter = characterService.updateMemo(username, updateMemoParams);
+    public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username, @RequestBody @Valid UpdateMemoRequest updateMemoRequest) {
+        Character updateCharacter = characterService.updateMemo(username, updateMemoRequest);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 

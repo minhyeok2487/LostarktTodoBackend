@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateMemoParams {
+public class UpdateMemoRequest {
 
     @NotNull
     private long characterId;

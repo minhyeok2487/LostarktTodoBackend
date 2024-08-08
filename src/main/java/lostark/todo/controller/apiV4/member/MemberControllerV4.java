@@ -4,9 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.memberDto.MemberRequestDto;
-import lostark.todo.controller.dtoV2.member.EditMainCharacterParams;
-import lostark.todo.controller.dtoV2.member.EditProviderParams;
+import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
+import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
+import lostark.todo.controller.dtoV2.member.EditProviderRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.CharacterService;
@@ -48,16 +48,16 @@ public class MemberControllerV4 {
     @ApiOperation(value = "대표 캐릭터 변경 API")
     @PatchMapping("/main-character")
     public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
-                                               @RequestBody EditMainCharacterParams params) {
-        memberService.editMainCharacter(username, params.getMainCharacter());
+                                               @RequestBody EditMainCharacterRequest request) {
+        memberService.editMainCharacter(username, request.getMainCharacter());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
     @PatchMapping("/provider")
     public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
-                                          @RequestBody EditProviderParams params) {
-        memberService.editProvider(username, params.getPassword());
+                                          @RequestBody EditProviderRequest request) {
+        memberService.editProvider(username, request.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -80,21 +80,21 @@ public class MemberControllerV4 {
     @ApiOperation(value = "회원 API KEY 갱신")
     @PatchMapping("/api-key")
     public ResponseEntity<?> updateApiKey(@AuthenticationPrincipal String username,
-                                       @RequestBody MemberRequestDto memberRequestDto) {
+                                       @RequestBody SaveCharacterRequest saveCharacterRequest) {
         // 1. 검증
-        Member member = memberService.findMember(username);
-        if (memberRequestDto.getApiKey() == null || memberRequestDto.getApiKey().isEmpty()) {
+        Member member = memberService.get(username);
+        if (saveCharacterRequest.getApiKey() == null || saveCharacterRequest.getApiKey().isEmpty()) {
             throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
         }
-        if (member.getApiKey() != null && member.getApiKey().equals(memberRequestDto.getApiKey())) {
+        if (member.getApiKey() != null && member.getApiKey().equals(saveCharacterRequest.getApiKey())) {
             throw new IllegalArgumentException("동일한 API KEY입니다.");
         }
 
         // 2. API KEY 인증 확인
-        lostarkApiService.findEvents(memberRequestDto.getApiKey());
+        lostarkApiService.findEvents(saveCharacterRequest.getApiKey());
 
         // 3. API KEY 업데이트
-        memberService.updateApiKey(member, memberRequestDto.getApiKey());
+        memberService.editApiKey(member, saveCharacterRequest.getApiKey());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

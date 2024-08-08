@@ -41,7 +41,7 @@ public class HomeController {
     @GetMapping()
     public ResponseEntity<?> findAll(@AuthenticationPrincipal String username) {
         //1. 전체 캐릭터 데이터
-        Member member = memberService.findMember(username);
+        Member member = memberService.get(username);
         List<Character> characterList = member.getCharacters();
 
         //2. 전체 캐릭터 데이터 -> DtoSortedList

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateFriendWeekRaidParams {
+public class UpdateFriendWeekRaidRequest {
 
     @NotNull
     private String friendUsername;

@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SignUpParams {
+public class SignUpRequest {
 
     @NotEmpty
     @ApiModelProperty(example = "회원 이메일")

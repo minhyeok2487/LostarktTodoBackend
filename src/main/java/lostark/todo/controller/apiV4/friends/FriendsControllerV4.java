@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
-import lostark.todo.controller.dtoV2.firend.UpdateFriendWeekRaidParams;
-import lostark.todo.controller.dtoV2.firend.UpdateSortParams;
+import lostark.todo.controller.dtoV2.firend.UpdateFriendWeekRaidRequest;
+import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.friends.Friends;
@@ -56,9 +56,9 @@ public class FriendsControllerV4 {
     @ApiOperation(value = "깐부 순서 변경")
     @PutMapping("/sort")
     public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,
-                                        @RequestBody UpdateSortParams updateSortParams) {
+                                        @RequestBody UpdateSortRequest updateSortRequest) {
         Member member = memberService.get(username);
-        friendsService.updateSort(member, updateSortParams.getFriendIdList());
+        friendsService.updateSort(member, updateSortRequest.getFriendIdList());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -101,19 +101,19 @@ public class FriendsControllerV4 {
     @ApiOperation(value = "깐부 캐릭터 주간 레이드 추가/제거")
     @PostMapping("/raid")
     public ResponseEntity<?> updateFriendWeekRaid(@AuthenticationPrincipal String username,
-                                                  @RequestBody UpdateFriendWeekRaidParams params) {
-        Friends friend = friendsService.findByFriendUsername(params.getFriendUsername(), username);
+                                                  @RequestBody UpdateFriendWeekRaidRequest request) {
+        Friends friend = friendsService.findByFriendUsername(request.getFriendUsername(), username);
 
         if (!friend.getFriendSettings().isSetting()) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
         Character character = friend.getMember().getCharacters().stream()
-                .filter(c -> c.getId() == params.getFriendCharacterId())
+                .filter(c -> c.getId() == request.getFriendCharacterId())
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 캐릭터 입니다."));
 
-        List<WeekContent> weekContentList = contentService.findAllByIdWeekContent(params.getWeekContentIdList())
+        List<WeekContent> weekContentList = contentService.findAllByIdWeekContent(request.getWeekContentIdList())
                 .stream()
                 .map(content -> (WeekContent) content)
                 .toList();

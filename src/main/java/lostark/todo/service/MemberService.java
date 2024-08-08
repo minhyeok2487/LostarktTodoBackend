@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
-import lostark.todo.controller.dto.memberDto.MemberLoginDto;
-import lostark.todo.controller.dto.memberDto.MemberRequestDto;
+import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
+import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.domain.Role;
@@ -37,6 +37,11 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member get(String username) {
         return memberRepository.get(username).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Member get(Long id) {
+        return memberRepository.get(id).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
     }
 
     // 1차 회원가입 - Test Code 작성완료
@@ -72,8 +77,7 @@ public class MemberService {
         }
     }
 
-
-    // 유저 전환(소셜 로그인 -> 일반 로그인)
+    // 유저 전환(소셜 로그인 -> 일반 로그인) - Test Code 작성완료
     @Transactional
     public void editProvider(String username, String newPassword) {
         if (username.equals(TEST_USERNAME)) {
@@ -89,49 +93,64 @@ public class MemberService {
         member.changeAuthToNone(passwordEncoder.encode(newPassword));
     }
 
-
-    public Member login(MemberLoginDto memberloginDto) {
-        String username = memberloginDto.getUsername();
-        Member member = findMember(username);
-        if (passwordEncoder.matches(memberloginDto.getPassword(), member.getPassword())) {
+    // 일반 로그인 - Test Code 작성 X
+    @Transactional
+    public Member login(LoginMemberRequest request) {
+        Member member = get(request.getUsername());
+        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             return member;
         } else {
-            throw new IllegalArgumentException("이메일 또는 패스워드가 일치하지 않습니다.");
+            throw new IllegalArgumentException(LOGIN_FAIL);
         }
     }
 
-    /**
-     * 회원 찾기(캐릭터 리스트와 함께)
-     */
-    public Member findMember(String username) {
-        return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
-    }
-
-    public Member findMember(long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
-    }
-
-    /**
-     * 회원가입 캐릭터 추가
-     */
+    // 비밀번호 변경 - Test Code 작성 X
     @Transactional
-    public void createCharacter(String username, MemberRequestDto dto, List<Character> characterList) {
+    public void updatePassword(String mail, String newPassword) {
+        Member member = get(mail);
+        member.updatePassword(passwordEncoder.encode(newPassword));
+    }
+
+    // 회원가입 캐릭터 추가 - Test Code 작성 X
+    @Transactional
+    public void createCharacter(String username, SaveCharacterRequest request, List<Character> characterList) {
         Member member = get(username);
-        characterList.stream().map(character -> member.addCharacter(character)).collect(Collectors.toList());
-        member.setApiKey(dto.getApiKey());
-        member.setMainCharacter(dto.getCharacterName());
+        member.createCharacter(characterList, request);
     }
 
-
-    public List<Member> findAll() {
-        return memberRepository.findAll();
+    // 회원 API KEY 수정 - Test Code 작성 X
+    public void editApiKey(Member member, String apiKey) {
+        member.editApiKey(apiKey);
     }
 
+    // 가입 여부 확인 - Test Code 작성 X
+    @Transactional(readOnly = true)
+    public boolean existByUsername(String username) {
+        return memberRepository.existsByUsername(username);
+    }
 
-    public Member updateSort(String username, List<CharacterSortDto> characterSortDtoList) {
-        Member member = findMember(username);
+    // 회원 삭제 - Test Code 작성 X
+    @Transactional
+    public void deleteMember(String name) {
+        Member member = get(name);
+        memberRepository.delete(member);
+    }
+
+    // Admin 일일 가입자 수 통계 호출 - Test Code 작성 X
+    @Transactional(readOnly = true)
+    public List<DashboardResponse> searchMemberDashBoard(int limit) {
+        return memberRepository.searchMemberDashBoard(limit);
+    }
+
+    // Admin 회원 리스트 출력 - Test Code 작성 X
+    @Transactional(readOnly = true)
+    public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
+        return memberRepository.searchAdminMember(request, pageRequest);
+    }
+
+    // TODO - CharacterService쪽에 있어야함
+    public Member editSort(String username, List<CharacterSortDto> characterSortDtoList) {
+        Member member = get(username);
         List<Character> beforeCharacterList = member.getCharacters();
         beforeCharacterList.stream().peek(
                         character -> characterSortDtoList.stream()
@@ -141,38 +160,5 @@ public class MemberService {
                 .collect(Collectors.toList());
 
         return member;
-    }
-
-    /**
-     * 회원 API KEY 업데이트
-     */
-    public void updateApiKey(Member member, String apiKey) {
-        member.setApiKey(apiKey);
-    }
-
-    public boolean existByUsername(String username) {
-        return memberRepository.existsByUsername(username);
-    }
-
-    @Transactional(readOnly = true)
-    public List<DashboardResponse> searchMemberDashBoard(int limit) {
-        return memberRepository.searchMemberDashBoard(limit);
-    }
-
-    @Transactional(readOnly = true)
-    public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
-        return memberRepository.searchAdminMember(request, pageRequest);
-    }
-
-    @Transactional
-    public void removeMember(String name) {
-        Member member = get(name);
-        memberRepository.delete(member);
-    }
-
-    @Transactional
-    public void updatePassword(String mail, String newPassword) {
-        Member member = get(mail);
-        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 }
