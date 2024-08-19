@@ -4,24 +4,16 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.DayTodo;
-import lostark.todo.domain.market.Market;
-import lostark.todo.event.entity.EventType;
-import lostark.todo.event.entity.character.DayContentCheckEvent;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.MarketService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +23,6 @@ import java.util.Map;
 public class SettingsApiController {
 
     private final CharacterService characterService;
-    private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "캐릭터 레이드 골드 체크 방식 업데이트", response = CharacterDto.class)
     @PatchMapping("/gold-check-version")
@@ -39,7 +30,7 @@ public class SettingsApiController {
                                                 @RequestBody @Valid CharacterDefaultDto characterDefaultDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(
+        Character character = characterService.get(
                 characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
 
         Character updateCharacter = characterService.updateGoldCheckVersion(character);

@@ -2,7 +2,6 @@ package lostark.todo.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
@@ -19,10 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -41,21 +36,22 @@ public class BoardImagesService {
 
     private final BoardsImagesRepository repository;
 
+    //이미지 업로드
     public BoardImages upload(MultipartFile image) {
         //입력받은 이미지 파일이 빈 파일인지 검증
         if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())){
             throw new IllegalArgumentException("빈 파일 입니다.");
         }
         //uploadImage를 호출하여 S3에 저장된 이미지의 public url을 반환한다.
-        return this.uploadImage(image);
+        return uploadImage(image);
     }
 
     //1. validateImageFileExtention()을 호출하여 확장자 명이 올바른지 확인한다.
     //2. uploadImageToS3()를 호출하여 이미지를 S3에 업로드하고, S3에 저장된 이미지의 public url을 받아서 서비스 로직에 반환한다.
     private BoardImages uploadImage(MultipartFile image) {
-        this.validateImageFile(Objects.requireNonNull(image.getOriginalFilename()));
+        validateImageFile(Objects.requireNonNull(image.getOriginalFilename()));
         try {
-            return this.uploadImageToS3(image);
+            return uploadImageToS3(image);
         } catch (IOException e) {
             throw new IllegalStateException("이미지 업로드를 실패했습니다.");
         }
@@ -118,34 +114,13 @@ public class BoardImagesService {
                 .fileName(s3FileName)
                 .imageUrl(url)
                 .build();
-        repository.save(boardImages);
-
-        return boardImages;
+        return repository.save(boardImages);
     }
 
+    // 공지사항 - 이미지 연결
     public void saveByfileNames(List<String> fileNameList, Boards boards) {
         for (BoardImages boardImages : repository.findAllByFileNameIn(fileNameList)) {
             boards.addImages(boardImages);
-        }
-    }
-
-    // s3 이미지 삭제
-    public void deleteImageFromS3(String imageAddress){
-        String key = getKeyFromImageAddress(imageAddress);
-        try{
-            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
-        }catch (Exception e){
-            throw new IllegalStateException("이미지 삭제 실패");
-        }
-    }
-
-    private String getKeyFromImageAddress(String imageAddress){
-        try{
-            URL url = new URL(imageAddress);
-            String decodingKey = URLDecoder.decode(url.getPath(), "UTF-8");
-            return decodingKey.substring(1); // 맨 앞의 '/' 제거
-        }catch (MalformedURLException | UnsupportedEncodingException e){
-            throw new IllegalStateException("이미지 삭제 실패");
         }
     }
 }

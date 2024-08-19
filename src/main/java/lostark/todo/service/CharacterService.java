@@ -29,19 +29,11 @@ public class CharacterService {
 
     private final CharacterRepository characterRepository;
 
-    public List<Character> findCharacterListUsername(String username) {
-        return characterRepository.findAllByUsername(username);
-    }
-
-    public List<Character> findAll() {
-        return characterRepository.findAll();
-    }
-
 
     // 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
     // 로그인한 아이디에 등록된 캐릭터인지 검증
     @Transactional(readOnly = true)
-    public Character findCharacter(long characterId, String characterName, String username) {
+    public Character get(long characterId, String characterName, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
                 () -> new IllegalArgumentException("characterName = "+characterName+" / username = " + username + " : 존재하지 않는 캐릭터"));
     }
@@ -81,8 +73,6 @@ public class CharacterService {
         }
     }
 
-
-
     // 일일 컨텐츠 체크 업데이트
     public Character updateCheck(Character character, String category) {
         if(category.equals("epona")) {
@@ -112,7 +102,7 @@ public class CharacterService {
 
     @Transactional
     public Character updateGoldCharacter(CharacterDefaultDto characterDefaultDto, String username) {
-        Character character = findCharacter(
+        Character character = get(
                 characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
 
         // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
@@ -251,7 +241,7 @@ public class CharacterService {
 
     @Transactional
     public Character updateSetting(String username, SettingRequestDto settingRequestDto) {
-        Character character = findCharacter(
+        Character character = get(
                 settingRequestDto.getCharacterId(), settingRequestDto.getCharacterName(), username);
         character.getSettings().update(settingRequestDto.getName(), settingRequestDto.isValue());
         return character;
@@ -262,7 +252,7 @@ public class CharacterService {
     public Character updateDayTodoCheck(String username, CharacterDefaultDto characterDefaultDto,
                                         DayTodoCategoryEnum category, boolean updateAll) {
 
-        Character character = findCharacter(
+        Character character = get(
                 characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
 
         DayTodo dayTodo = character.getDayTodo();
@@ -290,7 +280,7 @@ public class CharacterService {
     }
 
     public Character updateGauge(String username, CharacterDayTodoDto characterDayTodoDto, Map<String, Market> contentResource) {
-        Character character = findCharacter(
+        Character character = get(
                 characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
         return updateGauge(character, characterDayTodoDto, contentResource);
     }

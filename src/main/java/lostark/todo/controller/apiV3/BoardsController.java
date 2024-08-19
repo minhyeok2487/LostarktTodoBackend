@@ -139,12 +139,6 @@ public class BoardsController {
         Member member = memberService.get(username);
 
         if (member.getRole().equals(Role.ADMIN)) {
-            Boards boards = boardsService.findById(id);
-            if (!boards.getBoardImages().isEmpty()) {
-                for (BoardImages boardImage : boards.getBoardImages()) {
-                    boardImagesService.deleteImageFromS3(boardImage.getImageUrl());
-                }
-            }
             boardsService.delete(id);
             log.info("사이트 공지사항을 성공적으로 삭제하였습니다. Id: {}, 수정자 : {}", id, username);
             return new ResponseEntity<>("ok", HttpStatus.OK);

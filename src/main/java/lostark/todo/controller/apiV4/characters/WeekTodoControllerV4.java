@@ -34,7 +34,7 @@ public class WeekTodoControllerV4 {
                                          @PathVariable long characterId, @PathVariable String characterName) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(characterId, characterName, username);
+        Character character = characterService.get(characterId, characterName, username);
 
         // 아이템 레벨보다 작은 컨텐츠 불러옴
         List<WeekContent> weekContents = contentService.findAllWeekContent(character.getItemLevel());

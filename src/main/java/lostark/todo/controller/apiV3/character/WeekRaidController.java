@@ -27,7 +27,7 @@ public class WeekRaidController {
                                                  @RequestBody RaidGoldCheckRequestDto requestDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(requestDto.getCharacterId(),
+        Character character = characterService.get(requestDto.getCharacterId(),
                 requestDto.getCharacterName(), username);
 
         // 골드 체크 업데이트

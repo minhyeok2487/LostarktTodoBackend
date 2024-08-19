@@ -40,7 +40,7 @@ public class WeekContentApiControllerV2 {
                                          @RequestBody WeekContentDto weekContentDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(characterId, characterName, username);
+        Character character = characterService.get(characterId, characterName, username);
         WeekContent weekContent = (WeekContent) contentService.findById(weekContentDto.getId());
 
         todoServiceV2.updateWeekRaid(character, weekContent);
@@ -56,7 +56,7 @@ public class WeekContentApiControllerV2 {
                                           @RequestBody List<WeekContentDto> weekContentDtoList) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(characterId, characterName, username);
+        Character character = characterService.get(characterId, characterName, username);
         List<WeekContent> weekContentList = contentService.findAllByCategoryAndWeekCategory(character.getItemLevel(),
                 weekContentDtoList.get(0).getWeekCategory(), weekContentDtoList.get(0).getWeekContentCategory());
 
@@ -71,7 +71,7 @@ public class WeekContentApiControllerV2 {
                                             @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
+        Character character = characterService.get(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
         todoServiceV2.updateWeekRaidCheck(character, todoDto.getWeekCategory(), todoDto.getCurrentGate(), todoDto.getTotalGate());
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
@@ -82,7 +82,7 @@ public class WeekContentApiControllerV2 {
                                                @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
+        Character character = characterService.get(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
 
         todoServiceV2.updateWeekRaidCheckAll(character, todoDto.getWeekCategory());
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
@@ -95,7 +95,7 @@ public class WeekContentApiControllerV2 {
                                             @RequestBody TodoDto todoDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
+        Character character = characterService.get(todoDto.getCharacterId(), todoDto.getCharacterName(), username);
         TodoV2 todo = todoServiceV2.updateWeekMessage(todoDto);
         TodoResponseDto todoResponseDto = new TodoResponseDto().toDto(todo, character.getSettings().isGoldCheckVersion());
         return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
@@ -109,7 +109,7 @@ public class WeekContentApiControllerV2 {
                                             @RequestBody List<TodoSortRequestDto> todoSortRequestDtos) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(characterId, characterName, username);
+        Character character = characterService.get(characterId, characterName, username);
 
         todoServiceV2.updateWeekRaidSort(character, todoSortRequestDtos);
 
@@ -125,7 +125,7 @@ public class WeekContentApiControllerV2 {
                                                    @RequestBody CharacterDto characterDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(
+        Character character = characterService.get(
                 characterDto.getId(), characterDto.getCharacterName(), username);
 
         // all?
@@ -147,7 +147,7 @@ public class WeekContentApiControllerV2 {
                                         @RequestBody CharacterDto characterDto) {
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(
+        Character character = characterService.get(
                 characterDto.getId(), characterDto.getCharacterName(), username);
 
         // Check 업데이트
@@ -172,7 +172,7 @@ public class WeekContentApiControllerV2 {
 
         // 로그인한 아이디에 등록된 캐릭터인지 검증
         // 다른 아이디면 자동으로 Exception 처리
-        Character character = characterService.findCharacter(
+        Character character = characterService.get(
                 characterDto.getId(), characterDto.getCharacterName(), username);
 
         // cubeTicket 업데이트

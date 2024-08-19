@@ -43,7 +43,7 @@ public class CharactersControllerV4 {
             response = CharacterResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        List<Character> characterList = characterService.findCharacterListUsername(username);
+        List<Character> characterList = memberService.get(username).getCharacters();
         List<CharacterResponse> responseList = characterList.stream()
                 .map(CharacterResponse::toDto)
                 .sorted(Comparator
