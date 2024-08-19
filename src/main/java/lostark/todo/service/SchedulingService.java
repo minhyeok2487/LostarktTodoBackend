@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.CharacterRepository;
 import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
+import lostark.todo.domain.customTodo.CustomTodoRepository;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.notices.Notices;
@@ -31,6 +33,7 @@ public class SchedulingService {
     private final MarketService marketService;
     private final TodoV2Repository todoV2Repository;
     private final CharacterRepository characterRepository;
+    private final CustomTodoRepository customTodoRepository;
     private final ContentRepository contentRepository;
     private final LostarkNewsService newsService;
     private final NoticesService noticesService;
@@ -64,6 +67,8 @@ public class SchedulingService {
 
         log.info("일일 숙제 수익 계산");
         updateDayTodoGold();
+
+        log.info("커스텀 일일 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.DAILY));
     }
 
     public void updateDayTodoGold() {
@@ -162,6 +167,8 @@ public class SchedulingService {
 
         // 일일 수익 주간 합 초기화
         characterRepository.updateWeekDayTodoTotalGold();
+
+        log.info("커스텀 주간 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.WEEKLY));
     }
 
 

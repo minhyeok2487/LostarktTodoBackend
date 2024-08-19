@@ -23,4 +23,12 @@ public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
                         member.username.eq(username)
                 ).fetch();
     }
+
+    @Override
+    public long update(CustomTodoFrequencyEnum frequency) {
+        return factory.update(customTodo)
+                .set(customTodo.isChecked, false)
+                .where(customTodo.frequency.eq(frequency))
+                .execute();
+    }
 }
