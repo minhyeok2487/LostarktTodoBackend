@@ -38,4 +38,8 @@ public class CustomTodo extends BaseTimeEntity {
     public void check() {
         this.isChecked = !this.isChecked;
     }
+
+    public void update(String contentName) {
+        this.contentName = contentName;
+    }
 }

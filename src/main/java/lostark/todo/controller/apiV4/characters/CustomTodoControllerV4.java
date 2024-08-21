@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CustomTodoResponse;
+import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
 import lostark.todo.service.CharacterService;
@@ -44,6 +45,16 @@ public class CustomTodoControllerV4 {
                                     @RequestBody CreateCustomTodoRequest request) {
         Character character = characterService.get(request.getCharacterId(), username);
         customTodoService.create(character, request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "커스텀 숙제 수정")
+    @PatchMapping("/{customTodoId}")
+    public ResponseEntity<?> update(@AuthenticationPrincipal String username,
+                                    @RequestBody UpdateCustomTodoRequest request,
+                                    @PathVariable Long customTodoId) {
+        Character character = characterService.get(request.getCharacterId(), username);
+        customTodoService.update(character, request, customTodoId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

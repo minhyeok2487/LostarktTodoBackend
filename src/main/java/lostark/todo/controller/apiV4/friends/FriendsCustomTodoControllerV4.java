@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CustomTodoResponse;
+import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
 import lostark.todo.domain.friends.Friends;
@@ -42,7 +43,7 @@ public class FriendsCustomTodoControllerV4 {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "커스텀 숙제 추가")
+    @ApiOperation(value = "깐부 커스텀 숙제 추가")
     @PostMapping("/{friendUsername}")
     public ResponseEntity<?> create(@AuthenticationPrincipal String username,
                                     @RequestBody CreateCustomTodoRequest request, @PathVariable String friendUsername) {
@@ -56,7 +57,22 @@ public class FriendsCustomTodoControllerV4 {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "커스텀 숙제 체크")
+    @ApiOperation(value = "깐부 커스텀 숙제 수정")
+    @PatchMapping("/{friendUsername}/{customTodoId}")
+    public ResponseEntity<?> update(@AuthenticationPrincipal String username,
+                                    @RequestBody UpdateCustomTodoRequest request,
+                                    @PathVariable Long customTodoId, @PathVariable String friendUsername) {
+        Friends friend = friendsService.findByFriendUsername(friendUsername, username);
+        if (!friend.getFriendSettings().isSetting()) {
+            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+        }
+
+        Character character = characterService.get(request.getCharacterId(), friendUsername);
+        customTodoService.update(character, request, customTodoId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 커스텀 숙제 체크")
     @PostMapping("/{friendUsername}/check")
     public ResponseEntity<?> check(@AuthenticationPrincipal String username,
                                    @RequestBody CheckCustomTodoRequest request, @PathVariable String friendUsername) {
@@ -66,7 +82,7 @@ public class FriendsCustomTodoControllerV4 {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "커스텀 숙제 삭제")
+    @ApiOperation(value = "깐부 커스텀 숙제 삭제")
     @DeleteMapping("/{friendUsername}/{customTodoId}")
     public ResponseEntity<?> remove(@AuthenticationPrincipal String username, @PathVariable Long customTodoId,
                                     @PathVariable String friendUsername) {

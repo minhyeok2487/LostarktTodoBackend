@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
+import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
 import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
@@ -49,6 +50,16 @@ public class CustomTodoService {
     }
 
     @Transactional
+    public void update(Character character, UpdateCustomTodoRequest request, Long customTodoId) {
+        CustomTodo customTodo = get(customTodoId);
+        if (customTodo.getCharacter().getId() == character.getId()) {
+            customTodo.update(request.getContentName());
+        } else {
+            throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
+        }
+    }
+
+    @Transactional
     public void check(Character character, CheckCustomTodoRequest request) {
         CustomTodo customTodo = get(request.getCustomTodoId());
         if (customTodo.getCharacter().getId() == character.getId()) {
@@ -86,5 +97,4 @@ public class CustomTodoService {
             throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
         }
     }
-
 }
