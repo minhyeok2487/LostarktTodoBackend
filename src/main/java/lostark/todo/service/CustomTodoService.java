@@ -6,13 +6,16 @@ import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
+import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
 import lostark.todo.domain.customTodo.CustomTodoRepository;
+import lostark.todo.domain.friends.Friends;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static lostark.todo.constants.ErrorMessages.CUSTOM_TODO_NOT_FOUND;
+import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
 
 
 @Service
@@ -64,4 +67,24 @@ public class CustomTodoService {
             throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
         }
     }
+
+    @Transactional
+    public void friendCheck(Character character, CheckCustomTodoRequest request, Friends friend) {
+        CustomTodo customTodo = get(request.getCustomTodoId());
+
+        if (customTodo.getCharacter().getId() != character.getId()) {
+            throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
+        }
+
+        boolean canCheckTodo = customTodo.getFrequency().equals(CustomTodoFrequencyEnum.DAILY)
+                ? friend.getFriendSettings().isCheckDayTodo()
+                : friend.getFriendSettings().isCheckWeekTodo();
+
+        if (canCheckTodo) {
+            customTodo.check();
+        } else {
+            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+        }
+    }
+
 }

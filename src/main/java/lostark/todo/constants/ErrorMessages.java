@@ -10,4 +10,6 @@ public class ErrorMessages {
     public static final String LOGIN_FAIL = "이메일 또는 패스워드가 일치하지 않습니다.";
 
     public static final String CUSTOM_TODO_NOT_FOUND = "등록되지 않은 커스텀숙제 입니다.";
+
+    public static final String FRIEND_PERMISSION_DENIED = "깐부 권한이 없습니다.";
 }

@@ -172,56 +172,6 @@ public class FriendsService {
         return member.getMainCharacter() != null ? member.getMainCharacter() : member.getCharacters().get(0).getCharacterName();
     }
 
-    @Transactional(readOnly = true)
-    public List<FriendsResponse> getFriendList(Member member) {
-        List<FriendsResponse> returnDtoList = new ArrayList<>();
-        List<Friends> byMember = friendsRepository.findAllByMember(member);
-        List<Friends> fromMember = friendsRepository.findAllByFromMember(member.getId());
-        for (Friends friends : byMember) {
-            boolean toFriends = friends.isAreWeFriend();
-            for (Friends fromFriend : fromMember) {
-                if (friends.getFromMember() == fromFriend.getMember().getId()) {
-                    boolean fromFriends = fromFriend.isAreWeFriend();
-                    String areWeFriend = "";
-                    if (toFriends && fromFriends) {
-                        areWeFriend = "깐부";
-                    } else if (toFriends) {
-                        areWeFriend = "깐부 요청 진행중";
-                    } else if (fromFriends) {
-                        areWeFriend = "깐부 요청 받음";
-                    } else {
-                        areWeFriend = "요청 거부";
-                    }
-
-                    //캐릭터 리스트
-                    List<CharacterResponse> characterResponseList = fromFriend.getMember().getCharacters().stream()
-                            .filter(character -> character.getSettings().isShowCharacter())
-                            .map(CharacterResponse::toDto)
-                            .collect(Collectors.toList());
-
-                    // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-                    characterResponseList.sort(Comparator
-                            .comparingInt(CharacterResponse::getSortNumber)
-                            .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed())
-                    );
-
-                    FriendsResponse friendsReturnDto = FriendsResponse.builder()
-                            .friendId(friends.getId())
-                            .friendUsername(fromFriend.getMember().getUsername())
-                            .areWeFriend(areWeFriend)
-                            .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
-                            .characterList(characterResponseList)
-                            .toFriendSettings(friends.getFriendSettings())
-                            .fromFriendSettings(fromFriend.getFriendSettings())
-                            .build();
-
-                    returnDtoList.add(friendsReturnDto);
-                }
-            }
-        }
-        return returnDtoList.stream().sorted(Comparator.comparingInt(FriendsResponse::getOrdering)).toList();
-    }
-
     public void updateFriendsRequest(Member toMember, Member fromMember, String category) {
         if (category.equals("ok")) {
             friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).setAreWeFriend(true);
@@ -268,11 +218,6 @@ public class FriendsService {
             return false;
         }
     }
-
-    public Friends findFriend(Member member, Long friendId) {
-        return friendsRepository.findFriend(friendId, member.getId()).orElseThrow(() -> new IllegalArgumentException("잘못된 요청 입니다."));
-    }
-
 
     public Character findFriendCharacter(String friendUsername, long characterId) {
         return friendsRepository.findFriendCharacter(friendUsername, characterId);
