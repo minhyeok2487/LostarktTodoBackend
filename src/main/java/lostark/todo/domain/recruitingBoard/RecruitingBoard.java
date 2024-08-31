@@ -26,6 +26,8 @@ public class RecruitingBoard extends BaseTimeEntity {
     @JsonBackReference //순환참조 방지
     private Member member;
 
+    private String title;
+
     @Column(length = 5000)
     private String body;
 
@@ -47,9 +49,12 @@ public class RecruitingBoard extends BaseTimeEntity {
 
     private String url3;
 
+    private int showCount;
+
     public static RecruitingBoard toEntity(Member member, CreateRecruitingBoardRequest request) {
         return RecruitingBoard.builder()
                 .member(member)
+                .title(request.getTitle())
                 .body(request.getBody())
                 .showMainCharacter(request.getShowMainCharacter())
                 .ExpeditionSetting(request.getExpeditionSetting())
@@ -59,6 +64,7 @@ public class RecruitingBoard extends BaseTimeEntity {
                 .url1(request.getUrl1())
                 .url2(request.getUrl2())
                 .url3(request.getUrl3())
+                .showCount(0)
                 .build();
     }
 }

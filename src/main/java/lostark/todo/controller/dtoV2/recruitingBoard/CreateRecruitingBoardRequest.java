@@ -12,6 +12,9 @@ import java.util.List;
 public class CreateRecruitingBoardRequest {
 
     @NotNull
+    private String title;
+
+    @NotNull
     private Boolean showMainCharacter;
 
     @NotNull

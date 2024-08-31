@@ -2,7 +2,6 @@ package lostark.todo.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.Role;
 import lostark.todo.security.CustomOAuth2UserService;
 import lostark.todo.security.OAuthSuccessHandler;
 import lostark.todo.security.RedirectUrlCookieFilter;
@@ -15,14 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.filter.CorsFilter;
-
-import javax.servlet.http.Cookie;
-import java.util.Arrays;
-import java.util.Optional;
-
-import static lostark.todo.security.RedirectUrlCookieFilter.REDIRECT_URI_PARAM;
 
 /**
  * Spring Security 웹 애플리케이션 보안 구성
@@ -76,6 +68,7 @@ public class WebSecurityConfig {
                 .authorizeRequests() // 인증 필요하지 않는 링크
                 .antMatchers(PERMIT_ALL_LINK).permitAll()
                 .antMatchers(HttpMethod.GET,"/v3/comments").permitAll() // 방명록 불러오기 Get만 허용
+                .antMatchers(HttpMethod.GET,"/v4/recruiting-board/**").permitAll() // 모집 게시판 Get만 허용
                 .anyRequest().authenticated() // 나머지 경로 모두 인증
                 .and().oauth2Login()//OAuth 로그인
                 .authorizationEndpoint().baseUri("/auth/authorize")

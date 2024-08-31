@@ -38,6 +38,7 @@ class RecruitingBoardServiceTest {
         request.setWeekdaysPlay(List.of(TimeCategoryEnum.DAY, TimeCategoryEnum.NIGHT));
         request.setWeekendsPlay(List.of(TimeCategoryEnum.DAY, TimeCategoryEnum.NIGHT, TimeCategoryEnum.DAWN));
         request.setRecruitingCategory(RecruitingCategoryEnum.FRIENDS);
+        request.setTitle("게시글 작성 테스트");
         request.setBody("게시글 작성 테스트");
         request.setUrl1("asdasd");
 
