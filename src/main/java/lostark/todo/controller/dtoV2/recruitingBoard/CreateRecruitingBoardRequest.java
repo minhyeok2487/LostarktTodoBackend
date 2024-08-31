@@ -1,0 +1,36 @@
+package lostark.todo.controller.dtoV2.recruitingBoard;
+
+import lombok.Data;
+import lostark.todo.domain.recruitingBoard.ExpeditionSettingEnum;
+import lostark.todo.domain.recruitingBoard.RecruitingCategoryEnum;
+import lostark.todo.domain.recruitingBoard.TimeCategoryEnum;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+@Data
+public class CreateRecruitingBoardRequest {
+
+    @NotNull
+    private Boolean showMainCharacter;
+
+    @NotNull
+    private ExpeditionSettingEnum expeditionSetting;
+
+    @NotNull
+    private List<TimeCategoryEnum> weekdaysPlay;
+
+    @NotNull
+    private List<TimeCategoryEnum> weekendsPlay;
+
+    @NotNull
+    private RecruitingCategoryEnum recruitingCategory;
+
+    private String body;
+
+    private String url1;
+
+    private String url2;
+
+    private String url3;
+}
