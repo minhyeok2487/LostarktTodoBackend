@@ -53,6 +53,34 @@ public class RecruitingBoardController {
     @GetMapping("/{recruitingBoardId}")
     public ResponseEntity<?> get(@PathVariable Long recruitingBoardId) {
         RecruitingBoard recruitingBoard = recruitingBoardService.get(recruitingBoardId);
+        recruitingBoardService.upShowCount(recruitingBoard);
         return new ResponseEntity<>(new GetRecruitingBoardResponse(recruitingBoard), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "모집 게시글 수정 API")
+    @PutMapping("/{recruitingBoardId}")
+    public ResponseEntity<?> update(@AuthenticationPrincipal String username,
+                                    @RequestBody UpdateRecruitingBoardRequest request,
+                                    @PathVariable Long recruitingBoardId) {
+        // 멤버 정보 가져오기
+        Member member = memberService.get(username);
+
+        // 게시글 작성
+        recruitingBoardService.update(member, request, recruitingBoardId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "모집 게시글 삭제 API")
+    @DeleteMapping("/{recruitingBoardId}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal String username,
+                                    @PathVariable Long recruitingBoardId) {
+        // 멤버 정보 가져오기
+        Member member = memberService.get(username);
+
+        // 게시글 작성
+        recruitingBoardService.delete(member, recruitingBoardId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

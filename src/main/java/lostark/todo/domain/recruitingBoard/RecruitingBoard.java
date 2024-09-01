@@ -3,6 +3,7 @@ package lostark.todo.domain.recruitingBoard;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.controller.dtoV2.recruitingBoard.CreateRecruitingBoardRequest;
+import lostark.todo.controller.dtoV2.recruitingBoard.UpdateRecruitingBoardRequest;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 
@@ -66,5 +67,21 @@ public class RecruitingBoard extends BaseTimeEntity {
                 .url3(request.getUrl3())
                 .showCount(0)
                 .build();
+    }
+
+    public void upShowCount() {
+        this.showCount++;
+    }
+
+    public void update(UpdateRecruitingBoardRequest request) {
+        this.title = request.getTitle();
+        this.body = request.getBody();
+        this.showMainCharacter = request.getShowMainCharacter();
+        this.ExpeditionSetting = request.getExpeditionSetting();
+        this.weekdaysPlay = request.getWeekdaysPlay().toString();
+        this.weekendsPlay = request.getWeekendsPlay().toString();
+        this.url1 = request.getUrl1();
+        this.url2 = request.getUrl2();
+        this.url3 = request.getUrl3();
     }
 }
