@@ -9,7 +9,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
+import static lostark.todo.domain.character.QCharacter.character;
+import static lostark.todo.domain.content.QDayContent.dayContent;
 import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domain.recruitingBoard.QRecruitingBoard.recruitingBoard;
 
@@ -22,7 +25,7 @@ public class RecruitingBoardRepositoryImpl implements RecruitingBoardCustomRepos
     public Page<RecruitingBoard> search(SearchRecruitingBoardRequest request, PageRequest pageRequest) {
         List<RecruitingBoard> fetch = factory.select(recruitingBoard)
                 .from(recruitingBoard)
-                .leftJoin(recruitingBoard.member, member)
+                .leftJoin(recruitingBoard.member, member).fetchJoin()
                 .where(
                         eqRecruitingCategory(request.getRecruitingCategory())
                 )
@@ -35,6 +38,21 @@ public class RecruitingBoardRepositoryImpl implements RecruitingBoardCustomRepos
         ).fetchCount();
 
         return new PageImpl<>(fetch, pageRequest, total);
+    }
+
+    @Override
+    public Optional<RecruitingBoard> get(long recruitingBoardId) {
+        RecruitingBoard result =
+                factory.select(recruitingBoard)
+                        .from(recruitingBoard)
+                        .leftJoin(recruitingBoard.member, member).fetchJoin()
+                        .leftJoin(member.characters, character).fetchJoin()
+                        .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
+                        .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                        .where(
+                                recruitingBoard.id.eq(recruitingBoardId)
+                        ).fetchOne();
+        return Optional.ofNullable(result);
     }
 
     private BooleanExpression eqRecruitingCategory(RecruitingCategoryEnum recruitingCategory) {

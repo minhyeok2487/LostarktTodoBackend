@@ -12,4 +12,6 @@ public class ErrorMessages {
     public static final String CUSTOM_TODO_NOT_FOUND = "등록되지 않은 커스텀숙제 입니다.";
 
     public static final String FRIEND_PERMISSION_DENIED = "깐부 권한이 없습니다.";
+
+    public static final String RECRUITING_BOARD_NOT_FOUND = "없는 모집 게시글 입니다.";
 }

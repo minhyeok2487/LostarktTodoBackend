@@ -4,10 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.recruitingBoard.CreateRecruitingBoardRequest;
-import lostark.todo.controller.dtoV2.recruitingBoard.CreateRecruitingBoardResponse;
-import lostark.todo.controller.dtoV2.recruitingBoard.SearchRecruitingBoardRequest;
-import lostark.todo.controller.dtoV2.recruitingBoard.SearchRecruitingBoardResponse;
+import lostark.todo.controller.dtoV2.recruitingBoard.*;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.recruitingBoard.RecruitingBoard;
 import lostark.todo.service.MemberService;
@@ -50,5 +47,12 @@ public class RecruitingBoardController {
         PageRequest pageRequest = PageRequest.of(page-1, limit);
         Page<RecruitingBoard> search = recruitingBoardService.search(request, pageRequest);
         return new ResponseEntity<>(search.map(SearchRecruitingBoardResponse::new), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "모집 게시글 조회", response = GetRecruitingBoardResponse.class)
+    @GetMapping("/{recruitingBoardId}")
+    public ResponseEntity<?> get(@PathVariable Long recruitingBoardId) {
+        RecruitingBoard recruitingBoard = recruitingBoardService.get(recruitingBoardId);
+        return new ResponseEntity<>(new GetRecruitingBoardResponse(recruitingBoard), HttpStatus.OK);
     }
 }

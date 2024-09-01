@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static lostark.todo.constants.ErrorMessages.RECRUITING_BOARD_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,5 +31,11 @@ public class RecruitingBoardService {
     @Transactional(readOnly = true)
     public Page<RecruitingBoard> search(SearchRecruitingBoardRequest request, PageRequest pageRequest) {
         return recruitingBoardRepository.search(request, pageRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public RecruitingBoard get(long recruitingBoardId) {
+        return recruitingBoardRepository.get(recruitingBoardId)
+                .orElseThrow(() -> new IllegalArgumentException(RECRUITING_BOARD_NOT_FOUND));
     }
 }
