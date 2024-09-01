@@ -1,6 +1,7 @@
 package lostark.todo.domain.recruitingBoard;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.controller.dtoV2.recruitingBoard.CreateRecruitingBoardRequest;
 import lostark.todo.controller.dtoV2.recruitingBoard.UpdateRecruitingBoardRequest;
@@ -8,6 +9,7 @@ import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -52,6 +54,10 @@ public class RecruitingBoard extends BaseTimeEntity {
 
     private int showCount;
 
+    @OneToMany(mappedBy = "recruitingBoard", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @JsonManagedReference
+    private List<RecruitingBoardImages> boardImages;
+
     public static RecruitingBoard toEntity(Member member, CreateRecruitingBoardRequest request) {
         return RecruitingBoard.builder()
                 .member(member)
@@ -83,5 +89,11 @@ public class RecruitingBoard extends BaseTimeEntity {
         this.url1 = request.getUrl1();
         this.url2 = request.getUrl2();
         this.url3 = request.getUrl3();
+    }
+
+    public RecruitingBoard addImages(RecruitingBoardImages image) {
+        boardImages.add(image);
+        image.setRecruitingBoard(this);
+        return this;
     }
 }

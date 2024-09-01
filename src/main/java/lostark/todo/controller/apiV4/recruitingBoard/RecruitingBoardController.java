@@ -8,6 +8,7 @@ import lostark.todo.controller.dtoV2.recruitingBoard.*;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.recruitingBoard.RecruitingBoard;
 import lostark.todo.service.MemberService;
+import lostark.todo.service.RecruitingBoardImagesService;
 import lostark.todo.service.RecruitingBoardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ public class RecruitingBoardController {
 
     private final MemberService memberService;
     private final RecruitingBoardService recruitingBoardService;
+    private final RecruitingBoardImagesService recruitingBoardImagesService;
 
     @ApiOperation(value = "모집 게시글 작성 API")
     @PostMapping()
@@ -35,6 +37,8 @@ public class RecruitingBoardController {
 
         // 게시글 작성
         RecruitingBoard recruitingBoard = recruitingBoardService.create(member, request);
+
+        recruitingBoardImagesService.saveByfileNames(request.getFileNames(), recruitingBoard);
 
         return new ResponseEntity<>(new CreateRecruitingBoardResponse(recruitingBoard.getId()), HttpStatus.OK);
     }

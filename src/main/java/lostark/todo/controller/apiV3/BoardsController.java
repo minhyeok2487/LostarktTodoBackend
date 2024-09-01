@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.boardsDto.*;
+import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.BoardImages;
 import lostark.todo.domain.boards.Boards;
@@ -12,6 +13,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.exhandler.exceptions.CustomIllegalArgumentException;
 import lostark.todo.service.BoardImagesService;
 import lostark.todo.service.BoardsService;
+import lostark.todo.service.ImagesService;
 import lostark.todo.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,7 @@ public class BoardsController {
     private final MemberService memberService;
     private final BoardsService boardsService;
     private final BoardImagesService boardImagesService;
+    private final ImagesService imagesService;
 
 
     @ApiOperation(value = "사이트 공지사항 page, size 크기로 가져오기",
@@ -94,7 +97,6 @@ public class BoardsController {
     public ResponseEntity<?> save(@AuthenticationPrincipal String username,
                                   @RequestBody BoardInsertDto boardInsertDto) {
         Member member = memberService.get(username);
-        log.info(String.valueOf(boardInsertDto.getFileNames().size()));
 
         if (member.getRole().equals(Role.ADMIN)) {
             Boards entity = Boards.builder()
@@ -147,13 +149,15 @@ public class BoardsController {
         }
     }
 
-    @ApiOperation(value = "이미지 업로드", response = BoardImageUrlDto.class)
+    @ApiOperation(value = "이미지 업로드", response = ImageUrlDto.class)
     @PostMapping("/image")
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal String username, @RequestPart("image") MultipartFile image) {
         Member member = memberService.get(username);
         if (member.getRole().equals(Role.ADMIN)) {
-            BoardImages upload = boardImagesService.upload(image);
-            return new ResponseEntity<>(new BoardImageUrlDto(upload), HttpStatus.OK);
+            String folderName = "boards/";
+            ImageResponse imageResponse = imagesService.upload(image, folderName);
+            BoardImages upload = boardImagesService.uploadImage(imageResponse);
+            return new ResponseEntity<>(new ImageUrlDto(imageResponse), HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("권한이 없습니다.");
         }

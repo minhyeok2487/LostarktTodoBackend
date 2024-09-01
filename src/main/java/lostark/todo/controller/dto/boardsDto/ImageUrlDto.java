@@ -5,13 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.boards.BoardImages;
+import lostark.todo.controller.dtoV2.image.ImageResponse;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardImageUrlDto {
+public class ImageUrlDto {
 
     @ApiModelProperty(notes = "url")
     private String url;
@@ -19,8 +19,8 @@ public class BoardImageUrlDto {
     @ApiModelProperty(notes = "fileName")
     private String fileName;
 
-    public BoardImageUrlDto(BoardImages upload) {
-        this.fileName = upload.getFileName();
-        this.url = upload.getImageUrl();
+    public ImageUrlDto(ImageResponse imageResponse) {
+        this.fileName = imageResponse.getFileName();
+        this.url = imageResponse.getImageUrl();
     }
 }

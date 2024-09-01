@@ -1,5 +1,6 @@
 package lostark.todo.controller.dtoV2.recruitingBoard;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lostark.todo.domain.recruitingBoard.ExpeditionSettingEnum;
 import lostark.todo.domain.recruitingBoard.RecruitingCategoryEnum;
@@ -36,4 +37,7 @@ public class CreateRecruitingBoardRequest {
     private String url2;
 
     private String url3;
+
+    @ApiModelProperty(notes = "이미지 name 리스트")
+    private List<String> fileNames;
 }
