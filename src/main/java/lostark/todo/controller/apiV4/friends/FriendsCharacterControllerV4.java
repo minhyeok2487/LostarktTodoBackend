@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.Character;
@@ -29,6 +30,20 @@ public class FriendsCharacterControllerV4 {
 
     private final CharacterService characterService;
     private final FriendsService friendsService;
+
+    @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterResponse.class)
+    @PatchMapping("/{friendUsername}/gold-character")
+    public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,
+                                                                 @RequestBody CharacterDefaultDto characterDefaultDto,
+                                                                 @PathVariable String friendUsername) {
+        Friends friend = friendsService.findByFriendUsername(friendUsername, username);
+        if (!friend.getFriendSettings().isSetting()) {
+            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+        }
+
+        Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, friendUsername);
+        return new ResponseEntity<>(CharacterResponse.toDto(resultCharacter), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
     @PostMapping("/{friendUsername}/memo")
