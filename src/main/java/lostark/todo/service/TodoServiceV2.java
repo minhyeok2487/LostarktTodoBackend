@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
+import lostark.todo.domain.keyvalue.KeyValueRepository;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domain.todoV2.TodoV2Repository;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 public class TodoServiceV2 {
 
     private final TodoV2Repository todoV2Repository;
+    private final KeyValueRepository keyValueRepository;
 
     public TodoV2 findById(long id) {
         return todoV2Repository.findById(id)
@@ -58,7 +60,7 @@ public class TodoServiceV2 {
                 .character(character)
                 .isChecked(false)
                 .gold(weekContent.getGold())
-                .coolTime(2)
+                .coolTime(checkTwoCycle(weekContent))
                 .sortNumber(999)
                 .build();
 
@@ -127,6 +129,15 @@ public class TodoServiceV2 {
         todoV2Repository.delete(existingTodo);
     }
 
+    // 2주기 레이드일때 등록된 값 체크해서 초기화주간 인지 확인
+    // 초기화 주간이면 2, 아니면 1
+    private int checkTwoCycle(WeekContent weekContent) {
+        if (weekContent.getCoolTime() == 2) {
+            return Integer.parseInt(keyValueRepository.findByKeyName("two-cycle"));
+        } else {
+            return 2;
+        }
+    }
 
 
 
@@ -156,7 +167,7 @@ public class TodoServiceV2 {
                             .character(character)
                             .isChecked(false)
                             .gold(content.getGold())
-                            .coolTime(2)
+                            .coolTime(checkTwoCycle(content))
                             .sortNumber(999)
                             .build())
                     .toList();
@@ -183,22 +194,17 @@ public class TodoServiceV2 {
 
     }
 
-
+    @Transactional
     public void updateWeekRaidCheckAll(Character character, String weekCategory) {
         List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
-        // 전체 체크 상태가 아니라면 전체 체크, 아니면 전체 체크 해제
-        List<TodoV2> checked = todoV2List.stream().filter(TodoV2::isChecked).toList();
-        for (TodoV2 todoV2 : todoV2List) {
-            if (checked.size() == todoV2List.size()) {
-                if (todoV2.getCoolTime() != 0) { //2주기 레이드 체크 방지
-                    todoV2.setChecked(false);
-                }
-            } else {
-                todoV2.setChecked(true);
-            }
 
-        }
+        // 현재 체크된 항목이 전체 항목 수와 같은지 확인
+        boolean allChecked = todoV2List.stream().allMatch(TodoV2::isChecked);
+
+        // 전체가 체크되어 있으면 전체 체크 해제, 그렇지 않으면 전체 체크
+        todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
     }
+
 
     // 캐릭터 보스별로 순서 정렬
     public void updateWeekRaidSort(Character character, List<TodoSortRequestDto> dtos) {

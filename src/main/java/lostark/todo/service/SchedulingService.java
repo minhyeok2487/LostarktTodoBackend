@@ -7,6 +7,7 @@ import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
 import lostark.todo.domain.customTodo.CustomTodoRepository;
+import lostark.todo.domain.keyvalue.KeyValueRepository;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.notices.Notices;
@@ -39,6 +40,7 @@ public class SchedulingService {
     private final NoticesService noticesService;
     private final WebHookService webHookService;
     private final ScheduleService scheduleService;
+    private final KeyValueRepository keyValueRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -159,6 +161,8 @@ public class SchedulingService {
      */
     @Scheduled(cron = "0 1 6 * * 3", zone = "Asia/Seoul")
     public void resetWeekTodo() {
+        log.info("2주기 체크 값 변경 = {}", keyValueRepository.updateTwoCycle());
+
         log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 
         log.info("todoV2Repository.resetTodoV2() = {}", todoV2Repository.resetTodoV2()); // 주간 레이드 초기화
