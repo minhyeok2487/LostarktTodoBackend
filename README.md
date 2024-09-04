@@ -1,104 +1,54 @@
-# 로스트아크 숙제 체크 사이트
-## https://app.loatodo.com
-![img_1.png](resource/main.png)
+# 로스트아크 일정 관리 사이트
+### https://app.loatodo.com
+![img_1.png](img_1.png)
 
-## Github
-- [Backend](https://github.com/minhyeok2487/LostarktTodoBackend)
-- [Frontend](https://github.com/minhyeok2487/LostarkTodoFrontend)
-- [Frontend-Publisher](https://github.com/leehanbee35/LostarkTodoFrontend.git)
-
-
-## 프로젝트
-### 개요
-- 로스트아크 일일, 주간 컨텐츠 관리 사이트
+# 프로젝트 구조
+### 주요 기능
+- 로스트아크 일일, 주간 숙제(일정) 관리
     - 일일 컨텐츠 : 카오스 던전, 가디언 토벌, 에포나 의뢰
         - 로스트아크 오픈 API의 거래소, 경매장 등의 데이터를 호출해 예상 수익 계산
         - 체크한 내용을 바탕으로 휴식게이지 계산 -> 인게임과 동일한 휴식게이지
-    - 주간 컨텐츠 : 군단장 레이드, 어비스 던전, 어비스레이드
+    - 주간 레이드 : 카제로스 레이드, 군단장 레이드, 어비스 던전, 어비스레이드
         - 주간 수익 계산
-        - 몇 개의 2주 주기 컨텐츠 계산
-- 컨텐츠 완료 한 기록 저장 -> 달력식으로 보기
-- 주간숙제 고정팟 관리 -> 접속시간 기록 바탕으로 고정팟 추천
+        - 몇 개의 2주 주기 컨텐츠 계산 (카멘 4관문, 아브렐슈드 4관문)
+    - 커스텀 메뉴 : 등록된 항목 외의 사용자 임의로 항목 추가 가능(일일, 주간)
+- 깐부
+  - 다른 사용자의 숙제 탭 내용 공유
+  - 각 항목마다 권한을 부여할 수 있음
+- 일정
+  - 캘린더 형식의 일정 등록 기능
+- 방명록
+- 모집 게시판 (개발중)
+  - 깐부, 길드, 공격대 모집/홍보 게시판 개발중
 
-### 인원
-* 개발자 1 (백엔드 & 프론트) PM
-* 퍼블리셔 1 (2023.10.12~)
+### 기술스택
+- Programing Languages : Java, TypeScript, HTML5, CSS3
+- Framework : SpringBoot, React
+- Library : JPA, QueryDSL, Spring Security, Spring Cache, Swagger, JWT, Recoil, React-Query
+- Tooling / DevOps : Redis, Docker, Git, Figma
+- Environment : AWS (EC2, RDS, S3, ECR, ECS, CodePipeline, ElastiCache)
+- DB : MySQL
+- Etc : Jira, Confluence, Discord
 
-### 기간
-* 2023.08.02 ~ 2023.09.10(기본 기능 개발)
-* 2023.09.11 베타 버전 배포
-* 2023.10.10 메인 기능(숙제 관리) 배포 완료
+### 인력 구성
+- PM겸 풀스택 개발 1
+- UI/UX 기획, 퍼블리셔 1 (2023.10.12 ~)
+- 프론트엔드 개발 1 (2024.06.12 ~)
 
-### 배포기록
-* https://www.inven.co.kr/board/lostark/4821?name=nicname&keyword=Dev&eq=1&iskin=
+### 운영 기록
+- 2023.07.02 ~ 2023.09.10 - 기본 기능 개발
+- 2023.09.11 - 베타 버전 배포
+- 2023.10.10 - 메인 기능(숙제 관리) 배포 완료
+- 2023.12.01 - 친구 기능 추가 완료
+- 2024.01.10 - 이메일 인증 로그인 구현
+- 2024.02.21 - 홈 화면 리빌딩
+- 2024.06.01 - 타입스크립트, React Query, Recoil을 사용하여 프론트엔드 재구축
+- 2024.06.16 - 백엔드서버 RI 및 CI/CD 환경 구성
+- 2024.07.10 - 알림 기능 추가
 
-
-### 주요 기능
-#### 1. 가입
-##### **구글 로그인으로 가입 가능**
-* ApiKey, 대표캐릭터 -> ApiKey 가 필수이기 때문에 로스트아크 서버 점검 중에는 가입불가
-![00.gif](resource/00.gif)
-
-#### 2. Todo
-##### **캐릭터 Info**
-  * 캐릭터 이미지 안에 클래스, 서버, 아이템 레벨, 캐릭터 이름 출력
-  * 원하는 컨텐츠만 출력
-  ![09.gif](resource/09.gif)
-
-
-  * 캐릭터 순서 변경
-  ![12.gif](resource/12.gif)
-
-
-
-##### **일일 숙제 체크**
-  * 돋보기 클릭 시 재료 통계 출력
-  ![01.gif](resource/01.gif)
-
-
-  * 하단 녹색 바 클릭 시 휴식게이지 수정 -> 자동으로 예상수익 변경
-  ![02.gif](resource/02.gif)
-
-
-  * 매일 오전 6시 일일숙제 초기화 -> 체크된 내용으로 휴식게이지 계산 -> 예상수익 변경
-
-
-##### **주간 숙제 관리**
-  * 원하는 컨텐츠 체크 후 저장
-  ![03.gif](resource/03.gif)  
-
-
-  * 같은 레이드 동시 선택 불가 (예시 - 카양겔(노말), 카양겔(하드))
-  ![04.gif](resource/04.gif)
-
-
-  * 골드 획득이 높은 순으로 정렬 -> 3개 주간 골드로 포함
-  ![05.gif](resource/05.gif)
-
-
-* 서버별 출력 분리
-![06.gif](resource/06.gif)
-
-* 주간 원정대 숙제 체크 -> 서버별
-  * 도전 어비스 던전
-  * 도전 가디언 토벌
-![07.gif](resource/07.gif)
-
-
-* 골드 획득 캐릭터 지정
-* 수익 / 예상 수익
-  * 일일 수익 / 예상 일일 수익
-  * 주간 수익 / 예상 주간 수익 -> 단, 골드 획득 지정 캐릭터만
-![08.gif](resource/08.gif)
-
-
-#### 기타
-##### **다크모드**
-![10.gif](resource/10.gif)
-
-
-##### **방명록**
-![11.gif](resource/11.gif)
+### Github
+- [Backend](https://github.com/minhyeok2487/LostarktTodoBackend)
+- [Frontend](https://github.com/minhyeok2487/LoatodoFrontWithTs)
 
 ### 참고 사이트
 * [로스트아크 오픈 API](https://developer-lostark.game.onstove.com/getting-started)
@@ -106,47 +56,54 @@
 * [클로아(디자인 참고)](https://kloa.gg)
 
 
-
-
-## STACKS
-### Environment
-<div>
-  <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
-  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</div>
-
-### Backend Development
-<div>
-  <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
-  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
-</div>
-
-
-### Frontend Development
-<div>
-<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=white">
-</div>
-
-### DataBase
-<div>
-  <img src="https://img.shields.io/badge/amazonrds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white">
-<img src="https://img.shields.io/badge/mySql-003545?style=for-the-badge&logo=MySql&logoColor=white">
-</div>
-
-### Communication
-<div>
-<img src="https://img.shields.io/badge/confluence-172B4D?style=for-the-badge&logo=confluence&logoColor=white">
-<img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
-</div>
-
-## 문서 정리
-### Backend 프로젝트 진행 중 성장
-* [JPA N+1 문제](https://repeater2487.tistory.com/129)
-* [JPQL 사용](https://repeater2487.tistory.com/130)
-* [엔티티 생성/수정 시각 자동화 Auditing](https://repeater2487.tistory.com/131)
-* [API 문서 자동화 Swagger](https://repeater2487.tistory.com/134)
-* [빌더 패턴 (with Lombok)](https://repeater2487.tistory.com/135)
-* [일대다 매핑과 빌더 패턴](https://repeater2487.tistory.com/136)
-* [int와 Integer, boolean과 Boolean](https://repeater2487.tistory.com/137)
+## 회고
+- **2024.06.16 / 백엔드서버 RI 및 CI/CD 환경 구성**
+  - 기존 ElasticBeanstalk으로 운영하던 비용이 부담되서 서버비용 감축을 위함
+  - AWS Code Build, Code Pipeline, ECR, ECS 사용 
+  - 예약 인스턴스(RI)를 이용하여 서버비용 감축
+  - 블로그 정리
+    - https://repeater2487.tistory.com/193
+    - https://repeater2487.tistory.com/196
+    - https://repeater2487.tistory.com/197
+- **2024.06.01 / 프론트엔트 환경 재구축**
+  - useState만을 사용하여 관리하니 유지보수에 어려움을 느낌
+  - 타입스크립트, React Query, Recoil 사용
+  - 위 라이브러리를 사용하여 기능 추가 및 개선 용이
+- **2024.02.26 / 전략패턴을 이용한 코드 리팩토링**
+  - boolean 형식으로 저장 후 IF문을 이용하여 정책을 분리해서 구현한 메소드
+  - ENUM과 전략패턴을 이용하여 로직 분리
+  - 추후 새로운 정책 추가 용이
+  - https://repeater2487.tistory.com/183
+- **2023.12.31 ~ 2024.02.01 / Redis에 관하여**
+  - 초기 이메일 인증 로직을 Redis 이용하여 구현
+    - 이때 인증 번호 저장용으로 Redis 서버를 AWS ElastiCache 사용
+  - 비용적인 문제로 위 서버를 내리고 기존 RDBMS 테이블에 저장하는 방식으로 변경함
+  - https://repeater2487.tistory.com/182
+- **2023.11.24 / N+1 문제 리팩토링**
+  - 1:N 관계 테이블 4개를 호출해서 SELECT 문이 여러번 실행
+    - (Member - Characters - Content, todoV2)
+  - JPQL JOIN FETCH로 변경
+  - 단, 이렇게 했을때 특정 테이블(todoV2)의 값이 없으면 데이터를 불러오지 않아 3개의 테이블만 연결 
+    - → 해당 문제 LEFT JOIN으로 해결 (Member - Characters - Content)
+  - https://repeater2487.tistory.com/164
+- **2023.11.08 / 메모리 부족으로 인한 서버다운**
+  - 약 10만건의 데이터 JPA 더티체킹 업데이트로 인한 메모리 부족 문제
+  - JPQL 문법으로 변경으로 해결(Bulk 업데이트)
+  - https://repeater2487.tistory.com/163
+- **2023.10.30 / 주간 숙제 완료 시 수치가 초과되는 문제 해결**
+  - 백엔드와 프론트 로직 문제
+  - https://repeater2487.tistory.com/158
+- **기타**
+  - 2023.08.01 / int와 Integer, boolean과 Boolean
+    - https://repeater2487.tistory.com/137
+  - 2023.07.28 / 빌더 패턴
+    - https://repeater2487.tistory.com/135
+    - https://repeater2487.tistory.com/136
+  - 2023.07.26 / API 문서 자동화 Swagger
+    - https://repeater2487.tistory.com/134
+  - 2023.07.06 / fetch join을 활용한 LAZY 호출 최적화
+    - https://repeater2487.tistory.com/129
+  - 2023.07.08 / Auditing을 활용한 엔티티 생성/수정 시각 자동화
+    - https://repeater2487.tistory.com/131
+  - 2023.07.07 / JPQL을 활용한 쿼리 작성
+    - https://repeater2487.tistory.com/130
