@@ -21,6 +21,9 @@
 - 모집 게시판 (개발중)
   - 깐부, 길드, 공격대 모집/홍보 게시판 개발중
 
+### 성과 (2024.09.04)
+![img.png](img.png)
+
 ### 기술스택
 - Programing Languages : Java, TypeScript, HTML5, CSS3
 - Framework : SpringBoot, React
