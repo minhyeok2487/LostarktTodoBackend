@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CommentsRepository extends JpaRepository<Comments, Long> {
+public interface CommentsRepository extends JpaRepository<Comments, Long>, CommentsCustomRepository {
 
     @Query("SELECT c FROM Comments c WHERE c.parentId = 0")
     Page<Comments> findAllByParentIdIs0(Pageable pageable);

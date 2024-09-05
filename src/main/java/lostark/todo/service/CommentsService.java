@@ -2,6 +2,8 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsRequest;
+import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsResponse;
 import lostark.todo.domain.comments.Comments;
 import lostark.todo.domain.comments.CommentsRepository;
 import org.springframework.data.domain.Page;
@@ -56,5 +58,10 @@ public class CommentsService {
     public int findCommentPage(long commentId) {
         int commentIndex = commentsRepository.findCommentIndex(commentId);
         return (commentIndex / 5) + 1;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SearchAdminCommentsResponse> searchAdmin(SearchAdminCommentsRequest request, PageRequest pageRequest) {
+        return commentsRepository.searchAdmin(request, pageRequest);
     }
 }
