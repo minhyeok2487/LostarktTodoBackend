@@ -75,7 +75,8 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     @Override
     public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
         List<SearchAdminMemberResponse> fetch = factory.select(new QSearchAdminMemberResponse(
-                        member.id, member.username, member.createdDate, member.authProvider, member.mainCharacter
+                        member.id, member.username, member.createdDate, member.authProvider,
+                        member.mainCharacter, member.apiKey
                 ))
                 .from(member)
                 .where(

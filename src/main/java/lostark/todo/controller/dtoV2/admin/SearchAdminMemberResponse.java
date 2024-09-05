@@ -18,12 +18,16 @@ public class SearchAdminMemberResponse {
 
     private String mainCharacter;
 
+    private String apiKey;
+
     @QueryProjection
-    public SearchAdminMemberResponse(long memberId, String username, LocalDateTime createdDate, String authProvider, String mainCharacter) {
+    public SearchAdminMemberResponse(long memberId, String username, LocalDateTime createdDate,
+                                     String authProvider, String mainCharacter, String apiKey) {
         this.memberId = memberId;
         this.username = username;
         this.createdDate = createdDate;
         this.authProvider = authProvider;
         this.mainCharacter = mainCharacter;
+        this.apiKey = apiKey;
     }
 }
