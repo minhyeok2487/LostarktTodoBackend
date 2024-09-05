@@ -127,8 +127,10 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
         factory.update(character)
                 .set(character.dayTodo.chaosGold,
                         new CaseBuilder()
-                                .when(character.dayTodo.chaosGauge.goe(40)).then(price * 4.0)
+                                .when(character.itemLevel.lt(1640).and(character.dayTodo.chaosGauge.goe(40))).then(price * 4.0)
                                 .when(character.itemLevel.lt(1640).and(character.dayTodo.chaosGauge.goe(20))).then(price * 3.0)
+                                .when(character.itemLevel.goe(1640).and(character.dayTodo.chaosGauge.goe(40))).then(price * 2.0)
+                                .when(character.itemLevel.goe(1640).and(character.dayTodo.chaosGauge.lt(40))).then(price)
                                 .otherwise(price * 2.0))
                 .where(character.dayTodo.chaos.eq(dayContent))
                 .execute();
