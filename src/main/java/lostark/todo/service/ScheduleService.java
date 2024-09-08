@@ -52,7 +52,6 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    // TODO 추후 최적화
     public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
         return scheduleRepository.getWeek(username, request).stream()
                 .peek(response -> {

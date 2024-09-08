@@ -53,12 +53,18 @@ public class CharactersControllerV4 {
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
+    @ApiOperation(value = "캐릭터 리스트 순서변경 저장", response = CharacterResponse.class)
     @PatchMapping("/sorting")
-    public ResponseEntity updateSort(@AuthenticationPrincipal String username,
+    public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,
                                      @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
-        memberService.editSort(username, characterSortDtoList);
-        return new ResponseEntity<>(HttpStatus.OK);
+        List<Character> characterList = memberService.editSort(username, characterSortDtoList);
+        List<CharacterResponse> responseList = characterList.stream()
+                .map(CharacterResponse::toDto)
+                .sorted(Comparator
+                        .comparingInt(CharacterResponse::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
+                .toList();
+        return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",

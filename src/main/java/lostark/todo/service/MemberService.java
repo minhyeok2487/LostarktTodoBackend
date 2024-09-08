@@ -149,16 +149,13 @@ public class MemberService {
     }
 
     // TODO - CharacterService쪽에 있어야함
-    public Member editSort(String username, List<CharacterSortDto> characterSortDtoList) {
-        Member member = get(username);
-        List<Character> beforeCharacterList = member.getCharacters();
-        beforeCharacterList.stream().peek(
+    public List<Character> editSort(String username, List<CharacterSortDto> characterSortDtoList) {
+        return get(username).getCharacters().stream().peek(
                         character -> characterSortDtoList.stream()
                                 .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
                                 .findFirst()
                                 .ifPresent(characterSortDto -> character.setSortNumber(characterSortDto.getSortNumber())))
                 .collect(Collectors.toList());
 
-        return member;
     }
 }

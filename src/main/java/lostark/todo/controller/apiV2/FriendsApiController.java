@@ -10,6 +10,7 @@ import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodo;
 import lostark.todo.domain.content.Category;
@@ -303,15 +304,14 @@ public class FriendsApiController {
         boolean setting = friendsService.checkSetting(fromMember, toMember, "setting");
 
         if(setting) {
-            Member member = memberService.editSort(fromUser, characterSortDtoList);
-
-            List<CharacterDto> characterDtoList = new ArrayList<>();
-            for (Character character : member.getCharacters()) {
-                // Character -> CharacterResponseDto 변경
-                CharacterDto characterDto = new CharacterDto().toDtoV2(character);
-                characterDtoList.add(characterDto);
-            }
-            return new ResponseEntity<>(characterDtoList, HttpStatus.OK);
+            List<Character> characterList = memberService.editSort(fromUser, characterSortDtoList);
+            List<CharacterResponse> responseList = characterList.stream()
+                    .map(CharacterResponse::toDto)
+                    .sorted(Comparator
+                            .comparingInt(CharacterResponse::getSortNumber)
+                            .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
+                    .toList();
+            return new ResponseEntity<>(responseList, HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
