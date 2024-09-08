@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.todoDto.raid.RaidGoldCheckRequestDto;
+import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.Character;
 import lostark.todo.service.CharacterService;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,6 @@ public class WeekRaidController {
         // 골드 체크 업데이트
         characterService.updateRaidGoldCheck(character, requestDto.getWeekCategory(), requestDto.isUpdateValue());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
     }
 }
