@@ -28,4 +28,8 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
 
     @Query("SELECT d FROM DayContent d")
     List<DayContent> findAllByDayContent();
+
+    @Query("SELECT c from CubeContent c")
+    List<CubeContent> findAllByCubeContent();
+
 }

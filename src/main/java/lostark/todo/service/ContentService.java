@@ -60,4 +60,9 @@ public class ContentService {
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
         return contentRepository.getScheduleRaidCategory();
     }
+
+    @Transactional(readOnly = true)
+    public List<CubeContent> findAllCubeContent() {
+        return contentRepository.findAllByCubeContent();
+    }
 }
