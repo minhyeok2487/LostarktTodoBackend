@@ -1,7 +1,8 @@
-package lostark.todo.domain.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.repository;
 
 
-import lostark.todo.controller.dtoV2.recruitingBoard.SearchRecruitingBoardRequest;
+import lostark.todo.domainV2.board.recrutingBoard.dto.SearchRecruitingBoardRequest;
+import lostark.todo.domainV2.board.recrutingBoard.entity.RecruitingBoard;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 

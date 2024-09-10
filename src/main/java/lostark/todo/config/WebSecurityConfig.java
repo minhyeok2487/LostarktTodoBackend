@@ -68,7 +68,7 @@ public class WebSecurityConfig {
                 .authorizeRequests() // 인증 필요하지 않는 링크
                 .antMatchers(PERMIT_ALL_LINK).permitAll()
                 .antMatchers(HttpMethod.GET,"/v3/comments").permitAll() // 방명록 불러오기 Get만 허용
-                .antMatchers(HttpMethod.GET,"/v4/recruiting-board/**").permitAll() // 모집 게시판 Get만 허용
+                .antMatchers(HttpMethod.GET,"/api/v1/recruiting-board/**").permitAll() // 모집 게시판 Get만 허용
                 .anyRequest().authenticated() // 나머지 경로 모두 인증
                 .and().oauth2Login()//OAuth 로그인
                 .authorizationEndpoint().baseUri("/auth/authorize")

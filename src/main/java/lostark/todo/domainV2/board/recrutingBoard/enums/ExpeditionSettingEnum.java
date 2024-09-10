@@ -1,4 +1,4 @@
-package lostark.todo.domain.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.enums;
 
 public enum ExpeditionSettingEnum {
 

@@ -1,10 +1,10 @@
-package lostark.todo.controller.dtoV2.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.recruitingBoard.ExpeditionSettingEnum;
-import lostark.todo.domain.recruitingBoard.RecruitingCategoryEnum;
-import lostark.todo.domain.recruitingBoard.TimeCategoryEnum;
+import lostark.todo.domainV2.board.recrutingBoard.enums.ExpeditionSettingEnum;
+import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;
+import lostark.todo.domainV2.board.recrutingBoard.enums.TimeCategoryEnum;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -36,17 +36,12 @@ public class CreateRecruitingBoardRequest {
     @ApiModelProperty(example = "게시판 카테고리")
     private RecruitingCategoryEnum recruitingCategory;
 
+    @NotNull
     @ApiModelProperty(example = "내용")
     private String body;
 
-    @ApiModelProperty(example = "외부 링크 1")
-    private String url1;
-
-    @ApiModelProperty(example = "외부 링크 2")
-    private String url2;
-
-    @ApiModelProperty(example = "외부 링크 3")
-    private String url3;
+    @ApiModelProperty(example = "외부 링크 리스트")
+    private List<String> url;
 
     @ApiModelProperty(notes = "이미지 name 리스트")
     private List<String> fileNames;

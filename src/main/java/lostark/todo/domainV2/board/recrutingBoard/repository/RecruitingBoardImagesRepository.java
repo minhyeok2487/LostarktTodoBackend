@@ -1,5 +1,6 @@
-package lostark.todo.domain.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.repository;
 
+import lostark.todo.domainV2.board.recrutingBoard.entity.RecruitingBoardImages;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

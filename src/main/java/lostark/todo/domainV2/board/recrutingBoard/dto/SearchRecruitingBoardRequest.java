@@ -1,8 +1,8 @@
-package lostark.todo.controller.dtoV2.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.recruitingBoard.RecruitingCategoryEnum;
+import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;
 
 @Data
 public class SearchRecruitingBoardRequest {

@@ -41,15 +41,15 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfiguration {
     private String version;
-    private String title;
+    private String description;
 
     /**
      * Swagger 문서 정보
      */
-    private ApiInfo apiInfo(String title, String version) {
+    private ApiInfo apiInfo(String description, String version) {
         return new ApiInfoBuilder()
-                .title(title)
-//                .description("로스트아크 일정 관리 REST API")
+                .title("로아투두 API")
+                .description(description)
                 .version(version)
                 .build();
     }
@@ -57,17 +57,16 @@ public class SwaggerConfiguration {
     /**
      * 설정 Bean 등록
      */
-
     @Bean
     public Docket v2() {
         version = "v2";
-        title = "로스트아크 일정 관리 REST API";
+        description = "로스트아크 일정 관리 REST API";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
                 .useDefaultResponseMessages(false)
                 .groupName(version)
-                .apiInfo(apiInfo(title, version))
+                .apiInfo(apiInfo(description, version))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV2"))
                 .build()
@@ -78,13 +77,13 @@ public class SwaggerConfiguration {
     @Bean
     public Docket v3() {
         version = "v3";
-        title = "로스트아크 일정 관리 REST API";
+        description = "로스트아크 일정 관리 REST API";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
                 .useDefaultResponseMessages(false)
                 .groupName(version)
-                .apiInfo(apiInfo(title, version))
+                .apiInfo(apiInfo(description, version))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV3"))
                 .build()
@@ -95,15 +94,32 @@ public class SwaggerConfiguration {
     @Bean
     public Docket v4() {
         version = "v4";
-        title = "로스트아크 일정 관리 REST API";
+        description = "로스트아크 일정 관리 REST API";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
                 .useDefaultResponseMessages(false)
                 .groupName(version)
-                .apiInfo(apiInfo(title, version))
+                .apiInfo(apiInfo(description, version))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV4"))
+                .build()
+                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Arrays.asList(apiKey()));
+    }
+
+    @Bean
+    public Docket board() {
+        version = "게시판";
+        description = "게시판 관련 API (공지사항, 모집, 방명록)";
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(description, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.board"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));

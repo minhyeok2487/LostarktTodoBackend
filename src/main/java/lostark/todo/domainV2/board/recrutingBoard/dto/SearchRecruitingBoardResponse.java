@@ -1,9 +1,9 @@
-package lostark.todo.controller.dtoV2.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.recruitingBoard.RecruitingBoard;
-import lostark.todo.domain.recruitingBoard.RecruitingCategoryEnum;
+import lostark.todo.domainV2.board.recrutingBoard.entity.RecruitingBoard;
+import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;
 
 import java.time.LocalDateTime;
 
@@ -19,13 +19,13 @@ public class SearchRecruitingBoardResponse {
     @ApiModelProperty(example = "제목")
     private String title;
 
-    @ApiModelProperty(example = "내용")
-    private String body;
-
     @ApiModelProperty(example = "작성자 캐릭터 이름")
     private String mainCharacterName;
 
-    @ApiModelProperty(example = "글 생성 시간")
+    @ApiModelProperty(example = "작성자 아이템 레벨")
+    private double itemLevel;
+
+    @ApiModelProperty(example = "글 작성 시간")
     private LocalDateTime createdDate;
 
     @ApiModelProperty(example = "조회수")
@@ -35,15 +35,11 @@ public class SearchRecruitingBoardResponse {
         this.recruitingBoardId = recruitingBoard.getId();
         this.recruitingCategory = recruitingBoard.getRecruitingCategory();
         this.title = recruitingBoard.getTitle();
-        this.body = recruitingBoard.getBody();
         this.createdDate = recruitingBoard.getCreatedDate();
         this.showCount = recruitingBoard.getShowCount();
-        if (recruitingBoard.isShowMainCharacter()) {
-            this.mainCharacterName = recruitingBoard.getMember().getMainCharacter() != null ?
-                    recruitingBoard.getMember().getMainCharacter() :
-                    recruitingBoard.getMember().getCharacters().get(0).getCharacterName();
-        } else {
-            this.mainCharacterName = "비공개";
-        }
+        this.mainCharacterName = recruitingBoard.getDisplayCharacterName();
+
+        String mainCharacter = recruitingBoard.determineMainCharacter();
+        this.itemLevel = recruitingBoard.calculateDisplayItemLevel(mainCharacter);
     }
 }

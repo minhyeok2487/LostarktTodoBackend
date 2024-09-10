@@ -1,9 +1,9 @@
-package lostark.todo.controller.dtoV2.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.recruitingBoard.ExpeditionSettingEnum;
-import lostark.todo.domain.recruitingBoard.TimeCategoryEnum;
+import lostark.todo.domainV2.board.recrutingBoard.enums.ExpeditionSettingEnum;
+import lostark.todo.domainV2.board.recrutingBoard.enums.TimeCategoryEnum;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

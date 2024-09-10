@@ -1,4 +1,4 @@
-package lostark.todo.domain.recruitingBoard;
+package lostark.todo.domainV2.board.recrutingBoard.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;

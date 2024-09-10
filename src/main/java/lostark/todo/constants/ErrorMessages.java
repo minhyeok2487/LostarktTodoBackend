@@ -17,4 +17,5 @@ public class ErrorMessages {
     public static final String FRIEND_PERMISSION_DENIED = "깐부 권한이 없습니다.";
 
     public static final String RECRUITING_BOARD_NOT_FOUND = "없는 모집 게시글 입니다.";
+    public static final String TIME_CATEGORY_INVALID_SELECTION = "미정을 포함하면 다른 시간대는 선택할 수 없습니다.";
 }
