@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +20,15 @@ import static lostark.todo.domain.character.QCharacter.character;
 import static lostark.todo.domain.content.QDayContent.dayContent;
 import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domainV2.board.recrutingBoard.entity.QRecruitingBoard.recruitingBoard;
+import static lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum.*;
 
 @RequiredArgsConstructor
 public class RecruitingBoardRepositoryImpl implements RecruitingBoardCustomRepository {
 
     private final JPAQueryFactory factory;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Page<RecruitingBoard> search(SearchRecruitingBoardRequest request, PageRequest pageRequest) {
@@ -55,6 +62,33 @@ public class RecruitingBoardRepositoryImpl implements RecruitingBoardCustomRepos
                                 recruitingBoard.id.eq(recruitingBoardId)
                         ).fetchOne();
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    public List<RecruitingBoard> searchMain() {
+        String sql = buildUnionAllQuery();
+        Query query = entityManager.createNativeQuery(sql, RecruitingBoard.class);
+        return query.getResultList();
+    }
+
+    private String buildUnionAllQuery() {
+        return String.join(" UNION ALL ",
+                buildCategoryQuery(FRIENDS.name()),
+                buildCategoryQuery(RECRUITING_GUILD.name(), LOOKING_GUILD.name()),
+                buildCategoryQuery(RECRUITING_PARTY.name(), LOOKING_PARTY.name()),
+                buildCategoryQuery(ETC.name())
+        );
+    }
+
+    private String buildCategoryQuery(String... categories) {
+        String categoryCondition = categories.length > 1 ?
+                String.format("IN ('%s')", String.join("', '", categories)) :
+                String.format("= '%s'", categories[0]);
+
+        return String.format(
+                "(SELECT * FROM recruiting_board WHERE recruiting_category %s ORDER BY created_date DESC LIMIT 5)",
+                categoryCondition
+        );
     }
 
     private BooleanExpression eqRecruitingCategory(RecruitingCategoryEnum recruitingCategory) {

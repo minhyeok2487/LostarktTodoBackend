@@ -10,6 +10,7 @@ import lostark.todo.domainV2.board.recrutingBoard.dao.RecruitingBoardDao;
 import lostark.todo.domainV2.board.recrutingBoard.dao.RecruitingBoardImagesDao;
 import lostark.todo.domainV2.board.recrutingBoard.dto.*;
 import lostark.todo.domainV2.board.recrutingBoard.entity.RecruitingBoard;
+import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;
 import lostark.todo.domainV2.board.recrutingBoard.enums.TimeCategoryEnum;
 import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.service.ImagesService;
@@ -19,6 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static lostark.todo.constants.ErrorMessages.MEMBER_NOT_MATCH;
 import static lostark.todo.constants.ErrorMessages.TIME_CATEGORY_INVALID_SELECTION;
@@ -39,6 +44,30 @@ public class RecruitingBoardService {
     public Page<SearchRecruitingBoardResponse> search(SearchRecruitingBoardRequest request, PageRequest pageRequest) {
         return recruitingBoardDao.search(request, pageRequest).map(SearchRecruitingBoardResponse::new);
     }
+
+    @Transactional(readOnly = true)
+    public Map<String, List<SearchRecruitingBoardResponse>> searchMain() {
+        List<RecruitingBoard> recruitingBoards = recruitingBoardDao.searchMain();
+
+        // 카테고리 그룹 정의
+        Map<RecruitingCategoryEnum, String> categoryMap = Map.of(
+                RecruitingCategoryEnum.FRIENDS, "FRIENDS",
+                RecruitingCategoryEnum.RECRUITING_GUILD, "GUILD",
+                RecruitingCategoryEnum.LOOKING_GUILD, "GUILD",
+                RecruitingCategoryEnum.RECRUITING_PARTY, "PARTY",
+                RecruitingCategoryEnum.LOOKING_PARTY, "PARTY"
+        );
+
+        return recruitingBoards.stream()
+                .collect(Collectors.groupingBy(
+                        recruitingBoard -> categoryMap.getOrDefault(recruitingBoard.getRecruitingCategory(), "ETC"),
+                        Collectors.mapping(
+                                SearchRecruitingBoardResponse::new,
+                                Collectors.toList()
+                        )
+                ));
+    }
+
 
     @Transactional
     public GetRecruitingBoardResponse get(Long recruitingBoardId, String token) {

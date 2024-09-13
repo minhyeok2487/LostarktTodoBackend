@@ -30,7 +30,7 @@ public class RecruitingBoardApi {
         return new ResponseEntity<>(recruitingBoardService.create(username, request), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "모집 게시글 리스트 조회", response = SearchRecruitingBoardResponse.class)
+    @ApiOperation(value = "모집 게시글 리스트 조회", notes = "인증 토큰 X", response = SearchRecruitingBoardResponse.class)
     @GetMapping()
     public ResponseEntity<?> search(SearchRecruitingBoardRequest request,
                                     @RequestParam(required = false, defaultValue = "1") int page,
@@ -39,7 +39,13 @@ public class RecruitingBoardApi {
         return new ResponseEntity<>(recruitingBoardService.search(request, pageRequest), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "모집 게시글 단건 조회", response = GetRecruitingBoardResponse.class)
+    @ApiOperation(value = "모집 게시글 카테고리 별 5개씩 조회(메인화면)", notes = "인증 토큰 X", response = SearchRecruitingBoardResponse.class)
+    @GetMapping("/main")
+    public ResponseEntity<?> searchMain() {
+        return new ResponseEntity<>(recruitingBoardService.searchMain(), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "모집 게시글 단건 조회", notes = "인증 토큰 X", response = GetRecruitingBoardResponse.class)
     @GetMapping("/{recruitingBoardId}")
     public ResponseEntity<?> get(GetRecruitingBoardRequest request,
                                  @PathVariable Long recruitingBoardId) {

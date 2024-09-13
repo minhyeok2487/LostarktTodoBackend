@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static lostark.todo.constants.ErrorMessages.RECRUITING_BOARD_NOT_FOUND;
 
 @RequiredArgsConstructor
@@ -36,5 +38,10 @@ public class RecruitingBoardDao {
     @Transactional
     public void delete(RecruitingBoard recruitingBoard) {
         recruitingBoardRepository.delete(recruitingBoard);
+    }
+
+    @Transactional
+    public List<RecruitingBoard> searchMain() {
+        return recruitingBoardRepository.searchMain();
     }
 }
