@@ -13,7 +13,7 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.ContentService;
+import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,7 @@
-package lostark.todo.domain.cube;
+package lostark.todo.domainV2.util.cube.repository;
 
-import lostark.todo.controller.dtoV2.cube.CubeResponse;
+import lostark.todo.domainV2.util.cube.dto.CubeResponse;
+import lostark.todo.domainV2.util.cube.entity.Cubes;
 
 import java.util.List;
 import java.util.Optional;

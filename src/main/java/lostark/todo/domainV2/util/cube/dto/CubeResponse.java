@@ -1,9 +1,9 @@
-package lostark.todo.controller.dtoV2.cube;
+package lostark.todo.domainV2.util.cube.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lostark.todo.domain.character.Character;
-import lostark.todo.domain.cube.Cubes;
+import lostark.todo.domainV2.util.cube.entity.Cubes;
 
 @Data
 public class CubeResponse {

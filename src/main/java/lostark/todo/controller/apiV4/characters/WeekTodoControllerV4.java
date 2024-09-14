@@ -8,7 +8,7 @@ import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.domain.character.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.ContentService;
+import lostark.todo.domainV2.util.content.service.ContentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

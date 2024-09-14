@@ -1,4 +1,4 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.util.content.service;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
@@ -59,10 +59,5 @@ public class ContentService {
     @Transactional(readOnly = true)
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
         return contentRepository.getScheduleRaidCategory();
-    }
-
-    @Transactional(readOnly = true)
-    public List<CubeContent> findAllCubeContent() {
-        return contentRepository.findAllByCubeContent();
     }
 }

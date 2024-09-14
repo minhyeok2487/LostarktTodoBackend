@@ -1,18 +1,19 @@
-package lostark.todo.domain.cube;
+package lostark.todo.domainV2.util.cube.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.dtoV2.cube.CubeResponse;
-import lostark.todo.controller.dtoV2.cube.QCubeResponse;
+import lostark.todo.domainV2.util.cube.dto.CubeResponse;
+import lostark.todo.domainV2.util.cube.dto.QCubeResponse;
+import lostark.todo.domainV2.util.cube.entity.Cubes;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
 
 import static lostark.todo.domain.character.QCharacter.character;
-import static lostark.todo.domain.cube.QCubes.*;
 import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.util.cube.entity.QCubes.cubes;
 
 @RequiredArgsConstructor
 public class CubesRepositoryImpl implements CubesCustomRepository {
@@ -27,7 +28,9 @@ public class CubesRepositoryImpl implements CubesCustomRepository {
                 .join(member).on(member.id.eq(character.member.id))
                 .where(
                         eqUsername(username)
-                ).fetch();
+                )
+                .orderBy(character.sortNumber.asc())
+                .fetch();
     }
 
     @Override

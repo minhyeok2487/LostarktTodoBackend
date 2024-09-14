@@ -1,7 +1,7 @@
-package lostark.todo.domain.cube;
+package lostark.todo.domainV2.util.cube.entity;
 
 import lombok.*;
-import lostark.todo.controller.dtoV2.cube.CubeUpdateRequest;
+import lostark.todo.domainV2.util.cube.dto.CubeUpdateRequest;
 
 import javax.persistence.*;
 

@@ -13,6 +13,8 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.util.content.service.ContentService;
+import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
 import lostark.todo.service.lostarkApi.LostarkCharacterService;
 import org.springframework.http.HttpStatus;

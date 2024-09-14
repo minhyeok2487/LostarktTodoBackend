@@ -13,7 +13,7 @@ import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
-import lostark.todo.service.ContentService;
+import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.service.FriendsService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.TodoServiceV2;

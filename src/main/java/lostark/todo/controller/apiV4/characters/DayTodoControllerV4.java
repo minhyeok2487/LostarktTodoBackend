@@ -11,7 +11,7 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domain.character.DayTodoCategoryEnum;
 import lostark.todo.domain.market.Market;
 import lostark.todo.service.CharacterService;
-import lostark.todo.service.MarketService;
+import lostark.todo.domainV2.util.market.service.MarketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
