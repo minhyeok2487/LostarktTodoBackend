@@ -1,5 +1,6 @@
-package lostark.todo.domain.comments;
+package lostark.todo.domainV2.board.comments.repository;
 
+import lostark.todo.domainV2.board.comments.entity.Comments;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +17,6 @@ public interface CommentsRepository extends JpaRepository<Comments, Long>, Comme
     @Query("SELECT COUNT(c) FROM Comments c WHERE c.id > :commentId AND c.parentId = 0")
     int findCommentIndex(@Param("commentId") long commentId);
 
+    @Query("SELECT c FROM Comments  c WHERE  c.parentId = 0 order by c.createdDate DESC")
     List<Comments> findAllByParentId(long id);
 }

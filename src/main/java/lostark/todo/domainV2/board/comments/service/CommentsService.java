@@ -1,17 +1,21 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.board.comments.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.commentsDto.CommentListDto;
+import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
 import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsResponse;
-import lostark.todo.domain.comments.Comments;
-import lostark.todo.domain.comments.CommentsRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lostark.todo.domainV2.board.comments.dto.CommentResponse;
+import lostark.todo.domainV2.board.comments.entity.Comments;
+import lostark.todo.domainV2.board.comments.repository.CommentsRepository;
+import lostark.todo.domainV2.board.comments.dao.CommentsDao;
+import lostark.todo.global.dto.CursorResponse;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +25,7 @@ import java.util.List;
 public class CommentsService {
 
     private final CommentsRepository commentsRepository;
+    private final CommentsDao commentsDao;
 
     public Page<Comments> findAllByParentIdIs0(int page) {
         return commentsRepository.findAllByParentIdIs0(PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
@@ -63,5 +68,21 @@ public class CommentsService {
     @Transactional(readOnly = true)
     public Page<SearchAdminCommentsResponse> searchAdmin(SearchAdminCommentsRequest request, PageRequest pageRequest) {
         return commentsRepository.searchAdmin(request, pageRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public CommentListDto test() {
+        List<Comments> test = commentsRepository.findAllByParentId(0);
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        for (Comments comments : test) {
+            commentResponseDtoList.add(new CommentResponseDto().createResponseDto(comments));
+        }
+
+        return new CommentListDto(commentResponseDtoList, 10000000);
+    }
+
+    @Transactional(readOnly = true)
+    public CursorResponse<CommentResponse> searchCursor(Long commentsId, PageRequest pageRequest) {
+        return commentsDao.searchCursor(commentsId, pageRequest);
     }
 }

@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsResponse;
-import lostark.todo.service.CommentsService;
+import lostark.todo.domainV2.board.comments.service.CommentsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;

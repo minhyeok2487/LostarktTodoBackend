@@ -5,17 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
-import lostark.todo.domain.comments.Comments;
+import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domain.member.Member;
-import lostark.todo.service.CommentsService;
+import lostark.todo.domainV2.board.comments.service.CommentsService;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +36,11 @@ public class CommentController {
                 .build();
         commentsService.update(updateComments); //업데이트
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "comment Test")
+    @GetMapping()
+    public ResponseEntity<?> findComments() {
+        return new ResponseEntity<>(commentsService.test(), HttpStatus.OK);
     }
 }

@@ -4,13 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.Role;
-import lostark.todo.domain.character.Character;
-import lostark.todo.domain.comments.Comments;
-import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 

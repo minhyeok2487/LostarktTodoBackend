@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domain.Role;
-import lostark.todo.domain.comments.Comments;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.board.comments.entity.Comments;
 
 import java.time.LocalDateTime;
 

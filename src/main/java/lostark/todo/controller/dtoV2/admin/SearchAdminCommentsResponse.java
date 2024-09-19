@@ -2,7 +2,7 @@ package lostark.todo.controller.dtoV2.admin;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
-import lostark.todo.domain.comments.Comments;
+import lostark.todo.domainV2.board.comments.entity.Comments;
 
 import java.time.LocalDateTime;
 

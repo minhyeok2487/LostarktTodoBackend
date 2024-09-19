@@ -10,7 +10,7 @@ import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.service.BoardsService;
-import lostark.todo.service.CommentsService;
+import lostark.todo.domainV2.board.comments.service.CommentsService;
 import lostark.todo.service.MemberService;
 import lostark.todo.service.NotificationService;
 import org.json.simple.JSONObject;
