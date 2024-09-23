@@ -17,6 +17,5 @@ public interface CommentsRepository extends JpaRepository<Comments, Long>, Comme
     @Query("SELECT COUNT(c) FROM Comments c WHERE c.id > :commentId AND c.parentId = 0")
     int findCommentIndex(@Param("commentId") long commentId);
 
-    @Query("SELECT c FROM Comments  c WHERE  c.parentId = 0 order by c.createdDate DESC")
     List<Comments> findAllByParentId(long id);
 }
