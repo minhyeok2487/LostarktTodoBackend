@@ -19,14 +19,12 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
 
 
     @Override
-    public List<Notification> search(Member member) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneMonthAgo = now.minusMonths(1);
+    public List<Notification> searchBoard(Member member) {
 
         return factory.selectFrom(notification)
                 .leftJoin(notification.receiver, QMember.member).fetchJoin()
                 .where(
-                        betweenDate(oneMonthAgo, now),
+                        eqType(NotificationType.BOARD),
                         eqUsername(member.getUsername())
                 )
                 .orderBy(notification.createdDate.desc())
@@ -94,6 +92,13 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
 
     private BooleanExpression eqUnread() {
         return notification.isRead.eq(false);
+    }
+
+    private BooleanExpression eqType(NotificationType notificationType) {
+        if (notificationType != null) {
+            return notification.notificationType.eq(notificationType);
+        }
+        return null;
     }
 
 

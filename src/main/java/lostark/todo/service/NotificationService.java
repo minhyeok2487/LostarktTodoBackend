@@ -27,7 +27,7 @@ public class NotificationService {
 
     @Transactional
     public List<Notification> searchBoard(Member member, List<Boards> searchBoard) {
-        List<Notification> notifications = notificationRepository.search(member);
+        List<Notification> notifications = notificationRepository.searchBoard(member);
 
         for (Boards boards : searchBoard) {
             if (!notifications.stream().map(Notification::getBoardId).toList().contains(boards.getId())) {

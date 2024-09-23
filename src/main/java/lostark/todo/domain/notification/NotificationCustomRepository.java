@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface NotificationCustomRepository {
 
-    List<Notification> search(Member member);
+    List<Notification> searchBoard(Member member);
 
     Optional<Notification> get(long notificationId, String username);
 
