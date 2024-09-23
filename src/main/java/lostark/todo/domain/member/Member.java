@@ -10,6 +10,7 @@ import lostark.todo.domain.character.Character;
 import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.notification.Notification;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -45,23 +46,23 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Character> characters;
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Comments> comments;
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Friends> friends;
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Boards> boards;
 
-    @OneToMany(mappedBy = "receiver", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "receiver", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Notification> notifications;
 
@@ -95,5 +96,11 @@ public class Member extends BaseTimeEntity {
     // 비밀번호 변경 - Test Code 작성
     public void updatePassword(String encodePassword) {
         this.password = encodePassword;
+    }
+
+    // 대표캐릭터 이름 찾기 (없으면 캐릭터 리스트 중 첫번째)
+    public String getMainCharacterName() {
+        return this.mainCharacter != null ? this.mainCharacter :
+                this.characters.get(0).getCharacterName();
     }
 }

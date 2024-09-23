@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
+import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static lostark.todo.Constant.LEVEL_UP_RESOURCES;
 
 @Service
 @Slf4j
@@ -19,6 +17,7 @@ import static lostark.todo.Constant.LEVEL_UP_RESOURCES;
 public class MarketService {
 
     private final MarketRepository marketRepository;
+    private final MarketDao marketDao;
 
     public List<Market> findAll() {
         return marketRepository.findAll();
@@ -52,9 +51,7 @@ public class MarketService {
 
     // 거래소 데이터 호출
     public Map<String, Market> findContentResource() {
-        List<Market> marketByNames = findByNameIn(LEVEL_UP_RESOURCES);
-        return marketByNames.stream()
-                .collect(Collectors.toMap(Market::getName, market -> market));
+        return marketDao.findContentResource();
     }
 
     public List<Market> findByNameIn(List<String> names) {

@@ -12,14 +12,23 @@ import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.*;
 import lostark.todo.domain.character.Character;
+import lostark.todo.domain.content.Category;
+import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
+import lostark.todo.domainV2.member.dao.MemberDao;
+import lostark.todo.domainV2.util.content.dao.ContentDao;
+import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static lostark.todo.constants.ErrorMessages.CHARACTER_NOT_FOUND;
+import static lostark.todo.utils.GlobalMethod.isSameUUID;
 
 @Service
 @Slf4j
@@ -28,6 +37,10 @@ import java.util.stream.Collectors;
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
+    private final MemberDao memberDao;
+    private final MarketDao marketDao;
+    private final ContentDao contentDao;
+    private final LostarkCharacterDao lostarkCharacterDao;
 
 
     // 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
@@ -319,5 +332,100 @@ public class CharacterService {
     public void delete(Long characterId, String username) {
         Character character = get(characterId, username);
         characterRepository.delete(character);
+    }
+
+    @Transactional
+    public void updateCharacterList(String username) {
+        // 1. 회원 조회
+        Member member = memberDao.get(username);
+
+        // 2. 대표 캐릭터 이름 조회
+        String mainCharacter = member.getMainCharacterName();
+
+        // 3. 원정대 검색할 캐릭터 닉네임 찾기
+        String searchCharacterName = findSiblingCharacterName(member);
+
+        // 4. 콘텐츠 통계 데이터 조회
+        Map<String, Market> contentResource = marketDao.findContentResource();
+        List<DayContent> chaosDungeons = contentDao.findDayContent(Category.카오스던전);
+        List<DayContent> guardianRaids = contentDao.findDayContent(Category.가디언토벌);
+
+        // 5. 원정대 캐릭터 업데이트 로직
+        updateSiblings(searchCharacterName, member, chaosDungeons, guardianRaids, contentResource, mainCharacter);
+    }
+
+    // 원정대 검색할 캐릭터 닉네임 찾기
+    // 캐릭터 이미지가 있으면서 UUID가 일치하는 첫번째 캐릭터
+    private String findSiblingCharacterName(Member member) {
+        return member.getCharacters().stream()
+                .filter(character -> character.getCharacterImage() != null)
+                .filter(character -> {
+                    CharacterJsonDto updatedCharacter = lostarkCharacterDao.getCharacter(character.getCharacterName(), member.getApiKey());
+                    return isMatchingCharacter(character, updatedCharacter);
+                })
+                .map(Character::getCharacterName)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(CHARACTER_NOT_FOUND));
+    }
+
+
+    private boolean isMatchingCharacter(Character character, CharacterJsonDto updatedCharacter) {
+        if (updatedCharacter == null || updatedCharacter.getCharacterImage() == null) {
+            return false;
+        } else {
+            return isSameUUID(updatedCharacter.getCharacterImage(), character.getCharacterImage());
+        }
+    }
+
+    // 원정대 업데이트
+    private void updateSiblings(String searchCharacterName, Member member, List<DayContent> chaos, List<DayContent> guardian,
+                                Map<String, Market> contentResource, String mainCharacter) {
+        List<CharacterJsonDto> siblings = lostarkCharacterDao.getSiblings(searchCharacterName, member.getApiKey());
+
+        siblings.stream()
+                .map(dto -> {
+                    // 캐릭터 이미지 업데이트
+                    CharacterJsonDto updatedCharacter = lostarkCharacterDao.getCharacter(dto.getCharacterName(), member.getApiKey());
+                    if (updatedCharacter.getCharacterImage() != null) {
+                        dto.setCharacterImage(updatedCharacter.getCharacterImage());
+                    }
+                    return dto;
+                })
+                .forEach(dto -> updateCharacter(dto, member, chaos, guardian, contentResource, mainCharacter));
+    }
+
+    private void updateCharacter(CharacterJsonDto dto, Member member, List<DayContent> chaos, List<DayContent> guardian,
+                                 Map<String, Market> contentResource, String mainCharacter) {
+
+        Optional<Character> matchingCharacter = member.getCharacters().stream()
+                .filter(character -> character.getCharacterImage() != null)
+                .filter(character -> isSameUUID(character.getCharacterImage(), dto.getCharacterImage()))
+                .findFirst();
+
+        DayTodo dayContent = new DayTodo().createDayContent(chaos, guardian, dto.getItemMaxLevel());
+
+        if (matchingCharacter.isPresent()) {
+            // 캐릭터가 존재할 경우 업데이트
+            Character character = matchingCharacter.get();
+            if (character.getCharacterName().equals(mainCharacter)) {
+                member.setMainCharacter(dto.getCharacterName()); // 메인 캐릭터 이름 변경
+            }
+            character.updateCharacter(dto, dayContent, contentResource);
+        } else {
+            // UUID가 일치하지 않으면 이름으로 캐릭터 찾기
+            Optional<Character> characterByName = member.getCharacters().stream()
+                    .filter(character -> character.getCharacterName().equals(dto.getCharacterName()))
+                    .findFirst();
+
+            if (characterByName.isPresent()) {
+                // 이름으로 찾은 캐릭터가 있으면 업데이트
+                characterByName.get().updateCharacter(dto, dayContent, contentResource);
+            } else {
+                // UUID도, 이름도 일치하는 캐릭터가 없으면 새로 추가
+                Character newCharacter = addCharacter(dto, dayContent, member);
+                calculateDayTodo(newCharacter, contentResource);
+                member.getCharacters().add(newCharacter);
+            }
+        }
     }
 }

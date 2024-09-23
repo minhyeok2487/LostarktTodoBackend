@@ -1,4 +1,4 @@
-package lostark.todo.service.lostarkApi;
+package lostark.todo.domainV2.lostark.enums;
 
 public enum NoticesType {
 

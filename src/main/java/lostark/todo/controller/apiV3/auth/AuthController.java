@@ -17,7 +17,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
-import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,7 +43,7 @@ public class AuthController {
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
-    private final LostarkCharacterService lostarkCharacterService;
+    private final LostarkCharacterDao lostarkCharacterDao;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
     private final TokenProvider tokenProvider;
 
@@ -65,7 +65,7 @@ public class AuthController {
             List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
 
             // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
-            List<Character> characterList = lostarkCharacterService.findCharacterList(request.getCharacterName(), request.getApiKey(), chaos, guardian);
+            List<Character> characterList = lostarkCharacterDao.findCharacterList(request.getCharacterName(), request.getApiKey(), chaos, guardian);
 
             // 재련재료 데이터 리스트로 거래소 데이터 호출
             Map<String, Market> contentResource = marketService.findContentResource();

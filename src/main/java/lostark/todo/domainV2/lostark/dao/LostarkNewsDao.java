@@ -1,7 +1,8 @@
-package lostark.todo.service.lostarkApi;
+package lostark.todo.domainV2.lostark.dao;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.notices.Notices;
+import lostark.todo.domainV2.lostark.enums.NoticesType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LostarkNewsService {
+public class LostarkNewsDao {
 
-    private final LostarkApiService apiService;
+    private final LostarkApiDao apiService;
 
     public JSONArray findEvents(String apiKey) {
         try {

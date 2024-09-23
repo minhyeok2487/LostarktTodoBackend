@@ -1,7 +1,7 @@
 package lostark.todo.domain.notices;
 
 import lombok.*;
-import lostark.todo.service.lostarkApi.NoticesType;
+import lostark.todo.domainV2.lostark.enums.NoticesType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

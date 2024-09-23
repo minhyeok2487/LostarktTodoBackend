@@ -1,4 +1,4 @@
-package lostark.todo.service.lostarkApi;
+package lostark.todo.domainV2.lostark.dao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class LostarkMarketService {
+public class LostarkMarketDao {
 
-    private final LostarkApiService lostarkApiService;
+    private final LostarkApiDao lostarkApiDao;
 
     public List<Market> getMarketData(int categoryCode, String apiKey) {
 
@@ -61,7 +61,7 @@ public class LostarkMarketService {
                     + "  \"PageNo\": "+ pageNo +",\n"
                     + "  \"SortCondition\": \"DESC\"\n"
                     + "}";
-            InputStreamReader inputStreamReader = lostarkApiService.lostarkPostApi(link, parameter, apiKey);
+            InputStreamReader inputStreamReader = lostarkApiDao.lostarkPostApi(link, parameter, apiKey);
             JSONParser parser = new JSONParser();
             return (JSONObject) parser.parse(inputStreamReader);
         } catch (Exception e) {

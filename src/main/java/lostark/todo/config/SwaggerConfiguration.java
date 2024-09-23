@@ -111,7 +111,7 @@ public class SwaggerConfiguration {
     @Bean
     public Docket board() {
         version = "게시판";
-        description = "게시판 관련 API (공지사항, 모집, 방명록)";
+        description = "게시판 API (공지사항, 모집, 방명록)";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
@@ -120,6 +120,40 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo(description, version))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.board"))
+                .build()
+                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Arrays.asList(apiKey()));
+    }
+
+    @Bean
+    public Docket characters() {
+        version = "캐릭터";
+        description = "캐릭터 API";
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(description, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.character"))
+                .build()
+                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Arrays.asList(apiKey()));
+    }
+
+    @Bean
+    public Docket util() {
+        version = "유틸";
+        description = "유틸 API (콘텐츠, 큐브, 거래소 등)";
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(description, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.util"))
                 .build()
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()));

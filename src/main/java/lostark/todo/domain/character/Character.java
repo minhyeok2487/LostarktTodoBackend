@@ -207,5 +207,4 @@ public class Character extends BaseTimeEntity {
         this.memo = StringUtils.hasText(memo) ? memo : null;
         return this;
     }
-
 }

@@ -3,6 +3,7 @@ package lostark.todo.domainV2.util.content.service;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 import lostark.todo.domain.content.*;
+import lostark.todo.domainV2.util.content.dao.ContentDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.*;
 public class ContentService {
 
     private final ContentRepository contentRepository;
+    private final ContentDao contentDao;
 
     public Content findById(long id) {
         return contentRepository.findById(id).orElseThrow(()->new IllegalArgumentException("없는 컨텐츠 입니다."));
@@ -23,15 +25,9 @@ public class ContentService {
         return contentRepository.findAllById(idList);
     }
 
-    /**
-     *  카테고리(카오스던전, 가디언토벌)별 일일컨텐츠 출력
-     */
+    // 카테고리(카오스던전, 가디언토벌)별 일일컨텐츠 출력
     public List<DayContent> findDayContent(Category category) {
-        if(category.equals(Category.가디언토벌) || category.equals(Category.카오스던전)) {
-            return contentRepository.findDayContentByCategoryOrderByLevelDesc(category);
-        } else {
-            throw new IllegalArgumentException("카테고리가 일일컨텐츠가 아닙니다.(카오스던전, 가디언토벌)");
-        }
+        return contentDao.findDayContent(category);
     }
 
     /**

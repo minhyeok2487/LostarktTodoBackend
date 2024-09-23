@@ -21,7 +21,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
-import lostark.todo.service.lostarkApi.LostarkCharacterService;
+import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,7 +44,7 @@ public class FriendsApiController {
     private final MarketService marketService;
     private final ContentService contentService;
     private final NotificationService notificationService;
-    private final LostarkCharacterService lostarkCharacterService;
+    private final LostarkCharacterDao lostarkCharacterDao;
 
     @ApiOperation(value = "친구 리스트")
     @GetMapping()
@@ -319,6 +319,7 @@ public class FriendsApiController {
         }
     }
 
+    //TODO : 삭제 예정
     @ApiOperation(value = "깐부 캐릭터 리스트 업데이트")
     @PatchMapping("/characterList")
     public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username,
@@ -328,15 +329,15 @@ public class FriendsApiController {
         boolean setting = friendsService.checkSetting(member, toMember, "setting");
 
         if(setting) {
-            String mainCharacter = member.getMainCharacter() != null ? member.getMainCharacter() :
+            String mainCharacter = member.getMainCharacterName() != null ? member.getMainCharacterName() :
                     member.getCharacters().get(0).getCharacterName();
             Map<String, Market> contentResource = marketService.findContentResource();
             List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
             List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
 
-            List<CharacterJsonDto> characterJsonDtoList = lostarkCharacterService.getCharacterJsonDtoList(mainCharacter, member.getApiKey());
+            List<CharacterJsonDto> characterJsonDtoList = lostarkCharacterDao.getSiblings(mainCharacter, member.getApiKey());
             for (CharacterJsonDto dto : characterJsonDtoList) {
-                dto.setCharacterImage(lostarkCharacterService.getCharacterImageUrl(dto.getCharacterName(), member.getApiKey()));
+                dto.setCharacterImage(lostarkCharacterDao.getCharacterImageUrl(dto.getCharacterName(), member.getApiKey()));
 
                 Optional<Character> find = member.getCharacters().stream()
                         .filter(character -> character.getCharacterName().equals(dto.getCharacterName())).findFirst();
