@@ -152,7 +152,7 @@ public class RecruitingBoard extends BaseTimeEntity {
     }
 
     public String determineMainCharacter() {
-        String mainCharacter = this.getMember().getMainCharacter();
+        String mainCharacter = this.getMember().getMainCharacterName();
         if (mainCharacter != null) {
             return mainCharacter;
         }

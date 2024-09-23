@@ -92,7 +92,7 @@ public class NotificationService {
     }
 
     private String getMainCharacterName(Member member) {
-        return member.getMainCharacter() != null ? member.getMainCharacter() : member.getCharacters().get(0).getCharacterName();
+        return member.getMainCharacterName() != null ? member.getMainCharacterName() : member.getCharacters().get(0).getCharacterName();
     }
 
     private void createAndSaveNotification(Member receiver, String content, Member friend) {

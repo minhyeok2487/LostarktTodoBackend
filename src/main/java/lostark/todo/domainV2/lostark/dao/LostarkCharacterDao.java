@@ -1,4 +1,4 @@
-package lostark.todo.service.lostarkApi;
+package lostark.todo.domainV2.lostark.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class LostarkCharacterService {
+public class LostarkCharacterDao {
 
-    private final LostarkApiService apiService;
+    private final LostarkApiDao apiService;
 
     /**
      * 대표캐릭터와 연동된 캐릭터 호출(api 검증)
@@ -104,7 +104,7 @@ public class LostarkCharacterService {
         }
     }
 
-    public List<CharacterJsonDto> getCharacterJsonDtoList(String characterName, String apiKey) {
+    public List<CharacterJsonDto> getSiblings(String characterName, String apiKey) {
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String url = "https://developer-lostark.game.onstove.com/characters/" + encodedCharacterName + "/siblings";
 
@@ -184,6 +184,21 @@ public class LostarkCharacterService {
                 return profile.get("CharacterImage").toString();
             }
             return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CharacterJsonDto getCharacter(String characterName, String apiKey) {
+        try {
+            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
+
+            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

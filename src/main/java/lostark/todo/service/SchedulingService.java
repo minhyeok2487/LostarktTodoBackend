@@ -14,8 +14,8 @@ import lostark.todo.domain.notices.Notices;
 import lostark.todo.domain.todoV2.TodoV2Repository;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.discordWebHook.DiscordWebhook;
-import lostark.todo.service.lostarkApi.LostarkMarketService;
-import lostark.todo.service.lostarkApi.LostarkNewsService;
+import lostark.todo.domainV2.lostark.dao.LostarkMarketDao;
+import lostark.todo.domainV2.lostark.dao.LostarkNewsDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,13 +31,13 @@ import java.util.Map;
 @Transactional
 @Slf4j
 public class SchedulingService {
-    private final LostarkMarketService lostarkMarketService;
+    private final LostarkMarketDao lostarkMarketDao;
     private final MarketService marketService;
     private final TodoV2Repository todoV2Repository;
     private final CharacterRepository characterRepository;
     private final CustomTodoRepository customTodoRepository;
     private final ContentRepository contentRepository;
-    private final LostarkNewsService newsService;
+    private final LostarkNewsDao newsService;
     private final NoticesService noticesService;
     private final WebHookService webHookService;
     private final ScheduleService scheduleService;
@@ -57,7 +57,7 @@ public class SchedulingService {
      */
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
     public void updateMarketData() {
-        List<Market> marketList = lostarkMarketService.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
+        List<Market> marketList = lostarkMarketDao.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
         marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
     }
 

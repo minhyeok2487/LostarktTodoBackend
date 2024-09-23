@@ -169,7 +169,7 @@ public class FriendsService {
     }
 
     private String getMainCharacterName(Member member) {
-        return member.getMainCharacter() != null ? member.getMainCharacter() : member.getCharacters().get(0).getCharacterName();
+        return member.getMainCharacterName() != null ? member.getMainCharacterName() : member.getCharacters().get(0).getCharacterName();
     }
 
     public void updateFriendsRequest(Member toMember, Member fromMember, String category) {

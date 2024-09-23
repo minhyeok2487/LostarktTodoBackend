@@ -37,7 +37,7 @@ public class MemberResponse {
 
     private MainCharacterResponse createMainCharacter(Member member) {
         for (Character character : member.getCharacters()) {
-            if (character.getCharacterName().equals(member.getMainCharacter())) {
+            if (character.getCharacterName().equals(member.getMainCharacterName())) {
                 return new MainCharacterResponse(character);
             }
         }
