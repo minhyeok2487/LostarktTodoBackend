@@ -386,7 +386,7 @@ public class CharacterService {
                 .map(dto -> {
                     // 캐릭터 이미지 업데이트
                     CharacterJsonDto updatedCharacter = lostarkCharacterDao.getCharacter(dto.getCharacterName(), member.getApiKey());
-                    if (updatedCharacter.getCharacterImage() != null) {
+                    if (updatedCharacter != null && updatedCharacter.getCharacterImage() != null) {
                         dto.setCharacterImage(updatedCharacter.getCharacterImage());
                     }
                     return dto;
