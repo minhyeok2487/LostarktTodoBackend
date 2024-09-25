@@ -10,6 +10,8 @@ public interface NotificationCustomRepository {
 
     List<Notification> searchBoard(Member member);
 
+    List<Notification> search(Member member);
+
     Optional<Notification> get(long notificationId, String username);
 
     LocalDateTime getRecent(String username);

@@ -42,7 +42,7 @@ public class NotificationControllerV4 {
         List<Boards> searchBoard = boardsService.search();
 
         // 알림 검색
-        List<Notification> notifications = notificationService.searchBoard(member, searchBoard);
+        List<Notification> notifications = notificationService.search(member, searchBoard);
 
         // 알림을 응답 객체로 변환
         List<SearchNotificationResponse> result = notifications.stream().map(notification -> {

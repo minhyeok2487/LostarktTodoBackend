@@ -26,7 +26,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public List<Notification> searchBoard(Member member, List<Boards> searchBoard) {
+    public List<Notification> search(Member member, List<Boards> searchBoard) {
         List<Notification> notifications = notificationRepository.searchBoard(member);
 
         for (Boards boards : searchBoard) {
@@ -34,6 +34,9 @@ public class NotificationService {
                 notifications.add(createBoardNotification(boards.getId(), member));
             }
         }
+        List<Notification> search = notificationRepository.search(member);
+        notifications.addAll(search);
+
         return notifications.stream()
                 .sorted(Comparator.comparing(Notification::getCreatedDate).reversed())
                 .collect(Collectors.toList());

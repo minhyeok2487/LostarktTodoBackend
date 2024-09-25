@@ -32,6 +32,23 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     }
 
     @Override
+    public List<Notification> search(Member member) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneMonthAgo = now.minusMonths(1);
+
+        return factory.selectFrom(notification)
+                .leftJoin(notification.receiver, QMember.member).fetchJoin()
+                .where(
+                        betweenDate(oneMonthAgo, now),
+                        eqUsername(member.getUsername()),
+                        neType(NotificationType.BOARD)
+                )
+                .orderBy(notification.createdDate.desc())
+                .fetch();
+    }
+
+
+    @Override
     public Optional<Notification> get(long notificationId, String username) {
         Notification result = factory.selectFrom(notification)
                 .leftJoin(notification.receiver, QMember.member).fetchJoin()
@@ -97,6 +114,13 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     private BooleanExpression eqType(NotificationType notificationType) {
         if (notificationType != null) {
             return notification.notificationType.eq(notificationType);
+        }
+        return null;
+    }
+
+    private BooleanExpression neType(NotificationType notificationType) {
+        if (notificationType != null) {
+            return notification.notificationType.ne(notificationType);
         }
         return null;
     }
