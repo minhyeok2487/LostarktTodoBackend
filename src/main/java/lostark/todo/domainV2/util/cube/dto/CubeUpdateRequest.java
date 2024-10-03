@@ -20,4 +20,6 @@ public class CubeUpdateRequest {
     private int ban5;
 
     private int unlock1;
+
+    private int unlock2;
 }
