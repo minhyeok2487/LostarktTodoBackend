@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/character/week")
-@Api(tags = {"회원 주간 숙제 관련 API"})
+@Api(tags = {"회원 주간 숙제 API"})
 public class CharacterWeekTodoApi {
 
     private final CharacterService characterService;

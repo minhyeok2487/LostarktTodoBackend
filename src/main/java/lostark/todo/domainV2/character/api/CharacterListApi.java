@@ -25,7 +25,7 @@ import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/character-list")
-@Api(tags = {"회원 캐릭터 리스트 관련 API"})
+@Api(tags = {"회원 캐릭터 리스트 API"})
 public class CharacterListApi {
 
     private final CharacterService characterService;

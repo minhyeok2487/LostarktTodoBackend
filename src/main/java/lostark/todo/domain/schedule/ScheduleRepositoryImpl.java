@@ -5,7 +5,7 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.schedule.*;
-import lostark.todo.domain.character.QCharacter;
+import lostark.todo.domainV2.character.entity.QCharacter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static lostark.todo.domain.character.QCharacter.character;
 import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domain.schedule.QSchedule.schedule;
+import static lostark.todo.domainV2.character.entity.QCharacter.character;
 
 @RequiredArgsConstructor
 public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
