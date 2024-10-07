@@ -3,7 +3,7 @@ package lostark.todo.domain.friends;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.QMember;
 

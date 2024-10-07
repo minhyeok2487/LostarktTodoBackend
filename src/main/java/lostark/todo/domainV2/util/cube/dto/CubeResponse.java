@@ -2,7 +2,7 @@ package lostark.todo.domainV2.util.cube.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.util.cube.entity.Cubes;
 
 @Data

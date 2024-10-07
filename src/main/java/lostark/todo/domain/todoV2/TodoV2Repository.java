@@ -1,6 +1,6 @@
 package lostark.todo.domain.todoV2;
 
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

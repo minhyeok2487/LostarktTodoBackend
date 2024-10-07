@@ -1,22 +1,24 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.character.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.controller.adminDto.DashboardResponse;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
-import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
-import lostark.todo.controller.dto.characterDto.CharacterDto;
-import lostark.todo.controller.dto.characterDto.SettingRequestDto;
+import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
-import lostark.todo.domain.character.*;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.*;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.dao.CharacterDao;
+import lostark.todo.domainV2.character.entity.Character;
+import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
+import lostark.todo.domainV2.character.enums.DayTodoCategoryEnum;
+import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
 import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.domainV2.util.content.dao.ContentDao;
@@ -37,6 +39,7 @@ import static lostark.todo.utils.GlobalMethod.isSameUUID;
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
+    private final CharacterDao characterDao;
     private final MemberDao memberDao;
     private final MarketDao marketDao;
     private final ContentDao contentDao;
@@ -48,7 +51,7 @@ public class CharacterService {
     @Transactional(readOnly = true)
     public Character get(long characterId, String characterName, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
-                () -> new IllegalArgumentException("characterName = "+characterName+" / username = " + username + " : 존재하지 않는 캐릭터"));
+                () -> new IllegalArgumentException("characterName = " + characterName + " / username = " + username + " : 존재하지 않는 캐릭터"));
     }
 
     @Transactional(readOnly = true)
@@ -88,26 +91,26 @@ public class CharacterService {
 
     // 일일 컨텐츠 체크 업데이트
     public Character updateCheck(Character character, String category) {
-        if(category.equals("epona")) {
+        if (category.equals("epona")) {
             character.getDayTodo().updateCheckEpona();
         }
-        if(category.equals("chaos")) {
+        if (category.equals("chaos")) {
             character.getDayTodo().updateCheckChaos();
         }
-        if(category.equals("guardian")) {
+        if (category.equals("guardian")) {
             character.getDayTodo().updateCheckGuardian();
         }
         return character;
     }
 
     public Character updateCheckAll(Character character, String category) {
-        if(category.equals("epona")) {
+        if (category.equals("epona")) {
             character.getDayTodo().updateCheckEponaAll();
         }
-        if(category.equals("chaos")) {
+        if (category.equals("chaos")) {
             character.getDayTodo().updateCheckChaosAll();
         }
-        if(category.equals("guardian")) {
+        if (category.equals("guardian")) {
             character.getDayTodo().updateCheckGuardian();
         }
         return character;
@@ -427,5 +430,34 @@ public class CharacterService {
                 member.getCharacters().add(newCharacter);
             }
         }
+    }
+
+    //    ----------------------------------------------------------------------------------------------------------------
+    public List<CharacterResponse> convertAndSortCharacterList(List<Character> characterList) {
+        return characterList.stream()
+                .map(CharacterResponse::toDto) // DTO로 변환
+                .sorted(
+                        Comparator.comparingInt(CharacterResponse::getSortNumber)
+                                .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed())
+                )
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CharacterResponse> getCharacterList(String username) {
+        List<Character> characterList = characterDao.getCharacterList(username);
+        return convertAndSortCharacterList(characterList);
+    }
+
+    @Transactional
+    public List<CharacterResponse> editSort(String username, List<CharacterSortDto> characterSortDtoList) {
+        List<Character> characterList = characterDao.getCharacterList(username).stream().peek(
+                        character -> characterSortDtoList.stream()
+                                .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
+                                .findFirst()
+                                .ifPresent(characterSortDto -> character.setSortNumber(characterSortDto.getSortNumber())))
+                .toList();
+        return convertAndSortCharacterList(characterList);
+
     }
 }

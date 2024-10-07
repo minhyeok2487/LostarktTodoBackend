@@ -1,9 +1,7 @@
 package lostark.todo.domain.logs;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.Category;
 import lostark.todo.event.entity.character.DayContentCheckEvent;
 

@@ -1,8 +1,4 @@
-package lostark.todo.domain.character.goldCheckPolicy;
-
-import lostark.todo.domain.character.goldCheckPolicy.GoldCheckPolicy;
-import lostark.todo.domain.character.goldCheckPolicy.RaidCheckPolicy;
-import lostark.todo.domain.character.goldCheckPolicy.TopThreePolicy;
+package lostark.todo.domainV2.character.enums.goldCheckPolicy;
 
 public enum GoldCheckPolicyEnum {
 

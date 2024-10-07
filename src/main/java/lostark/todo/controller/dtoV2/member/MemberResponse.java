@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domain.Role;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 
 import javax.validation.constraints.NotEmpty;

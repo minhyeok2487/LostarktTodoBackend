@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.character.ChallengeContentEnum;
+import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 
 @Data
 @NoArgsConstructor

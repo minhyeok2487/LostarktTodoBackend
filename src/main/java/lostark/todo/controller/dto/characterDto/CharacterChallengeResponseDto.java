@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 
 @Data
 @NoArgsConstructor

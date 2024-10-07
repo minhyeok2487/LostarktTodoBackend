@@ -8,7 +8,7 @@ import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.controller.dtoV2.firend.UpdateFriendWeekRaidRequest;
 import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.member.Member;

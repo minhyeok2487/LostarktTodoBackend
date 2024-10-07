@@ -9,7 +9,7 @@ import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
 import lostark.todo.controller.dtoV2.member.EditProviderRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
-import lostark.todo.service.CharacterService;
+import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.service.FriendsService;
 import lostark.todo.service.MemberService;
 import lostark.todo.domainV2.lostark.dao.LostarkApiDao;

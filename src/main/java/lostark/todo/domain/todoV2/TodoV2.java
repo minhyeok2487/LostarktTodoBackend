@@ -3,7 +3,7 @@ package lostark.todo.domain.todoV2;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import org.hibernate.annotations.ColumnDefault;
 

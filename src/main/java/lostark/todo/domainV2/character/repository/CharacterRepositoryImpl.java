@@ -1,4 +1,4 @@
-package lostark.todo.domain.character;
+package lostark.todo.domainV2.character.repository;
 
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -11,6 +11,7 @@ import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.adminDto.QDashboardResponse;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.character.entity.Character;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,19 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                         eqCharacterId(characterId)
                 )
                 .fetchOne());
+    }
+
+    @Override
+    public List<Character> getCharacterList(String username) {
+        return factory.selectFrom(character)
+                .leftJoin(character.member, member).fetchJoin()
+                .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
+                .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                .leftJoin(character.todoV2List, todoV2).fetchJoin()
+                .where(
+                        eqMember(username)
+                )
+                .fetch();
     }
 
     @Override

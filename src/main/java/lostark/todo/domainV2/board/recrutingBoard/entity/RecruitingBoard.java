@@ -3,7 +3,7 @@ package lostark.todo.domainV2.board.recrutingBoard.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.board.recrutingBoard.dto.CreateRecruitingBoardRequest;
 import lostark.todo.domainV2.board.recrutingBoard.dto.UpdateRecruitingBoardRequest;
 import lostark.todo.domain.BaseTimeEntity;

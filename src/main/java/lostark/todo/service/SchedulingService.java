@@ -2,7 +2,7 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.character.CharacterRepository;
+import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;

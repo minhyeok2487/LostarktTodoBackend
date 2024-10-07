@@ -8,12 +8,13 @@ import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.DayTodo;
+import lostark.todo.domainV2.character.entity.Character;
+import lostark.todo.domainV2.character.entity.DayTodo;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
@@ -41,6 +42,7 @@ public class CharactersControllerV4 {
     private final MemberService memberService;
     private final LostarkCharacterDao lostarkCharacterDao;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 + 숙제 정보 조회 API",
             response = CharacterResponse.class)
     @GetMapping()
@@ -55,6 +57,7 @@ public class CharactersControllerV4 {
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 리스트 순서변경 저장", response = CharacterResponse.class)
     @PatchMapping("/sorting")
     public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,

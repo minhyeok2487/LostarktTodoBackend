@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
 import lostark.todo.domain.todoV2.TodoV2;

@@ -1,8 +1,9 @@
-package lostark.todo.domain.character;
+package lostark.todo.domainV2.character.repository;
 
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.character.entity.Character;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,4 +25,6 @@ public interface CharacterCustomRepository  {
     void updateDayContentPriceChaos(DayContent dayContent, Double price);
 
     void updateDayContentPriceGuardian(DayContent dayContent, Double price);
+
+    List<Character> getCharacterList(String username);
 }

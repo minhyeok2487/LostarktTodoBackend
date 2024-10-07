@@ -1,4 +1,4 @@
-package lostark.todo.domain.character;
+package lostark.todo.domainV2.character.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,6 +10,7 @@ import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;

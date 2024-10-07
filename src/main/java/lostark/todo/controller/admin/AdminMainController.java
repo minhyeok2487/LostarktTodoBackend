@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.adminDto.DashboardResponse;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
-import lostark.todo.service.CharacterService;
+import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

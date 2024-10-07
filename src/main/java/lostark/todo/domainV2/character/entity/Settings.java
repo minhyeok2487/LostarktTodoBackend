@@ -1,7 +1,7 @@
-package lostark.todo.domain.character;
+package lostark.todo.domainV2.character.entity;
 
 import lombok.*;
-import lostark.todo.domain.character.goldCheckPolicy.GoldCheckPolicyEnum;
+import lostark.todo.domainV2.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -45,6 +45,9 @@ public class Settings {
    @ColumnDefault("'TOP_THREE_POLICY'")
    private GoldCheckPolicyEnum goldCheckPolicyEnum;
 
+   @ColumnDefault("false")
+   private boolean linkCubeCal;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -56,6 +59,7 @@ public class Settings {
       this.showCubeTicket = true;
       this.goldCheckVersion = false;
       this.goldCheckPolicyEnum = GoldCheckPolicyEnum.TOP_THREE_POLICY;
+      this.linkCubeCal = false;
    }
 
    public void update(String name, boolean value) {

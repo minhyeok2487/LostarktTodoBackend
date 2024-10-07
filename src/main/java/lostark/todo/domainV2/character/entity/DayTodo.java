@@ -1,4 +1,4 @@
-package lostark.todo.domain.character;
+package lostark.todo.domainV2.character.entity;
 
 import lombok.*;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;

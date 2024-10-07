@@ -1,6 +1,6 @@
 package lostark.todo.domain.friends;
 
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 import org.springframework.data.repository.query.Param;
 

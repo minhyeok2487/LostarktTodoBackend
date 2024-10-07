@@ -3,7 +3,7 @@ package lostark.todo.domain.customTodo;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 
 import javax.persistence.*;
 

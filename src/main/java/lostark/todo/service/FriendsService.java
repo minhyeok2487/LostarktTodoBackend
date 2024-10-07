@@ -6,7 +6,7 @@ import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;

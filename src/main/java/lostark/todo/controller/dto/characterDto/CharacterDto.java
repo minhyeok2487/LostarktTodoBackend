@@ -6,9 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
-import lostark.todo.domain.character.Character;
-import lostark.todo.domain.character.goldCheckPolicy.GoldCheckPolicyEnum;
-import lostark.todo.domain.character.Settings;
+import lostark.todo.domainV2.character.entity.Character;
+import lostark.todo.domainV2.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
+import lostark.todo.domainV2.character.entity.Settings;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.todoV2.TodoV2;
 

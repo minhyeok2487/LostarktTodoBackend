@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
 import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
 import lostark.todo.domain.customTodo.CustomTodoRepository;

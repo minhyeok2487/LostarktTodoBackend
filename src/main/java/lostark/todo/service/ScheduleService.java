@@ -3,7 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.schedule.Schedule;
 import lostark.todo.domain.schedule.ScheduleCategory;
 import lostark.todo.domain.schedule.ScheduleRepository;

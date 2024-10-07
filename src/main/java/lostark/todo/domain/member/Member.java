@@ -6,7 +6,7 @@ import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.character.Character;
+import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.notification.Notification;
