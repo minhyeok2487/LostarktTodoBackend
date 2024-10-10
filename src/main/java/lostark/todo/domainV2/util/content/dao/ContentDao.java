@@ -1,10 +1,7 @@
 package lostark.todo.domainV2.util.content.dao;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.ContentRepository;
-import lostark.todo.domain.content.CubeContent;
-import lostark.todo.domain.content.DayContent;
+import lostark.todo.domain.content.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,5 +27,10 @@ public class ContentDao {
         } else {
             throw new IllegalArgumentException("카테고리가 일일컨텐츠가 아닙니다.(카오스던전, 가디언토벌)");
         }
+    }
+
+    @Transactional
+    public List<Content> findAllByIdWeekContent(List<Long> idList) {
+        return contentRepository.findAllById(idList);
     }
 }

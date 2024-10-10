@@ -33,6 +33,7 @@ public class WeekContentApiControllerV2 {
     private final ContentService contentService;
     private final TodoServiceV2 todoServiceV2;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 주간 레이드 추가/제거")
     @PostMapping("/raid/{characterId}/{characterName}")
     public ResponseEntity updateWeekRaid(@AuthenticationPrincipal String username,
@@ -48,6 +49,7 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 주간 레이드 전체 추가/제거 all")
     @PostMapping("/raid/{characterId}/{characterName}/all")
     public ResponseEntity updateWeekRaidAll(@AuthenticationPrincipal String username,
@@ -65,6 +67,7 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 주간 레이드 check 수정")
     @PatchMapping("/raid/check")
     public ResponseEntity updateWeekRaidCheck(@AuthenticationPrincipal String username,
@@ -76,6 +79,7 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 주간 레이드 check 수정 All")
     @PatchMapping("/raid/check/all")
     public ResponseEntity updateWeekRaidCheckAll(@AuthenticationPrincipal String username,

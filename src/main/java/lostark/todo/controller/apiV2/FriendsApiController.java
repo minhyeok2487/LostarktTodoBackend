@@ -9,12 +9,8 @@ import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
 import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
-import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.character.entity.DayTodo;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
@@ -179,6 +175,7 @@ public class FriendsApiController {
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 
+    //TODO 추후삭제
     @ApiOperation(value = "깐부 캐릭터 주간 레이드 check 수정")
     @PatchMapping({"/raid/check", "/raid/check/{all}"})
     public ResponseEntity updateWeekRaidCheck(@AuthenticationPrincipal String username,
@@ -315,45 +312,6 @@ public class FriendsApiController {
                             .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
                     .toList();
             return new ResponseEntity<>(responseList, HttpStatus.OK);
-        } else {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-    }
-
-    //TODO : 삭제 예정
-    @ApiOperation(value = "깐부 캐릭터 리스트 업데이트")
-    @PatchMapping("/characterList")
-    public ResponseEntity updateCharacterList(@AuthenticationPrincipal String username,
-                                              @RequestBody FriendsReturnDto friendsReturnDto) {
-        Member toMember = memberService.get(username);
-        Member member = memberService.get(friendsReturnDto.getFriendUsername());
-        boolean setting = friendsService.checkSetting(member, toMember, "setting");
-
-        if(setting) {
-            String mainCharacter = member.getMainCharacterName() != null ? member.getMainCharacterName() :
-                    member.getCharacters().get(0).getCharacterName();
-            Map<String, Market> contentResource = marketService.findContentResource();
-            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
-            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
-
-            List<CharacterJsonDto> characterJsonDtoList = lostarkCharacterDao.getSiblings(mainCharacter, member.getApiKey());
-            for (CharacterJsonDto dto : characterJsonDtoList) {
-                dto.setCharacterImage(lostarkCharacterDao.getCharacterImageUrl(dto.getCharacterName(), member.getApiKey()));
-
-                Optional<Character> find = member.getCharacters().stream()
-                        .filter(character -> character.getCharacterName().equals(dto.getCharacterName())).findFirst();
-
-                DayTodo dayContent = new DayTodo().createDayContent(chaos, guardian, dto.getItemMaxLevel());
-
-                if (find.isPresent()) { // 이름 같은게 있으면 업데이트
-                    Character character = find.get();
-                    characterService.updateCharacter(character, dto, dayContent, contentResource);
-                } else { // 이름 같은게 없으면 추가
-                    Character character = characterService.addCharacter(dto, dayContent, member);
-                    member.getCharacters().add(character);
-                }
-            }
-            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("권한이 없습니다.");
         }

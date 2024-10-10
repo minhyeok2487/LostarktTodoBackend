@@ -22,7 +22,7 @@ public class ContentService {
     }
 
     public List<Content> findAllByIdWeekContent(List<Long> idList) {
-        return contentRepository.findAllById(idList);
+        return contentDao.findAllByIdWeekContent(idList);
     }
 
     // 카테고리(카오스던전, 가디언토벌)별 일일컨텐츠 출력
@@ -43,13 +43,6 @@ public class ContentService {
 
     public List<WeekContent> findAllByCategoryAndWeekCategory(double itemLevel, String weekCategory, WeekContentCategory weekContentCategory) {
         return contentRepository.findAllWeekContent(itemLevel, weekCategory, weekContentCategory);
-    }
-
-    /**
-     * 큐브 컨텐츠 호출
-     */
-    public CubeContent findCubeContent(String name) {
-        return contentRepository.findByName(name).orElseThrow(()->new IllegalArgumentException(name + "은 없는 컨텐츠 입니다."));
     }
 
     @Transactional(readOnly = true)

@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
+import lostark.todo.domainV2.character.dto.UpdateWeekRaidCheckRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domain.todoV2.TodoV2Repository;
+import lostark.todo.domainV2.util.content.dao.ContentDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +24,16 @@ public class TodoServiceV2 {
 
     private final TodoV2Repository todoV2Repository;
     private final KeyValueRepository keyValueRepository;
+    private final ContentDao contentDao;
 
     public TodoV2 findById(long id) {
         return todoV2Repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("없는 정보입니다."));
     }
 
-    public List<TodoV2> findAll() {return todoV2Repository.findAll();}
+    public List<TodoV2> findAll() {
+        return todoV2Repository.findAll();
+    }
 
 
     public TodoV2 updateWeekMessage(TodoDto todoDto) {
@@ -140,7 +145,6 @@ public class TodoServiceV2 {
     }
 
 
-
     /**
      * 주간 레이드 추가/삭제(카테고리, 난이도 일괄)
      */
@@ -178,10 +182,9 @@ public class TodoServiceV2 {
     }
 
 
-
     public void updateWeekRaidCheck(Character character, String weekCategory, int currentGate, int totalGate) {
-        if (currentGate<totalGate) {
-            TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(character, weekCategory, currentGate+1)
+        if (currentGate < totalGate) {
+            TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(character, weekCategory, currentGate + 1)
                     .orElseThrow(() -> new IllegalArgumentException("이전 관문이 없습니다. 주간 숙제 관리에서 추가해주세요"));
             result.updateCheck();
         }
@@ -216,6 +219,38 @@ public class TodoServiceV2 {
                     todoV2.setSortNumber(dto.getSortNumber());
                 }
             }
+        }
+    }
+
+    @Transactional
+    public void updateWeekRaidCheck(Character character, UpdateWeekRaidCheckRequest request) {
+        List<WeekContent> weekContentList = contentDao.findAllByIdWeekContent(request.getWeekContentIdList())
+                .stream()
+                .map(content -> (WeekContent) content)
+                .toList();
+
+        String weekCategory = weekContentList.get(0).getWeekCategory();
+        if (weekContentList.size() == 1) {
+            if (request.getCurrentGate() < request.getTotalGate()) {
+                TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(
+                        character, weekCategory, request.getCurrentGate() + 1)
+                        .orElseThrow(() -> new IllegalArgumentException("이전 관문이 없습니다. 주간 숙제 관리에서 추가해주세요"));
+                result.updateCheck();
+            }
+            if (request.getCurrentGate() == request.getTotalGate()) { //다시 0으로 돌아감
+                List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
+                for (TodoV2 todoV2 : todoV2List) {
+                    todoV2.setChecked(false);
+                }
+            }
+        } else {
+            List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
+
+            // 현재 체크된 항목이 전체 항목 수와 같은지 확인
+            boolean allChecked = todoV2List.stream().allMatch(TodoV2::isChecked);
+
+            // 전체가 체크되어 있으면 전체 체크 해제, 그렇지 않으면 전체 체크
+            todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
         }
     }
 }
