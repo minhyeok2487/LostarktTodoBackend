@@ -29,7 +29,7 @@ import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/character/week")
-@Api(tags = {"회원 주간 숙제 API"})
+@Api(tags = {"캐릭터 주간 숙제 API"})
 public class CharacterWeekApi {
 
     private final CharacterService characterService;
