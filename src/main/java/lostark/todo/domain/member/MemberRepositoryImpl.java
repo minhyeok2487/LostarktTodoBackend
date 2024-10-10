@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
@@ -35,6 +36,19 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                         .leftJoin(member.characters, character).fetchJoin()
                         .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                         .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
+                        .where(Objects.requireNonNull(eqUsername(username)).and(character.isDeleted.eq(false)))
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<Member> getAll(String username) {
+        return Optional.ofNullable(
+                factory.select(member)
+                        .from(member)
+                        .leftJoin(member.characters, character).fetchJoin()
+                        .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
+                        .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                         .where(eqUsername(username))
                         .fetchOne()
         );
@@ -48,7 +62,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                         .leftJoin(member.characters, character).fetchJoin()
                         .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                         .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
-                        .where(member.id.eq(id))
+                        .where(member.id.eq(id).and(character.isDeleted.eq(false)))
                         .fetchOne()
         );
     }

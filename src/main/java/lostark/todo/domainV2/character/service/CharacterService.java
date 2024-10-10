@@ -334,13 +334,13 @@ public class CharacterService {
     @Transactional
     public void delete(Long characterId, String username) {
         Character character = get(characterId, username);
-        characterRepository.delete(character);
+        character.delete();
     }
 
     @Transactional
     public void updateCharacterList(String username) {
         // 1. 회원 조회
-        Member member = memberDao.get(username);
+        Member member = memberDao.getAll(username);
 
         // 2. 대표 캐릭터 이름 조회
         String mainCharacter = member.getMainCharacterName();

@@ -36,7 +36,8 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .leftJoin(character.todoV2List, todoV2).fetchJoin()
                 .where(
                         eqMember(username),
-                        eqCharacterId(characterId)
+                        eqCharacterId(characterId),
+                        isDeleted(false)
                 )
                 .fetchOne());
     }
@@ -49,7 +50,8 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                 .leftJoin(character.todoV2List, todoV2).fetchJoin()
                 .where(
-                        eqMember(username)
+                        eqMember(username),
+                        isDeleted(false)
                 )
                 .fetch();
     }
@@ -171,6 +173,10 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     private BooleanExpression eqCharacterId(long characterId) {
         return character.id.eq(characterId);
+    }
+
+    private BooleanExpression isDeleted(boolean isDeleted) {
+        return character.isDeleted.eq(isDeleted);
     }
 
 }

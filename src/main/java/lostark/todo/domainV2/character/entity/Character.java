@@ -11,6 +11,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -80,6 +81,9 @@ public class Character extends BaseTimeEntity {
 
     @Embedded
     private Settings settings;
+
+    @ColumnDefault("false")
+    private boolean isDeleted;
 
     @Override
     public String toString() {
@@ -207,5 +211,9 @@ public class Character extends BaseTimeEntity {
     public Character updateMemo(String memo) {
         this.memo = StringUtils.hasText(memo) ? memo : null;
         return this;
+    }
+
+    public void delete() {
+        this.isDeleted = !this.isDeleted;
     }
 }
