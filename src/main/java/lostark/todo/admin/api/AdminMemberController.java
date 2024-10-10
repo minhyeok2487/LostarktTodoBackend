@@ -1,4 +1,4 @@
-package lostark.todo.controller.admin;
+package lostark.todo.admin.api;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

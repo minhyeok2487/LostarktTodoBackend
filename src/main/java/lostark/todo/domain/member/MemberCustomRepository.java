@@ -1,6 +1,6 @@
 package lostark.todo.domain.member;
 
-import lostark.todo.controller.adminDto.DashboardResponse;
+import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import org.springframework.data.domain.PageImpl;

@@ -3,7 +3,7 @@ package lostark.todo.domainV2.character.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import lostark.todo.controller.adminDto.DashboardResponse;
+import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
