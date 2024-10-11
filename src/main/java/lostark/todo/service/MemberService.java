@@ -12,6 +12,7 @@ import lostark.todo.domain.Role;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
+import lostark.todo.domainV2.member.dao.MemberDao;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberDao memberDao;
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
@@ -114,7 +116,7 @@ public class MemberService {
     // 회원가입 캐릭터 추가 - Test Code 작성 X
     @Transactional
     public void createCharacter(String username, SaveCharacterRequest request, List<Character> characterList) {
-        Member member = get(username);
+        Member member = memberDao.getAll(username);
         member.createCharacter(characterList, request);
     }
 
