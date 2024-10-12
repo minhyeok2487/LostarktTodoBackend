@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -47,14 +46,7 @@ public class CharactersControllerV4 {
             response = CharacterResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        List<Character> characterList = memberService.get(username).getCharacters();
-        List<CharacterResponse> responseList = characterList.stream()
-                .map(CharacterResponse::toDto)
-                .sorted(Comparator
-                        .comparingInt(CharacterResponse::getSortNumber)
-                        .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
+        return new ResponseEntity<>(characterService.getCharacterList(username), HttpStatus.OK);
     }
 
     // TODO 추후 삭제

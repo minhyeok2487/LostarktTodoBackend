@@ -116,7 +116,7 @@ public class MemberService {
     // 회원가입 캐릭터 추가 - Test Code 작성 X
     @Transactional
     public void createCharacter(String username, SaveCharacterRequest request, List<Character> characterList) {
-        Member member = memberDao.getAll(username);
+        Member member = memberDao.get(username);
         member.createCharacter(characterList, request);
     }
 

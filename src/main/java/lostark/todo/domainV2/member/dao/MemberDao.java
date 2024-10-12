@@ -22,11 +22,6 @@ public class MemberDao {
     }
 
     @Transactional(readOnly = true)
-    public Member getAll(String username) {
-        return memberRepository.getAll(username).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
-    }
-
-    @Transactional(readOnly = true)
     public Member get(Long id) {
         return memberRepository.get(id).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
     }
