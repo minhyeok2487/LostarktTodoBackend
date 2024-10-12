@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidCheckRequest;
+import lostark.todo.domainV2.character.dto.UpdateWeekRaidMessageRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.friends.Friends;
@@ -97,5 +98,25 @@ public class CharacterWeekApi {
 
     }
 
+    @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (1관문에 저장됨)",
+            response = CharacterResponse.class)
+    @PatchMapping("/raid/message")
+    public ResponseEntity<?> updateWeekMessage(@AuthenticationPrincipal String username,
+                                               @RequestParam(required = false) String friendUsername,
+                                               @RequestBody UpdateWeekRaidMessageRequest request) {
+        Character updateCharacter;
+        if (friendUsername == null) {
+            updateCharacter = characterService.get(request.getCharacterId(), username);
+        } else {
+            Friends friend = friendsService.findByFriendUsername(friendUsername, username);
+            if (!friend.getFriendSettings().isUpdateRaid()) {
+                throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            } else {
+                updateCharacter = characterService.get(request.getCharacterId(), friendUsername);
+            }
+        }
+        todoServiceV2.updateWeekMessage(updateCharacter, request);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
 
 }

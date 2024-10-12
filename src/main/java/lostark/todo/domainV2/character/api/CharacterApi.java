@@ -28,12 +28,12 @@ public class CharacterApi {
     private final CharacterService characterService;
     private final FriendsService friendsService;
 
-    @ApiOperation(value = "캐릭터 출력 내용 수정")
+    @ApiOperation(value = "캐릭터 출력 내용 수정", response = CharacterResponse.class)
     @PatchMapping("/settings")
     public ResponseEntity<?> updateSettings(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody SettingRequestDto settingRequestDto) {
-        Character updateCharacter = null;
+        Character updateCharacter;
         if (friendUsername == null) {
             updateCharacter = characterService.updateSetting(username, settingRequestDto);
         } else {

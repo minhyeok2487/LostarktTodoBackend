@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidCheckRequest;
+import lostark.todo.domainV2.character.dto.UpdateWeekRaidMessageRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
@@ -39,6 +40,15 @@ public class TodoServiceV2 {
     public TodoV2 updateWeekMessage(TodoDto todoDto) {
         return findById(todoDto.getTodoId()).updateMessage(todoDto.getMessage());
     }
+
+    @Transactional
+    public void updateWeekMessage(Character character, UpdateWeekRaidMessageRequest request) {
+        character.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.getId() == request.getTodoId())
+                .findFirst()
+                .ifPresent(todoV2 -> todoV2.updateMessage(request.getMessage()));
+    }
+
 
     //주간 레이드 추가/삭제(1개씩)
     @Transactional

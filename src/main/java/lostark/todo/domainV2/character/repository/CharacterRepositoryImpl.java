@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
+import static lostark.todo.domain.content.QWeekContent.weekContent;
 import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domain.todo.QTodo.todo;
 import static lostark.todo.domain.todoV2.QTodoV2.todoV2;
@@ -34,6 +35,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                 .leftJoin(character.todoV2List, todoV2).fetchJoin()
+                .leftJoin(todoV2.weekContent, weekContent).fetchJoin()
                 .where(
                         eqMember(username),
                         eqCharacterId(characterId),

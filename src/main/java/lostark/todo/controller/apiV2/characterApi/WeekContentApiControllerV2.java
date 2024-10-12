@@ -92,6 +92,7 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
+    // TODO 추후삭제
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정",
             response = TodoResponseDto.class)
     @PatchMapping("/message")

@@ -6,6 +6,7 @@ import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 
@@ -52,11 +53,7 @@ public class TodoV2 extends BaseTimeEntity {
     }
 
     public TodoV2 updateMessage(String message) {
-        if (message.isEmpty()) {
-            this.message = null;
-        } else {
-            this.message = message;
-        }
+        this.message = StringUtils.hasText(message) ? message : null;
         return this;
     }
 
