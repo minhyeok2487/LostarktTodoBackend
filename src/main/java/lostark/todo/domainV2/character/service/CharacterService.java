@@ -400,29 +400,32 @@ public class CharacterService {
     private void updateCharacter(CharacterJsonDto dto, Member member, List<DayContent> chaos, List<DayContent> guardian,
                                  Map<String, Market> contentResource, String mainCharacter) {
 
-        Optional<Character> matchingCharacter = member.getCharacters().stream()
+        List<Character> findCharacterListUUID = member.getCharacters().stream()
                 .filter(character -> character.getCharacterImage() != null)
                 .filter(character -> isSameUUID(character.getCharacterImage(), dto.getCharacterImage()))
-                .findFirst();
+                .toList();
 
         DayTodo dayContent = new DayTodo().createDayContent(chaos, guardian, dto.getItemMaxLevel());
 
-        if (matchingCharacter.isPresent()) {
-            // 캐릭터가 존재할 경우 업데이트
-            Character character = matchingCharacter.get();
-            if (character.getCharacterName().equals(mainCharacter)) {
-                member.setMainCharacter(dto.getCharacterName()); // 메인 캐릭터 이름 변경
+        if (!findCharacterListUUID.isEmpty()) {
+            for (Character character : findCharacterListUUID) {
+                // 캐릭터가 존재할 경우 업데이트
+                if (character.getCharacterName().equals(mainCharacter)) {
+                    member.setMainCharacter(dto.getCharacterName()); // 메인 캐릭터 이름 변경
+                }
+                character.updateCharacter(dto, dayContent, contentResource);
             }
-            character.updateCharacter(dto, dayContent, contentResource);
         } else {
             // UUID가 일치하지 않으면 이름으로 캐릭터 찾기
-            Optional<Character> characterByName = member.getCharacters().stream()
+            List<Character> findCharacterListName = member.getCharacters().stream()
                     .filter(character -> character.getCharacterName().equals(dto.getCharacterName()))
-                    .findFirst();
+                    .toList();
 
-            if (characterByName.isPresent()) {
+            if (!findCharacterListName.isEmpty()) {
                 // 이름으로 찾은 캐릭터가 있으면 업데이트
-                characterByName.get().updateCharacter(dto, dayContent, contentResource);
+                for (Character character : findCharacterListName) {
+                    character.updateCharacter(dto, dayContent, contentResource);
+                }
             } else {
                 // UUID도, 이름도 일치하는 캐릭터가 없으면 새로 추가
                 Character newCharacter = addCharacter(dto, dayContent, member);
