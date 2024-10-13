@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidCheckRequest;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidMessageRequest;
+import lostark.todo.domainV2.character.dto.UpdateWeekRaidSortRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
@@ -220,7 +221,7 @@ public class TodoServiceV2 {
 
 
     // 캐릭터 보스별로 순서 정렬
-    public void updateWeekRaidSort(Character character, List<TodoSortRequestDto> dtos) {
+    public void updateWeekRaidSortBefore(Character character, List<TodoSortRequestDto> dtos) {
         for (TodoSortRequestDto dto : dtos) {
             List<TodoV2> todoV2List = todoV2Repository.findByCharacterAndWeekCategory(character, dto.getWeekCategory());
 
@@ -243,7 +244,7 @@ public class TodoServiceV2 {
         if (weekContentList.size() == 1) {
             if (request.getCurrentGate() < request.getTotalGate()) {
                 TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(
-                        character, weekCategory, request.getCurrentGate() + 1)
+                                character, weekCategory, request.getCurrentGate() + 1)
                         .orElseThrow(() -> new IllegalArgumentException("이전 관문이 없습니다. 주간 숙제 관리에서 추가해주세요"));
                 result.updateCheck();
             }
@@ -263,4 +264,20 @@ public class TodoServiceV2 {
             todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
         }
     }
+
+    @Transactional
+    // 캐릭터 보스별로 순서 정렬
+    public void updateWeekRaidSort(Character character, List<UpdateWeekRaidSortRequest.SortRequest> request) {
+        request.stream()
+                .map(sortRequest -> todoV2Repository.findByCharacterAndWeekCategory(character, sortRequest.getWeekCategory()))
+                .filter(todoV2List -> !todoV2List.isEmpty())
+                .forEach(todoV2List -> todoV2List.forEach(todoV2 -> todoV2.setSortNumber(
+                        request.stream()
+                                .filter(sr -> sr.getWeekCategory().equals(todoV2.getWeekContent().getWeekCategory()))
+                                .findFirst()
+                                .map(UpdateWeekRaidSortRequest.SortRequest::getSortNumber)
+                                .orElse(todoV2.getSortNumber())
+                )));
+    }
+
 }

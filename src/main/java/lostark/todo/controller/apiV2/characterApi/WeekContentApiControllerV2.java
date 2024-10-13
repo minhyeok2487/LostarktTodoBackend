@@ -106,6 +106,7 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
     }
 
+    // TODO 추후삭제
     @ApiOperation(value = "캐릭터 주간 레이드 순서 변경")
     @PutMapping("/raid/{characterId}/{characterName}/sort")
     public ResponseEntity<?> updateTodoSort(@AuthenticationPrincipal String username,
@@ -116,7 +117,7 @@ public class WeekContentApiControllerV2 {
         // 다른 아이디면 자동으로 Exception 처리
         Character character = characterService.get(characterId, characterName, username);
 
-        todoServiceV2.updateWeekRaidSort(character, todoSortRequestDtos);
+        todoServiceV2.updateWeekRaidSortBefore(character, todoSortRequestDtos);
 
         return new ResponseEntity<>(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
