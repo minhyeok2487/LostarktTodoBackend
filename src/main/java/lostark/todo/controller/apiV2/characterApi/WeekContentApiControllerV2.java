@@ -148,7 +148,8 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 실마엘 교환 업데이트", response = CharacterDto.class)
+    // TODO 추후삭제
+    @ApiOperation(value = "캐릭터 실마엘 교환 업데이트 (삭제 예정)", response = CharacterDto.class)
     @PatchMapping("/silmael")
     public ResponseEntity updateSilmael(@AuthenticationPrincipal String username,
                                         @RequestBody CharacterDto characterDto) {
@@ -163,7 +164,8 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 큐브 티켓 업데이트", response = CharacterDto.class)
+    // TODO 추후 삭제
+    @ApiOperation(value = "캐릭터 큐브 티켓 업데이트 (삭제 예정)", response = CharacterDto.class)
     @PatchMapping("/cube/{state}")
     public ResponseEntity updateCubeTicket(@AuthenticationPrincipal String username,
                                            @RequestBody CharacterDto characterDto,

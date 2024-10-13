@@ -111,7 +111,7 @@ public class CharacterWeekApi {
     }
 
     @ApiOperation(value = "캐릭터 주간 에포나 체크", response = CharacterResponse.class)
-    @PatchMapping("/epona")
+    @PostMapping("/epona")
     public ResponseEntity<?> updateWeekEpona(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
                                              @RequestBody UpdateWeekEponaRequest request) {
@@ -122,13 +122,24 @@ public class CharacterWeekApi {
     }
 
     @ApiOperation(value = "캐릭터 실마엘 교환 체크", response = CharacterResponse.class)
-    @PatchMapping("/silmael")
+    @PostMapping("/silmael")
     public ResponseEntity<?> updateWeekSilmael(@AuthenticationPrincipal String username,
                                                @RequestParam(required = false) String friendUsername,
                                                @RequestBody BaseCharacterRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateWeekSilmael(updateCharacter);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 큐브 티켓 업데이트", response = CharacterResponse.class)
+    @PatchMapping("/cube")
+    public ResponseEntity<?> updateWeekCubeTicket(@AuthenticationPrincipal String username,
+                                            @RequestParam(required = false) String friendUsername,
+                                            @RequestBody UpdateWeekCubeRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        characterService.updateCubeTicket(updateCharacter, request.getNum());
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 }
