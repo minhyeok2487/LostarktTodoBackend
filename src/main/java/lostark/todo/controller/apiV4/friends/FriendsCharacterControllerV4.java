@@ -91,7 +91,8 @@ public class FriendsCharacterControllerV4 {
         return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
+    //TODO 추후삭제
+    @ApiOperation(value = "캐릭터 메모 업데이트 (삭제 예정)", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
     @PostMapping("/{friendUsername}/memo")
     public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username,
                                         @RequestBody @Valid UpdateMemoRequest updateMemoRequest,

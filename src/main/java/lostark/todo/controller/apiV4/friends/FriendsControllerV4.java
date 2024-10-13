@@ -99,7 +99,7 @@ public class FriendsControllerV4 {
     }
 
     // TODO 추후 삭제
-    @ApiOperation(value = "깐부 캐릭터 주간 레이드 추가/제거")
+    @ApiOperation(value = "깐부 캐릭터 주간 레이드 추가/제거 (삭제 예정)")
     @PostMapping("/raid")
     public ResponseEntity<?> updateFriendWeekRaid(@AuthenticationPrincipal String username,
                                                   @RequestBody UpdateFriendWeekRaidRequest request) {
