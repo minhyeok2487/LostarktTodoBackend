@@ -1,13 +1,13 @@
-package lostark.todo.global.updateCharacter;
+package lostark.todo.global.friendPermisson;
 
 import lostark.todo.domain.friends.Friends;
 
 import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
 
-public class UpdateRaidPermissionStrategy implements UpdateCharacterStrategy {
+public class CheckWeekTodoPermissionStrategy implements UpdateCharacterStrategy {
     @Override
     public void validatePermission(Friends friend) {
-        if (!friend.getFriendSettings().isUpdateRaid()) {
+        if (!friend.getFriendSettings().isCheckWeekTodo()) {
             throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
         }
     }

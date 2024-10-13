@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domainV2.character.dto.UpdateWeekEponaRequest;
 import lostark.todo.domainV2.character.entity.*;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
@@ -154,7 +155,7 @@ public class CharacterService {
     /**
      * 실마엘 교환 업데이트
      */
-    public void updateSilmael(Character character) {
+    public void updateWeekSilmael(Character character) {
         character.getWeekTodo().updateSilmael();
     }
 
@@ -463,4 +464,14 @@ public class CharacterService {
         return convertAndSortCharacterList(characterList);
 
     }
+
+    @Transactional
+    public void updateWeekEpona(Character character, UpdateWeekEponaRequest request) {
+        Optional.of(character.getWeekTodo())
+                .filter(weekTodo -> request.isAll() && weekTodo.getWeekEpona() < 3)
+                .ifPresent(weekTodo -> weekTodo.setWeekEpona(2));
+
+        character.getWeekTodo().updateWeekEpona();
+    }
+
 }

@@ -34,7 +34,7 @@ public class WeekContentApiControllerV2 {
     private final TodoServiceV2 todoServiceV2;
 
     // TODO 추후 삭제
-    @ApiOperation(value = "캐릭터 주간 레이드 추가/제거")
+    @ApiOperation(value = "캐릭터 주간 레이드 추가/제거 (삭제 예정)")
     @PostMapping("/raid/{characterId}/{characterName}")
     public ResponseEntity updateWeekRaid(@AuthenticationPrincipal String username,
                                          @PathVariable long characterId, @PathVariable String characterName,
@@ -50,7 +50,7 @@ public class WeekContentApiControllerV2 {
     }
 
     // TODO 추후 삭제
-    @ApiOperation(value = "캐릭터 주간 레이드 전체 추가/제거 all")
+    @ApiOperation(value = "캐릭터 주간 레이드 전체 추가/제거 all (삭제 예정)")
     @PostMapping("/raid/{characterId}/{characterName}/all")
     public ResponseEntity updateWeekRaidAll(@AuthenticationPrincipal String username,
                                           @PathVariable long characterId,
@@ -68,7 +68,7 @@ public class WeekContentApiControllerV2 {
     }
 
     // TODO 추후 삭제
-    @ApiOperation(value = "캐릭터 주간 레이드 check 수정")
+    @ApiOperation(value = "캐릭터 주간 레이드 check 수정 (삭제 예정)")
     @PatchMapping("/raid/check")
     public ResponseEntity updateWeekRaidCheck(@AuthenticationPrincipal String username,
                                             @RequestBody TodoDto todoDto) {
@@ -80,7 +80,7 @@ public class WeekContentApiControllerV2 {
     }
 
     // TODO 추후 삭제
-    @ApiOperation(value = "캐릭터 주간 레이드 check 수정 All")
+    @ApiOperation(value = "캐릭터 주간 레이드 check 수정 All (삭제 예정)")
     @PatchMapping("/raid/check/all")
     public ResponseEntity updateWeekRaidCheckAll(@AuthenticationPrincipal String username,
                                                @RequestBody TodoDto todoDto) {
@@ -93,7 +93,7 @@ public class WeekContentApiControllerV2 {
     }
 
     // TODO 추후삭제
-    @ApiOperation(value = "캐릭터 주간 레이드 message 수정",
+    @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (삭제 예정)",
             response = TodoResponseDto.class)
     @PatchMapping("/message")
     public ResponseEntity<?> updateWeekMessage(@AuthenticationPrincipal String username,
@@ -107,7 +107,7 @@ public class WeekContentApiControllerV2 {
     }
 
     // TODO 추후삭제
-    @ApiOperation(value = "캐릭터 주간 레이드 순서 변경")
+    @ApiOperation(value = "캐릭터 주간 레이드 순서 변경 (삭제 예정)")
     @PutMapping("/raid/{characterId}/{characterName}/sort")
     public ResponseEntity<?> updateTodoSort(@AuthenticationPrincipal String username,
                                             @PathVariable long characterId,
@@ -122,7 +122,8 @@ public class WeekContentApiControllerV2 {
         return new ResponseEntity<>(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 에포나 체크",
+    // TODO 추후삭제
+    @ApiOperation(value = "캐릭터 주간 에포나 체크 (삭제 예정)",
             notes = "'all'이 붙으면 전체 체크/해제",
             response = CharacterDto.class)
     @PatchMapping({"/epona/{all}","/epona"})
@@ -157,7 +158,7 @@ public class WeekContentApiControllerV2 {
                 characterDto.getId(), characterDto.getCharacterName(), username);
 
         // Check 업데이트
-        characterService.updateSilmael(character);
+        characterService.updateWeekSilmael(character);
 
         return new ResponseEntity(new CharacterDto().toDtoV2(character), HttpStatus.OK);
     }

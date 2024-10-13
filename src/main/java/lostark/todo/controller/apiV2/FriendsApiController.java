@@ -236,7 +236,7 @@ public class FriendsApiController {
 
         if(weekTodo) {
             // Check 업데이트
-            characterService.updateSilmael(friendCharacter);
+            characterService.updateWeekSilmael(friendCharacter);
         }
 
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);

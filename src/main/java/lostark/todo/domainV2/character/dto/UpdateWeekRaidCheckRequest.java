@@ -1,23 +1,14 @@
 package lostark.todo.domainV2.character.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class UpdateWeekRaidCheckRequest {
-
-    @NotNull
-    private long characterId;
+public class UpdateWeekRaidCheckRequest extends BaseCharacterRequest {
 
     @NotEmpty
     private List<Long> weekContentIdList;

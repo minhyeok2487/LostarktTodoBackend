@@ -1,4 +1,4 @@
-package lostark.todo.global.updateCharacter;
+package lostark.todo.global.friendPermisson;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.friends.Friends;
@@ -14,7 +14,7 @@ public class UpdateCharacterMethod {
     private final CharacterService characterService;
     private final FriendsService friendsService;
 
-    public Character getUpdateCharacter(String username, String friendUsername, long characterId, RaidPermissionType permissionType) {
+    public Character getUpdateCharacter(String username, String friendUsername, long characterId, FriendPermissionType permissionType) {
         if (friendUsername == null) {
             return characterService.get(characterId, username);
         } else {

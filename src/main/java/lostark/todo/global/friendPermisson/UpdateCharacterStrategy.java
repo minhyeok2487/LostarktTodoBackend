@@ -1,4 +1,4 @@
-package lostark.todo.global.updateCharacter;
+package lostark.todo.global.friendPermisson;
 
 import lostark.todo.domain.friends.Friends;
 

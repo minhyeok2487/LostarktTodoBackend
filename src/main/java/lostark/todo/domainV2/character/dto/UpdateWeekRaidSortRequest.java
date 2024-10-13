@@ -3,17 +3,12 @@ package lostark.todo.domainV2.character.dto;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UpdateWeekRaidSortRequest {
-
-    @NotNull
-    private long characterId;
+public class UpdateWeekRaidSortRequest extends BaseCharacterRequest {
 
     private List<SortRequest> sortRequestList;
 

@@ -5,17 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.domainV2.character.dto.UpdateWeekRaidCheckRequest;
-import lostark.todo.domainV2.character.dto.UpdateWeekRaidMessageRequest;
-import lostark.todo.domainV2.character.dto.UpdateWeekRaidSortRequest;
+import lostark.todo.domainV2.character.dto.*;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.friends.Friends;
-import lostark.todo.domainV2.character.dto.UpdateWeekRaidRequest;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.global.updateCharacter.RaidPermissionType;
-import lostark.todo.global.updateCharacter.UpdateCharacterMethod;
+import lostark.todo.global.friendPermisson.FriendPermissionType;
+import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import lostark.todo.service.FriendsService;
 import lostark.todo.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
@@ -84,7 +81,7 @@ public class CharacterWeekApi {
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody UpdateWeekRaidCheckRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), RaidPermissionType.UPDATE_RAID);
+                request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
 
@@ -93,23 +90,45 @@ public class CharacterWeekApi {
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (1관문에 저장됨)",
             response = CharacterResponse.class)
     @PostMapping("/raid/message")
-    public ResponseEntity<?> updateWeekMessage(@AuthenticationPrincipal String username,
-                                               @RequestParam(required = false) String friendUsername,
-                                               @RequestBody UpdateWeekRaidMessageRequest request) {
+    public ResponseEntity<?> updateWeekRaidMessage(@AuthenticationPrincipal String username,
+                                                   @RequestParam(required = false) String friendUsername,
+                                                   @RequestBody UpdateWeekRaidMessageRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), RaidPermissionType.UPDATE_RAID);
+                request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekMessage(updateCharacter, request);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 순서 변경", response = CharacterResponse.class)
     @PostMapping("/raid/sort")
-    public ResponseEntity<?> updateTodoSort(@AuthenticationPrincipal String username,
-                                            @RequestParam(required = false) String friendUsername,
-                                            @RequestBody UpdateWeekRaidSortRequest request) {
+    public ResponseEntity<?> updateWeekRaidSort(@AuthenticationPrincipal String username,
+                                                @RequestParam(required = false) String friendUsername,
+                                                @RequestBody UpdateWeekRaidSortRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), RaidPermissionType.UPDATE_RAID);
+                request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekRaidSort(updateCharacter, request.getSortRequestList());
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 에포나 체크", response = CharacterResponse.class)
+    @PatchMapping("/epona")
+    public ResponseEntity<?> updateWeekEpona(@AuthenticationPrincipal String username,
+                                             @RequestParam(required = false) String friendUsername,
+                                             @RequestBody UpdateWeekEponaRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        characterService.updateWeekEpona(updateCharacter, request);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 실마엘 교환 체크", response = CharacterResponse.class)
+    @PatchMapping("/silmael")
+    public ResponseEntity<?> updateWeekSilmael(@AuthenticationPrincipal String username,
+                                               @RequestParam(required = false) String friendUsername,
+                                               @RequestBody BaseCharacterRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        characterService.updateWeekSilmael(updateCharacter);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 }
