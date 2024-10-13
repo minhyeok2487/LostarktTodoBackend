@@ -176,7 +176,7 @@ public class FriendsApiController {
     }
 
     //TODO 추후삭제
-    @ApiOperation(value = "깐부 캐릭터 주간 레이드 check 수정")
+    @ApiOperation(value = "깐부 캐릭터 주간 레이드 check 수정 (삭제 예정)")
     @PatchMapping({"/raid/check", "/raid/check/{all}"})
     public ResponseEntity updateWeekRaidCheck(@AuthenticationPrincipal String username,
                                               @PathVariable(value = "all", required = false) String all,
@@ -197,7 +197,8 @@ public class FriendsApiController {
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "깐부 캐릭터 주간 에포나 체크",
+    //TODO 추후삭제
+    @ApiOperation(value = "깐부 캐릭터 주간 에포나 체크 (삭제 예정)",
             notes = "'all'이 붙으면 전체 체크/해제",
             response = CharacterDto.class)
     @PatchMapping({"/epona/{all}","/epona"})
@@ -224,7 +225,8 @@ public class FriendsApiController {
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "깐부 캐릭터 실마엘 교환 업데이트", response = CharacterDto.class)
+    //TODO 추후삭제
+    @ApiOperation(value = "깐부 캐릭터 실마엘 교환 업데이트 (삭제 예정)", response = CharacterDto.class)
     @PatchMapping("/silmael")
     public ResponseEntity updateSilmael(@AuthenticationPrincipal String username,
                                         @RequestBody CharacterDto characterDto) {
@@ -242,7 +244,8 @@ public class FriendsApiController {
         return new ResponseEntity(new CharacterDto().toDtoV2(friendCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "깐부 캐릭터 큐브 티켓 업데이트", response = CharacterDto.class)
+    //TODO 추후삭제
+    @ApiOperation(value = "깐부 캐릭터 큐브 티켓 업데이트 (삭졔 예정)", response = CharacterDto.class)
     @PatchMapping("/cube/{state}")
     public ResponseEntity updateCubeTicket(@AuthenticationPrincipal String username,
                                            @RequestBody CharacterDto characterDto,
