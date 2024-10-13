@@ -12,6 +12,8 @@ public interface CharacterCustomRepository  {
 
     Optional<Character> getByIdAndUsername(long characterId, String username);
 
+    List<Character> getCharacterList(String username);
+
     long deleteByMember(Member member);
 
     List<DashboardResponse> searchCharactersDashBoard(int limit);
@@ -25,6 +27,4 @@ public interface CharacterCustomRepository  {
     void updateDayContentPriceChaos(DayContent dayContent, Double price);
 
     void updateDayContentPriceGuardian(DayContent dayContent, Double price);
-
-    List<Character> getCharacterList(String username);
 }

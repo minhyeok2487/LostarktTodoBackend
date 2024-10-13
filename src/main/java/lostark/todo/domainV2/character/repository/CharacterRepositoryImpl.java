@@ -30,7 +30,8 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     @Override
     public Optional<Character> getByIdAndUsername(long characterId, String username) {
-        return Optional.ofNullable(factory.selectFrom(character)
+        return Optional.ofNullable(factory.selectDistinct(character)
+                .from(character)
                 .leftJoin(character.member, member).fetchJoin()
                 .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
@@ -46,11 +47,13 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     @Override
     public List<Character> getCharacterList(String username) {
-        return factory.selectFrom(character)
+        return factory.selectDistinct(character)
+                .from(character)
                 .leftJoin(character.member, member).fetchJoin()
                 .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                 .leftJoin(character.todoV2List, todoV2).fetchJoin()
+                .leftJoin(todoV2.weekContent, weekContent).fetchJoin()
                 .where(
                         eqMember(username),
                         isDeleted(false)
