@@ -3,6 +3,7 @@ package lostark.todo.domainV2.character.entity;
 import lombok.*;
 import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.content.DayContent;
+import lostark.todo.domainV2.character.dto.UpdateDayGaugeRequest;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
@@ -213,6 +214,15 @@ public class DayTodo {
         this.guardianGauge = characterDayTodoDto.getGuardianGauge();
         this.beforeGuardianGauge = guardianGauge;
         this.eponaGauge = characterDayTodoDto.getEponaGauge();
+        this.beforeEponaGauge = eponaGauge;
+    }
+
+    public void updateDayContentGauge(UpdateDayGaugeRequest request) {
+        this.chaosGauge = request.getChaosGauge();
+        this.beforeChaosGauge = chaosGauge;
+        this.guardianGauge = request.getGuardianGauge();
+        this.beforeGuardianGauge = guardianGauge;
+        this.eponaGauge = request.getEponaGauge();
         this.beforeEponaGauge = eponaGauge;
     }
 }

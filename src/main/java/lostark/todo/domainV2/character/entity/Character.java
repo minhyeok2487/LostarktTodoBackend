@@ -140,11 +140,23 @@ public class Character extends BaseTimeEntity {
         Market guardian = getMarketItem(character.getItemLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
         Market leapStone = getMarketItem(character.getItemLevel(), contentResource, "위대한 명예의 돌파석", "경이로운 명예의 돌파석", "찬란한 명예의 돌파석", "운명의 돌파석");
         // 카오스 던전 계산
-        calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry, character);
+        calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry);
 
         // 가디언 토벌 계산
-        calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone, character);
+        calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone);
         return this;
+    }
+
+    public void calculateDayTodo(Map<String, Market> contentResource) {
+        Market jewelry = getJewelry(this.itemLevel, contentResource);
+        Market destruction = getMarketItem(this.itemLevel, contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
+        Market guardian = getMarketItem(this.itemLevel, contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
+        Market leapStone = getMarketItem(this.itemLevel, contentResource, "위대한 명예의 돌파석", "경이로운 명예의 돌파석", "찬란한 명예의 돌파석", "운명의 돌파석");
+        // 카오스 던전 계산
+        calculateChaos(this.dayTodo.getChaos(), destruction, guardian, jewelry);
+
+        // 가디언 토벌 계산
+        calculateGuardian(this.dayTodo.getGuardian(), destruction, guardian, leapStone);
     }
 
     private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
@@ -168,13 +180,13 @@ public class Character extends BaseTimeEntity {
         }
     }
 
-    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry, Character character) {
+    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry) {
         double price = 0;
         price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
         price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
         price += jewelry.getRecentPrice() * dayContent.getJewelry();
 
-        int chaosGauge = character.getDayTodo().getChaosGauge();
+        int chaosGauge = this.dayTodo.getChaosGauge();
         if (itemLevel < 1640) {
             if (chaosGauge >= 40) {
                 price = price*4;
@@ -190,22 +202,22 @@ public class Character extends BaseTimeEntity {
         }
 
         price = Math.round(price * 100.0) / 100.0;
-        character.getDayTodo().setChaosGold(price);
+        this.dayTodo.setChaosGold(price);
     }
 
-    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone, Character character) {
+    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone) {
         double price = 0;
         price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
         price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
         price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
 
-        int guardianGauge = character.getDayTodo().getGuardianGauge();
+        int guardianGauge = this.dayTodo.getGuardianGauge();
         if (guardianGauge >= 20) {
             price = price*2;
         }
 
         price = Math.round(price * 100.0) / 100.0;
-        character.getDayTodo().setGuardianGold(price);
+        this.dayTodo.setGuardianGold(price);
     }
 
     public Character updateMemo(String memo) {

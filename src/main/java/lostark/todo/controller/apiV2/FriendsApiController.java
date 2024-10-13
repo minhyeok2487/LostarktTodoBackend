@@ -139,7 +139,8 @@ public class FriendsApiController {
         return ResponseEntity.ok(new CharacterDto().toDtoV2(friendCharacter));
     }
 
-    @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 휴식게이지 업데이트",
+    // TODO 추후 삭제
+    @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 휴식게이지 업데이트, (삭제 예정)",
             response = CharacterDto.class)
     @PatchMapping("/day-content/gauge")
     public ResponseEntity updateDayTodoGauge(@AuthenticationPrincipal String username,

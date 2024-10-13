@@ -45,7 +45,8 @@ public class DayTodoControllerV4 {
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
+    // TODO 추후삭제
+    @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트 (삭제 예정)",
             response = CharacterResponse.class)
     @PatchMapping("/gauge")
     public ResponseEntity<?> updateDayTodoGauge(@AuthenticationPrincipal String username,

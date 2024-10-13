@@ -9,6 +9,7 @@ import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domainV2.character.dto.UpdateDayCheckRequest;
+import lostark.todo.domainV2.character.dto.UpdateDayGaugeRequest;
 import lostark.todo.domainV2.character.dto.UpdateWeekEponaRequest;
 import lostark.todo.domainV2.character.entity.*;
 import lostark.todo.domain.content.Category;
@@ -497,5 +498,21 @@ public class CharacterService {
             case guardian -> dayTodo.updateCheckGuardian();
             default -> throw new IllegalArgumentException("Invalid day todo category: " + request.getCategory());
         }
+    }
+
+    @Transactional
+    public void updateDayGauge(Character character, UpdateDayGaugeRequest request) {
+        Integer dtoChaosGauge = request.getChaosGauge();
+        validateGauge(dtoChaosGauge, 200); //검증
+
+        Integer dtoGuardianGauge = request.getGuardianGauge();
+        validateGauge(dtoGuardianGauge, 100); //검증
+
+        Integer dtoEponGauge = request.getEponaGauge();
+        validateGauge(dtoEponGauge, 100); //검증
+
+        character.getDayTodo().updateDayContentGauge(request);
+
+        character.calculateDayTodo(marketDao.findContentResource());
     }
 }
