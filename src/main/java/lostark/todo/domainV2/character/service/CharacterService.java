@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domainV2.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domainV2.character.dto.UpdateWeekEponaRequest;
 import lostark.todo.domainV2.character.entity.*;
 import lostark.todo.domain.content.Category;
@@ -474,4 +475,27 @@ public class CharacterService {
         character.getWeekTodo().updateWeekEpona();
     }
 
+    @Transactional
+    public void updateDayCheck(Character character, UpdateDayCheckRequest request) {
+        DayTodo dayTodo = character.getDayTodo();
+
+        switch (request.getCategory()) {
+            case epona -> {
+                if (request.isAll()) {
+                    dayTodo.updateCheckEponaAll();
+                } else {
+                    dayTodo.updateCheckEpona();
+                }
+            }
+            case chaos -> {
+                if (request.isAll()) {
+                    dayTodo.updateCheckChaosAll();
+                } else {
+                    dayTodo.updateCheckChaos();
+                }
+            }
+            case guardian -> dayTodo.updateCheckGuardian();
+            default -> throw new IllegalArgumentException("Invalid day todo category: " + request.getCategory());
+        }
+    }
 }

@@ -31,7 +31,8 @@ public class DayTodoControllerV4 {
     private final CharacterService characterService;
     private final MarketService marketService;
 
-    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterResponse.class)
+    // TODO 추후삭제
+    @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트 (삭제 예정)", response = CharacterResponse.class)
     @PatchMapping({"/check/{category}", "/check/{category}/{all}"})
     public ResponseEntity<?> updateDayTodoCheck(@AuthenticationPrincipal String username,
                                              @PathVariable("category") DayTodoCategoryEnum category,

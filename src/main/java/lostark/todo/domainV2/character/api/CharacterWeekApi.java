@@ -37,7 +37,7 @@ public class CharacterWeekApi {
     private final UpdateCharacterMethod updateCharacterMethod;
 
     // TODO 추후 정리
-    @ApiOperation(value = "캐릭터 레이드 추가/제거")
+    @ApiOperation(value = "캐릭터 레이드 추가/제거", response = CharacterResponse.class)
     @PostMapping("/raid")
     public ResponseEntity<?> updateWeekRaid(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
@@ -75,7 +75,7 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 레이드 check 수정")
+    @ApiOperation(value = "캐릭터 주간 레이드 check 수정", response = CharacterResponse.class)
     @PostMapping("/raid/check")
     public ResponseEntity<?> updateWeekRaidCheck(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
@@ -84,7 +84,6 @@ public class CharacterWeekApi {
                 request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
-
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (1관문에 저장됨)",
@@ -133,7 +132,7 @@ public class CharacterWeekApi {
     }
 
     @ApiOperation(value = "캐릭터 큐브 티켓 업데이트", response = CharacterResponse.class)
-    @PatchMapping("/cube")
+    @PostMapping("/cube")
     public ResponseEntity<?> updateWeekCubeTicket(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody UpdateWeekCubeRequest request) {

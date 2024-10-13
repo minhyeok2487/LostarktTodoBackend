@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
 import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
-import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dto.todoDto.TodoDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domainV2.character.entity.Character;
@@ -15,10 +14,8 @@ import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,20 +36,7 @@ public class FriendsApiController {
     private final FriendsService friendsService;
     private final TodoServiceV2 todoServiceV2;
     private final MarketService marketService;
-    private final ContentService contentService;
     private final NotificationService notificationService;
-    private final LostarkCharacterDao lostarkCharacterDao;
-
-    @ApiOperation(value = "친구 리스트")
-    @GetMapping()
-    public ResponseEntity getFriends(@AuthenticationPrincipal String username) {
-        Member member = memberService.get(username);
-        if (member.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 없습니다.");
-        }
-        List<FriendsReturnDto> friends = friendsService.isFriend(member);
-        return new ResponseEntity<>(friends, HttpStatus.OK);
-    }
 
     @ApiOperation(value = "캐릭터 검색")
     @GetMapping("/character/{characterName}")
@@ -131,7 +115,8 @@ public class FriendsApiController {
         return new ResponseEntity(friendSettings, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 체크 업데이트", response = CharacterDto.class)
+    // TODO 추후 삭제
+    @ApiOperation(value = "깐부 캐릭터 일일컨텐츠 체크 업데이트 (삭제 예정)", response = CharacterDto.class)
     @PatchMapping({"/day-content/check/{category}", "/day-content/check/{category}/{all}"})
     public ResponseEntity updateDayTodoCheck(@AuthenticationPrincipal String username,
                                              @PathVariable("category") String category,

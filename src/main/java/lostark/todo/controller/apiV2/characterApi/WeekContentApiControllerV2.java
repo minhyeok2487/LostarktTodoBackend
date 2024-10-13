@@ -26,7 +26,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/v2/character/week")
-@Api(tags = {"캐릭터 API V2 - 주간 컨텐츠"})
+@Api(tags = {"캐릭터 API V2 - 주간 컨텐츠 (추후 삭제)"})
 public class WeekContentApiControllerV2 {
 
     private final CharacterService characterService;
