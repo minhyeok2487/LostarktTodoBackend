@@ -47,6 +47,10 @@
 - UI/UX 기획, 퍼블리셔 1
 - 프론트엔드 개발 1
 
+### DB
+![image](https://github.com/user-attachments/assets/674b1dee-1996-4d4e-9c34-ee1257aae23b)
+
+
 ### 운영 기록
 - 2023.07.02 ~ 2023.09.10 - 기본 기능 개발
 - 2023.09.11 - 베타 버전 배포
