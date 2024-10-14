@@ -47,6 +47,10 @@
 - UI/UX 기획, 퍼블리셔 1
 - 프론트엔드 개발 1
 
+### Swagger
+- [링크](https://api2.loatodo.com/swagger-ui.html)
+- 기존 v2, v3으로 분리 -> 카테고리 별로 분리 + 리팩토링 작업 진행중
+
 ### DB
 ![image](https://github.com/user-attachments/assets/674b1dee-1996-4d4e-9c34-ee1257aae23b)
 
