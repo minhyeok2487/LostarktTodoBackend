@@ -29,7 +29,9 @@
   - 깐부, 길드, 공격대 모집/홍보 게시판 개발중
 
 ### GA 성과 (2024.10.14)
-![image](https://github.com/user-attachments/assets/866e2c60-1000-49ee-b46e-ab5a00b2199c)
+#### 최근 30일 기준
+![image](https://github.com/user-attachments/assets/7fa4c5b0-fc5f-4c4c-a007-9bf20db2f7f4)
+
 
 ### 기술스택
 - Programing Languages : Java, TypeScript, HTML5, CSS3
