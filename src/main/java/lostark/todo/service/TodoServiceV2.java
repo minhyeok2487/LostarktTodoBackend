@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -253,13 +252,13 @@ public class TodoServiceV2 {
             // 전체 체크 되어 있으면 체크 해제
             todoV2List.forEach(todoV2 -> todoV2.setChecked(false));
         } else {
-            // 첫 번째 체크된 항목 찾기
-            Optional<TodoV2> firstChecked = todoV2List.stream()
+            // 마지막 체크된 항목 찾기
+            List<TodoV2> findList = todoV2List.stream()
                     .filter(TodoV2::isChecked)
-                    .findFirst();
+                    .toList();
 
-            if (firstChecked.isPresent()) {
-                int currentGate = firstChecked.get().getWeekContent().getGate();
+            if (!findList.isEmpty()) {
+                int currentGate = findList.get(findList.size()-1).getWeekContent().getGate();
                 // 다음 관문 체크
                 todoV2List.stream()
                         .filter(todoV2 -> todoV2.getWeekContent().getGate() == currentGate + 1)
