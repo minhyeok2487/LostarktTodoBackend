@@ -283,7 +283,8 @@ public class FriendsApiController {
         return new ResponseEntity<>(new CharacterDto().toDtoList(characterList), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "깐부의 캐릭터 리스트 순서변경 저장", response = CharacterDto.class)
+    //TODO 추후삭제
+    @ApiOperation(value = "깐부의 캐릭터 리스트 순서변경 저장 (삭제예정)", response = CharacterDto.class)
     @PatchMapping("/characterList/sorting/{fromUser}")
     public ResponseEntity updateSort(@AuthenticationPrincipal String username,
                                      @PathVariable("fromUser") String fromUser,
