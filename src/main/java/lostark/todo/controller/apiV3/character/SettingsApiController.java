@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.service.CharacterService;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public class SettingsApiController {
 
         Character updateCharacter = characterService.updateGoldCheckVersion(character);
 
-        return new ResponseEntity<>(new CharacterDto().toDtoV2(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 
 
