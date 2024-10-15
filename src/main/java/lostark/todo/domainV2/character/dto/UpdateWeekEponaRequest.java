@@ -7,5 +7,5 @@ import lombok.EqualsAndHashCode;
 @Data
 public class UpdateWeekEponaRequest extends BaseCharacterRequest {
 
-    private boolean isAll;
+    private boolean allCheck;
 }

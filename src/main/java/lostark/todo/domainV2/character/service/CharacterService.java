@@ -470,7 +470,7 @@ public class CharacterService {
     @Transactional
     public void updateWeekEpona(Character character, UpdateWeekEponaRequest request) {
         Optional.of(character.getWeekTodo())
-                .filter(weekTodo -> request.isAll() && weekTodo.getWeekEpona() < 3)
+                .filter(weekTodo -> request.isAllCheck() && weekTodo.getWeekEpona() < 3)
                 .ifPresent(weekTodo -> weekTodo.setWeekEpona(2));
 
         character.getWeekTodo().updateWeekEpona();
@@ -482,14 +482,14 @@ public class CharacterService {
 
         switch (request.getCategory()) {
             case epona -> {
-                if (request.isAll()) {
+                if (request.isAllCheck()) {
                     dayTodo.updateCheckEponaAll();
                 } else {
                     dayTodo.updateCheckEpona();
                 }
             }
             case chaos -> {
-                if (request.isAll()) {
+                if (request.isAllCheck()) {
                     dayTodo.updateCheckChaosAll();
                 } else {
                     dayTodo.updateCheckChaos();

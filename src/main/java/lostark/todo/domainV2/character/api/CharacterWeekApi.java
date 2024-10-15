@@ -81,7 +81,7 @@ public class CharacterWeekApi {
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody UpdateWeekRaidCheckRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
+                request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }

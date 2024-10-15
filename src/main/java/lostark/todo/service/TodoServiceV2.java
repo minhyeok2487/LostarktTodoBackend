@@ -12,11 +12,11 @@ import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domain.todoV2.TodoV2Repository;
-import lostark.todo.domainV2.util.content.dao.ContentDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,7 +26,6 @@ public class TodoServiceV2 {
 
     private final TodoV2Repository todoV2Repository;
     private final KeyValueRepository keyValueRepository;
-    private final ContentDao contentDao;
 
     public TodoV2 findById(long id) {
         return todoV2Repository.findById(id)
@@ -235,35 +234,47 @@ public class TodoServiceV2 {
 
     @Transactional
     public void updateWeekRaidCheck(Character character, UpdateWeekRaidCheckRequest request) {
-        List<WeekContent> weekContentList = contentDao.findAllByIdWeekContent(request.getWeekContentIdList())
-                .stream()
-                .map(content -> (WeekContent) content)
-                .toList();
+        List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, request.getWeekCategory());
+        if (todoV2List.isEmpty()) {
+            throw new IllegalArgumentException("등록된 숙제가 아닙니다.");
+        }
+        boolean allChecked = todoV2List.stream().allMatch(TodoV2::isChecked);
 
-        String weekCategory = weekContentList.get(0).getWeekCategory();
-        if (weekContentList.size() == 1) {
-            if (request.getCurrentGate() < request.getTotalGate()) {
-                TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(
-                                character, weekCategory, request.getCurrentGate() + 1)
-                        .orElseThrow(() -> new IllegalArgumentException("이전 관문이 없습니다. 주간 숙제 관리에서 추가해주세요"));
-                result.updateCheck();
-            }
-            if (request.getCurrentGate() == request.getTotalGate()) { //다시 0으로 돌아감
-                List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
-                for (TodoV2 todoV2 : todoV2List) {
-                    todoV2.setChecked(false);
-                }
-            }
-        } else {
-            List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
-
-            // 현재 체크된 항목이 전체 항목 수와 같은지 확인
-            boolean allChecked = todoV2List.stream().allMatch(TodoV2::isChecked);
-
-            // 전체가 체크되어 있으면 전체 체크 해제, 그렇지 않으면 전체 체크
+        // 전체 체크 API
+        if (request.isAllCheck()) {
+            // 숙제 전체가 체크되어 있다면 전체 체크해제
+            // 하나라도 체크가 안되어있으면 전체 체크
             todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
+            return;
+        }
+
+        // 단건 체크 API
+        if (allChecked) {
+            // 전체 체크 되어 있으면 체크 해제
+            todoV2List.forEach(todoV2 -> todoV2.setChecked(false));
+        } else {
+            // 첫 번째 체크된 항목 찾기
+            Optional<TodoV2> firstChecked = todoV2List.stream()
+                    .filter(TodoV2::isChecked)
+                    .findFirst();
+
+            if (firstChecked.isPresent()) {
+                int currentGate = firstChecked.get().getWeekContent().getGate();
+                // 다음 관문 체크
+                todoV2List.stream()
+                        .filter(todoV2 -> todoV2.getWeekContent().getGate() == currentGate + 1)
+                        .findFirst()
+                        .ifPresent(next -> next.setChecked(true));
+            } else {
+                // 체크된 항목이 없으면 gate == 1인 항목 체크
+                todoV2List.stream()
+                        .filter(todoV2 -> todoV2.getWeekContent().getGate() == 1)
+                        .findFirst()
+                        .ifPresent(firstGate -> firstGate.setChecked(true));
+            }
         }
     }
+
 
     @Transactional
     // 캐릭터 보스별로 순서 정렬

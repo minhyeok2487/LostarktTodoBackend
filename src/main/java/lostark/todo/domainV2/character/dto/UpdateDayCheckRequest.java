@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 public class UpdateDayCheckRequest extends BaseCharacterRequest {
 
     @NotNull
-    private boolean isAll;
+    private boolean allCheck;
 
     @NotNull
     private DayTodoCategoryEnum category;
