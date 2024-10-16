@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.config.TokenProvider;
+import lostark.todo.global.config.TokenProvider;
 import lostark.todo.controller.dto.auth.ResponseDto;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;

@@ -2,8 +2,6 @@ package lostark.todo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.todoDto.TodoDto;
-import lostark.todo.controller.dto.todoDto.TodoSortRequestDto;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidCheckRequest;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidMessageRequest;
 import lostark.todo.domainV2.character.dto.UpdateWeekRaidSortRequest;
@@ -26,18 +24,8 @@ public class TodoServiceV2 {
     private final TodoV2Repository todoV2Repository;
     private final KeyValueRepository keyValueRepository;
 
-    public TodoV2 findById(long id) {
-        return todoV2Repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("없는 정보입니다."));
-    }
-
     public List<TodoV2> findAll() {
         return todoV2Repository.findAll();
-    }
-
-
-    public TodoV2 updateWeekMessage(TodoDto todoDto) {
-        return findById(todoDto.getTodoId()).updateMessage(todoDto.getMessage());
     }
 
     @Transactional
@@ -187,47 +175,6 @@ public class TodoServiceV2 {
 
             character.getTodoV2List().addAll(updatedTodoV2List);
             todoV2Repository.saveAll(updatedTodoV2List);
-        }
-    }
-
-
-    public void updateWeekRaidCheck(Character character, String weekCategory, int currentGate, int totalGate) {
-        if (currentGate < totalGate) {
-            TodoV2 result = todoV2Repository.findByCharacterAndWeekCategoryAndGate(character, weekCategory, currentGate + 1)
-                    .orElseThrow(() -> new IllegalArgumentException("이전 관문이 없습니다. 주간 숙제 관리에서 추가해주세요"));
-            result.updateCheck();
-        }
-        if (currentGate == totalGate) {
-            List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
-            for (TodoV2 todoV2 : todoV2List) {
-                todoV2.setChecked(false);
-            }
-        }
-
-    }
-
-    @Transactional
-    public void updateWeekRaidCheckAll(Character character, String weekCategory) {
-        List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, weekCategory);
-
-        // 현재 체크된 항목이 전체 항목 수와 같은지 확인
-        boolean allChecked = todoV2List.stream().allMatch(TodoV2::isChecked);
-
-        // 전체가 체크되어 있으면 전체 체크 해제, 그렇지 않으면 전체 체크
-        todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
-    }
-
-
-    // 캐릭터 보스별로 순서 정렬
-    public void updateWeekRaidSortBefore(Character character, List<TodoSortRequestDto> dtos) {
-        for (TodoSortRequestDto dto : dtos) {
-            List<TodoV2> todoV2List = todoV2Repository.findByCharacterAndWeekCategory(character, dto.getWeekCategory());
-
-            if (!todoV2List.isEmpty()) {
-                for (TodoV2 todoV2 : todoV2List) {
-                    todoV2.setSortNumber(dto.getSortNumber());
-                }
-            }
         }
     }
 

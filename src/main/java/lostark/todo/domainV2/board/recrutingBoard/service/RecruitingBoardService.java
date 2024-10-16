@@ -2,7 +2,7 @@ package lostark.todo.domainV2.board.recrutingBoard.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.config.TokenProvider;
+import lostark.todo.global.config.TokenProvider;
 import lostark.todo.controller.dto.boardsDto.ImageUrlDto;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.member.Member;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static lostark.todo.constants.ErrorMessages.MEMBER_NOT_MATCH;
-import static lostark.todo.constants.ErrorMessages.TIME_CATEGORY_INVALID_SELECTION;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.MEMBER_NOT_MATCH;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.TIME_CATEGORY_INVALID_SELECTION;
 
 @Service
 @RequiredArgsConstructor

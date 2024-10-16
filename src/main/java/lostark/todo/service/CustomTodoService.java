@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static lostark.todo.constants.ErrorMessages.CUSTOM_TODO_NOT_FOUND;
-import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.CUSTOM_TODO_NOT_FOUND;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
 
 @Service

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static lostark.todo.constants.ErrorMessages.RECRUITING_BOARD_NOT_FOUND;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.RECRUITING_BOARD_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Repository

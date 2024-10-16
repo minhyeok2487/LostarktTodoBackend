@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
-import lostark.todo.controller.dtoV2.firend.UpdateFriendWeekRaidRequest;
 import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
@@ -16,7 +15,6 @@ import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.service.FriendsService;
 import lostark.todo.service.MemberService;
-import lostark.todo.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,7 +34,6 @@ public class FriendsControllerV4 {
     private final FriendsService friendsService;
     private final MemberService memberService;
     private final ContentService contentService;
-    private final TodoServiceV2 todoServiceV2;
 
     @ApiOperation(value = "깐부 리스트 조회",
             response = FriendsResponse.class)
@@ -96,36 +93,6 @@ public class FriendsControllerV4 {
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    // TODO 추후 삭제
-    @ApiOperation(value = "깐부 캐릭터 주간 레이드 추가/제거 (삭제 예정)")
-    @PostMapping("/raid")
-    public ResponseEntity<?> updateFriendWeekRaid(@AuthenticationPrincipal String username,
-                                                  @RequestBody UpdateFriendWeekRaidRequest request) {
-        Friends friend = friendsService.findByFriendUsername(request.getFriendUsername(), username);
-
-        if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-
-        Character character = friend.getMember().getCharacters().stream()
-                .filter(c -> c.getId() == request.getFriendCharacterId())
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 캐릭터 입니다."));
-
-        List<WeekContent> weekContentList = contentService.findAllByIdWeekContent(request.getWeekContentIdList())
-                .stream()
-                .map(content -> (WeekContent) content)
-                .toList();
-
-        if (weekContentList.size() == 1) {
-            todoServiceV2.updateWeekRaid(character, weekContentList.get(0));
-        } else {
-            todoServiceV2.updateWeekRaidAll(character, weekContentList);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

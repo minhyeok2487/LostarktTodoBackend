@@ -22,12 +22,12 @@ public class BoardImagesService {
 
 
     // 이미지 s3에 업로드
-    public BoardImages uploadImage(ImageResponse imageResponse) {
+    public void uploadImage(ImageResponse imageResponse) {
         BoardImages boardImages = BoardImages.builder()
                 .fileName(imageResponse.getFileName())
                 .imageUrl(imageResponse.getImageUrl())
                 .build();
-        return repository.save(boardImages);
+        repository.save(boardImages);
     }
 
     // 공지사항 - 이미지 연결

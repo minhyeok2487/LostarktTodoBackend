@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static lostark.todo.constants.ErrorMessages.CHARACTER_NOT_FOUND;
-import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_FOUND;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
 
 @RestController
@@ -89,8 +89,7 @@ public class FriendsCharacterControllerV4 {
         return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
     }
 
-    //TODO 추후삭제
-    @ApiOperation(value = "캐릭터 메모 업데이트 (삭제 예정)", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
+    @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
     @PostMapping("/{friendUsername}/memo")
     public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username,
                                         @RequestBody @Valid UpdateMemoRequest updateMemoRequest,

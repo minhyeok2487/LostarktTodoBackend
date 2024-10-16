@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
-import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domainV2.character.entity.Character;
@@ -33,14 +32,6 @@ public class CharacterControllerV4 {
                                                             @RequestBody CharacterDefaultDto characterDefaultDto) {
         Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, username);
         return new ResponseEntity<>(CharacterResponse.toDto(resultCharacter), HttpStatus.OK);
-    }
-
-    // TODO 삭제 예정
-    @ApiOperation(value = "캐릭터 출력 내용 수정")
-    @PatchMapping("/settings")
-    public ResponseEntity<?> updateSettings(@AuthenticationPrincipal String username, @RequestBody SettingRequestDto settingRequestDto) {
-        Character updateCharacter = characterService.updateSetting(username, settingRequestDto);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")

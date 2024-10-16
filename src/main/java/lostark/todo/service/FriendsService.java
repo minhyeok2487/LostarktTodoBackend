@@ -11,7 +11,7 @@ import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
 import lostark.todo.domain.member.Member;
-import lostark.todo.utils.GlobalMethod;
+import lostark.todo.global.utils.GlobalMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -191,23 +191,6 @@ public class FriendsService {
         Friends friends = friendsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 데이터 입니다."));
         friends.getFriendSettings().update(name, value);
         return friends.getFriendSettings();
-    }
-
-    public boolean checkSetting(Member fromMember, Member toMember, String content) {
-        Friends memberAndFromMember = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
-        if (content.equals("dayContent")) {
-            return memberAndFromMember.getFriendSettings().isCheckDayTodo();
-        }
-        if (content.equals("raid")) {
-            return memberAndFromMember.getFriendSettings().isCheckRaid();
-        }
-        if (content.equals("weekTodo")) {
-            return memberAndFromMember.getFriendSettings().isCheckWeekTodo();
-        }
-        if (content.equals("setting")) {
-            return memberAndFromMember.getFriendSettings().isSetting();
-        }
-        return false;
     }
 
     public boolean deleteByMember(Member member) {

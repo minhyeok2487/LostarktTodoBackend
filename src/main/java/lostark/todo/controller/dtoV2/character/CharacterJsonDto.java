@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.utils.DoubleDeserializer;
+import lostark.todo.global.utils.DoubleDeserializer;
 
 @Data
 @NoArgsConstructor

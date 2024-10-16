@@ -3,7 +3,7 @@ package lostark.todo.domain.logs;
 import lombok.*;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.Category;
-import lostark.todo.event.entity.character.DayContentCheckEvent;
+import lostark.todo.global.event.entity.character.DayContentCheckEvent;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

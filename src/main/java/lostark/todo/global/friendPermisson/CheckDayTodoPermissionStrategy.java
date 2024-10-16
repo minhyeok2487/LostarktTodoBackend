@@ -2,7 +2,7 @@ package lostark.todo.global.friendPermisson;
 
 import lostark.todo.domain.friends.Friends;
 
-import static lostark.todo.constants.ErrorMessages.FRIEND_PERMISSION_DENIED;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
 public class CheckDayTodoPermissionStrategy implements UpdateCharacterStrategy {
     @Override

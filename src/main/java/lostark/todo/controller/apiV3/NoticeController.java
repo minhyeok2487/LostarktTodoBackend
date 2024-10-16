@@ -4,27 +4,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.boardsDto.BoardInsertDto;
-import lostark.todo.controller.dto.boardsDto.BoardResponseDto;
-import lostark.todo.controller.dto.boardsDto.BoardUpdateDto;
-import lostark.todo.controller.dto.boardsDto.BoardsDto;
 import lostark.todo.controller.dto.noticesDto.NoticesDto;
-import lostark.todo.domain.Role;
-import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notices.Notices;
-import lostark.todo.exhandler.exceptions.CustomIllegalArgumentException;
-import lostark.todo.service.BoardsService;
-import lostark.todo.service.MemberService;
+import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
 import lostark.todo.service.NoticesService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j

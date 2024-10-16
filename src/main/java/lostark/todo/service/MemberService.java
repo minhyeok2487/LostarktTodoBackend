@@ -3,7 +3,6 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.admin.dto.DashboardResponse;
-import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
@@ -20,10 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static lostark.todo.Constant.TEST_USERNAME;
-import static lostark.todo.constants.ErrorMessages.*;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -148,16 +146,5 @@ public class MemberService {
     @Transactional(readOnly = true)
     public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
         return memberRepository.searchAdminMember(request, pageRequest);
-    }
-
-    // TODO - CharacterService쪽에 있어야함
-    public List<Character> editSort(String username, List<CharacterSortDto> characterSortDtoList) {
-        return get(username).getCharacters().stream().peek(
-                        character -> characterSortDtoList.stream()
-                                .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
-                                .findFirst()
-                                .ifPresent(characterSortDto -> character.setSortNumber(characterSortDto.getSortNumber())))
-                .collect(Collectors.toList());
-
     }
 }

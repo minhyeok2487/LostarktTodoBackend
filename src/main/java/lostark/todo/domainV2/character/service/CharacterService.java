@@ -32,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static lostark.todo.constants.ErrorMessages.CHARACTER_NOT_FOUND;
-import static lostark.todo.utils.GlobalMethod.isSameUUID;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_FOUND;
+import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 
 @Service
 @Slf4j

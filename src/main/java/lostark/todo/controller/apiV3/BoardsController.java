@@ -10,7 +10,7 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.BoardImages;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domain.member.Member;
-import lostark.todo.exhandler.exceptions.CustomIllegalArgumentException;
+import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
 import lostark.todo.service.BoardImagesService;
 import lostark.todo.service.BoardsService;
 import lostark.todo.service.ImagesService;
@@ -156,7 +156,7 @@ public class BoardsController {
         if (member.getRole().equals(Role.ADMIN)) {
             String folderName = "boards/";
             ImageResponse imageResponse = imagesService.upload(image, folderName);
-            BoardImages upload = boardImagesService.uploadImage(imageResponse);
+            boardImagesService.uploadImage(imageResponse);
             return new ResponseEntity<>(new ImageUrlDto(imageResponse), HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("권한이 없습니다.");

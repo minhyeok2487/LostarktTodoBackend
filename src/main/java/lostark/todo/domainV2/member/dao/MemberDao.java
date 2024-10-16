@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
-import static lostark.todo.constants.ErrorMessages.MEMER_NOT_FOUND;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.MEMER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Repository
