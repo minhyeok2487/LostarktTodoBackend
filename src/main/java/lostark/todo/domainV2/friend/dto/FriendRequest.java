@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FriendRequest {
 
-    private String characterName;
+    private String friendUsername;
 }

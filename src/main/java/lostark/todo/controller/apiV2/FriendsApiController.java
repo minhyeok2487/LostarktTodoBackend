@@ -61,6 +61,7 @@ public class FriendsApiController {
         }
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "친구 요청")
     @PostMapping("/{fromUser}")
     public ResponseEntity addFriendsRequest(@AuthenticationPrincipal String username,
