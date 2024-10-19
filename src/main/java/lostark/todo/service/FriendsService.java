@@ -3,6 +3,7 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domainV2.friend.dao.FriendDao;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
@@ -14,6 +15,7 @@ import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.friend.enums.FriendRequestCategory;
 import lostark.todo.domainV2.friend.enums.FriendStatus;
 import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.global.utils.GlobalMethod;
@@ -197,9 +199,9 @@ public class FriendsService {
         }
     }
 
-    public FriendSettings updateSetting(long id, String name, boolean value) {
-        Friends friends = friendsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 데이터 입니다."));
-        friends.getFriendSettings().update(name, value);
+    public FriendSettings updateSetting(UpdateFriendSettingRequest request ) {
+        Friends friends = friendsRepository.findById(request.getId()).orElseThrow(() -> new IllegalArgumentException("없는 데이터 입니다."));
+        friends.getFriendSettings().update(request.getName(), request.isValue());
         return friends.getFriendSettings();
     }
 
@@ -262,5 +264,20 @@ public class FriendsService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void updateFriendsRequestV2(Member toMember, Member fromMember, FriendRequestCategory category) {
+        if (category.equals(FriendRequestCategory.OK)) {
+            friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).setAreWeFriend(true);
+        } else if (category.equals(FriendRequestCategory.REJECT)) {
+            friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).setAreWeFriend(false);
+        } else if (category.equals(FriendRequestCategory.DELETE)) {
+            Friends toMemberEntity = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
+            Friends fromMemberEntity = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
+            friendsRepository.delete(toMemberEntity);
+            friendsRepository.delete(fromMemberEntity);
+        } else {
+            throw new RuntimeException();
+        }
     }
 }

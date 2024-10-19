@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class FriendSettingRequestDto {
+public class UpdateFriendSettingRequest {
 
     private long id;
 

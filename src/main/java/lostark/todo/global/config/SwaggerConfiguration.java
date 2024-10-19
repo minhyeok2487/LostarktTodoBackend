@@ -143,6 +143,23 @@ public class SwaggerConfiguration {
     }
 
     @Bean
+    public Docket friend() {
+        version = "깐부(친구)";
+        description = "깐부(친구) API";
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(description, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.friend"))
+                .build()
+                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Arrays.asList(apiKey()));
+    }
+
+    @Bean
     public Docket util() {
         version = "유틸";
         description = "유틸 API (콘텐츠, 큐브, 거래소 등)";

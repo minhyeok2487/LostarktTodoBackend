@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
-import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
+import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.member.Member;
@@ -30,7 +30,7 @@ public class FriendsApiController {
     private final NotificationService notificationService;
 
     // TODO 추후 삭제
-    @ApiOperation(value = "캐릭터 검색")
+    @ApiOperation(value = "캐릭터 검색 (삭제 예정)")
     @GetMapping("/character/{characterName}")
     public ResponseEntity getCharacterWithFriend(@AuthenticationPrincipal String username,
                                                  @PathVariable String characterName) {
@@ -62,7 +62,7 @@ public class FriendsApiController {
     }
 
     // TODO 추후 삭제
-    @ApiOperation(value = "친구 요청")
+    @ApiOperation(value = "친구 요청 (삭제 예정)")
     @PostMapping("/{fromUser}")
     public ResponseEntity addFriendsRequest(@AuthenticationPrincipal String username,
                                             @PathVariable String fromUser) {
@@ -80,7 +80,8 @@ public class FriendsApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "친구 요청 수락/거부/삭제")
+    // TODO 추후 삭제
+    @ApiOperation(value = "친구 요청 수락/거부/삭제 (삭제 예정)")
     @PatchMapping("/{fromUser}/{category}")
     public ResponseEntity updateFriendsRequest(@AuthenticationPrincipal String username,
                                                @PathVariable("fromUser") String fromUser,
@@ -97,13 +98,13 @@ public class FriendsApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "깐부 권한 수정")
+    // TODO 추후 삭제
+    @ApiOperation(value = "깐부 권한 수정 (삭제 예정)")
     @PatchMapping("/settings")
     public ResponseEntity updateSettings(@AuthenticationPrincipal String username,
-                                         @RequestBody FriendSettingRequestDto friendSettingRequestDto) {
+                                         @RequestBody UpdateFriendSettingRequest friendSettingRequestDto) {
 
-        FriendSettings friendSettings = friendsService.updateSetting(friendSettingRequestDto.getId(),
-                friendSettingRequestDto.getName(), friendSettingRequestDto.isValue());
+        FriendSettings friendSettings = friendsService.updateSetting(friendSettingRequestDto);
 
         return new ResponseEntity(friendSettings, HttpStatus.OK);
     }
