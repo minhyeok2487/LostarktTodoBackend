@@ -62,6 +62,13 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
     }
 
     @Override
+    public List<Character> getCharacter(String characterName) {
+        return factory.selectFrom(character)
+                .leftJoin(character.member, member).fetchJoin()
+                .where(character.characterName.eq(characterName)).fetch();
+    }
+
+    @Override
     public long deleteByMember(Member member) {
         factory.delete(todo)
                 .where(todo.character.in(member.getCharacters()))

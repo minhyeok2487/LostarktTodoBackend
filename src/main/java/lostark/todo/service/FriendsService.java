@@ -3,20 +3,27 @@ package lostark.todo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.domainV2.friend.dao.FriendDao;
+import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
+import lostark.todo.domainV2.character.dao.CharacterDao;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.friends.FriendSettings;
 import lostark.todo.domain.friends.Friends;
 import lostark.todo.domain.friends.FriendsRepository;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.friend.enums.FriendStatus;
+import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.global.utils.GlobalMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +32,9 @@ import java.util.stream.Collectors;
 public class FriendsService {
 
     private final FriendsRepository friendsRepository;
+    private final FriendDao friendDao;
+    private final MemberDao memberDao;
+    private final CharacterDao characterDao;
 
     public List<Friends> findAllByFromMember(Member member) {
         return friendsRepository.findAllByFromMember(member.getId());
@@ -228,5 +238,29 @@ public class FriendsService {
             idOrderingMap.put(param, start++);
         }
         friendsRepository.updateSort(idOrderingMap);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FriendFindCharacterResponse> findCharacter(String username, String characterName) {
+        Member member = memberDao.get(username);
+        List<Character> characterList = characterDao.getCharacter(characterName);
+
+        if (characterList.isEmpty()) {
+            throw new IllegalArgumentException(CHARACTER_NOT_FOUND);
+        }
+
+        return characterList.stream()
+                .filter(character -> !character.getMember().equals(member)) //본인 제외
+                .map(character -> {
+                    FriendStatus friendDaoFriend = friendDao.isFriend(member.getId(), character.getMember().getId());
+                    return FriendFindCharacterResponse.builder()
+                            .id(character.getMember().getId())
+                            .username(character.getMember().getUsername())
+                            .characterName(characterName)
+                            .characterListSize(character.getMember().getCharacters().size())
+                            .areWeFriend(friendDaoFriend.getType())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }

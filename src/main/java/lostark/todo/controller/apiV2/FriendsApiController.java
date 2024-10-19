@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.friendsDto.FindCharacterWithFriendsDto;
+import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dto.friendsDto.FriendSettingRequestDto;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.friends.FriendSettings;
@@ -29,6 +29,7 @@ public class FriendsApiController {
     private final FriendsService friendsService;
     private final NotificationService notificationService;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "캐릭터 검색")
     @GetMapping("/character/{characterName}")
     public ResponseEntity getCharacterWithFriend(@AuthenticationPrincipal String username,
@@ -39,12 +40,12 @@ public class FriendsApiController {
         Member toMember = memberService.get(username);
         List<Character> characterList = characterService.findCharacter(characterName);
         if(!characterList.isEmpty()) {
-            List<FindCharacterWithFriendsDto> dtoList = new ArrayList<>();
+            List<FriendFindCharacterResponse> dtoList = new ArrayList<>();
             for (Character character : characterList) {
                 if(toMember != character.getMember()) { //본인 제외
                     Member fromMember = memberService.get(character.getMember().getId());
                     String weAreFriend = friendsService.isFriend(toMember,fromMember);
-                    FindCharacterWithFriendsDto dto = FindCharacterWithFriendsDto.builder()
+                    FriendFindCharacterResponse dto = FriendFindCharacterResponse.builder()
                             .id(fromMember.getId())
                             .username(fromMember.getUsername())
                             .characterName(characterName)

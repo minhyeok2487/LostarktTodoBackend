@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.QMember;
+import lostark.todo.domainV2.friend.enums.FriendStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -99,6 +100,44 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
         em.close();
     }
 
+    @Override
+    public FriendStatus isFriend(long toMemberId, long fromMemberId) {
+        List<Friends> result = factory
+                .selectFrom(friends)
+                .where(
+                        FriendCondition(toMemberId, fromMemberId).or(FriendCondition(fromMemberId, toMemberId)))
+                .fetch();
+
+        boolean toFriends = false;
+        boolean fromFriends = false;
+
+        for (Friends friend : result) {
+            if (friend.getMember().getId() == toMemberId && friend.getFromMember() == fromMemberId) {
+                toFriends = friend.isAreWeFriend();
+            }
+            if (friend.getMember().getId() == fromMemberId && friend.getFromMember() == toMemberId) {
+                fromFriends = friend.isAreWeFriend();
+            }
+        }
+
+        if (!result.isEmpty()) {
+            if (toFriends && fromFriends) {
+                return FriendStatus.FRIEND;
+            } else if (toFriends) {
+                return FriendStatus.FRIEND_PROGRESSING;
+            } else if (fromFriends) {
+                return FriendStatus.FRIEND_RECEIVED;
+            } else {
+                return FriendStatus.FRIEND_REJECT;
+            }
+        }
+        return FriendStatus.FRIEND_SEND;
+    }
+
+
+    private BooleanExpression FriendCondition(long toMemberId, long fromMemberId) {
+        return friends.member.id.eq(toMemberId).and(friends.fromMember.eq(fromMemberId));
+    }
 
     private BooleanExpression eqFriendUsername(String friendUsername) {
         return friends.member.username.eq(friendUsername);

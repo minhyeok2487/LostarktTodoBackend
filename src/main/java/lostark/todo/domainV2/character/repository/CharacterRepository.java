@@ -24,14 +24,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long>, Cha
 
     List<Character> findAllByCharacterName(String characterName);
 
-    @Query("SELECT DISTINCT c FROM Character c " +
-            "LEFT JOIN FETCH c.todoV2List t " +
-            "LEFT JOIN FETCH t.weekContent " +
-            "LEFT JOIN FETCH c.dayTodo.guardian " +
-            "LEFT JOIN FETCH c.dayTodo.chaos " +
-            "WHERE c.member.username = :username")
-    List<Character> findAllByUsername(String username);
-
     @Modifying
     @Query(value = "UPDATE Character c SET c.dayTodo.weekTotalGold = 0 WHERE c.dayTodo.weekTotalGold > 0")
     void updateWeekDayTodoTotalGold();

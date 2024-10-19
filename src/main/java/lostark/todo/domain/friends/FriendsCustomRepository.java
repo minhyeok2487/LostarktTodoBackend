@@ -2,6 +2,7 @@ package lostark.todo.domain.friends;
 
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.friend.enums.FriendStatus;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface FriendsCustomRepository {
     long deleteByMemberFriend(long id, long fromMember);
 
     void updateSort(Map<Long, Integer> idOrderingMap);
+
+    FriendStatus isFriend(long toMemberId, long fromMemberId);
 }

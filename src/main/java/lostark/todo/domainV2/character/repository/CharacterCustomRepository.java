@@ -27,4 +27,6 @@ public interface CharacterCustomRepository  {
     void updateDayContentPriceChaos(DayContent dayContent, Double price);
 
     void updateDayContentPriceGuardian(DayContent dayContent, Double price);
+
+    List<Character> getCharacter(String characterName);
 }

@@ -18,4 +18,9 @@ public class CharacterDao {
     public List<Character> getCharacterList(String username) {
         return characterRepository.getCharacterList(username);
     }
+
+    @Transactional(readOnly = true)
+    public List<Character> getCharacter(String characterName) {
+        return characterRepository.getCharacter(characterName);
+    }
 }

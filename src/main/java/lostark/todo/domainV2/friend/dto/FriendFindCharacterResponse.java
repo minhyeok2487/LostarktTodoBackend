@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.friendsDto;
+package lostark.todo.domainV2.friend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class FindCharacterWithFriendsDto {
+public class FriendFindCharacterResponse {
 
     private long id;
 
