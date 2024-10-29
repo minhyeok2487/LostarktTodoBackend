@@ -49,7 +49,7 @@ public class CommunityService {
         return memberDao.get(username).getId();
     }
 
-    @RateLimit(120)
+//    @RateLimit(120)
     @Transactional
     public void save(String username, CommunitySaveRequest request) {
         Member member = memberDao.get(username);
