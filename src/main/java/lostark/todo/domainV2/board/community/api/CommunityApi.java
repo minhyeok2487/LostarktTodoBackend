@@ -9,11 +9,13 @@ import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
 import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.service.CommunityService;
+import lostark.todo.global.dto.ImageResponseV2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -50,6 +52,13 @@ public class CommunityApi {
                                   @RequestBody @Valid CommunitySaveRequest request) {
         service.save(username, request);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "이미지 업로드", response = ImageResponseV2.class)
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadImage(@AuthenticationPrincipal String username,
+                                         @RequestPart("image") MultipartFile image) {
+        return new ResponseEntity<>(service.uploadImage(username, image), HttpStatus.OK);
     }
 
 }

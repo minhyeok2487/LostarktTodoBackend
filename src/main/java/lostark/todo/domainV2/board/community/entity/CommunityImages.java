@@ -23,6 +23,9 @@ public class CommunityImages extends BaseTimeEntity {
     @Column(length = 1000)
     private String url;
 
+    @Column(length = 1000)
+    private String fileName;
+
     @Column()
     private long ordering;
 

@@ -30,7 +30,7 @@ public class RateLimitAspect {
         if (cache != null) {
             Cache.ValueWrapper valueWrapper = cache.get(key);
             if (valueWrapper != null) {
-                throw new IllegalStateException("요청이 너무 빈번합니다.");
+                throw new IllegalStateException(rateLimit + "초 후 재요청이 가능합니다.");
             }
 
             // 캐시에 저장

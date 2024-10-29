@@ -1,6 +1,8 @@
 package lostark.todo.domainV2.board.community.dao;
 
 import lombok.RequiredArgsConstructor;
+import lostark.todo.controller.dtoV2.image.ImageResponse;
+import lostark.todo.domainV2.board.community.entity.CommunityImages;
 import lostark.todo.domainV2.board.community.repository.CommunityImagesRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,5 +22,15 @@ public class CommunityImagesDao {
         AtomicInteger counter = new AtomicInteger(1);
         repository.search(imageList)
                 .forEach(image -> image.update(communityId, counter.getAndIncrement()));
+    }
+
+    @Transactional
+    public CommunityImages uploadImage(ImageResponse imageResponse) {
+        CommunityImages images = CommunityImages.builder()
+                .fileName(imageResponse.getFileName())
+                .url(imageResponse.getImageUrl())
+                .ordering(0)
+                .build();
+        return repository.save(images);
     }
 }
