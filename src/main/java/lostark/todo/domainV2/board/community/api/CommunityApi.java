@@ -5,16 +5,15 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainV2.board.community.dto.CommunityResponse;
+import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
 import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.service.CommunityService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -43,6 +42,14 @@ public class CommunityApi {
                                     @RequestParam(required = false, defaultValue = "20") int limit) {
         PageRequest pageRequest = PageRequest.of(0, limit);
         return new ResponseEntity<>(service.search(params, pageRequest), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "게시글 저장")
+    @PostMapping()
+    public ResponseEntity<?> save(@AuthenticationPrincipal String username,
+                                  @RequestBody @Valid CommunitySaveRequest request) {
+        service.save(username, request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
