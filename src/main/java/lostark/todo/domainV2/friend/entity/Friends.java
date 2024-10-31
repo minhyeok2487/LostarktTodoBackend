@@ -1,4 +1,4 @@
-package lostark.todo.domain.friends;
+package lostark.todo.domainV2.friend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;

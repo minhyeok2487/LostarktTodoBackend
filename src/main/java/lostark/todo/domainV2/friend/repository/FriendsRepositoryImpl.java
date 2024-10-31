@@ -1,8 +1,9 @@
-package lostark.todo.domain.friends;
+package lostark.todo.domainV2.friend.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.domainV2.friend.entity.Friends;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.QMember;
@@ -14,9 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
-import static lostark.todo.domain.friends.QFriends.friends;
 import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
+import static lostark.todo.domainV2.friend.entity.QFriends.friends;
 
 @RequiredArgsConstructor
 public class FriendsRepositoryImpl implements FriendsCustomRepository {

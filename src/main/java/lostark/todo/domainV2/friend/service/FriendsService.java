@@ -1,19 +1,17 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.friend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domainV2.friend.dao.FriendDao;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
-import lostark.todo.controller.dto.friendsDto.FriendsReturnDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.domainV2.character.dao.CharacterDao;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.friends.FriendSettings;
-import lostark.todo.domain.friends.Friends;
-import lostark.todo.domain.friends.FriendsRepository;
+import lostark.todo.domainV2.friend.entity.FriendSettings;
+import lostark.todo.domainV2.friend.entity.Friends;
+import lostark.todo.domainV2.friend.repository.FriendsRepository;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.friend.enums.FriendRequestCategory;
 import lostark.todo.domainV2.friend.enums.FriendStatus;
@@ -63,72 +61,6 @@ public class FriendsService {
                 .build();
         friendsRepository.save(toFriends);
         friendsRepository.save(fromFriends);
-    }
-
-    public String isFriend(Member toMember, Member fromMember) {
-        if (friendsRepository.existsByMemberAndFromMember(toMember, fromMember.getId())) {
-            boolean toFriends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).isAreWeFriend();
-            boolean fromFriends = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).isAreWeFriend();
-            if (toFriends && fromFriends) {
-                return "깐부";
-            } else if (toFriends) {
-                return "깐부 요청 진행중";
-            } else if (fromFriends) {
-                return "깐부 요청 받음";
-            } else {
-                return "요청 거부";
-            }
-        }
-        return "깐부 요청";
-    }
-
-    public List<FriendsReturnDto> isFriend(Member member) {
-        List<FriendsReturnDto> returnDtoList = new ArrayList<>();
-        List<Friends> byMember = friendsRepository.findAllByMember(member);
-        List<Friends> fromMember = friendsRepository.findAllByFromMember(member.getId());
-        for (Friends friends : byMember) {
-            boolean toFriends = friends.isAreWeFriend();
-            for (Friends fromFriend : fromMember) {
-                if (friends.getFromMember() == fromFriend.getMember().getId()) {
-                    boolean fromFriends = fromFriend.isAreWeFriend();
-                    String areWeFriend = "";
-                    if (toFriends && fromFriends) {
-                        areWeFriend = "깐부";
-                    } else if (toFriends) {
-                        areWeFriend = "깐부 요청 진행중";
-                    } else if (fromFriends) {
-                        areWeFriend = "깐부 요청 받음";
-                    } else {
-                        areWeFriend = "요청 거부";
-                    }
-
-                    //캐릭터 리스트
-                    List<CharacterDto> characterDtoList = fromFriend.getMember().getCharacters().stream()
-                            .filter(character -> character.getSettings().isShowCharacter())
-                            .map(character -> new CharacterDto().toDtoV2(character))
-                            .collect(Collectors.toList());
-
-                    // characterResponseDtoList를 character.getSortnumber 오름차순으로 정렬
-                    characterDtoList.sort(Comparator
-                            .comparingInt(CharacterDto::getSortNumber)
-                            .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed())
-                    );
-
-                    FriendsReturnDto friendsReturnDto = FriendsReturnDto.builder()
-                            .id(friends.getId())
-                            .friendUsername(fromFriend.getMember().getUsername())
-                            .areWeFriend(areWeFriend)
-                            .nickName(fromFriend.getMember().getCharacters().get(0).getCharacterName())
-                            .characterList(characterDtoList)
-                            .toFriendSettings(friends.getFriendSettings())
-                            .fromFriendSettings(fromFriend.getFriendSettings())
-                            .build();
-
-                    returnDtoList.add(friendsReturnDto);
-                }
-            }
-        }
-        return returnDtoList;
     }
 
     @Transactional(readOnly = true)
@@ -182,21 +114,6 @@ public class FriendsService {
 
     private String getMainCharacterName(Member member) {
         return member.getMainCharacterName() != null ? member.getMainCharacterName() : member.getCharacters().get(0).getCharacterName();
-    }
-
-    public void updateFriendsRequest(Member toMember, Member fromMember, String category) {
-        if (category.equals("ok")) {
-            friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId()).setAreWeFriend(true);
-        } else if (category.equals("reject")) {
-            friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId()).setAreWeFriend(false);
-        } else if (category.equals("delete")) {
-            Friends toMemberEntity = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
-            Friends fromMemberEntity = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
-            friendsRepository.delete(toMemberEntity);
-            friendsRepository.delete(fromMemberEntity);
-        } else {
-            throw new IllegalStateException("잘못된 요청입니다.");
-        }
     }
 
     public FriendSettings updateSetting(UpdateFriendSettingRequest request ) {

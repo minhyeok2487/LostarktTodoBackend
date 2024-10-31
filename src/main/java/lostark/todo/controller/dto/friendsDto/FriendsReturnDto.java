@@ -1,15 +1,12 @@
 package lostark.todo.controller.dto.friendsDto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
-import lostark.todo.domain.friends.FriendSettings;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.friend.entity.FriendSettings;
 
-import javax.persistence.*;
 import java.util.List;
 
 @AllArgsConstructor

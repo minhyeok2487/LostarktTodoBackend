@@ -9,7 +9,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
 import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
 import lostark.todo.domain.customTodo.CustomTodoRepository;
-import lostark.todo.domain.friends.Friends;
+import lostark.todo.domainV2.friend.entity.Friends;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

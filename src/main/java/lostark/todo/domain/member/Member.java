@@ -8,7 +8,7 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.Boards;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.board.comments.entity.Comments;
-import lostark.todo.domain.friends.Friends;
+import lostark.todo.domainV2.friend.entity.Friends;
 import lostark.todo.domain.notification.Notification;
 
 import javax.persistence.*;

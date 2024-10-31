@@ -10,7 +10,7 @@ import lostark.todo.controller.dtoV2.member.EditProviderRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.service.FriendsService;
+import lostark.todo.domainV2.friend.service.FriendsService;
 import lostark.todo.service.MemberService;
 import lostark.todo.domainV2.lostark.dao.LostarkApiDao;
 import org.springframework.http.HttpStatus;
