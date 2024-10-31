@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainV2.board.community.dto.CommunityResponse;
 import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
 import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
+import lostark.todo.domainV2.board.community.dto.CommunityUpdateRequest;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.service.CommunityService;
 import lostark.todo.global.dto.ImageResponseV2;
@@ -60,5 +61,15 @@ public class CommunityApi {
                                          @RequestPart("image") MultipartFile image) {
         return new ResponseEntity<>(service.uploadImage(username, image), HttpStatus.OK);
     }
+
+    @ApiOperation(value =  "게시글 수정", notes = "15분이내 게시글만 수정 가능, 사진 수정은 불가능")
+    @PatchMapping("")
+    public ResponseEntity<?> update(@AuthenticationPrincipal String username,
+                                    @RequestBody @Valid CommunityUpdateRequest request) {
+        service.update(username, request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
 }

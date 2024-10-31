@@ -6,6 +6,8 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -58,5 +60,20 @@ public class Community extends BaseTimeEntity {
 
     public static String createName(Member member) {
         return "익명의 " + member.getCharacters().get(0).getCharacterClassName() + member.getId();
+    }
+
+    public void update(String body) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime createdTime = this.getCreatedDate();
+
+        // 현재 시간과 작성 시간의 차이를 분 단위로 계산
+        long minutesDifference = ChronoUnit.MINUTES.between(createdTime, currentTime);
+
+        if (minutesDifference > 15) {
+            throw new IllegalStateException("게시글 작성 후 15분이 지나 수정할 수 없습니다.");
+        }
+
+        // 15분이 지나지 않았다면 내용 업데이트
+        this.body = body;
     }
 }

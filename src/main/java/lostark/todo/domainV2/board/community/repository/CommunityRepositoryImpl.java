@@ -10,13 +10,16 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domainV2.board.community.dto.CommunityResponse;
 import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
+import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.entity.QCommunity;
 import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
+import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domainV2.board.community.entity.QCommunity.community;
 import static lostark.todo.domainV2.board.community.entity.QCommunityLike.communityLike;
 
@@ -72,6 +75,15 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
         }
 
         return new CursorResponse<>(fetch, hasNext);
+    }
+
+    @Override
+    public Optional<Community> get(String username, long communityId) {
+        return Optional.ofNullable(factory.selectFrom(community)
+                .leftJoin(member).on(community.memberId.eq(member.id))
+                .where(
+                        member.username.eq(username).and(community.id.eq(communityId))
+                ).fetchOne());
     }
 
     private BooleanExpression ltCommunityId(Long communityId) {

@@ -9,12 +9,12 @@ import lostark.todo.domainV2.board.community.dao.CommunityImagesDao;
 import lostark.todo.domainV2.board.community.dto.CommunityResponse;
 import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
 import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
+import lostark.todo.domainV2.board.community.dto.CommunityUpdateRequest;
 import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.entity.CommunityImages;
 import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.global.config.TokenProvider;
-import lostark.todo.global.customAnnotation.RateLimit;
 import lostark.todo.global.dto.CursorResponse;
 import lostark.todo.global.dto.ImageResponseV2;
 import lostark.todo.service.ImagesService;
@@ -69,10 +69,16 @@ public class CommunityService {
 
     @Transactional
     public ImageResponseV2 uploadImage(String username, MultipartFile image) {
-        Member member = memberDao.get(username);
+        memberDao.get(username); // 단순 회원 검증용
         String folderName = "community-images/";
         ImageResponse imageResponse = imagesService.upload(image, folderName);
         CommunityImages images = communityImagesDao.uploadImage(imageResponse);
         return new ImageResponseV2(imageResponse, images.getId());
+    }
+
+    @Transactional
+    public void update(String username, CommunityUpdateRequest request) {
+        Community community = communityDao.get(username, request.getCommunityId());
+        community.update(request.getBody());
     }
 }

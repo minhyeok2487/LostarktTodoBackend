@@ -1,5 +1,6 @@
 package lostark.todo.domainV2.board.community.dao;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domainV2.board.community.dto.CommunityResponse;
 import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
@@ -25,5 +26,11 @@ public class CommunityDao {
     @Transactional
     public Community save(Community community) {
         return repository.save(community);
+    }
+
+    @Transactional(readOnly = true)
+    public Community get(String username, long communityId) {
+        return repository.get(username, communityId)
+                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
     }
 }
