@@ -45,6 +45,9 @@ public class Community extends BaseTimeEntity {
     @Column()
     private long commentParentId;
 
+    @Column()
+    private boolean deleted = false;
+
     public static Community toEntity(Member member, CommunitySaveRequest request) {
         return Community.builder()
                 .memberId(member.getId())
@@ -75,5 +78,9 @@ public class Community extends BaseTimeEntity {
 
         // 15분이 지나지 않았다면 내용 업데이트
         this.body = body;
+    }
+
+    public void delete() {
+        deleted = true;
     }
 }

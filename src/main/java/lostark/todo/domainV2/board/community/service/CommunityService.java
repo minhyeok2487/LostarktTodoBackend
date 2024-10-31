@@ -81,4 +81,10 @@ public class CommunityService {
         Community community = communityDao.get(username, request.getCommunityId());
         community.update(request.getBody());
     }
+
+    @Transactional
+    public void delete(String username, long communityId) {
+        Community community = communityDao.get(username, communityId);
+        community.delete();
+    }
 }

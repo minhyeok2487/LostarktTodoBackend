@@ -15,6 +15,7 @@ import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.entity.QCommunity;
 import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +62,8 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                 .where(
                         ltCommunityId(params.getCommunityId()),
                         eqCategory(params.getCategory()),
-                        eqRoot(0)
+                        eqRoot(0),
+                        isDeleted(false)
                 )
                 .orderBy(community.id.desc())
                 .limit(pageRequest.getPageSize() + 1)
@@ -82,7 +84,9 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
         return Optional.ofNullable(factory.selectFrom(community)
                 .leftJoin(member).on(community.memberId.eq(member.id))
                 .where(
-                        member.username.eq(username).and(community.id.eq(communityId))
+                        eqUsername(username),
+                        eqCommunityId(communityId),
+                        isDeleted(false)
                 ).fetchOne());
     }
 
@@ -102,5 +106,23 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
 
     private BooleanExpression eqRoot(long rootParentId) {
         return community.rootParentId.eq(rootParentId);
+    }
+
+    private BooleanExpression isDeleted(boolean deleted) {
+        return community.deleted.eq(deleted);
+    }
+
+    private BooleanExpression eqUsername(String username) {
+        if (StringUtils.hasText(username)) {
+            return member.username.eq(username);
+        }
+        return null;
+    }
+
+    private BooleanExpression eqCommunityId(Long communityId) {
+        if (communityId != null) {
+            return community.id.eq(communityId);
+        }
+        return null;
     }
 }

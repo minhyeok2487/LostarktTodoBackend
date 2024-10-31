@@ -70,6 +70,14 @@ public class CommunityApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation(value =  "게시글 삭제")
+    @DeleteMapping("/{communityId}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal String username,
+                                    @PathVariable long communityId) {
+        service.delete(username, communityId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 
 }
