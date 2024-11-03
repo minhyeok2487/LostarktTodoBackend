@@ -37,9 +37,6 @@ public class Community extends BaseTimeEntity {
     private CommunityCategory category;
 
     @Column()
-    private int likeCount;
-
-    @Column()
     private long rootParentId;
 
     @Column()
@@ -55,7 +52,6 @@ public class Community extends BaseTimeEntity {
                 .showName(request.isShowName())
                 .body(request.getBody())
                 .category(request.getCategory())
-                .likeCount(0)
                 .rootParentId(request.getRootParentId())
                 .commentParentId(request.getCommentParentId())
                 .build();

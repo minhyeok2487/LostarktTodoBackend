@@ -67,7 +67,7 @@ public class CommunityApi {
         return new ResponseEntity<>(service.uploadImage(username, image), HttpStatus.OK);
     }
 
-    @ApiOperation(value =  "게시글 수정", notes = "15분이내 게시글만 수정 가능, 사진 수정은 불가능")
+    @ApiOperation(value = "게시글 수정", notes = "15분이내 게시글만 수정 가능, 사진 수정은 불가능")
     @PatchMapping("")
     public ResponseEntity<?> update(@AuthenticationPrincipal String username,
                                     @RequestBody @Valid CommunityUpdateRequest request) {
@@ -75,7 +75,7 @@ public class CommunityApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value =  "게시글 삭제")
+    @ApiOperation(value = "게시글 삭제")
     @DeleteMapping("/{communityId}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal String username,
                                     @PathVariable long communityId) {
@@ -83,6 +83,13 @@ public class CommunityApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation(value = "좋아요")
+    @PostMapping("/like/{communityId}")
+    public ResponseEntity<?> updateLike(@AuthenticationPrincipal String username,
+                                        @PathVariable long communityId) {
+        service.updateLike(username, communityId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }

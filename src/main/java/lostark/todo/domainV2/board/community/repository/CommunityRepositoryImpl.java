@@ -57,7 +57,10 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                         .select(communitySub.count())
                                         .from(communitySub)
                                         .where(communitySub.rootParentId.eq(community.id)), "commentCount"),
-                                community.likeCount.as("likeCount")
+                                Expressions.as(JPAExpressions
+                                        .select(communityLike.count())
+                                        .from(communityLike)
+                                        .where(communityLike.communityId.eq(community.id)), "likeCount")
                         ))
                 .from(community)
                 .where(
@@ -118,7 +121,10 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                         .select(communitySub.count())
                                         .from(communitySub)
                                         .where(communitySub.rootParentId.eq(community.id)), "commentCount"),
-                                community.likeCount.as("likeCount")
+                                Expressions.as(JPAExpressions
+                                        .select(communityLike.count())
+                                        .from(communityLike)
+                                        .where(communityLike.communityId.eq(community.id)), "likeCount")
                         ))
                 .from(community)
                 .where(
@@ -152,7 +158,10 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                                 .exists())
                                         .then(true)
                                         .otherwise(false).as("myLike"),
-                                community.likeCount.as("likeCount"),
+                                Expressions.as(JPAExpressions
+                                        .select(communityLike.count())
+                                        .from(communityLike)
+                                        .where(communityLike.communityId.eq(community.id)), "likeCount"),
                                 community.rootParentId.as("rootParentId"),
                                 community.commentParentId.as("commentParentId")
                         ))

@@ -17,7 +17,7 @@ public class CommunityCommentResponse {
 
     private boolean myPost;
 
-    private int likeCount;
+    private long likeCount;
 
     private boolean myLike;
 

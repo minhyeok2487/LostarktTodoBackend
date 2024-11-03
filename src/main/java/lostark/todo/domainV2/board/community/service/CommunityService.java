@@ -7,6 +7,7 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.board.community.dao.CommunityDao;
 import lostark.todo.domainV2.board.community.dao.CommunityImagesDao;
+import lostark.todo.domainV2.board.community.dao.CommunityLikeDao;
 import lostark.todo.domainV2.board.community.dto.*;
 import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
@@ -29,6 +30,7 @@ import java.util.List;
 public class CommunityService {
 
     private final CommunityDao communityDao;
+    private final CommunityLikeDao communityLikeDao;
     private final CommunityImagesDao communityImagesDao;
     private final MemberDao memberDao;
     private final ImagesService imagesService;
@@ -84,5 +86,11 @@ public class CommunityService {
         CommunitySearchResponse searchResponse = communityDao.getResponse(memberId, communityId);
         List<CommunityCommentResponse> commentResponseList = communityDao.getComments(memberId, communityId);
         return new CommunityGetResponse(searchResponse, commentResponseList);
+    }
+
+    @Transactional
+    public void updateLike(String username, long communityId) {
+        Member member = memberDao.get(username);
+        communityLikeDao.updateLike(member.getId(), communityId);
     }
 }
