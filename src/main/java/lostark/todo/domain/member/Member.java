@@ -6,6 +6,7 @@ import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.Boards;
+import lostark.todo.domainV2.board.community.entity.Follow;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domainV2.friend.entity.Friends;
@@ -65,6 +66,14 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "receiver", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "follower", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Follow> followers;
+
+    @OneToMany(mappedBy = "following", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Follow> following;
 
     // 유저 전환(구글 로그인 -> 일반 로그인)
     public void changeAuthToNone(String encodePassword) {
