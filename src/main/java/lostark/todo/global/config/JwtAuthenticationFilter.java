@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static lostark.todo.global.config.WebSecurityConfig.PERMIT_ALL_LINK;
+import static lostark.todo.global.config.WebSecurityConfig.PERMIT_GET_LINK;
+
 /**
  * JWT 인증 처리
  * HTTP 요청을 필터링하여 클라이언트에서 전달된 JWT 토큰 검증
@@ -39,48 +42,105 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // 요청에서 토큰 가져오기
             String token = parseBearerToken(request);
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
-            // 토큰 검사하기. JWT이므로 인가 서버에 요청하지 않고도 검증 가능
             if (token != null && !token.equalsIgnoreCase("null")) {
-                // username 값 가져옴. 위조된 경우 예외 처리
-                String username = tokenProvider.validToken(token);
+                try {
+                    // username 값 가져옴. 위조된 경우 예외 처리
+                    String username = tokenProvider.validToken(token);
 
-                // 인증 완료
-                // SecurityContextHolder에 등록해야 인증된 사용자
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.NO_AUTHORITIES);
+                    // 인증 완료
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.NO_AUTHORITIES);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    securityContext.setAuthentication(authentication);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                securityContext.setAuthentication(authentication);
-                SecurityContextHolder.setContext(securityContext);
-
-                // Admin 권한 체크
-                // memberService를 통해 사용자 정보 가져오기
-                if (request.getRequestURI().startsWith("/admin")) {
-                    Member member = memberService.get(username);
-                    if (member.getRole() != Role.ADMIN) {
-                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                        response.getWriter().write("관리자 권한이 필요합니다.");
+                    // Admin 권한 체크
+                    if (request.getRequestURI().startsWith("/admin")) {
+                        Member member = memberService.get(username);
+                        if (member.getRole() != Role.ADMIN) {
+                            sendErrorResponse(response, "관리자 권한이 필요합니다.");
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    log.debug("Invalid token: {}", e.getMessage());
+                    if (!isPermitAllPath(request)) {
+                        sendErrorResponse(response, "유효하지 않은 토큰입니다.");
                         return;
                     }
+                    // 인증이 필요없는 경로면 null로 설정
+                    setNullAuthentication(securityContext, request);
                 }
+            } else {
+                // 토큰이 없는 경우
+                if (!isPermitAllPath(request)) {
+                    sendErrorResponse(response, "인증이 필요한 서비스입니다.");
+                    return;
+                }
+                // 인증이 필요없는 경로면 null로 설정
+                setNullAuthentication(securityContext, request);
             }
+
+            SecurityContextHolder.setContext(securityContext);
+            filterChain.doFilter(request, response);
+
         } catch (Exception e) {
             log.error("Auth Error = {}", e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
+            sendErrorResponse(response, "인증 처리 중 오류가 발생했습니다.");
+        }
+    }
+
+    private void setNullAuthentication(SecurityContext securityContext, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(null, null, AuthorityUtils.NO_AUTHORITIES);
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        securityContext.setAuthentication(authentication);
+    }
+
+    private boolean isPermitAllPath(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        // 모든 메소드 허용 패턴 체크
+        if (checkPatternMatch(path, PERMIT_ALL_LINK)) {
+            return true;
         }
 
-        filterChain.doFilter(request, response);
+        // GET 메소드 전용 패턴 체크
+        return "GET".equals(method) && checkPatternMatch(path, PERMIT_GET_LINK);
+    }
+
+    private boolean checkPatternMatch(String path, String[] patterns) {
+        for (String pattern : patterns) {
+            if (pattern.endsWith("/**")) {
+                // /** 패턴 처리
+                String basePattern = pattern.substring(0, pattern.length() - 3);
+                if (path.startsWith(basePattern)) {
+                    return true;
+                }
+            } else {
+                // 정확한 경로 매칭
+                if (path.equals(pattern)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json;charset=UTF-8");
+        String jsonResponse = String.format("{\"message\": \"%s\"}", message);
+        response.getWriter().write(jsonResponse);
     }
 
     private String parseBearerToken(HttpServletRequest request) {
-        // Http 요청의 헤더를 파싱해 Bearer 토큰을 리턴한다.
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
         return null;
     }
-
 }

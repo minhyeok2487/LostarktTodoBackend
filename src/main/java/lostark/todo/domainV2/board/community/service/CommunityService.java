@@ -1,29 +1,28 @@
 package lostark.todo.domainV2.board.community.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.board.community.dao.CommunityDao;
 import lostark.todo.domainV2.board.community.dao.CommunityImagesDao;
-import lostark.todo.domainV2.board.community.dto.CommunityResponse;
-import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
-import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
-import lostark.todo.domainV2.board.community.dto.CommunityUpdateRequest;
+import lostark.todo.domainV2.board.community.dto.*;
 import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.entity.CommunityImages;
 import lostark.todo.domainV2.member.dao.MemberDao;
-import lostark.todo.global.config.TokenProvider;
 import lostark.todo.global.dto.CursorResponse;
 import lostark.todo.global.dto.ImageResponseV2;
 import lostark.todo.service.ImagesService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,21 +31,12 @@ public class CommunityService {
     private final CommunityDao communityDao;
     private final CommunityImagesDao communityImagesDao;
     private final MemberDao memberDao;
-    private final TokenProvider tokenProvider;
     private final ImagesService imagesService;
 
     @Transactional(readOnly = true)
-    public CursorResponse<CommunityResponse> search(CommunitySearchParams params, PageRequest pageRequest) {
-        Long memberId = getMemberIdFromToken(params.getToken());
+    public CursorResponse<CommunitySearchResponse> search(String username, CommunitySearchParams params, PageRequest pageRequest) {
+        long memberId = username == null ? 0L : memberDao.get(username).getId();
         return communityDao.search(memberId, params, pageRequest);
-    }
-
-    private Long getMemberIdFromToken(String token) {
-        if (!StringUtils.hasText(token)) {
-            return 0L;
-        }
-        String username = tokenProvider.validToken(token);
-        return memberDao.get(username).getId();
     }
 
 //    @RateLimit(120)
@@ -86,5 +76,13 @@ public class CommunityService {
     public void delete(String username, long communityId) {
         Community community = communityDao.get(username, communityId);
         community.delete();
+    }
+
+    @Transactional(readOnly = true)
+    public CommunityGetResponse get(String username, Long communityId) {
+        long memberId = username == null ? 0L : memberDao.get(username).getId();
+        CommunitySearchResponse searchResponse = communityDao.getResponse(memberId, communityId);
+        List<CommunityCommentResponse> commentResponseList = communityDao.getComments(memberId, communityId);
+        return new CommunityGetResponse(searchResponse, commentResponseList);
     }
 }

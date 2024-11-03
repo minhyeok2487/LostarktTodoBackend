@@ -12,7 +12,4 @@ public class CommunitySearchParams {
 
     @ApiModelProperty(name = "커뮤니티 카테고리, 없으면 X")
     private CommunityCategory category;
-
-    @ApiModelProperty(name = "JWT 토큰, 없으면 X")
-    private String token;
 }

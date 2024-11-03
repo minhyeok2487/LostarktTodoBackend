@@ -62,7 +62,7 @@ public class Community extends BaseTimeEntity {
     }
 
     public static String createName(Member member) {
-        return "익명의 " + member.getCharacters().get(0).getCharacterClassName() + member.getId();
+        return "익명의 " + member.getCharacters().get(0).getCharacterClassName() + " " + member.getId();
     }
 
     public void update(String body) {

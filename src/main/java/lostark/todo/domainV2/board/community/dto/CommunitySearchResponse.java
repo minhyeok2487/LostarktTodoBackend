@@ -6,7 +6,7 @@ import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import java.time.LocalDateTime;
 
 @Data
-public class CommunityResponse {
+public class CommunitySearchResponse {
 
     private long communityId;
 

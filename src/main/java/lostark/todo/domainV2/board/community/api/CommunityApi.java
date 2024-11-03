@@ -4,10 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domainV2.board.community.dto.CommunityResponse;
-import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
-import lostark.todo.domainV2.board.community.dto.CommunitySearchParams;
-import lostark.todo.domainV2.board.community.dto.CommunityUpdateRequest;
+import lostark.todo.domainV2.board.community.dto.*;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.service.CommunityService;
 import lostark.todo.global.dto.ImageResponseV2;
@@ -39,12 +36,20 @@ public class CommunityApi {
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "게시글 불러오기 (커서 기반)", response = CommunityResponse.class)
+    @ApiOperation(value = "게시글 불러오기 (커서 기반)", response = CommunitySearchResponse.class)
     @GetMapping()
-    public ResponseEntity<?> search(@Valid CommunitySearchParams params,
+    public ResponseEntity<?> search(@AuthenticationPrincipal String username,
+                                    @Valid CommunitySearchParams params,
                                     @RequestParam(required = false, defaultValue = "20") int limit) {
         PageRequest pageRequest = PageRequest.of(0, limit);
-        return new ResponseEntity<>(service.search(params, pageRequest), HttpStatus.OK);
+        return new ResponseEntity<>(service.search(username, params, pageRequest), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "게시글 상세 불러오기", response = CommunityGetResponse.class)
+    @GetMapping("/{communityId}")
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username,
+                                 @PathVariable Long communityId) {
+        return new ResponseEntity<>(service.get(username, communityId), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시글 저장")

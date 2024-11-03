@@ -34,7 +34,7 @@ public class WebSecurityConfig {
      * 인증 필요하지 않는 링크
      * swagger, auth
      */
-    private static final String[] PERMIT_ALL_LINK = {
+    public static final String[] PERMIT_ALL_LINK = {
             "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/**",
@@ -47,6 +47,10 @@ public class WebSecurityConfig {
             "/v3/mail/**", "/v3/notification/**",
             "/v3/auth/signup", "/v3/auth/character", "/v3/auth/login",
             "/v2/boards/**","/v3/boards/**", "/v2/comments", "/v3/notices/**", "/v3/home/test"
+    };
+
+    public static final String[] PERMIT_GET_LINK = {
+        "/v3/comments", "/api/v1/recruting-board/**", "/api/v1/community/**"
     };
 
 
@@ -67,9 +71,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests() // 인증 필요하지 않는 링크
                 .antMatchers(PERMIT_ALL_LINK).permitAll()
-                .antMatchers(HttpMethod.GET,"/v3/comments").permitAll() // 방명록 불러오기 Get만 허용
-                .antMatchers(HttpMethod.GET,"/api/v1/recruiting-board/**").permitAll() // 모집 게시판 Get만 허용
-                .antMatchers(HttpMethod.GET,"/api/v1/community/**").permitAll() // 커뮤니티 Get만 허용
+                .antMatchers(HttpMethod.GET, PERMIT_GET_LINK).permitAll()
                 .anyRequest().authenticated() // 나머지 경로 모두 인증
                 .and().oauth2Login()//OAuth 로그인
                 .authorizationEndpoint().baseUri("/auth/authorize")
