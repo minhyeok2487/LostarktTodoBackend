@@ -46,7 +46,8 @@ public class WebSecurityConfig {
             "/css/**", "js/**", "/",
             "/v3/mail/**", "/v3/notification/**",
             "/v3/auth/signup", "/v3/auth/character", "/v3/auth/login",
-            "/v2/boards/**","/v3/boards/**", "/v2/comments", "/v3/notices/**", "/v3/home/test"
+            "/v2/boards/**","/v3/boards/**", "/v2/comments", "/v3/notices/**", "/v3/home/test", "/auth/authorize",
+            "/login/oauth2/**"
     };
 
     public static final String[] PERMIT_GET_LINK = {
