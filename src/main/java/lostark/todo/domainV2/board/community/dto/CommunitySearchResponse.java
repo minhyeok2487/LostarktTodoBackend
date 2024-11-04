@@ -14,6 +14,8 @@ public class CommunitySearchResponse {
 
     private String name;
 
+    private long memberId;
+
     private String body;
 
     private CommunityCategory category;

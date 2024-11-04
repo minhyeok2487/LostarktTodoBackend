@@ -38,6 +38,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 community.id.as("communityId"),
                                 community.createdDate.as("createdDate"),
                                 community.name.as("name"),
+                                community.memberId.as("memberId"),
                                 community.body.as("body"),
                                 community.category.as("category"),
                                 new CaseBuilder()
@@ -102,6 +103,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 community.id.as("communityId"),
                                 community.createdDate.as("createdDate"),
                                 community.name.as("name"),
+                                community.memberId.as("memberId"),
                                 community.body.as("body"),
                                 community.category.as("category"),
                                 new CaseBuilder()
@@ -143,6 +145,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 community.id.as("commentId"),
                                 community.createdDate.as("createdDate"),
                                 community.name.as("name"),
+                                community.memberId.as("memberId"),
                                 community.body.as("body"),
                                 community.category.as("category"),
                                 new CaseBuilder()
