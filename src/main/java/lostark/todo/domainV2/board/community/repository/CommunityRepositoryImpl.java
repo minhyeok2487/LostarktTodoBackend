@@ -67,7 +67,8 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                 .where(
                         ltCommunityId(params.getCommunityId()),
                         eqCategory(params.getCategory()),
-                        eqRoot(0),
+                        eqRootParentId(0),
+                        eqCommentParentId(0),
                         isDeleted(false)
                 )
                 .orderBy(community.id.desc())
@@ -170,7 +171,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                         ))
                 .from(community)
                 .where(
-                        eqRoot(rootParentId),
+                        eqRootParentId(rootParentId),
                         isDeleted(false)
                 )
                 .orderBy(community.id.asc())
@@ -191,8 +192,12 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
         return null;
     }
 
-    private BooleanExpression eqRoot(long rootParentId) {
+    private BooleanExpression eqRootParentId(long rootParentId) {
         return community.rootParentId.eq(rootParentId);
+    }
+
+    private BooleanExpression eqCommentParentId(long commentParentId) {
+        return community.commentParentId.eq(commentParentId);
     }
 
     private BooleanExpression isDeleted(boolean deleted) {
