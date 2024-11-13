@@ -57,7 +57,7 @@ public class CommunityService {
                 (!member.getRole().equals(Role.ADMIN))) {
             throw new IllegalArgumentException("공지사항은 관리자만 올릴 수 있습니다.");
         }
-        if(request.getCommentParentId() != 0 && request.getRootParentId() != 0) {
+        if(request.getCommentParentId() != 0 && request.getRootParentId() == 0) {
             throw new IllegalArgumentException("댓글 답글은 댓글 ID가 필요합니다");
         }
     }
