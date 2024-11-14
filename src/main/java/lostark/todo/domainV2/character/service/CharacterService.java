@@ -204,6 +204,7 @@ public class CharacterService {
         }
     }
 
+    @Transactional
     public void updateRaidGoldCheck(Character character, String weekCategory, boolean updateValue) {
         raidGoldCheckCount(character, updateValue);
         long count = character.getTodoV2List().stream()

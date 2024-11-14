@@ -141,4 +141,18 @@ public class CharacterWeekApi {
         characterService.updateCubeTicket(updateCharacter, request.getNum());
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "주간 레이드 컨텐츠 골드 획득/해제")
+    @PatchMapping("/raid/gold-check")
+    public ResponseEntity<?> updateRaidGoldCheck(@AuthenticationPrincipal String username,
+                                                 @RequestParam(required = false) String friendUsername,
+                                                 @RequestBody UpdateRaidGoldCheckRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
+
+        // 골드 체크 업데이트
+        characterService.updateRaidGoldCheck(updateCharacter, request.getWeekCategory(), request.isUpdateValue());
+
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
 }
