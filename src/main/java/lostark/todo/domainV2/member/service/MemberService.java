@@ -1,4 +1,4 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,12 @@ import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.domain.Role;
+import lostark.todo.domain.market.Market;
+import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
+import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
 import lostark.todo.domainV2.member.dao.MemberDao;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static lostark.todo.Constant.TEST_USERNAME;
 import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
@@ -29,9 +34,13 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
 @Slf4j
 public class MemberService {
 
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberDao memberDao;
+    private final LostarkCharacterApiClient lostarkCharacterApiClient;
+    private final MarketRepository marketRepository;
+    private final ConcurrentHashMap<String, Boolean> usernameLocks;
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
@@ -111,11 +120,47 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
-    // 회원가입 캐릭터 추가 - Test Code 작성 X
+    //TODO 추후 삭제
     @Transactional
-    public void createCharacter(String username, SaveCharacterRequest request, List<Character> characterList) {
+    public void createCharacterOLDER(String username, SaveCharacterRequest request, List<Character> characterList) {
         Member member = memberDao.get(username);
         member.createCharacter(characterList, request);
+    }
+
+    // 회원가입 캐릭터 추가
+    @Transactional
+    public void createCharacter(String username, SaveCharacterRequest request) {
+        validateCreateCharacter(username);
+        try {
+            Member member = get(username);
+            List<Character> characterList = createAndCalculateCharacters(request);
+            member.createCharacter(characterList, request);
+        } finally {
+            usernameLocks.remove(username);
+        }
+    }
+
+    private List<Character> createAndCalculateCharacters(SaveCharacterRequest request) {
+        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+        List<Character> characterList = lostarkCharacterApiClient.createCharacterList(
+                request.getCharacterName(), request.getApiKey());
+
+        // 재련재료 데이터 리스트로 거래소 데이터 호출
+        Map<String, Market> contentResource = marketRepository.findLevelUpResource();
+
+        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+        return characterList.stream()
+                .map(character -> character.calculateDayTodo(character, contentResource))
+                .collect(Collectors.toList());
+    }
+
+    private void validateCreateCharacter(String username) {
+        if (username.equals(TEST_USERNAME)) {
+            throw new IllegalStateException(TEST_MEMBER_NOT_ACCESS);
+        }
+        if (usernameLocks.putIfAbsent(username, true) != null) {
+            throw new IllegalStateException(EMAIL_REGISTRATION_IN_PROGRESS);
+        }
     }
 
     // 회원 API KEY 수정 - Test Code 작성 X

@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 @ToString
 @SuperBuilder
 @Entity
-
 public class DayContent extends Content{
 
     private double shilling; //실링

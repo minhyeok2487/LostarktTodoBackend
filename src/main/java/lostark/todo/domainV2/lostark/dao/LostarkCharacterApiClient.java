@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.domain.content.Category;
+import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.entity.DayTodo;
 import lostark.todo.domainV2.character.entity.Settings;
@@ -24,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -31,21 +34,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class LostarkCharacterDao {
+public class LostarkCharacterApiClient {
 
-    private final LostarkApiDao apiService;
+    private final LostarkApiClient apiClient;
+    private final ContentRepository contentRepository;
 
     /**
      * 대표캐릭터와 연동된 캐릭터 호출(api 검증)
      * @param characterName
      * @param apiKey
-     * @param chaos
-     * @param guardian
      * @return
      */
-    public List<Character> findCharacterList(String characterName, String apiKey, List<DayContent> chaos, List<DayContent> guardian) {
+    public List<Character> createCharacterList(String characterName, String apiKey) {
         try {
             JSONArray jsonArray = findCharacters(characterName, apiKey);
+
+            // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
+            Map<Category, List<DayContent>> dayContent = contentRepository.getDayContents();
+
             List<Character> characterList = new ArrayList<>();
             for (Object o : jsonArray) {
                 JSONObject jsonObject = (JSONObject) o;
@@ -63,7 +69,8 @@ public class LostarkCharacterDao {
                 character.setTodoList(new ArrayList<>());
                 character.setTodoV2List(new ArrayList<>());
                 character.setCharacterImage(getCharacterImageUrl(character.getCharacterName(), apiKey));
-                character.getDayTodo().createDayContent(chaos, guardian, character.getItemLevel());
+                character.getDayTodo().createDayContent(
+                        dayContent.get(Category.카오스던전), dayContent.get(Category.가디언토벌), character.getItemLevel());
                 characterList.add(character);
             }
             //레벨순으로 정렬 후 리턴
@@ -92,7 +99,7 @@ public class LostarkCharacterDao {
     public JSONArray findCharacters(String characterName, String apiKey) {
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
-        InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
         JSONParser parser = new JSONParser();
         try {
             JSONArray parse = (JSONArray) parser.parse(inputStreamReader);
@@ -108,7 +115,7 @@ public class LostarkCharacterDao {
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String url = "https://developer-lostark.game.onstove.com/characters/" + encodedCharacterName + "/siblings";
 
-        try (InputStreamReader reader = apiService.lostarkGetApi(url, apiKey)) {
+        try (InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey)) {
             ObjectMapper objectMapper = new ObjectMapper();
             List<CharacterJsonDto> characterList = objectMapper.readValue(
                     reader,
@@ -158,7 +165,7 @@ public class LostarkCharacterDao {
                 String characterName = jsonObject.get("CharacterName").toString();
                 String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
                 String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
-                InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+                InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
                 JSONParser parser = new JSONParser();
                 JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
 
@@ -177,7 +184,7 @@ public class LostarkCharacterDao {
         try {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
             if (profile != null && profile.get("CharacterImage") != null) {
@@ -194,7 +201,7 @@ public class LostarkCharacterDao {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
 
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);

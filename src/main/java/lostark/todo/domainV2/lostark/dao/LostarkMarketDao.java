@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional
 public class LostarkMarketDao {
 
-    private final LostarkApiDao lostarkApiDao;
+    private final LostarkApiClient lostarkApiClient;
 
     public List<Market> getMarketData(int categoryCode, String apiKey) {
 
@@ -61,7 +61,7 @@ public class LostarkMarketDao {
                     + "  \"PageNo\": "+ pageNo +",\n"
                     + "  \"SortCondition\": \"DESC\"\n"
                     + "}";
-            InputStreamReader inputStreamReader = lostarkApiDao.lostarkPostApi(link, parameter, apiKey);
+            InputStreamReader inputStreamReader = lostarkApiClient.lostarkPostApi(link, parameter, apiKey);
             JSONParser parser = new JSONParser();
             return (JSONObject) parser.parse(inputStreamReader);
         } catch (Exception e) {

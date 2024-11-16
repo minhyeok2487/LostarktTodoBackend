@@ -11,8 +11,8 @@ import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.friend.service.FriendsService;
-import lostark.todo.service.MemberService;
-import lostark.todo.domainV2.lostark.dao.LostarkApiDao;
+import lostark.todo.domainV2.member.service.MemberService;
+import lostark.todo.domainV2.lostark.dao.LostarkApiClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,7 +31,7 @@ public class MemberControllerV4 {
     private final MemberService memberService;
     private final CharacterService characterService;
     private final FriendsService friendsService;
-    private final LostarkApiDao lostarkApiDao;
+    private final LostarkApiClient lostarkApiClient;
 
     @ApiOperation(value = "회원 정보 조회 API",
             response = MemberResponse.class)
@@ -91,7 +91,7 @@ public class MemberControllerV4 {
         }
 
         // 2. API KEY 인증 확인
-        lostarkApiDao.findEvents(saveCharacterRequest.getApiKey());
+        lostarkApiClient.findEvents(saveCharacterRequest.getApiKey());
 
         // 3. API KEY 업데이트
         memberService.editApiKey(member, saveCharacterRequest.getApiKey());

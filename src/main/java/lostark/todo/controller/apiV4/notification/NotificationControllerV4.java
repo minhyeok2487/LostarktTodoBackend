@@ -11,7 +11,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.service.BoardsService;
 import lostark.todo.domainV2.board.comments.service.CommentsService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import lostark.todo.service.NotificationService;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;

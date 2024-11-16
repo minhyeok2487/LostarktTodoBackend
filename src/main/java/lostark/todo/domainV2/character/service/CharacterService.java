@@ -22,7 +22,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domainV2.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
+import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
 import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.domainV2.util.content.dao.ContentDao;
 import lostark.todo.domainV2.util.market.dao.MarketDao;
@@ -46,7 +46,7 @@ public class CharacterService {
     private final MemberDao memberDao;
     private final MarketDao marketDao;
     private final ContentDao contentDao;
-    private final LostarkCharacterDao lostarkCharacterDao;
+    private final LostarkCharacterApiClient lostarkCharacterApiClient;
 
 
     // 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
@@ -367,7 +367,7 @@ public class CharacterService {
         return member.getCharacters().stream()
                 .filter(character -> character.getCharacterImage() != null)
                 .filter(character -> {
-                    CharacterJsonDto updatedCharacter = lostarkCharacterDao.getCharacter(character.getCharacterName(), member.getApiKey());
+                    CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(character.getCharacterName(), member.getApiKey());
                     return isMatchingCharacter(character, updatedCharacter);
                 })
                 .map(Character::getCharacterName)
@@ -387,12 +387,12 @@ public class CharacterService {
     // 원정대 업데이트
     private void updateSiblings(String searchCharacterName, Member member, List<DayContent> chaos, List<DayContent> guardian,
                                 Map<String, Market> contentResource, String mainCharacter) {
-        List<CharacterJsonDto> siblings = lostarkCharacterDao.getSiblings(searchCharacterName, member.getApiKey());
+        List<CharacterJsonDto> siblings = lostarkCharacterApiClient.getSiblings(searchCharacterName, member.getApiKey());
 
         siblings.stream()
                 .map(dto -> {
                     // 캐릭터 이미지 업데이트
-                    CharacterJsonDto updatedCharacter = lostarkCharacterDao.getCharacter(dto.getCharacterName(), member.getApiKey());
+                    CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(dto.getCharacterName(), member.getApiKey());
                     if (updatedCharacter != null && updatedCharacter.getCharacterImage() != null) {
                         dto = updatedCharacter;
                     }

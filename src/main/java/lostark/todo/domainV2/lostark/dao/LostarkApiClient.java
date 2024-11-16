@@ -12,7 +12,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class LostarkApiDao {
+public class LostarkApiClient {
 
     public JSONArray findEvents(String apiKey) {
         try {
