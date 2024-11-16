@@ -24,10 +24,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static lostark.todo.Constant.TEST_USERNAME;
 import static lostark.todo.data.TestConstant.API_KEY;
-import static lostark.todo.global.exhandler.ErrorMessageConstants.EMAIL_REGISTRATION_IN_PROGRESS;
-import static lostark.todo.global.exhandler.ErrorMessageConstants.TEST_MEMBER_NOT_ACCESS;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -84,18 +82,27 @@ class MemberServiceTest {
         assertThat(mockMember.getCharacters().get(0).getDayTodo().getGuardianGold()).isNotEqualTo(0);
     }
 
-    @DisplayName("테스트 계정으로 캐릭터 추가 시도시 예외 발생")
+    @DisplayName("이미 등록된 캐릭터가 존재하는데 캐릭터 추가 시도시 예외 발생")
     @Test
-    void createCharacter_WithTestUsername_ThrowsException() {
+    void createCharacter_WithExistsCharacters_ThrowsException() {
         // given
+        String username = "user@test.com";
         SaveCharacterRequest request = saveCharacterRequest();
+
+        Member mockMember = MemberTestData.createMockMember(username);
+        List<Character> mockCharacterList = CharacterTestData.createMockCharacterList();
+        mockMember.createCharacter(mockCharacterList, request);
+
+        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
 
         // when & then
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                memberService.createCharacter(TEST_USERNAME, request));
+                memberService.createCharacter(username, request));
 
         assertThat(exception.getMessage())
-                .isEqualTo(TEST_MEMBER_NOT_ACCESS);
+                .isEqualTo(CHARACTER_ALREADY_EXISTS);
+
+        verify(memberRepository).get(username);  // repository 호출 검증
     }
 
     @DisplayName("동시에 같은 계정으로 캐릭터 추가 시도시 예외 발생")

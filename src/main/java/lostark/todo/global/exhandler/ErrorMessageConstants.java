@@ -3,6 +3,7 @@ package lostark.todo.global.exhandler;
 public class ErrorMessageConstants {
 
     public static final String EMAIL_REGISTRATION_IN_PROGRESS = "같은 이메일의 가입이 이미 진행중입니다.";
+    public static final String CHARACTER_ALREADY_EXISTS = "이미 등록된 캐릭터가 존재합니다.";
 
     public static final String MEMBER_NOT_MATCH = "일치하지 않는 회원정보 입니다.";
     public static final String CHARACTER_NOT_FOUND = "캐릭터를 찾을 수 없습니다.";

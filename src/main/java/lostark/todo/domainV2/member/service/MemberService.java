@@ -130,12 +130,17 @@ public class MemberService {
     // 회원가입 후 캐릭터 추가
     @Transactional
     public void createCharacter(String username, SaveCharacterRequest request) {
-        validateCreateCharacter(username);
-
         try (var ignored = memberLockManager.acquireLock(username)) {
             Member member = get(username);
+            validateCreateCharacter(member);
             List<Character> characterList = createAndCalculateCharacters(request);
             member.createCharacter(characterList, request);
+        }
+    }
+
+    private static void validateCreateCharacter(Member member) {
+        if (!member.getCharacters().isEmpty()) {
+            throw new IllegalStateException(CHARACTER_ALREADY_EXISTS);
         }
     }
 
@@ -151,12 +156,6 @@ public class MemberService {
         return characterList.stream()
                 .map(character -> character.calculateDayTodo(character, contentResource))
                 .collect(Collectors.toList());
-    }
-
-    private void validateCreateCharacter(String username) {
-        if (username.equals(TEST_USERNAME)) {
-            throw new IllegalStateException(TEST_MEMBER_NOT_ACCESS);
-        }
     }
 
     // 회원 API KEY 수정 - Test Code 작성 X
