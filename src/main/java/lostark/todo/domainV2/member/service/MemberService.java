@@ -15,6 +15,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domain.member.MemberRepository;
 import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
 import lostark.todo.domainV2.member.dao.MemberDao;
+import lostark.todo.domainV2.member.infra.MemberLockManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static lostark.todo.Constant.TEST_USERNAME;
@@ -34,13 +34,13 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
 @Slf4j
 public class MemberService {
 
-
+    private final MemberLockManager memberLockManager;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberDao memberDao;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final MarketRepository marketRepository;
-    private final ConcurrentHashMap<String, Boolean> usernameLocks;
+
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
@@ -127,16 +127,15 @@ public class MemberService {
         member.createCharacter(characterList, request);
     }
 
-    // 회원가입 캐릭터 추가
+    // 회원가입 후 캐릭터 추가
     @Transactional
     public void createCharacter(String username, SaveCharacterRequest request) {
         validateCreateCharacter(username);
-        try {
+
+        try (var ignored = memberLockManager.acquireLock(username)) {
             Member member = get(username);
             List<Character> characterList = createAndCalculateCharacters(request);
             member.createCharacter(characterList, request);
-        } finally {
-            usernameLocks.remove(username);
         }
     }
 
@@ -157,9 +156,6 @@ public class MemberService {
     private void validateCreateCharacter(String username) {
         if (username.equals(TEST_USERNAME)) {
             throw new IllegalStateException(TEST_MEMBER_NOT_ACCESS);
-        }
-        if (usernameLocks.putIfAbsent(username, true) != null) {
-            throw new IllegalStateException(EMAIL_REGISTRATION_IN_PROGRESS);
         }
     }
 
