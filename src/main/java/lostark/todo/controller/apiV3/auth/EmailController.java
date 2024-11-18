@@ -9,7 +9,7 @@ import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.controller.dto.mailDto.MailRequestDto;
 import lostark.todo.domain.member.Member;
 import lostark.todo.service.EmailService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LostarkNewsDao {
 
-    private final LostarkApiDao apiService;
+    private final LostarkApiClient apiService;
 
     public JSONArray findEvents(String apiKey) {
         try {

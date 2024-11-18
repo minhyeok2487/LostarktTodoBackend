@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

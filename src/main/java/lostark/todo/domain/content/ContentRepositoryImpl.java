@@ -8,6 +8,8 @@ import lostark.todo.controller.dtoV2.content.QRaidCategoryResponse;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static lostark.todo.domain.content.QWeekContent.weekContent;
 
@@ -43,5 +45,17 @@ public class ContentRepositoryImpl implements ContentCustomRepository {
                         .and(weekContent.coolTime.loe(2)))
                 .orderBy(weekContent.level.desc(), categoryOrder.asc(), weekContent.gate.asc())
                 .fetch();
+    }
+
+    @Override
+    public Map<Category, List<DayContent>> getDayContents() {
+        QDayContent dayContent = QDayContent.dayContent;
+        List<DayContent> contents = factory.selectFrom(dayContent)
+                .where(dayContent.category.in(Category.가디언토벌, Category.카오스던전))
+                .orderBy(dayContent.level.desc())
+                .fetch();
+
+        return contents.stream()
+                .collect(Collectors.groupingBy(DayContent::getCategory));
     }
 }

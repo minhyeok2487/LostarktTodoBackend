@@ -14,7 +14,7 @@ import lostark.todo.domain.member.Member;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.friend.service.FriendsService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
