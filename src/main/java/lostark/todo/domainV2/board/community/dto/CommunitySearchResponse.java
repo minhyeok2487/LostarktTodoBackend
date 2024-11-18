@@ -4,6 +4,7 @@ import lombok.Data;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class CommunitySearchResponse {
@@ -27,4 +28,6 @@ public class CommunitySearchResponse {
     private boolean myLike;
 
     private long commentCount;
+
+    private List<String> imageList;
 }

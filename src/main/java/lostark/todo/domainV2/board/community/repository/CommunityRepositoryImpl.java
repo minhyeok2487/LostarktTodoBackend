@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static lostark.todo.domain.member.QMember.member;
 import static lostark.todo.domainV2.board.community.entity.QCommunity.community;
+import static lostark.todo.domainV2.board.community.entity.QCommunityImages.communityImages;
 import static lostark.todo.domainV2.board.community.entity.QCommunityLike.communityLike;
 
 @RequiredArgsConstructor
@@ -74,6 +75,17 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                 .orderBy(community.id.desc())
                 .limit(pageRequest.getPageSize() + 1)
                 .fetch();
+
+        // 각 커뮤니티에 대한 이미지 리스트를 별도로 조회
+        fetch.forEach(response -> {
+            List<String> images = factory
+                    .select(communityImages.url)
+                    .from(communityImages)
+                    .where(communityImages.communityId.eq(response.getCommunityId()))
+                    .orderBy(communityImages.ordering.asc())
+                    .fetch();
+            response.setImageList(images);
+        });
 
         boolean hasNext = false;
 
@@ -136,6 +148,19 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                 )
                 .orderBy(community.id.desc())
                 .fetchOne();
+
+        if (fetch != null) {
+            List<String> images = factory
+                    .select(communityImages.url)
+                    .from(communityImages)
+                    .where(communityImages.communityId.eq(communityId))
+                    .orderBy(communityImages.ordering.asc())
+                    .fetch();
+            fetch.setImageList(images);
+        } else {
+            fetch.setImageList(null);
+        }
+
         return Optional.ofNullable(fetch);
     }
 
