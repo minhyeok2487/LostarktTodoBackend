@@ -12,7 +12,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.customTodo.CustomTodo;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.service.CustomTodoService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

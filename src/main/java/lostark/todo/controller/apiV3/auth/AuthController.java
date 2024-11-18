@@ -4,21 +4,20 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domainV2.member.service.MemberService;
 import lostark.todo.global.config.TokenProvider;
 import lostark.todo.controller.dto.auth.ResponseDto;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterDao;
+import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,7 +43,7 @@ public class AuthController {
     private final CharacterService characterService;
     private final MarketService marketService;
     private final ContentService contentService;
-    private final LostarkCharacterDao lostarkCharacterDao;
+    private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
     private final TokenProvider tokenProvider;
 
@@ -61,12 +60,8 @@ public class AuthController {
             throw new IllegalStateException("이미 진행중입니다.");
         }
         try {
-            // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
-            List<DayContent> chaos = contentService.findDayContent(Category.카오스던전);
-            List<DayContent> guardian = contentService.findDayContent(Category.가디언토벌);
-
             // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
-            List<Character> characterList = lostarkCharacterDao.findCharacterList(request.getCharacterName(), request.getApiKey(), chaos, guardian);
+            List<Character> characterList = lostarkCharacterApiClient.createCharacterList(request.getCharacterName(), request.getApiKey());
 
             // 재련재료 데이터 리스트로 거래소 데이터 호출
             Map<String, Market> contentResource = marketService.findContentResource();
@@ -79,7 +74,7 @@ public class AuthController {
             }
 
             // Member 회원가입
-            memberService.createCharacter(username, request, calculatedCharacterList);
+            memberService.createCharacterOLDER(username, request, calculatedCharacterList);
 
             return new ResponseEntity<>(HttpStatus.OK);
         } finally {

@@ -12,7 +12,7 @@ import lostark.todo.domainV2.friend.dto.FriendRequest;
 import lostark.todo.domainV2.friend.dto.UpdateFriendRequest;
 import lostark.todo.domainV2.friend.enums.FriendRequestCategory;
 import lostark.todo.domainV2.friend.service.FriendsService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import lostark.todo.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

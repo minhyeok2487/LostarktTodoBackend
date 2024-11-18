@@ -8,7 +8,7 @@ import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.board.comments.service.CommentsService;
-import lostark.todo.service.MemberService;
+import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
