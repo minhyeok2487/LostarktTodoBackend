@@ -4,6 +4,7 @@ import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
+import lostark.todo.domainV2.character.entity.Character;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -50,9 +51,20 @@ public class Community extends BaseTimeEntity {
     private boolean deleted = false;
 
     public static Community toEntity(Member member, CommunitySaveRequest request) {
+        Character mainCharacter = member.getCharacters().stream()
+                .filter(character -> character.getCharacterName().equals(member.getMainCharacterName()))
+                .findFirst()
+                .orElse(null);
+
+        String name = request.isShowName()
+                ? member.getMainCharacterName()
+                : createName(member, mainCharacter != null ? mainCharacter.getCharacterClassName() : null);
+
         return Community.builder()
                 .memberId(member.getId())
-                .name(request.isShowName() ? member.getMainCharacterName() : createName(member))
+                .characterImage(mainCharacter != null ? mainCharacter.getCharacterImage() : null)
+                .characterClassName(mainCharacter != null ? mainCharacter.getCharacterClassName() : null)
+                .name(name)
                 .showName(request.isShowName())
                 .body(request.getBody())
                 .category(request.getCategory())
@@ -61,8 +73,8 @@ public class Community extends BaseTimeEntity {
                 .build();
     }
 
-    public static String createName(Member member) {
-        return "익명의 " + member.getCharacters().get(0).getCharacterClassName() + " " + member.getId();
+    public static String createName(Member member, String characterClassName) {
+        return "익명의 " + (characterClassName != null ? characterClassName : member.getCharacters().get(0).getCharacterClassName()) + " " + member.getId();
     }
 
     public void update(String body) {
