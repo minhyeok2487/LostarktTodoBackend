@@ -24,6 +24,10 @@ public class Community extends BaseTimeEntity {
 
     private long memberId;
 
+    private String characterImage;
+
+    private String characterClassName;
+
     @Column(length = 100)
     private String name;
 

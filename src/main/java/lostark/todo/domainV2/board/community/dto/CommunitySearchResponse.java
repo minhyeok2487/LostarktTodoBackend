@@ -13,6 +13,10 @@ public class CommunitySearchResponse {
 
     private LocalDateTime createdDate;
 
+    private String characterClassName;
+
+    private String characterImage;
+
     private String name;
 
     private long memberId;
