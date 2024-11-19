@@ -218,7 +218,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
 
     private BooleanExpression eqCategory(CommunityCategory category) {
         if (category != null) {
-            return community.category.lt(category);
+            return community.category.eq(category);
         }
         return null;
     }
