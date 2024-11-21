@@ -2,6 +2,7 @@ package lostark.todo.domain.customTodo;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.domain.member.Member;
 import java.util.List;
 import static lostark.todo.domain.customTodo.QCustomTodo.customTodo;
 import static lostark.todo.domain.member.QMember.member;
@@ -29,6 +30,13 @@ public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
         return factory.update(customTodo)
                 .set(customTodo.isChecked, false)
                 .where(customTodo.frequency.eq(frequency))
+                .execute();
+    }
+
+    @Override
+    public void deleteByMember(Member member) {
+        factory.delete(customTodo)
+                .where(customTodo.character.in(member.getCharacters()))
                 .execute();
     }
 }

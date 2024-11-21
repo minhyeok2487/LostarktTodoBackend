@@ -13,6 +13,7 @@ import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.friend.service.FriendsService;
 import lostark.todo.domainV2.member.service.MemberService;
 import lostark.todo.domainV2.lostark.dao.LostarkApiClient;
+import lostark.todo.service.CustomTodoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,6 +33,7 @@ public class MemberControllerV4 {
     private final CharacterService characterService;
     private final FriendsService friendsService;
     private final LostarkApiClient lostarkApiClient;
+    private final CustomTodoService customTodoService;
 
     @ApiOperation(value = "회원 정보 조회 API",
             response = MemberResponse.class)
@@ -72,6 +74,7 @@ public class MemberControllerV4 {
         if (member.getCharacters().isEmpty()) {
             throw new IllegalStateException("등록된 캐릭터가 없습니다.");
         }
+        customTodoService.deleteMyMember(member);
         characterService.deleteByMember(member);
         friendsService.deleteByMember(member);
         return new ResponseEntity<>("ok", HttpStatus.OK);
