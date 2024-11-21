@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: mysql-container
     restart: always
     ports:
@@ -10,5 +10,9 @@ services:
       MYSQL_DATABASE: Loatodo
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin1234
+    command:
+      - --max_allowed_packet=1024M
+      - --net_read_timeout=3600
+      - --net_write_timeout=3600
     volumes:
       - /Users/minhyeok/Desktop/LostarkTodo/data/mysql:/var/lib/mysql
