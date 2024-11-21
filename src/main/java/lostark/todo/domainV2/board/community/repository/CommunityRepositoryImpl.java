@@ -162,11 +162,10 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                     .orderBy(communityImages.ordering.asc())
                     .fetch();
             fetch.setImageList(images);
+            return Optional.of(fetch);
         } else {
-            fetch.setImageList(null);
+            throw new NotFoundException("존재하지 않는 게시글 입니다.");
         }
-
-        return Optional.ofNullable(fetch);
     }
 
     @Override
