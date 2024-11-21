@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.domain.boards.Boards;
-import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domain.member.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationRepository;
@@ -52,30 +51,6 @@ public class NotificationService {
                 .receiver(receiver)
                 .build();
         return notificationRepository.save(notification);
-    }
-
-    @Transactional
-    public void saveComment(Comments comments) {
-        Notification notification = Notification.builder()
-                .content("내가 쓴 방명록에 댓글이 달렸어요.")
-                .isRead(false)
-                .notificationType(NotificationType.COMMENT)
-                .commentId(comments.getId())
-                .receiver(comments.getMember())
-                .build();
-        notificationRepository.save(notification);
-    }
-
-    @Transactional
-    public void saveCommentAdmin(Comments comments, Member admin) {
-        Notification notification = Notification.builder()
-                .content("새로운 방명록이 달렸어요")
-                .isRead(false)
-                .notificationType(NotificationType.COMMENT)
-                .commentId(comments.getId())
-                .receiver(admin)
-                .build();
-        notificationRepository.save(notification);
     }
 
     @Transactional

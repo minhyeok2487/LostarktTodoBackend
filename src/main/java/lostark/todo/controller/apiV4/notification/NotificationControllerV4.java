@@ -53,11 +53,6 @@ public class NotificationControllerV4 {
                 case BOARD -> {
                     object.put("boardId", notification.getBoardId());
                 }
-                case COMMENT -> {
-                    int page = commentsService.findCommentPage(notification.getCommentId());
-                    object.put("commentId", notification.getCommentId());
-                    object.put("page", page);
-                }
                 case FRIEND -> {
                     object.put("friendId", notification.getFriendId());
                     object.put("friendUsername", notification.getFriendUsername());
