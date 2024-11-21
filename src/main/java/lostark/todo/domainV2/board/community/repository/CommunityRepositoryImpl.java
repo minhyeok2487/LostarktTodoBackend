@@ -61,7 +61,8 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 Expressions.as(JPAExpressions
                                         .select(communitySub.count())
                                         .from(communitySub)
-                                        .where(communitySub.rootParentId.eq(community.id)), "commentCount"),
+                                        .where(communitySub.rootParentId.eq(community.id)
+                                                .and(communitySub.deleted.eq(false))), "commentCount"),
                                 Expressions.as(JPAExpressions
                                         .select(communityLike.count())
                                         .from(communityLike)
@@ -140,7 +141,8 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 Expressions.as(JPAExpressions
                                         .select(communitySub.count())
                                         .from(communitySub)
-                                        .where(communitySub.rootParentId.eq(community.id)), "commentCount"),
+                                        .where(communitySub.rootParentId.eq(community.id)
+                                                .and(communitySub.deleted.eq(false))), "commentCount"),
                                 Expressions.as(JPAExpressions
                                         .select(communityLike.count())
                                         .from(communityLike)
