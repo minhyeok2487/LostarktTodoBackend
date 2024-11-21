@@ -50,13 +50,13 @@ public class Notification extends BaseTimeEntity {
         this.isRead = true;
     }
 
-    public static Notification createReplyNotification(Community rootCommunity) {
+    public static Notification createReplyNotification(Community rootCommunity, Member receiver) {
         return builder()
                 .content("새로운 답글이 달렸습니다.")
                 .isRead(false)
                 .notificationType(NotificationType.COMMUNITY)
                 .communityId(rootCommunity.getId())
-                .receiver(rootCommunity.getMemberId())
+                .receiver(receiver)
                 .build();
     }
 }

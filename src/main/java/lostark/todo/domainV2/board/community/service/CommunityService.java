@@ -59,11 +59,17 @@ public class CommunityService {
                 .filter(list -> !list.isEmpty())
                 .ifPresent(images -> communityImagesDao.updateAll(community.getId(), images));
 
-        Optional.of(request.getRootParentId())
-                .filter(id -> id != 0L)
-                .map(communityRepository::get)
-                .map(Notification::createReplyNotification)
+        Optional.of(request)
+                .filter(req -> req.getRootParentId() != 0L)
+                .map(req -> {
+                    Community rootCommunity = communityRepository.get(req.getRootParentId());
+                    Member receiver = req.getCommentParentId() == 0L
+                            ? rootCommunity.getMemberId()
+                            : communityRepository.get(req.getCommentParentId()).getMemberId();
+                    return Notification.createReplyNotification(rootCommunity, receiver);
+                })
                 .ifPresent(notificationRepository::save);
+
     }
 
 
