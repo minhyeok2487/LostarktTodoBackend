@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.board.community.entity.Community;
 
 import javax.persistence.*;
 
@@ -38,6 +39,8 @@ public class Notification extends BaseTimeEntity {
 
     private String friendCharacterName;
 
+    private long communityId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @JsonBackReference //순환참조 방지
@@ -45,5 +48,15 @@ public class Notification extends BaseTimeEntity {
 
     public void updateRead() {
         this.isRead = true;
+    }
+
+    public static Notification createReplyNotification(Community rootCommunity) {
+        return builder()
+                .content("새로운 답글이 달렸습니다.")
+                .isRead(false)
+                .notificationType(NotificationType.COMMUNITY)
+                .communityId(rootCommunity.getId())
+                .receiver(rootCommunity.getMemberId())
+                .build();
     }
 }

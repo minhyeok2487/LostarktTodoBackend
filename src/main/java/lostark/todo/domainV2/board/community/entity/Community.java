@@ -1,5 +1,6 @@
 package lostark.todo.domainV2.board.community.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.member.Member;
@@ -23,7 +24,10 @@ public class Community extends BaseTimeEntity {
     @Column(name = "community_id")
     private long id;
 
-    private long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    @JsonBackReference //순환참조 방지
+    private Member memberId;
 
     private String characterImage;
 
@@ -61,7 +65,7 @@ public class Community extends BaseTimeEntity {
                 : createName(member, mainCharacter != null ? mainCharacter.getCharacterClassName() : null);
 
         return Community.builder()
-                .memberId(member.getId())
+                .memberId(member)
                 .characterImage(mainCharacter != null ? mainCharacter.getCharacterImage() : null)
                 .characterClassName(mainCharacter != null ? mainCharacter.getCharacterClassName() : null)
                 .name(name)

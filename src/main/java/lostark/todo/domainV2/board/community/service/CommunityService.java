@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.member.Member;
+import lostark.todo.domain.notification.Notification;
+import lostark.todo.domain.notification.NotificationRepository;
 import lostark.todo.domainV2.board.community.dao.CommunityDao;
 import lostark.todo.domainV2.board.community.dao.CommunityImagesDao;
 import lostark.todo.domainV2.board.community.dao.CommunityLikeDao;
@@ -12,7 +14,9 @@ import lostark.todo.domainV2.board.community.dto.*;
 import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.entity.CommunityImages;
+import lostark.todo.domainV2.board.community.repository.CommunityRepository;
 import lostark.todo.domainV2.member.dao.MemberDao;
+import lostark.todo.global.customAnnotation.RateLimit;
 import lostark.todo.global.dto.CursorResponse;
 import lostark.todo.global.dto.ImageResponseV2;
 import lostark.todo.service.ImagesService;
@@ -22,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,6 +39,8 @@ public class CommunityService {
     private final CommunityImagesDao communityImagesDao;
     private final MemberDao memberDao;
     private final ImagesService imagesService;
+    private final NotificationRepository notificationRepository;
+    private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
     public CursorResponse<CommunitySearchResponse> search(String username, CommunitySearchParams params, PageRequest pageRequest) {
@@ -41,23 +48,31 @@ public class CommunityService {
         return communityDao.search(memberId, params, pageRequest);
     }
 
-//    @RateLimit(120)
+    @RateLimit()
     @Transactional
     public void save(String username, CommunitySaveRequest request) {
         Member member = memberDao.get(username);
         validateSaveRequest(member, request);
-        Community save = communityDao.save(Community.toEntity(member, request));
-        if (!request.getImageList().isEmpty()) {
-            communityImagesDao.updateAll(save.getId(), request.getImageList());
-        }
+        Community community = communityRepository.save(Community.toEntity(member, request));
+
+        Optional.of(request.getImageList())
+                .filter(list -> !list.isEmpty())
+                .ifPresent(images -> communityImagesDao.updateAll(community.getId(), images));
+
+        Optional.of(request.getRootParentId())
+                .filter(id -> id != 0L)
+                .map(communityRepository::get)
+                .map(Notification::createReplyNotification)
+                .ifPresent(notificationRepository::save);
     }
+
 
     private void validateSaveRequest(Member member, CommunitySaveRequest request) {
         if ((request.getCategory().equals(CommunityCategory.BOARDS)) &&
-                (!member.getRole().equals(Role.ADMIN))) {
+                (!member.getRole().equals(Role.ADMIN)) && (request.getRootParentId() == 0)) {
             throw new IllegalArgumentException("공지사항은 관리자만 올릴 수 있습니다.");
         }
-        if(request.getCommentParentId() != 0 && request.getRootParentId() == 0) {
+        if (request.getCommentParentId() != 0 && request.getRootParentId() == 0) {
             throw new IllegalArgumentException("댓글 답글은 댓글 ID가 필요합니다");
         }
     }

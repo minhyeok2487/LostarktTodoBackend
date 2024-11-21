@@ -1,5 +1,6 @@
 package lostark.todo.domainV2.board.community.repository;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -41,11 +42,11 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 community.characterImage.as("characterImage"),
                                 community.characterClassName.as("characterClassName"),
                                 community.name.as("name"),
-                                community.memberId.as("memberId"),
+                                community.memberId.id.as("memberId"),
                                 community.body.as("body"),
                                 community.category.as("category"),
                                 new CaseBuilder()
-                                        .when(community.memberId.eq(memberId))
+                                        .when(community.memberId.id.eq(memberId))
                                         .then(true)
                                         .otherwise(false).as("myPost"),
                                 new CaseBuilder()
@@ -102,7 +103,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
     @Override
     public Optional<Community> get(String username, long communityId) {
         return Optional.ofNullable(factory.selectFrom(community)
-                .leftJoin(member).on(community.memberId.eq(member.id))
+                .leftJoin(member).on(community.memberId.id.eq(member.id))
                 .where(
                         eqUsername(username),
                         eqCommunityId(communityId),
@@ -120,11 +121,11 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 community.characterImage.as("characterImage"),
                                 community.characterClassName.as("characterClassName"),
                                 community.name.as("name"),
-                                community.memberId.as("memberId"),
+                                community.memberId.id.as("memberId"),
                                 community.body.as("body"),
                                 community.category.as("category"),
                                 new CaseBuilder()
-                                        .when(community.memberId.eq(memberId))
+                                        .when(community.memberId.id.eq(memberId))
                                         .then(true)
                                         .otherwise(false).as("myPost"),
                                 new CaseBuilder()
@@ -177,11 +178,11 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                                 community.characterImage.as("characterImage"),
                                 community.characterClassName.as("characterClassName"),
                                 community.name.as("name"),
-                                community.memberId.as("memberId"),
+                                community.memberId.id.as("memberId"),
                                 community.body.as("body"),
                                 community.category.as("category"),
                                 new CaseBuilder()
-                                        .when(community.memberId.eq(memberId))
+                                        .when(community.memberId.id.eq(memberId))
                                         .then(true)
                                         .otherwise(false).as("myPost"),
                                 new CaseBuilder()
@@ -207,6 +208,18 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                 )
                 .orderBy(community.id.asc())
                 .fetch();
+    }
+
+    @Override
+    public Community get(long communityId) {
+        return Optional.ofNullable(
+                factory.selectFrom(community)
+                        .leftJoin(member).on(community.memberId.eq(member))
+                        .where(
+                                eqCommunityId(communityId),
+                                isDeleted(false)
+                        ).fetchOne()
+        ).orElseThrow(() -> new NotFoundException("데이터를 찾을 수 없습니다."));
     }
 
     private BooleanExpression ltCommunityId(Long communityId) {

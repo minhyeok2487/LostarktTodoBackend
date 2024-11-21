@@ -63,6 +63,9 @@ public class NotificationControllerV4 {
                     object.put("friendUsername", notification.getFriendUsername());
                     object.put("friendCharacterName", notification.getFriendCharacterName());
                 }
+                case COMMUNITY -> {
+                    object.put("communityId", notification.getCommunityId());
+                }
                 default -> throw new IllegalArgumentException("Unknown notification type: " + notification.getNotificationType());
             }
 
