@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domainV2.member.repository.MemberRepository;
-import lostark.todo.domainV2.friend.dao.FriendDao;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
@@ -32,7 +31,6 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_
 public class FriendsService {
 
     private final FriendsRepository friendsRepository;
-    private final FriendDao friendDao;
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
 
@@ -171,7 +169,7 @@ public class FriendsService {
         return characterList.stream()
                 .filter(character -> !character.getMember().equals(member)) //본인 제외
                 .map(character -> {
-                    FriendStatus friendDaoFriend = friendDao.isFriend(member.getId(), character.getMember().getId());
+                    FriendStatus friendDaoFriend = friendsRepository.isFriend(member.getId(), character.getMember().getId());
                     return FriendFindCharacterResponse.builder()
                             .id(character.getMember().getId())
                             .username(character.getMember().getUsername())
