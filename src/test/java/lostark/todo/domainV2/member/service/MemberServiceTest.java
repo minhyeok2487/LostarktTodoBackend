@@ -64,7 +64,7 @@ class MemberServiceTest {
 
         // Mock 객체 동작 정의
         assertThat(mockMember).isNotNull();
-        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
+        when(memberRepository.get(username)).thenReturn(mockMember);
         when(lostarkCharacterApiClient.createCharacterList(request.getCharacterName(), API_KEY)).thenReturn(mockCharacterList);
         when(marketRepository.findLevelUpResource()).thenReturn(mockMarketMap);
 
@@ -93,7 +93,7 @@ class MemberServiceTest {
         List<Character> mockCharacterList = CharacterTestData.createMockCharacterList();
         mockMember.createCharacter(mockCharacterList, request);
 
-        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
+        when(memberRepository.get(username)).thenReturn(mockMember);
 
         // when & then
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
@@ -155,7 +155,7 @@ class MemberServiceTest {
         Map<String, Market> mockMarketMap = MarketTestData.createMockMarketMap();
 
         assertThat(mockMember).isNotNull();
-        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
+        when(memberRepository.get(username)).thenReturn(mockMember);
         when(marketRepository.findLevelUpResource()).thenReturn(mockMarketMap);
         when(lostarkCharacterApiClient.createCharacterList(request.getCharacterName(), API_KEY))
                 .thenReturn(mockCharacters);
