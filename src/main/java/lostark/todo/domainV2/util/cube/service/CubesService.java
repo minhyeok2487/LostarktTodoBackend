@@ -6,11 +6,11 @@ import lostark.todo.controller.dto.contentDto.CubeContentDto;
 import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.CubeContent;
 import lostark.todo.domain.market.Market;
+import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domainV2.util.cube.dto.CubeResponse;
 import lostark.todo.domainV2.util.cube.dto.CubeUpdateRequest;
 import lostark.todo.domainV2.util.cube.entity.Cubes;
 import lostark.todo.domainV2.util.cube.repository.CubesRepository;
-import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ public class CubesService {
 
     private final ContentRepository contentRepository;
     private final CubesRepository cubeRepository;
-    private final MarketDao marketDao;
+    private final MarketRepository marketRepository;
 
     @Transactional(readOnly = true)
     public List<CubeResponse> get(String username) {
@@ -57,7 +57,7 @@ public class CubesService {
 
     @Transactional(readOnly = true)
     public List<CubeContentDto> getStatistics() {
-        Map<String, Market> jewelryMap = marketDao.findByNameIn(List.of("3티어 1레벨 보석", "4티어 1레벨 보석"))
+        Map<String, Market> jewelryMap = marketRepository.findByNameIn(List.of("3티어 1레벨 보석", "4티어 1레벨 보석"))
                 .stream().collect(Collectors.toMap(Market::getName, market -> market));
         List<CubeContent> cubeContentList = contentRepository.findAllByCubeContent();
         return cubeContentList.stream()

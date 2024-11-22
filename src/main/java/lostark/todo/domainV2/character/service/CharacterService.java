@@ -9,6 +9,7 @@ import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.content.ContentRepository;
+import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domainV2.character.dto.UpdateDayGaugeRequest;
@@ -23,13 +24,13 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
-import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static lostark.todo.Constant.LEVEL_UP_RESOURCES;
 import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_FOUND;
 import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 
@@ -41,7 +42,7 @@ public class CharacterService {
 
     private final CharacterRepository characterRepository;
     private final MemberRepository memberRepository;
-    private final MarketDao marketDao;
+    private final MarketRepository marketRepository;
     private final ContentRepository contentRepository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
 
@@ -245,7 +246,9 @@ public class CharacterService {
         String searchCharacterName = findSiblingCharacterName(member);
 
         // 4. 콘텐츠 통계 데이터 조회
-        Map<String, Market> contentResource = marketDao.findContentResource();
+        Map<String, Market> contentResource = marketRepository.findByNameIn(LEVEL_UP_RESOURCES)
+                .stream()
+                .collect(Collectors.toMap(Market::getName, market -> market));
         Map<Category, List<DayContent>> dayContents = contentRepository.getDayContents();
         List<DayContent> chaosDungeons = dayContents.get(Category.카오스던전);
         List<DayContent> guardianRaids = dayContents.get(Category.가디언토벌);
@@ -407,6 +410,7 @@ public class CharacterService {
 
         character.getDayTodo().updateDayContentGauge(request);
 
-        character.calculateDayTodo(marketDao.findContentResource());
+        character.calculateDayTodo(marketRepository.findByNameIn(LEVEL_UP_RESOURCES).stream()
+                .collect(Collectors.toMap(Market::getName, market -> market)));
     }
 }
