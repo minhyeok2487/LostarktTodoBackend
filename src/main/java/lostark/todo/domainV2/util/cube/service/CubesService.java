@@ -6,7 +6,6 @@ import lostark.todo.controller.dto.contentDto.CubeContentDto;
 import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.CubeContent;
 import lostark.todo.domain.market.Market;
-import lostark.todo.domainV2.util.cube.dao.CubeDao;
 import lostark.todo.domainV2.util.cube.dto.CubeResponse;
 import lostark.todo.domainV2.util.cube.dto.CubeUpdateRequest;
 import lostark.todo.domainV2.util.cube.entity.Cubes;
@@ -27,12 +26,11 @@ public class CubesService {
 
     private final ContentRepository contentRepository;
     private final CubesRepository cubeRepository;
-    private final CubeDao cubeDao;
     private final MarketDao marketDao;
 
     @Transactional(readOnly = true)
     public List<CubeResponse> get(String username) {
-        return cubeDao.get(username);
+        return cubeRepository.get(username);
     }
 
     @Transactional
