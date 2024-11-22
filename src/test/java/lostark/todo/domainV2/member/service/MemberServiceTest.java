@@ -9,7 +9,7 @@ import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
+import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domainV2.member.infra.MemberLockManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

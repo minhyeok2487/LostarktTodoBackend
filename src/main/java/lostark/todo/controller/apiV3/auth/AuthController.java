@@ -17,7 +17,7 @@ import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.*;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
+import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

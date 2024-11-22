@@ -22,7 +22,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domainV2.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
+import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domainV2.util.content.dao.ContentDao;
 import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;

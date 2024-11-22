@@ -1,4 +1,4 @@
-package lostark.todo.domainV2.lostark.dao;
+package lostark.todo.domainV2.lostark.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

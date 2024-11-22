@@ -1,4 +1,4 @@
-package lostark.todo.domainV2.lostark.dao;
+package lostark.todo.domainV2.lostark.client;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.notices.Notices;
@@ -17,29 +17,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LostarkNewsDao {
+public class LostarkNoticeClient {
 
-    private final LostarkApiClient apiService;
-
-    public JSONArray findEvents(String apiKey) {
-        try {
-            String link = "https://developer-lostark.game.onstove.com/news/events";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-            return jsonArray;
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private final LostarkApiClient apiClient;
 
     public List<Notices> getNoticeList(String apiKey) {
         try {
             String link = "https://developer-lostark.game.onstove.com/news/notices";
-            InputStreamReader inputStreamReader = apiService.lostarkGetApi(link, apiKey);
+            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
 

@@ -1,4 +1,4 @@
-package lostark.todo.domainV2.lostark.dao;
+package lostark.todo.domainV2.lostark.client;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;

@@ -12,7 +12,7 @@ import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.friend.service.FriendsService;
 import lostark.todo.domainV2.member.service.MemberService;
-import lostark.todo.domainV2.lostark.dao.LostarkApiClient;
+import lostark.todo.domainV2.lostark.client.LostarkApiClient;
 import lostark.todo.service.CustomTodoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
