@@ -3,9 +3,9 @@ package lostark.todo.domainV2.util.cube.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.contentDto.CubeContentDto;
+import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domain.content.CubeContent;
 import lostark.todo.domain.market.Market;
-import lostark.todo.domainV2.util.content.dao.ContentDao;
 import lostark.todo.domainV2.util.cube.dao.CubeDao;
 import lostark.todo.domainV2.util.cube.dto.CubeResponse;
 import lostark.todo.domainV2.util.cube.dto.CubeUpdateRequest;
@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CubesService {
 
+    private final ContentRepository contentRepository;
     private final CubesRepository cubeRepository;
     private final CubeDao cubeDao;
     private final MarketDao marketDao;
-    private final ContentDao contentDao;
 
     @Transactional(readOnly = true)
     public List<CubeResponse> get(String username) {
@@ -61,7 +61,7 @@ public class CubesService {
     public List<CubeContentDto> getStatistics() {
         Map<String, Market> jewelryMap = marketDao.findByNameIn(List.of("3티어 1레벨 보석", "4티어 1레벨 보석"))
                 .stream().collect(Collectors.toMap(Market::getName, market -> market));
-        List<CubeContent> cubeContentList = contentDao.findAllCubeContent();
+        List<CubeContent> cubeContentList = contentRepository.findAllByCubeContent();
         return cubeContentList.stream()
                 .map(content -> {
                     String tierName = content.getLevel() >= 1640 ? "4티어 1레벨 보석" : "3티어 1레벨 보석";

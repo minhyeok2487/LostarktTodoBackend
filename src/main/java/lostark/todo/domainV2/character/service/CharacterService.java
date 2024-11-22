@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domain.content.ContentRepository;
 import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domainV2.character.dto.UpdateDayGaugeRequest;
@@ -20,10 +21,8 @@ import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
-import lostark.todo.domainV2.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
-import lostark.todo.domainV2.util.content.dao.ContentDao;
 import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +42,7 @@ public class CharacterService {
     private final CharacterRepository characterRepository;
     private final MemberRepository memberRepository;
     private final MarketDao marketDao;
-    private final ContentDao contentDao;
+    private final ContentRepository contentRepository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
 
 
@@ -67,54 +66,10 @@ public class CharacterService {
         return character.calculateDayTodo(character, contentResource);
     }
 
-    // 일일컨텐츠 휴식게이지 업데이트
-    @Transactional
-    public Character updateGauge(Character character, CharacterDayTodoDto characterDayTodoDto, Map<String, Market> contentResource) {
-        Integer dtoChaosGauge = characterDayTodoDto.getChaosGauge();
-        validateGauge(dtoChaosGauge, 200); //검증
-
-        Integer dtoGuardianGauge = characterDayTodoDto.getGuardianGauge();
-        validateGauge(dtoGuardianGauge, 100); //검증
-
-        Integer dtoEponGauge = characterDayTodoDto.getEponaGauge();
-        validateGauge(dtoEponGauge, 100); //검증
-
-        character.getDayTodo().updateDayContentGauge(characterDayTodoDto);
-
-        return character.calculateDayTodo(character, contentResource);
-    }
-
     private void validateGauge(Integer gauge, int max) {
         if (gauge < 0 || gauge > max || gauge % 10 != 0) {
             throw new IllegalArgumentException(String.format("휴식게이지는 0~%d 사이이며, 10단위여야 합니다.", max));
         }
-    }
-
-    // 일일 컨텐츠 체크 업데이트
-    public Character updateCheck(Character character, String category) {
-        if (category.equals("epona")) {
-            character.getDayTodo().updateCheckEpona();
-        }
-        if (category.equals("chaos")) {
-            character.getDayTodo().updateCheckChaos();
-        }
-        if (category.equals("guardian")) {
-            character.getDayTodo().updateCheckGuardian();
-        }
-        return character;
-    }
-
-    public Character updateCheckAll(Character character, String category) {
-        if (category.equals("epona")) {
-            character.getDayTodo().updateCheckEponaAll();
-        }
-        if (category.equals("chaos")) {
-            character.getDayTodo().updateCheckChaosAll();
-        }
-        if (category.equals("guardian")) {
-            character.getDayTodo().updateCheckGuardian();
-        }
-        return character;
     }
 
     @Transactional
@@ -146,13 +101,6 @@ public class CharacterService {
     }
 
     /**
-     * 주간 에포나 체크 업데이트
-     */
-    public void updateWeekEpona(Character character) {
-        character.getWeekTodo().updateWeekEpona();
-    }
-
-    /**
      * 실마엘 교환 업데이트
      */
     public void updateWeekSilmael(Character character) {
@@ -166,17 +114,6 @@ public class CharacterService {
         character.getWeekTodo().updateCubeTicket(num);
     }
 
-
-    /**
-     * 캐릭터 검색(리스트)
-     */
-    public List<Character> findCharacter(String characterName) {
-        return characterRepository.findAllByCharacterName(characterName);
-    }
-
-    public Character findCharacterById(long characterId) {
-        return characterRepository.findById(characterId).orElseThrow(() -> new IllegalArgumentException("캐릭터 id 에러"));
-    }
 
     public boolean deleteByMember(Member member) {
         long result = characterRepository.deleteByMember(member);
@@ -265,44 +202,6 @@ public class CharacterService {
         return character;
     }
 
-    // 일일 컨텐츠 체크 업데이트
-    @Transactional
-    public Character updateDayTodoCheck(String username, CharacterDefaultDto characterDefaultDto,
-                                        DayTodoCategoryEnum category, boolean updateAll) {
-
-        Character character = get(
-                characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
-
-        DayTodo dayTodo = character.getDayTodo();
-
-        switch (category) {
-            case epona -> {
-                if (updateAll) {
-                    dayTodo.updateCheckEponaAll();
-                } else {
-                    dayTodo.updateCheckEpona();
-                }
-            }
-            case chaos -> {
-                if (updateAll) {
-                    dayTodo.updateCheckChaosAll();
-                } else {
-                    dayTodo.updateCheckChaos();
-                }
-            }
-            case guardian -> dayTodo.updateCheckGuardian();
-            default -> throw new IllegalArgumentException("Invalid day todo category: " + category);
-        }
-
-        return character;
-    }
-
-    public Character updateGauge(String username, CharacterDayTodoDto characterDayTodoDto, Map<String, Market> contentResource) {
-        Character character = get(
-                characterDayTodoDto.getCharacterId(), characterDayTodoDto.getCharacterName(), username);
-        return updateGauge(character, characterDayTodoDto, contentResource);
-    }
-
     @Transactional
     public Character addCharacter(CharacterJsonDto dto, DayTodo dayContent, Member member) {
         Character character = Character.builder()
@@ -320,11 +219,6 @@ public class CharacterService {
         character.setTodoV2List(new ArrayList<>());
         character.createImage(dto.getCharacterImage());
         return characterRepository.save(character);
-    }
-
-    @Transactional
-    public void updateCharacter(Character character, CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
-        character.updateCharacter(dto, dayContent, contentResource);
     }
 
     @Transactional
@@ -352,8 +246,9 @@ public class CharacterService {
 
         // 4. 콘텐츠 통계 데이터 조회
         Map<String, Market> contentResource = marketDao.findContentResource();
-        List<DayContent> chaosDungeons = contentDao.findDayContent(Category.카오스던전);
-        List<DayContent> guardianRaids = contentDao.findDayContent(Category.가디언토벌);
+        Map<Category, List<DayContent>> dayContents = contentRepository.getDayContents();
+        List<DayContent> chaosDungeons = dayContents.get(Category.카오스던전);
+        List<DayContent> guardianRaids = dayContents.get(Category.가디언토벌);
 
         // 5. 원정대 캐릭터 업데이트 로직
         updateSiblings(searchCharacterName, member, chaosDungeons, guardianRaids, contentResource, mainCharacter);
