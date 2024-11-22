@@ -9,7 +9,6 @@ import lostark.todo.controller.dtoV2.admin.SearchAdminCommentsResponse;
 import lostark.todo.domainV2.board.comments.dto.CommentResponse;
 import lostark.todo.domainV2.board.comments.entity.Comments;
 import lostark.todo.domainV2.board.comments.repository.CommentsRepository;
-import lostark.todo.domainV2.board.comments.dao.CommentsDao;
 import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import java.util.List;
 public class CommentsService {
 
     private final CommentsRepository commentsRepository;
-    private final CommentsDao commentsDao;
 
     public Page<Comments> findAllByParentIdIs0(int page) {
         return commentsRepository.findAllByParentIdIs0(PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
@@ -55,16 +53,6 @@ public class CommentsService {
         commentsRepository.deleteById(comments.getId());
     }
 
-    public Comments findById(long id) {
-        return commentsRepository.findById(id).orElse(null);
-    }
-
-    @Transactional(readOnly = true)
-    public int findCommentPage(long commentId) {
-        int commentIndex = commentsRepository.findCommentIndex(commentId);
-        return (commentIndex / 5) + 1;
-    }
-
     @Transactional(readOnly = true)
     public Page<SearchAdminCommentsResponse> searchAdmin(SearchAdminCommentsRequest request, PageRequest pageRequest) {
         return commentsRepository.searchAdmin(request, pageRequest);
@@ -83,6 +71,6 @@ public class CommentsService {
 
     @Transactional(readOnly = true)
     public CursorResponse<CommentResponse> searchCursor(Long commentsId, PageRequest pageRequest) {
-        return commentsDao.searchCursor(commentsId, pageRequest);
+        return commentsRepository.searchCursor(commentsId, pageRequest);
     }
 }
