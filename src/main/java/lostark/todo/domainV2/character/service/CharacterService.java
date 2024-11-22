@@ -18,7 +18,6 @@ import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.todoV2.TodoV2;
-import lostark.todo.domainV2.character.dao.CharacterDao;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domainV2.character.enums.DayTodoCategoryEnum;
@@ -42,7 +41,6 @@ import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
-    private final CharacterDao characterDao;
     private final MemberRepository memberRepository;
     private final MarketDao marketDao;
     private final ContentDao contentDao;
@@ -452,13 +450,13 @@ public class CharacterService {
 
     @Transactional(readOnly = true)
     public List<CharacterResponse> getCharacterList(String username) {
-        List<Character> characterList = characterDao.getCharacterList(username);
+        List<Character> characterList = characterRepository.getCharacterList(username);
         return convertAndSortCharacterList(characterList);
     }
 
     @Transactional
     public List<CharacterResponse> editSort(String username, List<CharacterSortDto> characterSortDtoList) {
-        List<Character> characterList = characterDao.getCharacterList(username).stream().peek(
+        List<Character> characterList = characterRepository.getCharacterList(username).stream().peek(
                         character -> characterSortDtoList.stream()
                                 .filter(characterSortDto -> character.getCharacterName().equals(characterSortDto.getCharacterName()))
                                 .findFirst()

@@ -3,12 +3,12 @@ package lostark.todo.domainV2.friend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
+import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.friend.dao.FriendDao;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
-import lostark.todo.domainV2.character.dao.CharacterDao;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.friend.entity.FriendSettings;
 import lostark.todo.domainV2.friend.entity.Friends;
@@ -34,7 +34,7 @@ public class FriendsService {
     private final FriendsRepository friendsRepository;
     private final FriendDao friendDao;
     private final MemberRepository memberRepository;
-    private final CharacterDao characterDao;
+    private final CharacterRepository characterRepository;
 
     public List<Friends> findAllByFromMember(Member member) {
         return friendsRepository.findAllByFromMember(member.getId());
@@ -162,7 +162,7 @@ public class FriendsService {
     @Transactional(readOnly = true)
     public List<FriendFindCharacterResponse> findCharacter(String username, String characterName) {
         Member member = memberRepository.get(username);
-        List<Character> characterList = characterDao.getCharacter(characterName);
+        List<Character> characterList = characterRepository.getCharacter(characterName);
 
         if (characterList.isEmpty()) {
             throw new IllegalArgumentException(CHARACTER_NOT_FOUND);
