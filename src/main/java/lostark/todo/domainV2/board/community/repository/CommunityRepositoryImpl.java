@@ -19,6 +19,7 @@ import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,18 +103,18 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
     }
 
     @Override
-    public Optional<Community> get(String username, long communityId) {
+    public Community get(String username, long communityId) {
         return Optional.ofNullable(factory.selectFrom(community)
                 .leftJoin(member).on(community.memberId.id.eq(member.id))
                 .where(
                         eqUsername(username),
                         eqCommunityId(communityId),
                         isDeleted(false)
-                ).fetchOne());
+                ).fetchOne()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 게시글 입니다."));
     }
 
     @Override
-    public Optional<CommunitySearchResponse> getResponse(long memberId, long communityId) {
+    public CommunitySearchResponse getResponse(long memberId, long communityId) {
         QCommunity communitySub = new QCommunity("communitySub");
         CommunitySearchResponse fetch = factory.select(
                         Projections.fields(CommunitySearchResponse.class,
@@ -164,9 +165,9 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                     .orderBy(communityImages.ordering.asc())
                     .fetch();
             fetch.setImageList(images);
-            return Optional.of(fetch);
+            return fetch;
         } else {
-            throw new NotFoundException("존재하지 않는 게시글 입니다.");
+            throw new EntityNotFoundException("존재하지 않는 게시글 입니다.");
         }
     }
 

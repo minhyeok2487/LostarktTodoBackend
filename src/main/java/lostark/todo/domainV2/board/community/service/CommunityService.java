@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.Role;
+import lostark.todo.domainV2.board.community.entity.CommunityLike;
+import lostark.todo.domainV2.board.community.repository.CommunityImagesRepository;
+import lostark.todo.domainV2.board.community.repository.CommunityLikeRepository;
 import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationRepository;
-import lostark.todo.domainV2.board.community.dao.CommunityDao;
-import lostark.todo.domainV2.board.community.dao.CommunityImagesDao;
-import lostark.todo.domainV2.board.community.dao.CommunityLikeDao;
 import lostark.todo.domainV2.board.community.dto.*;
 import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -34,18 +35,17 @@ import java.util.Optional;
 @Transactional
 public class CommunityService {
 
-    private final CommunityDao communityDao;
-    private final CommunityLikeDao communityLikeDao;
-    private final CommunityImagesDao communityImagesDao;
+    private final CommunityRepository communityRepository;
+    private final CommunityLikeRepository communityLikeRepository;
+    private final CommunityImagesRepository communityImagesRepository;
     private final MemberRepository memberRepository;
     private final ImagesService imagesService;
     private final NotificationRepository notificationRepository;
-    private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
     public CursorResponse<CommunitySearchResponse> search(String username, CommunitySearchParams params, PageRequest pageRequest) {
         long memberId = username == null ? 0L : memberRepository.get(username).getId();
-        return communityDao.search(memberId, params, pageRequest);
+        return communityRepository.search(memberId, params, pageRequest);
     }
 
     @RateLimit()
@@ -57,7 +57,7 @@ public class CommunityService {
 
         Optional.of(request.getImageList())
                 .filter(list -> !list.isEmpty())
-                .ifPresent(images -> communityImagesDao.updateAll(community.getId(), images));
+                .ifPresent(images -> updateAll(community.getId(), images));
 
         Optional.of(request)
                 .filter(req -> req.getRootParentId() != 0L)
@@ -70,6 +70,12 @@ public class CommunityService {
                 })
                 .ifPresent(notificationRepository::save);
 
+    }
+
+    private void updateAll(long communityId, List<Long> imageList) {
+        AtomicInteger counter = new AtomicInteger(1);
+        communityImagesRepository.search(imageList)
+                .forEach(image -> image.update(communityId, counter.getAndIncrement()));
     }
 
 
@@ -88,33 +94,43 @@ public class CommunityService {
         memberRepository.get(username); // 단순 회원 검증용
         String folderName = "community-images/";
         ImageResponse imageResponse = imagesService.upload(image, folderName);
-        CommunityImages images = communityImagesDao.uploadImage(imageResponse);
-        return new ImageResponseV2(imageResponse, images.getId());
+        CommunityImages save = communityImagesRepository.save(
+                CommunityImages.builder()
+                        .fileName(imageResponse.getFileName())
+                        .url(imageResponse.getImageUrl())
+                        .ordering(0)
+                        .build());
+        return new ImageResponseV2(imageResponse, save.getId());
     }
 
     @Transactional
     public void update(String username, CommunityUpdateRequest request) {
-        Community community = communityDao.get(username, request.getCommunityId());
+        Community community = communityRepository.get(username, request.getCommunityId());
         community.update(request.getBody());
     }
 
     @Transactional
     public void delete(String username, long communityId) {
-        Community community = communityDao.get(username, communityId);
+        Community community = communityRepository.get(username, communityId);
         community.delete();
     }
 
     @Transactional(readOnly = true)
     public CommunityGetResponse get(String username, Long communityId) {
         long memberId = username == null ? 0L : memberRepository.get(username).getId();
-        CommunitySearchResponse searchResponse = communityDao.getResponse(memberId, communityId);
-        List<CommunityCommentResponse> commentResponseList = communityDao.getComments(memberId, communityId);
+        CommunitySearchResponse searchResponse = communityRepository.getResponse(memberId, communityId);
+        List<CommunityCommentResponse> commentResponseList = communityRepository.getComments(memberId, communityId);
         return new CommunityGetResponse(searchResponse, commentResponseList);
     }
 
     @Transactional
     public void updateLike(String username, long communityId) {
         Member member = memberRepository.get(username);
-        communityLikeDao.updateLike(member.getId(), communityId);
+        Optional<CommunityLike> communityLike = communityLikeRepository.findByCommunityIdAndMemberId(communityId, member.getId());
+        if (communityLike.isPresent()) {
+            communityLikeRepository.delete(communityLike.get());
+        } else {
+            communityLikeRepository.save(CommunityLike.builder().communityId(communityId).memberId(member.getId()).build());
+        }
     }
 }
