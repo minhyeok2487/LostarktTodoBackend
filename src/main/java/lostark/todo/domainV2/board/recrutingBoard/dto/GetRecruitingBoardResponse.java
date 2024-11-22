@@ -2,7 +2,7 @@ package lostark.todo.domainV2.board.recrutingBoard.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.recrutingBoard.enums.ExpeditionSettingEnum;
 import lostark.todo.domainV2.board.recrutingBoard.entity.RecruitingBoard;
 import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;

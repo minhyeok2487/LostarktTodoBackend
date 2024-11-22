@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.board.recrutingBoard.entity.QRecruitingBoard.recruitingBoard;
 import static lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum.*;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;

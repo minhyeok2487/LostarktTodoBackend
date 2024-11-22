@@ -1,7 +1,7 @@
 package lostark.todo.domainV2.board.community.dao;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.community.entity.Follow;
 import lostark.todo.domainV2.board.community.repository.FollowRepository;
 import org.springframework.stereotype.Repository;

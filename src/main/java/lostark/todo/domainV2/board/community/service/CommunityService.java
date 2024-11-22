@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.Role;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationRepository;
 import lostark.todo.domainV2.board.community.dao.CommunityDao;
@@ -15,7 +16,6 @@ import lostark.todo.domainV2.board.community.entity.Community;
 import lostark.todo.domainV2.board.community.entity.CommunityCategory;
 import lostark.todo.domainV2.board.community.entity.CommunityImages;
 import lostark.todo.domainV2.board.community.repository.CommunityRepository;
-import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.global.customAnnotation.RateLimit;
 import lostark.todo.global.dto.CursorResponse;
 import lostark.todo.global.dto.ImageResponseV2;
@@ -37,21 +37,21 @@ public class CommunityService {
     private final CommunityDao communityDao;
     private final CommunityLikeDao communityLikeDao;
     private final CommunityImagesDao communityImagesDao;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final ImagesService imagesService;
     private final NotificationRepository notificationRepository;
     private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
     public CursorResponse<CommunitySearchResponse> search(String username, CommunitySearchParams params, PageRequest pageRequest) {
-        long memberId = username == null ? 0L : memberDao.get(username).getId();
+        long memberId = username == null ? 0L : memberRepository.get(username).getId();
         return communityDao.search(memberId, params, pageRequest);
     }
 
     @RateLimit()
     @Transactional
     public void save(String username, CommunitySaveRequest request) {
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
         validateSaveRequest(member, request);
         Community community = communityRepository.save(Community.toEntity(member, request));
 
@@ -85,7 +85,7 @@ public class CommunityService {
 
     @Transactional
     public ImageResponseV2 uploadImage(String username, MultipartFile image) {
-        memberDao.get(username); // 단순 회원 검증용
+        memberRepository.get(username); // 단순 회원 검증용
         String folderName = "community-images/";
         ImageResponse imageResponse = imagesService.upload(image, folderName);
         CommunityImages images = communityImagesDao.uploadImage(imageResponse);
@@ -106,7 +106,7 @@ public class CommunityService {
 
     @Transactional(readOnly = true)
     public CommunityGetResponse get(String username, Long communityId) {
-        long memberId = username == null ? 0L : memberDao.get(username).getId();
+        long memberId = username == null ? 0L : memberRepository.get(username).getId();
         CommunitySearchResponse searchResponse = communityDao.getResponse(memberId, communityId);
         List<CommunityCommentResponse> commentResponseList = communityDao.getComments(memberId, communityId);
         return new CommunityGetResponse(searchResponse, commentResponseList);
@@ -114,7 +114,7 @@ public class CommunityService {
 
     @Transactional
     public void updateLike(String username, long communityId) {
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
         communityLikeDao.updateLike(member.getId(), communityId);
     }
 }

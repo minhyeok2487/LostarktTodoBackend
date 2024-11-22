@@ -8,7 +8,7 @@ import lostark.todo.global.config.TokenProvider;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
 import lostark.todo.controller.dtoV2.auth.SignUpRequest;
 import lostark.todo.controller.dtoV2.auth.AuthResponse;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.service.EmailService;
 import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;

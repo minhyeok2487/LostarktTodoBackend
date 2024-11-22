@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.board.community.entity.QCommunity.community;
 import static lostark.todo.domainV2.board.community.entity.QCommunityImages.communityImages;
 import static lostark.todo.domainV2.board.community.entity.QCommunityLike.communityLike;

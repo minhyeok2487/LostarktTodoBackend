@@ -7,7 +7,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.board.recrutingBoard.dto.CreateRecruitingBoardRequest;
 import lostark.todo.domainV2.board.recrutingBoard.dto.UpdateRecruitingBoardRequest;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.recrutingBoard.enums.ExpeditionSettingEnum;
 import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;
 import lostark.todo.domainV2.board.recrutingBoard.enums.TimeCategoryEnum;

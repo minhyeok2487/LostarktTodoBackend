@@ -3,7 +3,7 @@ package lostark.todo.domainV2.board.community.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.community.dto.CommunitySaveRequest;
 import lostark.todo.domainV2.character.entity.Character;
 

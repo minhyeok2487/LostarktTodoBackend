@@ -2,17 +2,17 @@ package lostark.todo.domainV2.board.recrutingBoard.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.global.config.TokenProvider;
 import lostark.todo.controller.dto.boardsDto.ImageUrlDto;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.recrutingBoard.dao.RecruitingBoardDao;
 import lostark.todo.domainV2.board.recrutingBoard.dao.RecruitingBoardImagesDao;
 import lostark.todo.domainV2.board.recrutingBoard.dto.*;
 import lostark.todo.domainV2.board.recrutingBoard.entity.RecruitingBoard;
 import lostark.todo.domainV2.board.recrutingBoard.enums.RecruitingCategoryEnum;
 import lostark.todo.domainV2.board.recrutingBoard.enums.TimeCategoryEnum;
-import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.service.ImagesService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +34,7 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.TIME_CATEGORY_
 public class RecruitingBoardService {
 
     private final RecruitingBoardDao recruitingBoardDao;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final RecruitingBoardImagesDao recruitingBoardImagesDao;
     private final TokenProvider tokenProvider;
     private final ImagesService imagesService;
@@ -77,7 +77,7 @@ public class RecruitingBoardService {
         Member member = null;
         if (StringUtils.hasText(token)) {
             String username = tokenProvider.validToken(token);
-            member = memberDao.get(username);
+            member = memberRepository.get(username);
         }
         return new GetRecruitingBoardResponse(recruitingBoard, member);
     }
@@ -85,7 +85,7 @@ public class RecruitingBoardService {
     @Transactional
     public CreateRecruitingBoardResponse create(String username, CreateRecruitingBoardRequest request) {
         validateCreate(request);
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
         RecruitingBoard recruitingBoard = RecruitingBoard.toEntity(member, request);
         recruitingBoardImagesDao.saveByfileNames(request.getFileNames(), recruitingBoard);
         RecruitingBoard save = recruitingBoardDao.save(recruitingBoard);
@@ -104,7 +104,7 @@ public class RecruitingBoardService {
 
     @Transactional
     public void update(String username, UpdateRecruitingBoardRequest request, Long recruitingBoardId) {
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
         RecruitingBoard recruitingBoard = validateOwnership(member, recruitingBoardId);
         recruitingBoard.update(request);
     }
@@ -119,14 +119,14 @@ public class RecruitingBoardService {
 
     @Transactional
     public void delete(String username, Long recruitingBoardId) {
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
         RecruitingBoard recruitingBoard = validateOwnership(member, recruitingBoardId);
         recruitingBoardDao.delete(recruitingBoard);
     }
 
     @Transactional
     public ImageUrlDto uploadImage(String username, MultipartFile image) {
-        memberDao.get(username); //체크만
+        memberRepository.get(username); //체크만
         String folderName = "recruiting/";
         ImageResponse imageResponse = imagesService.upload(image, folderName);
         recruitingBoardImagesDao.uploadImage(imageResponse);

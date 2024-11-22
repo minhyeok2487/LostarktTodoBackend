@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.domainV2.board.comments.entity.Comments;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.comments.service.CommentsService;
 import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;

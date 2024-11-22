@@ -10,7 +10,7 @@ import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domainV2.friend.entity.Friends;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.friend.service.FriendsService;

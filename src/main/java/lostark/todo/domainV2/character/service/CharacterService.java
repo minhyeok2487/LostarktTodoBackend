@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domainV2.character.dto.UpdateDayGaugeRequest;
 import lostark.todo.domainV2.character.dto.UpdateWeekEponaRequest;
@@ -15,7 +16,7 @@ import lostark.todo.domainV2.character.entity.*;
 import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.character.dao.CharacterDao;
 import lostark.todo.domainV2.character.entity.Character;
@@ -23,7 +24,6 @@ import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domainV2.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
 import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
-import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.domainV2.util.content.dao.ContentDao;
 import lostark.todo.domainV2.util.market.dao.MarketDao;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class CharacterService {
 
     private final CharacterRepository characterRepository;
     private final CharacterDao characterDao;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final MarketDao marketDao;
     private final ContentDao contentDao;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
@@ -344,7 +344,7 @@ public class CharacterService {
     @Transactional
     public void updateCharacterList(String username) {
         // 1. 회원 조회
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
 
         // 2. 대표 캐릭터 이름 조회
         String mainCharacter = member.getMainCharacterName();

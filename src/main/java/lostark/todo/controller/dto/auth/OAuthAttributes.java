@@ -3,7 +3,7 @@ package lostark.todo.controller.dto.auth;
 import lombok.Builder;
 import lombok.Getter;
 import lostark.todo.domain.Role;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 
 import java.util.Map;
 

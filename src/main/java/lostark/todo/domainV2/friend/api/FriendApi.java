@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domainV2.friend.entity.FriendSettings;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.domainV2.friend.dto.FriendRequest;
 import lostark.todo.domainV2.friend.dto.UpdateFriendRequest;

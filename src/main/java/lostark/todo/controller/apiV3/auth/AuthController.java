@@ -12,7 +12,7 @@ import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.market.Market;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;

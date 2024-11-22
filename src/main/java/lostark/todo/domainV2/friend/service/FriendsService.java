@@ -3,6 +3,7 @@ package lostark.todo.domainV2.friend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.friend.dao.FriendDao;
 import lostark.todo.domainV2.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
@@ -12,10 +13,9 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.friend.entity.FriendSettings;
 import lostark.todo.domainV2.friend.entity.Friends;
 import lostark.todo.domainV2.friend.repository.FriendsRepository;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.friend.enums.FriendRequestCategory;
 import lostark.todo.domainV2.friend.enums.FriendStatus;
-import lostark.todo.domainV2.member.dao.MemberDao;
 import lostark.todo.global.utils.GlobalMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,7 @@ public class FriendsService {
 
     private final FriendsRepository friendsRepository;
     private final FriendDao friendDao;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final CharacterDao characterDao;
 
     public List<Friends> findAllByFromMember(Member member) {
@@ -161,7 +161,7 @@ public class FriendsService {
 
     @Transactional(readOnly = true)
     public List<FriendFindCharacterResponse> findCharacter(String username, String characterName) {
-        Member member = memberDao.get(username);
+        Member member = memberRepository.get(username);
         List<Character> characterList = characterDao.getCharacter(characterName);
 
         if (characterList.isEmpty()) {

@@ -1,12 +1,12 @@
 package lostark.todo.domainV2.board.community.service;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.board.community.dao.FollowDao;
 import lostark.todo.domainV2.board.community.dto.FollowResponse;
 import lostark.todo.domainV2.board.community.dto.FollowingUpdateRequest;
 import lostark.todo.domainV2.board.community.entity.Follow;
-import lostark.todo.domainV2.member.dao.MemberDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class FollowService {
 
     private final FollowDao followDao;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public List<FollowResponse> search(String username) {
@@ -32,8 +32,8 @@ public class FollowService {
 
     @Transactional
     public void update(String username, FollowingUpdateRequest request) {
-        Member follower = memberDao.get(username);
-        Member following = memberDao.get(request.getFollowing());
+        Member follower = memberRepository.get(username);
+        Member following = memberRepository.get(request.getFollowing());
         followDao.update(follower, following);
     }
 }

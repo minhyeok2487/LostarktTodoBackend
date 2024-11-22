@@ -6,7 +6,7 @@ import lostark.todo.domain.Role;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.logs.LogsDayContent;
 import lostark.todo.domain.logs.LogsRepository;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.global.event.entity.character.DayContentCheckEvent;
 import lostark.todo.global.event.entity.CommentEvent;
 import lostark.todo.global.event.entity.MemberEvent;

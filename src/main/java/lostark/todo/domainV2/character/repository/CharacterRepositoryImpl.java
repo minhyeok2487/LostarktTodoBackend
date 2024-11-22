@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.admin.dto.QDashboardResponse;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.entity.Character;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
 import static lostark.todo.domain.content.QWeekContent.weekContent;
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domain.todo.QTodo.todo;
 import static lostark.todo.domain.todoV2.QTodoV2.todoV2;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
