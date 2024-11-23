@@ -2,7 +2,7 @@ package lostark.todo.domainV2.character.repository;
 
 import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.entity.Character;
 
 import java.util.List;

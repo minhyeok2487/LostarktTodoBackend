@@ -6,10 +6,10 @@ import lostark.todo.data.MarketTestData;
 import lostark.todo.data.MemberTestData;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
-import lostark.todo.domain.member.Member;
-import lostark.todo.domain.member.MemberRepository;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
+import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domainV2.member.infra.MemberLockManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class MemberServiceTest {
 
         // Mock 객체 동작 정의
         assertThat(mockMember).isNotNull();
-        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
+        when(memberRepository.get(username)).thenReturn(mockMember);
         when(lostarkCharacterApiClient.createCharacterList(request.getCharacterName(), API_KEY)).thenReturn(mockCharacterList);
         when(marketRepository.findLevelUpResource()).thenReturn(mockMarketMap);
 
@@ -93,7 +93,7 @@ class MemberServiceTest {
         List<Character> mockCharacterList = CharacterTestData.createMockCharacterList();
         mockMember.createCharacter(mockCharacterList, request);
 
-        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
+        when(memberRepository.get(username)).thenReturn(mockMember);
 
         // when & then
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
@@ -155,7 +155,7 @@ class MemberServiceTest {
         Map<String, Market> mockMarketMap = MarketTestData.createMockMarketMap();
 
         assertThat(mockMember).isNotNull();
-        when(memberRepository.get(username)).thenReturn(Optional.of(mockMember));
+        when(memberRepository.get(username)).thenReturn(mockMember);
         when(marketRepository.findLevelUpResource()).thenReturn(mockMarketMap);
         when(lostarkCharacterApiClient.createCharacterList(request.getCharacterName(), API_KEY))
                 .thenReturn(mockCharacters);

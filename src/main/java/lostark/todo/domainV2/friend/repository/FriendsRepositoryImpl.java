@@ -5,8 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domainV2.friend.entity.Friends;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.member.Member;
-import lostark.todo.domain.member.QMember;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.entity.QMember;
 import lostark.todo.domainV2.friend.enums.FriendStatus;
 
 import javax.persistence.EntityManager;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
 import static lostark.todo.domainV2.friend.entity.QFriends.friends;
 

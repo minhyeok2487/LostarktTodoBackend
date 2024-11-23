@@ -2,7 +2,7 @@ package lostark.todo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.auth.ResponseDto;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;

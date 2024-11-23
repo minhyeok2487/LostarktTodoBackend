@@ -1,4 +1,4 @@
-package lostark.todo.domain.member;
+package lostark.todo.domainV2.member.repository;
 
 import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -11,16 +11,21 @@ import lostark.todo.admin.dto.QDashboardResponse;
 import lostark.todo.controller.dtoV2.admin.QSearchAdminMemberResponse;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.entity.QMember;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.MEMER_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberCustomRepository {
@@ -28,29 +33,25 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Optional<Member> get(String username) {
-        return Optional.ofNullable(
-                factory.select(member)
-                        .from(member)
-                        .leftJoin(member.characters, character).fetchJoin()
-                        .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
-                        .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
-                        .where(eqUsername(username))
-                        .fetchOne()
-        );
+    public Member get(String username) {
+        return findMemberBy(member -> member.username.eq(username));
     }
 
     @Override
-    public Optional<Member> get(Long id) {
+    public Member get(Long id) {
+        return findMemberBy(member -> member.id.eq(id));
+    }
+
+    private Member findMemberBy(Function<QMember, BooleanExpression> whereCondition) {
         return Optional.ofNullable(
                 factory.select(member)
                         .from(member)
                         .leftJoin(member.characters, character).fetchJoin()
                         .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                         .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
-                        .where(member.id.eq(id))
+                        .where(whereCondition.apply(member))
                         .fetchOne()
-        );
+        ).orElseThrow(() -> new EntityNotFoundException(MEMER_NOT_FOUND));
     }
 
     @Override

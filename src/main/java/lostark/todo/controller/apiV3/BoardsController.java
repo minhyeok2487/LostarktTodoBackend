@@ -8,7 +8,7 @@ import lostark.todo.controller.dto.boardsDto.*;
 import lostark.todo.controller.dtoV2.image.ImageResponse;
 import lostark.todo.domain.Role;
 import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
 import lostark.todo.service.BoardImagesService;
 import lostark.todo.service.BoardsService;

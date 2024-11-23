@@ -1,6 +1,6 @@
 package lostark.todo.domain.customTodo;
 
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 
 import java.util.List;
 

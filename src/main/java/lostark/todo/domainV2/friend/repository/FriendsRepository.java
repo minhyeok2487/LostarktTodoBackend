@@ -1,6 +1,6 @@
 package lostark.todo.domainV2.friend.repository;
 
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.friend.entity.Friends;
 import org.springframework.data.jpa.repository.JpaRepository;
 

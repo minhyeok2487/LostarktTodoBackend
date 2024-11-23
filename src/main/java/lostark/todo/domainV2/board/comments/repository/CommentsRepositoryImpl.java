@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.board.comments.entity.QComments.comments;
 
 @RequiredArgsConstructor

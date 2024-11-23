@@ -11,10 +11,9 @@ import lostark.todo.domain.Role;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.market.MarketRepository;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.member.Member;
-import lostark.todo.domain.member.MemberRepository;
-import lostark.todo.domainV2.lostark.dao.LostarkCharacterApiClient;
-import lostark.todo.domainV2.member.dao.MemberDao;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.repository.MemberRepository;
+import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domainV2.member.infra.MemberLockManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +36,6 @@ public class MemberService {
     private final MemberLockManager memberLockManager;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MemberDao memberDao;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final MarketRepository marketRepository;
 
@@ -45,12 +43,12 @@ public class MemberService {
     // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
     public Member get(String username) {
-        return memberRepository.get(username).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
+        return memberRepository.get(username);
     }
 
     @Transactional(readOnly = true)
     public Member get(Long id) {
-        return memberRepository.get(id).orElseThrow(() -> new NoSuchElementException(MEMER_NOT_FOUND));
+        return memberRepository.get(id);
     }
 
     // 1차 회원가입 - Test Code 작성완료
@@ -123,7 +121,7 @@ public class MemberService {
     //TODO 추후 삭제
     @Transactional
     public void createCharacterOLDER(String username, SaveCharacterRequest request, List<Character> characterList) {
-        Member member = memberDao.get(username);
+        Member member = get(username);
         member.createCharacter(characterList, request);
     }
 

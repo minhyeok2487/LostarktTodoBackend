@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.domain.notification.NotificationRepository;
 import lostark.todo.domain.notification.NotificationType;

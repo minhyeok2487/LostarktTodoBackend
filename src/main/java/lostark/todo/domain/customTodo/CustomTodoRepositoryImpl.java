@@ -2,10 +2,10 @@ package lostark.todo.domain.customTodo;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import java.util.List;
 import static lostark.todo.domain.customTodo.QCustomTodo.customTodo;
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
 
 @RequiredArgsConstructor

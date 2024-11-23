@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.auth.OAuthAttributes;
 import lostark.todo.domain.Role;
-import lostark.todo.domain.member.Member;
-import lostark.todo.domain.member.MemberRepository;
+import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domainV2.member.repository.MemberRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -50,7 +50,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             member = memberRepository.save(member);
             log.info("{} Signup Success", attributes.getEmail());
         } else {
-            member = memberRepository.get(attributes.getEmail()).orElseThrow();
+            member = memberRepository.get(attributes.getEmail());
             member.setAccessKey(userRequest.getAccessToken().getTokenValue());
             log.info("{} Login Success", attributes.getEmail());
         }

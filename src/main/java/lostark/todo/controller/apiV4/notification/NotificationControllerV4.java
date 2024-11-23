@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.controller.dtoV2.notification.SearchNotificationResponse;
 import lostark.todo.domain.boards.Boards;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.notification.Notification;
 import lostark.todo.service.BoardsService;
 import lostark.todo.domainV2.board.comments.service.CommentsService;

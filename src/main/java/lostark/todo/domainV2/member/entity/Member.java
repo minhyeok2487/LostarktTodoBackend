@@ -1,4 +1,4 @@
-package lostark.todo.domain.member;
+package lostark.todo.domainV2.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;

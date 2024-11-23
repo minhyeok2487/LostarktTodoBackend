@@ -1,7 +1,7 @@
 package lostark.todo.global.exhandler.exceptions;
 
 import lombok.Getter;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 
 @Getter
 public class CustomIllegalArgumentException extends IllegalArgumentException {

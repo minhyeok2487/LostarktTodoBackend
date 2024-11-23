@@ -1,4 +1,4 @@
-package lostark.todo.domainV2.lostark.dao;
+package lostark.todo.domainV2.lostark.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class LostarkMarketDao {
+public class LostarkMarketApiClient {
 
     private final LostarkApiClient lostarkApiClient;
 

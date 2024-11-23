@@ -7,7 +7,7 @@ import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domain.todo.Todo;
 import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;

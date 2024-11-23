@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
 import static lostark.todo.domainV2.util.cube.entity.QCubes.cubes;
 

@@ -11,7 +11,7 @@ import lostark.todo.controller.dto.homeDto.HomeRaidDto;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.friend.entity.Friends;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.friend.service.FriendsService;
 import lostark.todo.domainV2.member.service.MemberService;

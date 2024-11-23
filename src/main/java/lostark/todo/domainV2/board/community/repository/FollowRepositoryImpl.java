@@ -2,13 +2,13 @@ package lostark.todo.domainV2.board.community.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.member.Member;
+import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.board.community.entity.Follow;
 
 import java.util.List;
 import java.util.Optional;
 
-import static lostark.todo.domain.member.QMember.member;
+import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.board.community.entity.QFollow.follow;
 
 @RequiredArgsConstructor

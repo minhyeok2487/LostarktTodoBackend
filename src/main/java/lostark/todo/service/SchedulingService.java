@@ -14,8 +14,8 @@ import lostark.todo.domain.notices.Notices;
 import lostark.todo.domain.todoV2.TodoV2Repository;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.discordWebHook.DiscordWebhook;
-import lostark.todo.domainV2.lostark.dao.LostarkMarketDao;
-import lostark.todo.domainV2.lostark.dao.LostarkNewsDao;
+import lostark.todo.domainV2.lostark.client.LostarkMarketApiClient;
+import lostark.todo.domainV2.lostark.client.LostarkNoticeClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,13 +31,13 @@ import java.util.Map;
 @Transactional
 @Slf4j
 public class SchedulingService {
-    private final LostarkMarketDao lostarkMarketDao;
+    private final LostarkMarketApiClient lostarkMarketApiClient;
     private final MarketService marketService;
     private final TodoV2Repository todoV2Repository;
     private final CharacterRepository characterRepository;
     private final CustomTodoRepository customTodoRepository;
     private final ContentRepository contentRepository;
-    private final LostarkNewsDao newsService;
+    private final LostarkNoticeClient lostarkNoticeClient;
     private final NoticesService noticesService;
     private final WebHookService webHookService;
     private final ScheduleService scheduleService;
@@ -57,7 +57,7 @@ public class SchedulingService {
      */
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
     public void updateMarketData() {
-        List<Market> marketList = lostarkMarketDao.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
+        List<Market> marketList = lostarkMarketApiClient.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
         marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
     }
 
@@ -180,7 +180,7 @@ public class SchedulingService {
     /*로스트아크 새로운 공지사항 가져와서 저장 (매 정각에 자동 실행)*/
     @Scheduled(cron = "10 0 * * * *", zone = "Asia/Seoul")
     public void getLostarkNotice() {
-        List<Notices> noticesList = newsService.getNoticeList(apiKey3);
+        List<Notices> noticesList = lostarkNoticeClient.getNoticeList(apiKey3);
         for (Notices notices : noticesList) {
             if (noticesService.save(notices)) {
                 webHookService.sendMessage(new DiscordWebhook.EmbedObject()
