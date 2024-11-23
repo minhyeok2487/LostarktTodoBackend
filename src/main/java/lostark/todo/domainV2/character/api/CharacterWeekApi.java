@@ -80,10 +80,15 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekRaidCheck(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody UpdateWeekRaidCheckRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), FriendPermissionType.CHECK_RAID);
-        todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return CharacterResponseOperation.builder()
+                .username(username)
+                .friendUsername(friendUsername)
+                .request(request)
+                .permissionType(FriendPermissionType.CHECK_RAID)
+                .operation(character -> todoServiceV2.updateWeekRaidCheck(character, request))
+                .updateCharacterMethod(updateCharacterMethod)
+                .build()
+                .execute();
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (1관문에 저장됨)",
@@ -92,10 +97,15 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekRaidMessage(@AuthenticationPrincipal String username,
                                                    @RequestParam(required = false) String friendUsername,
                                                    @RequestBody UpdateWeekRaidMessageRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
-        todoServiceV2.updateWeekMessage(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return CharacterResponseOperation.builder()
+                .username(username)
+                .friendUsername(friendUsername)
+                .request(request)
+                .permissionType(FriendPermissionType.CHECK_RAID)
+                .operation(character -> todoServiceV2.updateWeekMessage(character, request))
+                .updateCharacterMethod(updateCharacterMethod)
+                .build()
+                .execute();
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 순서 변경", response = CharacterResponse.class)
