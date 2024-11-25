@@ -1,10 +1,10 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
-import lostark.todo.domain.authEmail.AuthMail;
-import lostark.todo.domain.authEmail.AuthMailRepository;
+import lostark.todo.domainV2.member.entity.AuthMail;
+import lostark.todo.domainV2.member.repository.AuthMailRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

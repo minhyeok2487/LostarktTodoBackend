@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.auth;
+package lostark.todo.global.auth;
 
 import lombok.Builder;
 import lombok.Getter;

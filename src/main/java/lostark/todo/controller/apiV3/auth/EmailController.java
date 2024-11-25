@@ -4,11 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.auth.ResponseDto;
+import lostark.todo.global.dto.GlobalResponseDto;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.controller.dto.mailDto.MailRequestDto;
 import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.service.EmailService;
+import lostark.todo.domainV2.member.service.EmailService;
 import lostark.todo.domainV2.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +34,8 @@ public class EmailController {
             throw new IllegalArgumentException("이미 가입된 회원입니다.");
         }
         int number = emailService.sendSignUpMail(mailRequestDto.getMail());
-        ResponseDto responseDto = new ResponseDto(true, "인증번호 전송이 정상처리 되었습니다.");
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        GlobalResponseDto globalResponseDto = new GlobalResponseDto(true, "인증번호 전송이 정상처리 되었습니다.");
+        return new ResponseEntity<>(globalResponseDto, HttpStatus.OK);
     }
 
     @ApiOperation(value = "비밀번호 변경 인증번호 전송")
@@ -51,14 +51,14 @@ public class EmailController {
 
     @ApiOperation(value = "이메일 인증번호 인증",
             notes = "3분이내 인증번호가 일치해야 true 리턴",
-            response = ResponseDto.class)
+            response = GlobalResponseDto.class)
     @PostMapping("/auth")
     public ResponseEntity<?> authMail(@RequestBody MailCheckDto mailCheckDto) {
         boolean auth = emailService.checkMail(mailCheckDto);
         if (auth) {
-            return new ResponseEntity<>(new ResponseDto(true, "이메일 인증번호 성공"), HttpStatus.OK);
+            return new ResponseEntity<>(new GlobalResponseDto(true, "이메일 인증번호 성공"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new ResponseDto(false, "인증번호가 일치하지 않거나 만료되었습니다."), HttpStatus.OK);
+            return new ResponseEntity<>(new GlobalResponseDto(false, "인증번호가 일치하지 않거나 만료되었습니다."), HttpStatus.OK);
         }
     }
 }

@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.auth;
+package lostark.todo.global.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ResponseDto {
+public class GlobalResponseDto {
 
     private boolean success;
 

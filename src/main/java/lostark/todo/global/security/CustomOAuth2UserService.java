@@ -2,7 +2,7 @@ package lostark.todo.global.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.auth.OAuthAttributes;
+import lostark.todo.global.auth.OAuthAttributes;
 import lostark.todo.domain.Role;
 import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.member.repository.MemberRepository;
