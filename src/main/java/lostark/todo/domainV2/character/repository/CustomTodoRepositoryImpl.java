@@ -1,18 +1,38 @@
-package lostark.todo.domain.customTodo;
+package lostark.todo.domainV2.character.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.domainV2.character.entity.CustomTodo;
+import lostark.todo.domainV2.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domainV2.member.entity.Member;
+
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
+
 import static lostark.todo.domain.customTodo.QCustomTodo.customTodo;
 import static lostark.todo.domainV2.member.entity.QMember.member;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
+import static lostark.todo.global.exhandler.ErrorMessageConstants.CUSTOM_TODO_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
 
     private final JPAQueryFactory factory;
 
+
+    @Override
+    public CustomTodo get(Long customTodoId, Long characterId) {
+        return Optional.ofNullable(
+                factory.selectFrom(customTodo)
+                        .where(
+                                eqId(customTodoId),
+                                eqCharacterId(characterId)
+                        )
+                        .fetchOne()
+        ).orElseThrow(() -> new EntityNotFoundException(CUSTOM_TODO_NOT_FOUND));
+    }
 
     @Override
     public List<CustomTodo> search(String username) {
@@ -38,5 +58,19 @@ public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
         factory.delete(customTodo)
                 .where(customTodo.character.in(member.getCharacters()))
                 .execute();
+    }
+
+    private static BooleanExpression eqId(Long customTodoId) {
+        if (customTodoId != null) {
+            return customTodo.id.eq(customTodoId);
+        }
+        return null;
+    }
+
+    private static BooleanExpression eqCharacterId(Long characterId) {
+        if (characterId != null) {
+            return customTodo.character.id.eq(characterId);
+        }
+        return null;
     }
 }

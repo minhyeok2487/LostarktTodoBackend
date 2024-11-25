@@ -1,4 +1,4 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.character.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,9 +7,9 @@ import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
 import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.customTodo.CustomTodo;
-import lostark.todo.domain.customTodo.CustomTodoFrequencyEnum;
-import lostark.todo.domain.customTodo.CustomTodoRepository;
+import lostark.todo.domainV2.character.entity.CustomTodo;
+import lostark.todo.domainV2.character.enums.CustomTodoFrequencyEnum;
+import lostark.todo.domainV2.character.repository.CustomTodoRepository;
 import lostark.todo.domainV2.friend.entity.Friends;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +30,7 @@ public class CustomTodoService {
 
     @Transactional
     public CustomTodo get(Long customTodoId) {
-        return customTodoRepository.findById(customTodoId)
-                .orElseThrow(() -> new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND));
+        return customTodoRepository.get(customTodoId, null);
     }
 
     @Transactional
@@ -52,22 +51,12 @@ public class CustomTodoService {
 
     @Transactional
     public void update(Character character, UpdateCustomTodoRequest request, Long customTodoId) {
-        CustomTodo customTodo = get(customTodoId);
-        if (customTodo.getCharacter().getId() == character.getId()) {
-            customTodo.update(request.getContentName());
-        } else {
-            throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
-        }
+        customTodoRepository.get(customTodoId, character.getId()).update(request.getContentName());
     }
 
     @Transactional
     public void check(Character character, CheckCustomTodoRequest request) {
-        CustomTodo customTodo = get(request.getCustomTodoId());
-        if (customTodo.getCharacter().getId() == character.getId()) {
-            customTodo.check();
-        } else {
-            throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
-        }
+        customTodoRepository.get(request.getCustomTodoId(), character.getId()).check();
     }
 
     @Transactional

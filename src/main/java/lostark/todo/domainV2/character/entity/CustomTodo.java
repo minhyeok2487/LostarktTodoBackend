@@ -1,9 +1,9 @@
-package lostark.todo.domain.customTodo;
+package lostark.todo.domainV2.character.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domainV2.character.entity.Character;
+import lostark.todo.domainV2.character.enums.CustomTodoFrequencyEnum;
 
 import javax.persistence.*;
 
