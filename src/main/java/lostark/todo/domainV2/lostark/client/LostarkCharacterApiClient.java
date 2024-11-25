@@ -66,7 +66,6 @@ public class LostarkCharacterApiClient {
                         .weekTodo(new WeekTodo())
                         .build();
                 character.setSettings(new Settings());
-                character.setTodoList(new ArrayList<>());
                 character.setTodoV2List(new ArrayList<>());
                 character.setCharacterImage(getCharacterImageUrl(character.getCharacterName(), apiKey));
                 character.getDayTodo().createDayContent(

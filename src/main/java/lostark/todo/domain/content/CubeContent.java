@@ -2,10 +2,8 @@ package lostark.todo.domain.content;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import lostark.todo.domain.todoV2.TodoV2;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter

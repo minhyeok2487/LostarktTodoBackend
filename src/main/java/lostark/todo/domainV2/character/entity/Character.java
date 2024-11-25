@@ -8,8 +8,6 @@ import lostark.todo.domain.BaseTimeEntity;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.domain.todo.Todo;
-import lostark.todo.domain.todoV2.TodoV2;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.StringUtils;
@@ -64,10 +62,6 @@ public class Character extends BaseTimeEntity {
     private DayTodo dayTodo;
 
     @Embedded WeekTodo weekTodo;
-
-    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
-    @JsonManagedReference
-    private List<Todo> todoList;
 
     @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
     @JsonManagedReference

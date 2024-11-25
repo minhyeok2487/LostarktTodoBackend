@@ -1,9 +1,8 @@
-package lostark.todo.domain.todoV2;
+package lostark.todo.domainV2.character.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;
-import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.StringUtils;
@@ -48,13 +47,8 @@ public class TodoV2 extends BaseTimeEntity {
     @ColumnDefault("false")
     private boolean goldCheck;
 
-    public void updateCheck() {
-        this.isChecked = !this.isChecked;
-    }
-
-    public TodoV2 updateMessage(String message) {
+    public void updateMessage(String message) {
         this.message = StringUtils.hasText(message) ? message : null;
-        return this;
     }
 
     public void updateWeekContent(WeekContent weekContent) {
@@ -75,8 +69,7 @@ public class TodoV2 extends BaseTimeEntity {
                 '}';
     }
 
-    public TodoV2 updateGoldCheck() {
+    public void updateGoldCheck() {
         this.goldCheck = !this.goldCheck;
-        return this;
     }
 }

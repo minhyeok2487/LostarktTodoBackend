@@ -11,7 +11,7 @@ import lostark.todo.domain.keyvalue.KeyValueRepository;
 import lostark.todo.domain.market.CategoryCode;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domain.notices.Notices;
-import lostark.todo.domain.todoV2.TodoV2Repository;
+import lostark.todo.domainV2.character.repository.TodoV2Repository;
 import lostark.todo.domainV2.util.market.service.MarketService;
 import lostark.todo.service.discordWebHook.DiscordWebhook;
 import lostark.todo.domainV2.lostark.client.LostarkMarketApiClient;

@@ -14,7 +14,7 @@ import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import lostark.todo.domainV2.friend.service.FriendsService;
-import lostark.todo.service.TodoServiceV2;
+import lostark.todo.domainV2.character.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

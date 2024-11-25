@@ -2,7 +2,7 @@ package lostark.todo.controller.dto.todoDto;
 
 import lombok.*;
 import lostark.todo.domain.content.WeekContentCategory;
-import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.entity.TodoV2;
 
 @Data
 @NoArgsConstructor

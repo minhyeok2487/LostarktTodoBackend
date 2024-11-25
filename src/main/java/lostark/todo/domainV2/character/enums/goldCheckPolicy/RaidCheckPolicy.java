@@ -2,7 +2,7 @@ package lostark.todo.domainV2.character.enums.goldCheckPolicy;
 
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.entity.TodoV2;
 
 import java.util.Comparator;
 import java.util.List;
