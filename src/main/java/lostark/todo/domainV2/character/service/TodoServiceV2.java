@@ -1,4 +1,4 @@
-package lostark.todo.service;
+package lostark.todo.domainV2.character.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +8,13 @@ import lostark.todo.domainV2.character.dto.UpdateWeekRaidSortRequest;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domain.content.WeekContent;
 import lostark.todo.domain.keyvalue.KeyValueRepository;
-import lostark.todo.domain.todoV2.TodoV2;
-import lostark.todo.domain.todoV2.TodoV2Repository;
+import lostark.todo.domainV2.character.entity.TodoV2;
+import lostark.todo.domainV2.character.repository.TodoV2Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,10 +25,7 @@ public class TodoServiceV2 {
     private final TodoV2Repository todoV2Repository;
     private final KeyValueRepository keyValueRepository;
 
-    public List<TodoV2> findAll() {
-        return todoV2Repository.findAll();
-    }
-
+    // 캐릭터 주간 레이드 Message 수정
     @Transactional
     public void updateWeekMessage(Character character, UpdateWeekRaidMessageRequest request) {
         character.getTodoV2List().stream()
@@ -36,18 +34,16 @@ public class TodoServiceV2 {
                 .ifPresent(todoV2 -> todoV2.updateMessage(request.getMessage()));
     }
 
-
     //주간 레이드 추가/삭제(1개씩)
     @Transactional
     public void updateWeekRaid(Character character, WeekContent weekContent) {
-        TodoV2 existingTodo = findExistingTodo(character, weekContent);
-
-        if (existingTodo == null) {
-            createNewTodo(character, weekContent);
-        } else {
-            deleteTodo(character, existingTodo, weekContent);
-        }
+        Optional.ofNullable(findExistingTodo(character, weekContent)) // 이미 해당 레이드가 존재하는지 확인
+                .ifPresentOrElse(
+                        existingTodo -> deleteTodo(character, existingTodo, weekContent), // 존재하면 삭제
+                        () -> createNewTodo(character, weekContent) // 없으면 추가
+                );
     }
+
 
     private TodoV2 findExistingTodo(Character character, WeekContent weekContent) {
         return character.getTodoV2List().stream()
@@ -67,14 +63,18 @@ public class TodoServiceV2 {
                 .build();
 
         if (character.getTodoV2List().isEmpty()) {
-            if (weekContent.getGate() == 1) {
-                character.getTodoV2List().add(newTodo);
-                todoV2Repository.save(newTodo);
-            } else {
-                throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
-            }
+            handleNewTodo(character, weekContent, newTodo);
         } else {
             handleExistingTodo(character, newTodo);
+        }
+    }
+
+    private void handleNewTodo(Character character, WeekContent weekContent, TodoV2 newTodo) {
+        if (weekContent.getGate() == 1) {
+            character.getTodoV2List().add(newTodo);
+            todoV2Repository.save(newTodo);
+        } else {
+            throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
         }
     }
 
@@ -205,7 +205,7 @@ public class TodoServiceV2 {
                     .toList();
 
             if (!findList.isEmpty()) {
-                int currentGate = findList.get(findList.size()-1).getWeekContent().getGate();
+                int currentGate = findList.get(findList.size() - 1).getWeekContent().getGate();
                 // 다음 관문 체크
                 todoV2List.stream()
                         .filter(todoV2 -> todoV2.getWeekContent().getGate() == currentGate + 1)

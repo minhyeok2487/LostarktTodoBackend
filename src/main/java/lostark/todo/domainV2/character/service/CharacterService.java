@@ -19,7 +19,7 @@ import lostark.todo.domain.content.Category;
 import lostark.todo.domain.content.DayContent;
 import lostark.todo.domain.market.Market;
 import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.entity.TodoV2;
 import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.ChallengeContentEnum;
 import lostark.todo.domainV2.character.repository.CharacterRepository;
@@ -216,7 +216,6 @@ public class CharacterService {
                 .weekTodo(new WeekTodo())
                 .build();
         character.setSettings(new Settings());
-        character.setTodoList(new ArrayList<>());
         character.setTodoV2List(new ArrayList<>());
         character.createImage(dto.getCharacterImage());
         return characterRepository.save(character);

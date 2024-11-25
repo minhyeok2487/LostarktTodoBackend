@@ -18,9 +18,8 @@ import java.util.Optional;
 
 import static lostark.todo.domain.content.QDayContent.dayContent;
 import static lostark.todo.domain.content.QWeekContent.weekContent;
+import static lostark.todo.domainV2.character.entity.QTodoV2.todoV2;
 import static lostark.todo.domainV2.member.entity.QMember.member;
-import static lostark.todo.domain.todo.QTodo.todo;
-import static lostark.todo.domain.todoV2.QTodoV2.todoV2;
 import static lostark.todo.domainV2.character.entity.QCharacter.character;
 
 @RequiredArgsConstructor
@@ -70,10 +69,6 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     @Override
     public long deleteByMember(Member member) {
-        factory.delete(todo)
-                .where(todo.character.in(member.getCharacters()))
-                .execute();
-
         factory.delete(todoV2)
                 .where(todoV2.character.in(member.getCharacters()))
                 .execute();

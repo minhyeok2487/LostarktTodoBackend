@@ -1,17 +1,14 @@
-package lostark.todo.domain.todoV2;
+package lostark.todo.domainV2.character.repository;
 
 import lostark.todo.domainV2.character.entity.Character;
+import lostark.todo.domainV2.character.entity.TodoV2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TodoV2Repository extends JpaRepository<TodoV2, Long> {
-
-    @Query("SELECT t FROM TodoV2 t WHERE t.character = :character AND t.weekContent.weekCategory =:weekCategory AND t.weekContent.gate = :gate")
-    Optional<TodoV2> findByCharacterAndWeekCategoryAndGate(Character character, String weekCategory, int gate);
 
     @Query("SELECT t FROM TodoV2 t WHERE t.character = :character AND t.weekContent.weekCategory =:weekCategory AND t.coolTime >= 1")
     List<TodoV2> findAllCharacterAndWeekCategory(Character character, String weekCategory);

@@ -4,9 +4,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domainV2.member.service.AuthService;
 import lostark.todo.domainV2.member.service.MemberService;
 import lostark.todo.global.config.TokenProvider;
-import lostark.todo.controller.dto.auth.ResponseDto;
+import lostark.todo.global.dto.GlobalResponseDto;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
@@ -16,7 +17,6 @@ import lostark.todo.domainV2.member.entity.Member;
 import lostark.todo.domainV2.character.service.CharacterService;
 import lostark.todo.domainV2.util.content.service.ContentService;
 import lostark.todo.domainV2.util.market.service.MarketService;
-import lostark.todo.service.*;
 import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +42,6 @@ public class AuthController {
     private final AuthService authService;
     private final CharacterService characterService;
     private final MarketService marketService;
-    private final ContentService contentService;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
     private final TokenProvider tokenProvider;
@@ -103,18 +102,18 @@ public class AuthController {
     public ResponseEntity<?> logout(@AuthenticationPrincipal String username) {
         Member member = memberService.get(username);
 
-        ResponseDto responseDto = null;
+        GlobalResponseDto globalResponseDto = null;
         if (member.getAuthProvider().equals("Google")) {
             try {
-                responseDto = authService.googleLogout(member);
+                globalResponseDto = authService.googleLogout(member);
             } catch (Exception e) {
-                return new ResponseEntity<>(new ResponseDto(false, "구글 로그아웃 실패 : " + e.getMessage()), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new GlobalResponseDto(false, "구글 로그아웃 실패 : " + e.getMessage()), HttpStatus.BAD_REQUEST);
             }
         }
         if (member.getAuthProvider().equals("none")) {
-            responseDto = new ResponseDto(true, "로그아웃 성공");
+            globalResponseDto = new GlobalResponseDto(true, "로그아웃 성공");
         }
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(globalResponseDto, HttpStatus.OK);
     }
 }

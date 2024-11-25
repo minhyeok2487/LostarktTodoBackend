@@ -1,5 +1,6 @@
-package lostark.todo.domain.authEmail;
+package lostark.todo.domainV2.member.repository;
 
+import lostark.todo.domainV2.member.entity.AuthMail;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

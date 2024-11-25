@@ -1,4 +1,4 @@
-package lostark.todo.domain.authEmail;
+package lostark.todo.domainV2.member.entity;
 
 import lombok.*;
 import lostark.todo.domain.BaseTimeEntity;

@@ -10,7 +10,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.entity.Settings;
 import lostark.todo.domainV2.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.entity.TodoV2;
 
 import java.util.ArrayList;
 import java.util.Comparator;

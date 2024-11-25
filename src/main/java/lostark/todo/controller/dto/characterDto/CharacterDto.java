@@ -10,7 +10,7 @@ import lostark.todo.domainV2.character.entity.Character;
 import lostark.todo.domainV2.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
 import lostark.todo.domainV2.character.entity.Settings;
 import lostark.todo.domain.content.DayContent;
-import lostark.todo.domain.todoV2.TodoV2;
+import lostark.todo.domainV2.character.entity.TodoV2;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -172,15 +172,6 @@ public class CharacterDto {
         characterDto.setTodoList(todoResponseDtoList);
 
         return characterDto;
-    }
-
-    public List<CharacterDto> toDtoList(List<Character> characterList) {
-        return characterList.stream()
-                .filter(character -> character.getSettings().isShowCharacter())
-                .map(character -> new CharacterDto().toDtoV2(character))
-                .sorted(Comparator.comparingInt(CharacterDto::getSortNumber)
-                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed()))
-                .toList();
     }
 
 }
