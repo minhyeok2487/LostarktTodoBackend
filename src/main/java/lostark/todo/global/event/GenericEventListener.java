@@ -3,11 +3,7 @@ package lostark.todo.global.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.Role;
-import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.logs.LogsDayContent;
-import lostark.todo.domain.logs.LogsRepository;
 import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.global.event.entity.character.DayContentCheckEvent;
 import lostark.todo.global.event.entity.CommentEvent;
 import lostark.todo.global.event.entity.MemberEvent;
 import lostark.todo.service.WebHookService;
@@ -25,7 +21,6 @@ import java.awt.*;
 public class GenericEventListener {
 
     private final WebHookService webHookService;
-    private final LogsRepository logsRepository;
 
     @Value("${discord.noticeURL}")
     private String noticeUrl;
@@ -66,34 +61,5 @@ public class GenericEventListener {
         log.info(message);
 
         webHookService.sendMessage(object, memberURL);
-    }
-
-    @Async
-    @EventListener(classes = DayContentCheckEvent.class)
-    public void handleEvent(DayContentCheckEvent characterEvent) {
-        Character character = characterEvent.getCharacter();
-        LogsDayContent logsDayContent = new LogsDayContent();
-        if (characterEvent.getCategory().equals("epona")) {
-            double profit = 0;
-            logsDayContent = LogsDayContent.toEntity(characterEvent, character, profit);
-        }
-        if (characterEvent.getCategory().equals("chaos")) {
-            double profit = character.getDayTodo().getChaosGold();
-            if (character.getDayTodo().getChaosCheck() == 1) {
-                profit /= 2;
-            } else if (character.getDayTodo().getChaosCheck() == 0){
-                profit = -1 * profit;
-            }
-            logsDayContent = LogsDayContent.toEntity(characterEvent, character, profit);
-        }
-        if (characterEvent.getCategory().equals("guardian")) {
-            double profit = character.getDayTodo().getGuardianGold();
-            if (character.getDayTodo().getGuardianCheck() == 0) {
-                profit = -1 * profit;
-            }
-            logsDayContent = LogsDayContent.toEntity(characterEvent, character, profit);
-        }
-
-        logsRepository.save(logsDayContent);
     }
 }
