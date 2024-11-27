@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
+import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,13 @@ public class MemberApi {
     public ResponseEntity<?> saveCharacter(@AuthenticationPrincipal String username,
                                            @RequestBody @Valid SaveCharacterRequest request) {
         memberService.createCharacter(username, request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "비밀번호 변경")
+    @PostMapping("/password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid ResetPasswordRequest request) {
+        memberService.updatePassword(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

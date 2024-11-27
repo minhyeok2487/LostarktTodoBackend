@@ -54,13 +54,14 @@ public class AuthControllerV4 {
         return new ResponseEntity<>(new AuthResponse().toDto(signupMember, token), HttpStatus.CREATED);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "비밀번호 변경")
     @PostMapping("/password")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid ResetPasswordRequest request) {
 
         emailService.isAuth(request.getMail(), request.getNumber());
 
-        memberService.updatePassword(request.getMail(), request.getNewPassword());
+        memberService.updatePassword(request);
 
         // 비밀번호 변경 완료시 auth_mail에 저장된 인증번호 모두 삭제
         emailService.deleteAll(request.getMail());

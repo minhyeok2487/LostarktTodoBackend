@@ -7,7 +7,9 @@ import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
+import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
 import lostark.todo.domain.member.enums.Role;
+import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.character.entity.Character;
@@ -35,6 +37,7 @@ public class MemberService {
 
     private final MemberLockManager memberLockManager;
     private final MemberRepository memberRepository;
+    private final AuthMailRepository authMailRepository;
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final MarketRepository marketRepository;
@@ -143,9 +146,12 @@ public class MemberService {
 
     // 비밀번호 변경 - Test Code 작성 X
     @Transactional
-    public void updatePassword(String mail, String newPassword) {
-        Member member = get(mail);
-        member.updatePassword(passwordEncoder.encode(newPassword));
+    public void updatePassword(ResetPasswordRequest request) {
+        authMailRepository.getAuthMail(request.getMail(), request.getNumber())
+                .orElseThrow(() -> new IllegalStateException("이메일 인증이 실패하였습니다."));
+        Member member = get(request.getMail());
+        member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+        authMailRepository.deleteAllByMail(request.getMail());
     }
 
     //TODO 추후 삭제
