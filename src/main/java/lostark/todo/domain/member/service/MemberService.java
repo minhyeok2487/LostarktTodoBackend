@@ -7,6 +7,7 @@ import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
+import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
@@ -15,6 +16,7 @@ import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domain.member.infra.MemberLockManager;
+import lostark.todo.global.config.TokenProvider;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +40,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final MarketRepository marketRepository;
+    private final TokenProvider tokenProvider;
 
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
@@ -51,7 +54,7 @@ public class MemberService {
         return memberRepository.get(id);
     }
 
-    // 1차 회원가입 - Test Code 작성완료
+    // 1차 회원가입
     @Transactional
     public Member createMember(String mail, String password) {
         if (memberRepository.existsByUsername(mail)) {
@@ -67,6 +70,59 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    // 회원가입 후 캐릭터 추가
+    @Transactional
+    public void createCharacter(String username, SaveCharacterRequest request) {
+        try (var ignored = memberLockManager.acquireLock(username)) {
+            Member member = get(username);
+            validateCreateCharacter(member);
+            List<Character> characterList = createAndCalculateCharacters(request);
+            member.createCharacter(characterList, request);
+        }
+    }
+
+    private static void validateCreateCharacter(Member member) {
+        if (!member.getCharacters().isEmpty()) {
+            throw new IllegalStateException(CHARACTER_ALREADY_EXISTS);
+        }
+    }
+
+    private List<Character> createAndCalculateCharacters(SaveCharacterRequest request) {
+        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+        List<Character> characterList = lostarkCharacterApiClient.createCharacterList(
+                request.getCharacterName(), request.getApiKey());
+
+        // 재련재료 데이터 리스트로 거래소 데이터 호출
+        Map<String, Market> contentResource = marketRepository.findLevelUpResource();
+
+        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
+        return characterList.stream()
+                .map(character -> character.calculateDayTodo(character, contentResource))
+                .collect(Collectors.toList());
+    }
+
+    // 일반 로그인
+    @Transactional
+    public MemberResponse login(LoginMemberRequest request) {
+        Member member = validateLogin(request);
+
+        return MemberResponse.builder()
+                .username(member.getUsername())
+                .token(tokenProvider.createToken(member))
+                .build();
+    }
+
+    // 로그인 검증
+    @Transactional
+    public Member validateLogin(LoginMemberRequest request) {
+        Member member = get(request.getUsername());
+        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            return member;
+        } else {
+            throw new IllegalArgumentException(LOGIN_FAIL);
+        }
     }
 
     // 대표 캐릭터 변경 - Test Code 작성완료
@@ -100,17 +156,6 @@ public class MemberService {
         member.changeAuthToNone(passwordEncoder.encode(newPassword));
     }
 
-    // 일반 로그인 - Test Code 작성 X
-    @Transactional
-    public Member login(LoginMemberRequest request) {
-        Member member = get(request.getUsername());
-        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            return member;
-        } else {
-            throw new IllegalArgumentException(LOGIN_FAIL);
-        }
-    }
-
     // 비밀번호 변경 - Test Code 작성 X
     @Transactional
     public void updatePassword(String mail, String newPassword) {
@@ -123,37 +168,6 @@ public class MemberService {
     public void createCharacterOLDER(String username, SaveCharacterRequest request, List<Character> characterList) {
         Member member = get(username);
         member.createCharacter(characterList, request);
-    }
-
-    // 회원가입 후 캐릭터 추가
-    @Transactional
-    public void createCharacter(String username, SaveCharacterRequest request) {
-        try (var ignored = memberLockManager.acquireLock(username)) {
-            Member member = get(username);
-            validateCreateCharacter(member);
-            List<Character> characterList = createAndCalculateCharacters(request);
-            member.createCharacter(characterList, request);
-        }
-    }
-
-    private static void validateCreateCharacter(Member member) {
-        if (!member.getCharacters().isEmpty()) {
-            throw new IllegalStateException(CHARACTER_ALREADY_EXISTS);
-        }
-    }
-
-    private List<Character> createAndCalculateCharacters(SaveCharacterRequest request) {
-        // 대표캐릭터와 연동된 캐릭터 호출(api 검증)
-        List<Character> characterList = lostarkCharacterApiClient.createCharacterList(
-                request.getCharacterName(), request.getApiKey());
-
-        // 재련재료 데이터 리스트로 거래소 데이터 호출
-        Map<String, Market> contentResource = marketRepository.findLevelUpResource();
-
-        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-        return characterList.stream()
-                .map(character -> character.calculateDayTodo(character, contentResource))
-                .collect(Collectors.toList());
     }
 
     // 회원 API KEY 수정 - Test Code 작성 X

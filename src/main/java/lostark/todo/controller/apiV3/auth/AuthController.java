@@ -10,7 +10,7 @@ import lostark.todo.global.config.TokenProvider;
 import lostark.todo.global.dto.GlobalResponseDto;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
-import lostark.todo.controller.dto.memberDto.MemberResponseDto;
+import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.member.entity.Member;
@@ -45,6 +45,7 @@ public class AuthController {
     private final ConcurrentHashMap<String, Boolean> usernameLocks;
     private final TokenProvider tokenProvider;
 
+    // TODO 추후 삭제
     @ApiOperation(value = "1차 회원가입 이후 캐릭터 추가",
             notes="대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장")
     @PostMapping("/character")
@@ -81,13 +82,13 @@ public class AuthController {
     }
 
     @ApiOperation(value = "일반 로그인",
-            notes="JWT", response = MemberResponseDto.class)
+            notes="JWT", response = MemberResponse.class)
     @PostMapping("/login")
     public ResponseEntity<?> loginMember(@RequestBody @Valid LoginMemberRequest request) {
-        Member member = memberService.login(request);
+        Member member = memberService.validateLogin(request);
         String token = tokenProvider.createToken(member);
 
-        MemberResponseDto responseDto = MemberResponseDto.builder()
+        MemberResponse responseDto = MemberResponse.builder()
                 .username(member.getUsername())
                 .token(token)
                 .build();

@@ -4,6 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
+import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
@@ -31,5 +33,12 @@ public class AuthApi {
                                            @RequestBody @Valid SaveCharacterRequest request) {
         memberService.createCharacter(username, request);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "일반 로그인",
+            notes="JWT", response = MemberResponse.class)
+    @PostMapping("/login")
+    public ResponseEntity<?> loginMember(@RequestBody @Valid LoginMemberRequest request) {
+        return new ResponseEntity<>(memberService.login(request), HttpStatus.OK);
     }
 }

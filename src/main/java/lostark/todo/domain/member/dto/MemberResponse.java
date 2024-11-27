@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.memberDto;
+package lostark.todo.domain.member.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberResponseDto {
+public class MemberResponse {
 
     @NotEmpty
     @ApiModelProperty(example = "회원 id")
@@ -28,8 +28,8 @@ public class MemberResponseDto {
     @ApiModelProperty(example = "jwt")
     private String token;
 
-    public MemberResponseDto toDto(Member member) {
-        return MemberResponseDto.builder()
+    public MemberResponse toDto(Member member) {
+        return MemberResponse.builder()
                 .id(member.getId())
                 .username(member.getUsername())
                 .role(member.getRole())
