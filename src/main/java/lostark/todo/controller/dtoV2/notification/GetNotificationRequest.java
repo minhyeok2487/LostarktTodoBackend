@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.notification.NotificationType;
+import lostark.todo.domain.notification.enums.NotificationType;
 
 
 @Data

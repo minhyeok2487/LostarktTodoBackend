@@ -2,7 +2,7 @@ package lostark.todo.controller.dtoV2.content;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
-import lostark.todo.domain.content.WeekContentCategory;
+import lostark.todo.domain.util.content.enums.WeekContentCategory;
 
 @Data
 public class RaidCategoryResponse {

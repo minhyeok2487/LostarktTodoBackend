@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domainV2.character.enums.CustomTodoFrequencyEnum;
+import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

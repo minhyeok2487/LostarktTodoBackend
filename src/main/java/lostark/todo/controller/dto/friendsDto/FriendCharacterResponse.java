@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
-import lostark.todo.domainV2.friend.entity.FriendSettings;
+import lostark.todo.domain.friend.entity.FriendSettings;
 
 import java.util.List;
 import java.util.Map;

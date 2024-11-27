@@ -2,8 +2,8 @@ package lostark.todo.global.auth;
 
 import lombok.Builder;
 import lombok.Getter;
-import lostark.todo.domain.Role;
-import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domain.member.enums.Role;
+import lostark.todo.domain.member.entity.Member;
 
 import java.util.Map;
 

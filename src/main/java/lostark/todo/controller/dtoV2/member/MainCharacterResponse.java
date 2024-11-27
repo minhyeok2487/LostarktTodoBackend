@@ -3,7 +3,7 @@ package lostark.todo.controller.dtoV2.member;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domainV2.character.entity.Character;
+import lostark.todo.domain.character.entity.Character;
 
 import javax.validation.constraints.NotEmpty;
 

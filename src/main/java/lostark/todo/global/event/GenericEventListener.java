@@ -2,12 +2,12 @@ package lostark.todo.global.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.Role;
-import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domain.member.enums.Role;
+import lostark.todo.domain.member.entity.Member;
 import lostark.todo.global.event.entity.CommentEvent;
 import lostark.todo.global.event.entity.MemberEvent;
-import lostark.todo.service.WebHookService;
-import lostark.todo.service.discordWebHook.DiscordWebhook;
+import lostark.todo.global.service.webHook.WebHookService;
+import lostark.todo.global.service.webHook.DiscordWebhook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

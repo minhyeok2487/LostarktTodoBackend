@@ -3,7 +3,7 @@ package lostark.todo.global.exhandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
-import lostark.todo.service.WebHookService;
+import lostark.todo.global.service.webHook.WebHookService;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

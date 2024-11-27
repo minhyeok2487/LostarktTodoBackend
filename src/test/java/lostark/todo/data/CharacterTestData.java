@@ -1,11 +1,11 @@
 package lostark.todo.data;
 
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.DayContent;
-import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.character.entity.DayTodo;
-import lostark.todo.domainV2.character.entity.Settings;
-import lostark.todo.domainV2.character.entity.WeekTodo;
+import lostark.todo.domain.util.content.enums.Category;
+import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.character.entity.DayTodo;
+import lostark.todo.domain.character.entity.Settings;
+import lostark.todo.domain.character.entity.WeekTodo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +46,6 @@ public class CharacterTestData {
                 .weekTodo(new WeekTodo())
                 .build();
         character.setSettings(new Settings());
-        character.setTodoList(new ArrayList<>());
         character.setTodoV2List(new ArrayList<>());
         character.setSortNumber(sortNumber);
         // 캐릭터 이미지는 테스트용 URL

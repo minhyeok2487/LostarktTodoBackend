@@ -1,14 +1,11 @@
 package lostark.todo.controller.dto.contentDto;
 
-import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.content.Category;
-import lostark.todo.domain.content.Content;
-import lostark.todo.domain.content.WeekContent;
-import lostark.todo.domain.content.WeekContentCategory;
+import lostark.todo.domain.util.content.entity.WeekContent;
+import lostark.todo.domain.util.content.enums.WeekContentCategory;
 
 @AllArgsConstructor
 @NoArgsConstructor

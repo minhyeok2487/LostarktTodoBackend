@@ -2,8 +2,8 @@ package lostark.todo.controller.dtoV2.notification;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.notification.Notification;
-import lostark.todo.domain.notification.NotificationType;
+import lostark.todo.domain.notification.entity.Notification;
+import lostark.todo.domain.notification.enums.NotificationType;
 import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotEmpty;

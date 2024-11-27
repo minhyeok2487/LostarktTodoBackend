@@ -1,6 +1,6 @@
 package lostark.todo.data;
 
-import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domain.member.entity.Member;
 
 import java.util.ArrayList;
 

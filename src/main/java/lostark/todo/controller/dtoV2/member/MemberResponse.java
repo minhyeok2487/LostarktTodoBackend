@@ -3,9 +3,9 @@ package lostark.todo.controller.dtoV2.member;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.Role;
-import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domain.member.enums.Role;
+import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.member.entity.Member;
 
 import javax.validation.constraints.NotEmpty;
 

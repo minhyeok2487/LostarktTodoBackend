@@ -6,11 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
-import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.character.entity.Settings;
-import lostark.todo.domainV2.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
-import lostark.todo.domain.content.DayContent;
-import lostark.todo.domainV2.character.entity.TodoV2;
+import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.character.entity.Settings;
+import lostark.todo.domain.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
+import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.character.entity.TodoV2;
 
 import java.util.ArrayList;
 import java.util.Comparator;

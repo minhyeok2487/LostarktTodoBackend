@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import static lostark.todo.Constant.TEST_USERNAME;
+import static lostark.todo.global.Constant.TEST_USERNAME;
 
 @Aspect
 @Component

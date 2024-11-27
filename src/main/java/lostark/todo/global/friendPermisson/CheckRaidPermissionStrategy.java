@@ -1,6 +1,6 @@
 package lostark.todo.global.friendPermisson;
 
-import lostark.todo.domainV2.friend.entity.Friends;
+import lostark.todo.domain.friend.entity.Friends;
 
 import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 

@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.controller.dto.boardsDto.BoardResponseDto;
-import lostark.todo.controller.dto.boardsDto.BoardsDto;
-import lostark.todo.domain.notices.Notices;
+import lostark.todo.domain.lostark.notices.Notices;
 
 import java.util.List;
 

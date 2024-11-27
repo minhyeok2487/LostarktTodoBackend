@@ -2,7 +2,7 @@ package lostark.todo.global.event.entity;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domainV2.member.entity.Member;
+import lostark.todo.domain.member.entity.Member;
 import org.springframework.context.ApplicationEvent;
 
 @Slf4j

@@ -1,6 +1,6 @@
 package lostark.todo.global.friendPermisson;
 
-import lostark.todo.domainV2.friend.entity.Friends;
+import lostark.todo.domain.friend.entity.Friends;
 
 public enum FriendPermissionType {
 

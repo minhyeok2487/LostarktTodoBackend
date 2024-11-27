@@ -8,18 +8,18 @@ import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
 import lostark.todo.controller.dtoV2.member.EditProviderRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
-import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.domainV2.friend.service.FriendsService;
-import lostark.todo.domainV2.member.service.MemberService;
-import lostark.todo.domainV2.lostark.client.LostarkApiClient;
-import lostark.todo.domainV2.character.service.CustomTodoService;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.friend.service.FriendsService;
+import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.domain.lostark.client.LostarkApiClient;
+import lostark.todo.domain.character.service.CustomTodoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static lostark.todo.Constant.TEST_USERNAME;
+import static lostark.todo.global.Constant.TEST_USERNAME;
 
 
 @RestController

@@ -1,10 +1,10 @@
 package lostark.todo.global.friendPermisson;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domainV2.friend.entity.Friends;
-import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.domainV2.friend.service.FriendsService;
+import lostark.todo.domain.friend.entity.Friends;
+import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.friend.service.FriendsService;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor

@@ -2,9 +2,9 @@ package lostark.todo.global.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.Role;
-import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.domainV2.member.service.MemberService;
+import lostark.todo.domain.member.enums.Role;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.service.MemberService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;

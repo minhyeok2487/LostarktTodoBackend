@@ -1,0 +1,30 @@
+package lostark.todo.domain.board.boards.entity;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
+import lostark.todo.global.entity.BaseTimeEntity;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+public class BoardImages extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_images_id")
+    private long id;
+
+    private String fileName;
+
+    private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "boards_id")
+    @JsonBackReference //순환참조 방지
+    private Boards boards;
+}

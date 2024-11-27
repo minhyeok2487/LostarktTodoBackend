@@ -3,7 +3,7 @@ package lostark.todo.global.security;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.global.config.TokenProvider;
-import lostark.todo.domain.keyvalue.KeyValueRepository;
+import lostark.todo.global.keyvalue.KeyValueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;

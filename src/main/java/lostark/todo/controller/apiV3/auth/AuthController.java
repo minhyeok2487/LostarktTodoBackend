@@ -4,20 +4,19 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domainV2.member.service.AuthService;
-import lostark.todo.domainV2.member.service.MemberService;
+import lostark.todo.domain.member.service.AuthService;
+import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.config.TokenProvider;
 import lostark.todo.global.dto.GlobalResponseDto;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dto.memberDto.MemberResponseDto;
-import lostark.todo.domainV2.character.entity.Character;
-import lostark.todo.domain.market.Market;
-import lostark.todo.domainV2.member.entity.Member;
-import lostark.todo.domainV2.character.service.CharacterService;
-import lostark.todo.domainV2.util.content.service.ContentService;
-import lostark.todo.domainV2.util.market.service.MarketService;
-import lostark.todo.domainV2.lostark.client.LostarkCharacterApiClient;
+import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.util.market.entity.Market;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.util.market.service.MarketService;
+import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static lostark.todo.Constant.TEST_USERNAME;
+import static lostark.todo.global.Constant.TEST_USERNAME;
 
 @RestController
 @Slf4j

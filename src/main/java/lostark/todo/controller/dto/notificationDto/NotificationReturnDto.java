@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.notification.Notification;
+import lostark.todo.domain.notification.entity.Notification;
 
 @Data
 @NoArgsConstructor
