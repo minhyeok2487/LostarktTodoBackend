@@ -7,7 +7,6 @@ import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
-import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
@@ -16,7 +15,6 @@ import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domain.member.infra.MemberLockManager;
-import lostark.todo.global.config.TokenProvider;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,8 +38,6 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final MarketRepository marketRepository;
-    private final TokenProvider tokenProvider;
-
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
@@ -101,17 +97,6 @@ public class MemberService {
         return characterList.stream()
                 .map(character -> character.calculateDayTodo(character, contentResource))
                 .collect(Collectors.toList());
-    }
-
-    // 일반 로그인
-    @Transactional
-    public MemberResponse login(LoginMemberRequest request) {
-        Member member = validateLogin(request);
-
-        return MemberResponse.builder()
-                .username(member.getUsername())
-                .token(tokenProvider.createToken(member))
-                .build();
     }
 
     // 로그인 검증

@@ -81,6 +81,7 @@ public class AuthController {
         }
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "일반 로그인",
             notes="JWT", response = MemberResponse.class)
     @PostMapping("/login")
@@ -95,6 +96,7 @@ public class AuthController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    // TODO 추후 삭제
     @ApiOperation(value = "로그아웃",
             notes = "로그인 유형 상관없이 로그아웃",
             response = String.class)
