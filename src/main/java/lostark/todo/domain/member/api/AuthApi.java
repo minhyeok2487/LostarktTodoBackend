@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
+import lostark.todo.controller.dtoV2.auth.AuthResponse;
+import lostark.todo.controller.dtoV2.auth.SignUpRequest;
 import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.member.service.AuthService;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,13 @@ import javax.validation.Valid;
 public class AuthApi {
 
     private final AuthService authService;
+
+    @ApiOperation(value = "1차 회원 가입",
+            notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponse.class)
+    @PostMapping("/signup")
+    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request) {
+        return new ResponseEntity<>(authService.signUp(request), HttpStatus.CREATED);
+    }
 
     @ApiOperation(value = "일반 로그인",
             notes="JWT", response = MemberResponse.class)

@@ -31,6 +31,7 @@ public class AuthControllerV4 {
     private final EmailService emailService;
     private final TokenProvider tokenProvider;
 
+    // TODO 추후삭제
     @ApiOperation(value = "1차 회원 가입",
             notes="이메일, 비밀번호(O), Api-Key, 대표캐릭터(X)", response = AuthResponse.class)
     @PostMapping("/signup")

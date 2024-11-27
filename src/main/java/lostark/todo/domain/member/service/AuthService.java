@@ -3,7 +3,11 @@ package lostark.todo.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
+import lostark.todo.controller.dtoV2.auth.AuthResponse;
+import lostark.todo.controller.dtoV2.auth.SignUpRequest;
 import lostark.todo.domain.member.dto.MemberResponse;
+import lostark.todo.domain.member.enums.Role;
+import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.config.TokenProvider;
 import lostark.todo.global.dto.GlobalResponseDto;
@@ -16,8 +20,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Optional;
 
+import static lostark.todo.global.exhandler.ErrorMessageConstants.EMAIL_ALREADY_EXISTS;
 import static lostark.todo.global.exhandler.ErrorMessageConstants.LOGIN_FAIL;
 
 @Service
@@ -26,8 +32,39 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.LOGIN_FAIL;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+    private final AuthMailRepository authMailRepository;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
+
+    @Transactional
+    public AuthResponse signUp(SignUpRequest request) {
+        if (!request.getPassword().equals(request.getEqualPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        authMailRepository.getAuthMail(request.getMail(), request.getNumber())
+                .orElseThrow(() -> new IllegalStateException("이메일 인증이 실패하였습니다."));
+        Member signupMember = createMember(request.getMail(), request.getPassword());
+        authMailRepository.deleteAllByMail(request.getMail());
+        String token = tokenProvider.createToken(signupMember);
+        return new AuthResponse().toDto(signupMember, token);
+    }
+
+    // 회원 생성
+    private Member createMember(String mail, String password) {
+        if (memberRepository.existsByUsername(mail)) {
+            throw new IllegalArgumentException(EMAIL_ALREADY_EXISTS);
+        }
+
+        Member member = Member.builder()
+                .username(mail)
+                .password(passwordEncoder.encode(password))
+                .characters(new ArrayList<>())
+                .authProvider("none")
+                .role(Role.USER)
+                .build();
+
+        return memberRepository.save(member);
+    }
 
     // 일반 로그인
     @Transactional
@@ -71,6 +108,7 @@ public class AuthService {
                 .orElseGet(() -> new GlobalResponseDto(false, "사용자를 찾을 수 없습니다"));
     }
 
+    // 구글 로그아웃
     public GlobalResponseDto googleLogout(Member member) throws Exception {
 
         // 토큰 취소 URL
