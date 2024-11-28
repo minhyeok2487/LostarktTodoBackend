@@ -59,18 +59,6 @@ public class EmailService {
         return number;
     }
 
-    public void isAuth(String email, Integer number) {
-        boolean auth = emailRepository.findAllByMail(email).stream()
-                .anyMatch(mail -> mail.getNumber().equals(number) && mail.isAuth());
-        if (!auth) {
-            throw new IllegalStateException("이메일 인증이 실패하였습니다.");
-        }
-    }
-
-    public void deleteAll(String mail) {
-        emailRepository.deleteAllByMail(mail);
-    }
-
     public boolean checkMail(MailCheckDto mailCheckDto) {
         AuthMail authMail = emailRepository.findByMailAndNumber(mailCheckDto.getMail(), mailCheckDto.getNumber())
                 .orElseThrow(() -> new IllegalStateException("유효하지 않은 인증번호 입니다."));

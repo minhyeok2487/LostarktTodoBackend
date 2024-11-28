@@ -28,10 +28,7 @@ import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Swagger를 사용하여 API 문서를 생성하고 노출
@@ -54,6 +51,45 @@ public class SwaggerConfiguration {
                 .build();
     }
 
+    private Docket createDocket(String version, String description, String basePackage) {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .useDefaultResponseMessages(false)
+                .groupName(version)
+                .apiInfo(apiInfo(description, version))
+                .select()
+                .apis(RequestHandlerSelectors.basePackage(basePackage))
+                .build()
+                .securityContexts(Collections.singletonList(securityContext()))
+                .securitySchemes(Collections.singletonList(apiKey()));
+    }
+
+    @Bean
+    public Docket members() {
+        return createDocket("회원", "회원 API", "lostark.todo.domain.member");
+    }
+
+    @Bean
+    public Docket characters() {
+        return createDocket("캐릭터", "캐릭터 API", "lostark.todo.domain.character");
+    }
+
+    @Bean
+    public Docket board() {
+        return createDocket("게시판", "게시판 API (공지사항, 모집, 방명록)", "lostark.todo.domain.board");
+    }
+
+    @Bean
+    public Docket friend() {
+        return createDocket("깐부(친구)", "깐부(친구) API", "lostark.todo.domain.friend");
+    }
+
+    @Bean
+    public Docket util() {
+        return createDocket("유틸", "유틸 API (콘텐츠, 큐브, 거래소 등)", "lostark.todo.domain.util");
+    }
+
+
     @Bean
     public Docket v3() {
         version = "v3";
@@ -67,8 +103,8 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV3"))
                 .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()));
+                .securityContexts(List.of(securityContext()))
+                .securitySchemes(List.of(apiKey()));
     }
 
     @Bean
@@ -84,77 +120,10 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV4"))
                 .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()));
+                .securityContexts(List.of(securityContext()))
+                .securitySchemes(List.of(apiKey()));
     }
 
-    @Bean
-    public Docket board() {
-        version = "게시판";
-        description = "게시판 API (공지사항, 모집, 방명록)";
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .apiInfo(apiInfo(description, version))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.board"))
-                .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()));
-    }
-
-    @Bean
-    public Docket characters() {
-        version = "캐릭터";
-        description = "캐릭터 API";
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .apiInfo(apiInfo(description, version))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.character"))
-                .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()));
-    }
-
-    @Bean
-    public Docket friend() {
-        version = "깐부(친구)";
-        description = "깐부(친구) API";
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .apiInfo(apiInfo(description, version))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.friend"))
-                .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()));
-    }
-
-    @Bean
-    public Docket util() {
-        version = "유틸";
-        description = "유틸 API (콘텐츠, 큐브, 거래소 등)";
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .apiInfo(apiInfo(description, version))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.domainV2.util"))
-                .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()));
-    }
 
     /**
      * Method 순으로 정렬
@@ -191,7 +160,7 @@ public class SwaggerConfiguration {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+        return List.of(new SecurityReference("JWT", authorizationScopes));
     }
 
     @Bean
@@ -203,7 +172,7 @@ public class SwaggerConfiguration {
              CorsEndpointProperties corsProperties,
              WebEndpointProperties webEndpointProperties,
              Environment environment) {
-        List<ExposableEndpoint<?>> allEndpoints = new ArrayList();
+        List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
         Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
         allEndpoints.addAll(webEndpoints);
         allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());

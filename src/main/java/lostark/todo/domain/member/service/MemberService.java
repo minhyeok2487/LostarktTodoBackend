@@ -3,12 +3,10 @@ package lostark.todo.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.admin.dto.DashboardResponse;
-import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
-import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
@@ -53,24 +51,6 @@ public class MemberService {
         return memberRepository.get(id);
     }
 
-    // 1차 회원가입
-    @Transactional
-    public Member createMember(String mail, String password) {
-        if (memberRepository.existsByUsername(mail)) {
-            throw new IllegalArgumentException(EMAIL_ALREADY_EXISTS);
-        }
-
-        Member member = Member.builder()
-                .username(mail)
-                .password(passwordEncoder.encode(password))
-                .characters(new ArrayList<>())
-                .authProvider("none")
-                .role(Role.USER)
-                .build();
-
-        return memberRepository.save(member);
-    }
-
     // 회원가입 후 캐릭터 추가
     @Transactional
     public void createCharacter(String username, SaveCharacterRequest request) {
@@ -100,17 +80,6 @@ public class MemberService {
         return characterList.stream()
                 .map(character -> character.calculateDayTodo(character, contentResource))
                 .collect(Collectors.toList());
-    }
-
-    // 로그인 검증
-    @Transactional
-    public Member validateLogin(LoginMemberRequest request) {
-        Member member = get(request.getUsername());
-        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            return member;
-        } else {
-            throw new IllegalArgumentException(LOGIN_FAIL);
-        }
     }
 
     // 대표 캐릭터 변경 - Test Code 작성완료
@@ -152,13 +121,6 @@ public class MemberService {
         Member member = get(request.getMail());
         member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
         authMailRepository.deleteAllByMail(request.getMail());
-    }
-
-    //TODO 추후 삭제
-    @Transactional
-    public void createCharacterOLDER(String username, SaveCharacterRequest request, List<Character> characterList) {
-        Member member = get(username);
-        member.createCharacter(characterList, request);
     }
 
     // 회원 API KEY 수정 - Test Code 작성 X
