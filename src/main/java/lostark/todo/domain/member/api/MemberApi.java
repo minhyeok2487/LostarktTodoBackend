@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
+import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
@@ -46,6 +47,14 @@ public class MemberApi {
     @PostMapping("/password")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid ResetPasswordRequest request) {
         memberService.updatePassword(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "대표 캐릭터 변경 API")
+    @PatchMapping("/main-character")
+    public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
+                                               @RequestBody EditMainCharacterRequest request) {
+        memberService.editMainCharacter(username, request.getMainCharacter());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

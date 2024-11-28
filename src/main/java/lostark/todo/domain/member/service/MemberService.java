@@ -82,19 +82,15 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    // 대표 캐릭터 변경 - Test Code 작성완료
+    // 대표 캐릭터 변경
     @Transactional
     public void editMainCharacter(String username, String mainCharacter) {
         Member member = get(username);
-        boolean characterExists = member.getCharacters().stream()
-                .map(Character::getCharacterName)
-                .anyMatch(characterName -> characterName.equals(mainCharacter));
-
-        if (characterExists) {
-            member.editMainCharacter(mainCharacter);
-        } else {
+        if (member.getCharacters().stream()
+                .noneMatch(character -> character.getCharacterName().equals(mainCharacter))) {
             throw new IllegalArgumentException(MEMBER_CHARACTER_NOT_FOUND);
         }
+        member.editMainCharacter(mainCharacter);
     }
 
     // 유저 전환(소셜 로그인 -> 일반 로그인) - Test Code 작성완료
@@ -128,13 +124,6 @@ public class MemberService {
         member.editApiKey(apiKey);
     }
 
-
-    // 회원 삭제 - Test Code 작성 X
-    @Transactional
-    public void deleteMember(String name) {
-        Member member = get(name);
-        memberRepository.delete(member);
-    }
 
     // Admin 일일 가입자 수 통계 호출 - Test Code 작성 X
     @Transactional(readOnly = true)
