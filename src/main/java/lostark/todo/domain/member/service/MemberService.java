@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static lostark.todo.global.Constant.TEST_USERNAME;
 import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
 
 @Service
@@ -96,16 +95,10 @@ public class MemberService {
     // 유저 전환(소셜 로그인 -> 일반 로그인) - Test Code 작성완료
     @Transactional
     public void editProvider(String username, String newPassword) {
-        if (username.equals(TEST_USERNAME)) {
-            throw new IllegalArgumentException(TEST_MEMBER_NOT_ACCESS);
-        }
-
         Member member = get(username);
-
         if (member.getAuthProvider().equals("none")) {
             throw new IllegalArgumentException(MEMBER_NOT_SOCIAL);
         }
-
         member.changeAuthToNone(passwordEncoder.encode(newPassword));
     }
 

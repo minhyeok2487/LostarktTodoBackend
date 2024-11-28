@@ -14,6 +14,7 @@ import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.lostark.client.LostarkApiClient;
 import lostark.todo.domain.character.service.CustomTodoService;
+import lostark.todo.global.customAnnotation.NotTestMember;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,6 +53,7 @@ public class MemberControllerV4 {
 
     @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
     @PatchMapping("/provider")
+    @NotTestMember
     public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
                                           @RequestBody EditProviderRequest request) {
         memberService.editProvider(username, request.getPassword());

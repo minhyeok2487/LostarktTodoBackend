@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
 import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
+import lostark.todo.controller.dtoV2.member.EditProviderRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
@@ -55,6 +56,15 @@ public class MemberApi {
     public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
                                                @RequestBody EditMainCharacterRequest request) {
         memberService.editMainCharacter(username, request.getMainCharacter());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
+    @PatchMapping("/provider")
+    @NotTestMember
+    public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
+                                          @RequestBody EditProviderRequest request) {
+        memberService.editProvider(username, request.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
