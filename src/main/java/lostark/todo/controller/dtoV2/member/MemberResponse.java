@@ -1,16 +1,21 @@
 package lostark.todo.controller.dtoV2.member;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lostark.todo.domain.member.enums.Role;
-import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.member.entity.Member;
 
 import javax.validation.constraints.NotEmpty;
 
-@Data
+import java.util.Optional;
+
+import static lostark.todo.global.Constant.TEST_USERNAME;
+
+@Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class MemberResponse {
     @NotEmpty
     @ApiModelProperty(example = "회원 id")
@@ -28,19 +33,26 @@ public class MemberResponse {
     @ApiModelProperty(example = "권한")
     private Role role;
 
-    public MemberResponse(Member member) {
-        this.memberId = member.getId();
-        this.username = member.getUsername();
-        this.mainCharacter = createMainCharacter(member);
-        this.role = member.getRole();
+    public static MemberResponse toDto(Member member) {
+        return MemberResponse.builder()
+                .memberId(member.getId())
+                .username(createUsername(member))
+                .mainCharacter(createMainCharacter(member))
+                .role(member.getRole())
+                .build();
     }
 
-    private MainCharacterResponse createMainCharacter(Member member) {
-        for (Character character : member.getCharacters()) {
-            if (character.getCharacterName().equals(member.getMainCharacterName())) {
-                return new MainCharacterResponse(character);
-            }
-        }
-        return new MainCharacterResponse();
+    private static String createUsername(Member member) {
+        return Optional.of(member.getUsername())
+                .filter(username -> !username.equals(TEST_USERNAME))
+                .orElse(null);
+    }
+
+    private static MainCharacterResponse createMainCharacter(Member member) {
+        return member.getCharacters().stream()
+                .filter(character -> character.getCharacterName().equals(member.getMainCharacterName()))
+                .findFirst()
+                .map(MainCharacterResponse::new)
+                .orElseGet(MainCharacterResponse::new);
     }
 }

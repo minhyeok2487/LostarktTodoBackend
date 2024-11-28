@@ -26,7 +26,7 @@ public class AdminMainController {
             response = MemberResponse.class)
     @GetMapping("/member")
     public ResponseEntity<?> getMember(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(new MemberResponse(memberService.get(username)), HttpStatus.OK);
+        return new ResponseEntity<>(MemberResponse.toDto(memberService.get(username)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "일일 가입자 수 통계 호출",

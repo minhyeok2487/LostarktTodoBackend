@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
+import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,13 @@ import javax.validation.Valid;
 public class MemberApi {
 
     private final MemberService memberService;
+
+    @ApiOperation(value = "회원 정보 조회 API",
+            response = MemberResponse.class)
+    @GetMapping()
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(MemberResponse.toDto(memberService.get(username)), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "1차 회원가입 이후 캐릭터 추가",
             notes = "대표캐릭터 검색을 통한 로스트아크 api 검증 \n 대표캐릭터와 연동된 캐릭터 함께 저장")

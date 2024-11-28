@@ -39,12 +39,7 @@ public class MemberControllerV4 {
             response = MemberResponse.class)
     @GetMapping()
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        Member member = memberService.get(username);
-        MemberResponse memberResponse = new MemberResponse(member);
-        if (memberResponse.getUsername().equals(TEST_USERNAME)) {
-            memberResponse.setUsername(null);
-        }
-        return new ResponseEntity<>(memberResponse, HttpStatus.OK);
+        return new ResponseEntity<>(MemberResponse.toDto(memberService.get(username)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "대표 캐릭터 변경 API")
