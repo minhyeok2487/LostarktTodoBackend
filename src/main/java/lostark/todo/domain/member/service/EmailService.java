@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.domain.member.entity.AuthMail;
+import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.AuthMailRepository;
+import lostark.todo.domain.member.repository.MemberRepository;
+import lostark.todo.global.dto.GlobalResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final AuthMailRepository emailRepository;
+    private final MemberRepository memberRepository;
     private static int number;
 
     @Value("${spring.mail.username}")
@@ -52,22 +56,25 @@ public class EmailService {
         return message;
     }
 
-    public int sendSignUpMail(String email){
+    public GlobalResponseDto sendSignUpMail(String email){
+        if (memberRepository.existsByUsername(email)) {
+            throw new IllegalArgumentException("이미 가입된 회원입니다.");
+        }
         MimeMessage message = createSignUpMail(email);
         javaMailSender.send(message);
         emailRepository.save(new AuthMail(email, number));
-        return number;
+        return new GlobalResponseDto(true, "인증번호 전송이 정상처리 되었습니다.");
     }
 
-    public boolean checkMail(MailCheckDto mailCheckDto) {
+    public GlobalResponseDto checkMail(MailCheckDto mailCheckDto) {
         AuthMail authMail = emailRepository.findByMailAndNumber(mailCheckDto.getMail(), mailCheckDto.getNumber())
                 .orElseThrow(() -> new IllegalStateException("유효하지 않은 인증번호 입니다."));
         if (authMail.getNumber() == mailCheckDto.getNumber()
                 && Duration.between(authMail.getCreatedDate(), LocalDateTime.now()).toMinutes() <= 3) {
             authMail.setAuth(true);
-            return true;
+            return new GlobalResponseDto(true, "이메일 인증번호 성공");
         }
-        return false;
+        return new GlobalResponseDto(false, "인증번호가 일치하지 않거나 만료되었습니다.");
     }
 
     public MimeMessage createResetPasswordMail(String email) {
@@ -92,6 +99,10 @@ public class EmailService {
 
 
     public void sendResetPasswordMail(String email) {
+        Member member = memberRepository.get(email);
+        if (!member.getAuthProvider().equals("none")) {
+            throw new IllegalStateException("SNS 가입자는 비밀번호 변경이 불가능 합니다.");
+        }
         MimeMessage message = createResetPasswordMail(email);
         javaMailSender.send(message);
         emailRepository.save(new AuthMail(email, number));

@@ -128,11 +128,6 @@ public class MemberService {
         member.editApiKey(apiKey);
     }
 
-    // 가입 여부 확인 - Test Code 작성 X
-    @Transactional(readOnly = true)
-    public boolean existByUsername(String username) {
-        return memberRepository.existsByUsername(username);
-    }
 
     // 회원 삭제 - Test Code 작성 X
     @Transactional

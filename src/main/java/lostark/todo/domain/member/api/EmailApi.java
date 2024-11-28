@@ -1,26 +1,28 @@
-package lostark.todo.controller.apiV3.auth;
+package lostark.todo.domain.member.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.global.dto.GlobalResponseDto;
 import lostark.todo.controller.dto.mailDto.MailCheckDto;
 import lostark.todo.controller.dto.mailDto.MailRequestDto;
 import lostark.todo.domain.member.service.EmailService;
+import lostark.todo.global.dto.GlobalResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/v3/mail")
-@Api(tags = {"이메일 API(전체 추후 삭제)"})
-// TODO 추후 삭제
-public class EmailController {
+@RequestMapping("/api/v1/mail")
+@Api(tags = {"이메일 API"})
+public class EmailApi {
 
     private final EmailService emailService;
 
