@@ -8,6 +8,7 @@ public enum FriendPermissionType {
     CHECK_RAID(new CheckRaidPermissionStrategy()),
     CHECK_WEEK_TODO(new CheckWeekTodoPermissionStrategy()),
     CHECK_DAY_TODO(new CheckDayTodoPermissionStrategy()),
+    UPDATE_SETTING(new UpdateSettingsPermissionStrategy()),
     UPDATE_GAUGE(new UpdateGaugePermissionStrategy());
 
     private final UpdateCharacterStrategy strategy;

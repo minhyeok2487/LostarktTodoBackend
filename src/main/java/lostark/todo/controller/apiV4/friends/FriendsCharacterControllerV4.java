@@ -33,6 +33,7 @@ public class FriendsCharacterControllerV4 {
     private final CharacterService characterService;
     private final FriendsService friendsService;
 
+    //TODO 추후삭제
     @ApiOperation(value = "깐부 캐릭터 레이드 골드 체크 방식 업데이트", response = CharacterResponse.class)
     @PatchMapping("/{friendUsername}/gold-check-version")
     public ResponseEntity<?> updateDayTodoCheck(

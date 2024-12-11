@@ -118,21 +118,18 @@ public class CharacterService {
 
     public boolean deleteByMember(Member member) {
         long result = characterRepository.deleteByMember(member);
-        if (result != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return result != 0;
     }
 
     // 캐릭터 주간 레이드 골드 체크 업데이트
     // 주간 레이드 골드 체크 업데이트 전 체크사항
     private void raidGoldCheckCount(Character character, boolean updateValue) {
         List<String> weekCategoryList = character.getTodoV2List().stream()
-                .filter(todoV2 -> todoV2.isGoldCheck())
+                .filter(TodoV2::isGoldCheck)
                 .map(todoV2 -> todoV2.getWeekContent().getWeekCategory())
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
+
 
         // 등록된 골드획득 컨텐츠가 3개 이상 && 또다른 레이드를 골드획득 체크를 한다면(true)
         if (weekCategoryList.size() >= 3 && updateValue) {

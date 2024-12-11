@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
@@ -152,6 +153,19 @@ public class CharacterWeekApi {
 
         // 골드 체크 업데이트
         characterService.updateRaidGoldCheck(updateCharacter, request.getWeekCategory(), request.isUpdateValue());
+
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 레이드 골드 체크 방식 업데이트", response = CharacterDto.class)
+    @PatchMapping("/gold-check-version")
+    public ResponseEntity<?> updateDayTodoCheck(@AuthenticationPrincipal String username,
+                                                @RequestParam(required = false) String friendUsername,
+                                                @RequestBody @Valid BaseCharacterRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+
+        characterService.updateGoldCheckVersion(updateCharacter);
 
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }

@@ -21,6 +21,7 @@ import javax.validation.Valid;
 @Slf4j
 @RequestMapping("/v3/character/settings")
 @Api(tags = {"캐릭터 API - 설정 변경"})
+//TODO 추후 삭제
 public class SettingsApiController {
 
     private final CharacterService characterService;
