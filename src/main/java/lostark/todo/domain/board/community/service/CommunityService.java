@@ -48,7 +48,7 @@ public class CommunityService {
         return communityRepository.search(memberId, params, pageRequest);
     }
 
-    @RateLimit()
+    @RateLimit(10)
     @Transactional
     public void save(String username, CommunitySaveRequest request) {
         Member member = memberRepository.get(username);
