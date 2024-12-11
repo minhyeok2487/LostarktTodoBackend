@@ -5,16 +5,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.commentsDto.CommentListDto;
-import lostark.todo.controller.dto.commentsDto.CommentRequestDto;
 import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
 import lostark.todo.domain.board.comments.entity.Comments;
-import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.board.comments.service.CommentsService;
-import lostark.todo.domain.member.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,7 +24,6 @@ import java.util.List;
 public class CommentsController {
 
     private final CommentsService commentsService;
-    private final MemberService memberService;
 
     @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
     @GetMapping()
@@ -48,33 +43,5 @@ public class CommentsController {
         }
 
         return new ResponseEntity<>(new CommentListDto(commentResponseDtoList, totalPages), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "comment 저장")
-    @PostMapping()
-    public ResponseEntity<?> saveComments(@AuthenticationPrincipal String username,
-                                       @RequestBody CommentRequestDto commentRequestDto) {
-        Member member = memberService.get(username);
-        Comments updateComments = Comments.builder()
-                .body(commentRequestDto.getBody())
-                .member(member)
-                .parentId(commentRequestDto.getParentId())
-                .build();
-        commentsService.save(updateComments);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "comment 삭제")
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComments(@AuthenticationPrincipal String username, @PathVariable int commentId) {
-        Member member = memberService.get(username);
-        Comments updateComments = Comments.builder()
-                .id(commentId)
-                .member(member)
-                .build();
-        commentsService.delete(updateComments); //삭제
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
