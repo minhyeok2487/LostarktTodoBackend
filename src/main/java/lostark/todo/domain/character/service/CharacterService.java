@@ -381,13 +381,7 @@ public class CharacterService {
                     dayTodo.updateCheckEpona();
                 }
             }
-            case chaos -> {
-                if (request.isAllCheck()) {
-                    dayTodo.updateCheckChaosAll();
-                } else {
-                    dayTodo.updateCheckChaos();
-                }
-            }
+            case chaos -> dayTodo.updateCheckChaos();
             case guardian -> dayTodo.updateCheckGuardian();
             default -> throw new IllegalArgumentException("Invalid day todo category: " + request.getCategory());
         }

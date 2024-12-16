@@ -99,11 +99,10 @@ public class Character extends BaseTimeEntity {
         return this;
     }
 
-    public Character createImage(Object characterImage) {
+    public void createImage(Object characterImage) {
         if (characterImage != null) {
             this.characterImage = characterImage.toString();
         }
-        return this;
     }
 
     public void updateChallenge(ChallengeContentEnum content) {
@@ -181,18 +180,11 @@ public class Character extends BaseTimeEntity {
         price += jewelry.getRecentPrice() * dayContent.getJewelry();
 
         int chaosGauge = this.dayTodo.getChaosGauge();
-        if (itemLevel < 1640) {
-            if (chaosGauge >= 40) {
-                price = price*4;
-            } else if (chaosGauge >= 20) {
-                price = price*3;
-            } else {
-                price = price*2;
-            }
+
+        if (chaosGauge >= 40) {
+            price = price*4;
         } else {
-            if (chaosGauge >= 40) {
-                price = price*2;
-            }
+            price = price*2;
         }
 
         price = Math.round(price * 100.0) / 100.0;

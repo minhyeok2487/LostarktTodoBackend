@@ -1,7 +1,6 @@
 package lostark.todo.domain.character.entity;
 
 import lombok.*;
-import lostark.todo.controller.dto.characterDto.CharacterDayTodoDto;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
 import org.hibernate.annotations.ColumnDefault;
@@ -108,9 +107,9 @@ public class DayTodo {
      * 캐릭터 DayTodo updateCheck
      */
     public void updateCheckEpona() {
-        if(eponaCheck2 < 3) {
+        if (eponaCheck2 < 3) {
             eponaCheck2 += 1;
-            if(eponaGauge>=20) {
+            if (eponaGauge >= 20) {
                 eponaGauge -= 20;
             }
         } else {
@@ -120,13 +119,13 @@ public class DayTodo {
     }
 
     public void updateCheckEponaAll() {
-        if(eponaCheck2 == 3) {
+        if (eponaCheck2 == 3) {
             eponaCheck2 = 0;
             eponaGauge = beforeEponaGauge;
         } else {
             while (eponaCheck2 < 3) {
                 eponaCheck2 += 1;
-                if(eponaGauge>=20) {
+                if (eponaGauge >= 20) {
                     eponaGauge -= 20;
                 }
             }
@@ -135,31 +134,12 @@ public class DayTodo {
 
     public void updateCheckChaos() {
         double gold = calculateChaosGold();
-
-        if (chaosCheck < 2) {
-            chaosCheck += 1;
-            if (chaosGauge >= 20) {
-                chaosGauge -= 20;
+        if (chaosCheck != 2) {
+            chaosCheck = 2;
+            if (chaosGauge >= 40) {
+                chaosGauge -= 40;
             }
             addWeekTotalGold(gold);
-        } else {
-            resetChaos();
-        }
-    }
-
-    public void updateCheckChaosAll() {
-        if (chaosCheck != 2) {
-            if (chaos.getLevel() < 1640) {
-                while (chaosCheck < 2) {
-                    updateCheckChaos();
-                }
-            } else {
-                // 쿠르잔 전선은 휴게 계산 따로
-                chaosCheck = 2;
-                if (chaosGauge >= 40) {
-                    chaosGauge -= 40;
-                }
-            }
         } else {
             resetChaos();
         }
@@ -187,9 +167,9 @@ public class DayTodo {
 
 
     public void updateCheckGuardian() {
-        if(guardianCheck < 1) {
+        if (guardianCheck < 1) {
             guardianCheck += 1;
-            if(guardianGauge >= 20) {
+            if (guardianGauge >= 20) {
                 guardianGauge -= 20;
             }
             addWeekTotalGold(this.guardianGold);
@@ -206,15 +186,6 @@ public class DayTodo {
             }
             guardianGauge = beforeGuardianGauge;
         }
-    }
-
-    public void updateDayContentGauge(CharacterDayTodoDto characterDayTodoDto) {
-        this.chaosGauge = characterDayTodoDto.getChaosGauge();
-        this.beforeChaosGauge = chaosGauge;
-        this.guardianGauge = characterDayTodoDto.getGuardianGauge();
-        this.beforeGuardianGauge = guardianGauge;
-        this.eponaGauge = characterDayTodoDto.getEponaGauge();
-        this.beforeEponaGauge = eponaGauge;
     }
 
     public void updateDayContentGauge(UpdateDayGaugeRequest request) {
