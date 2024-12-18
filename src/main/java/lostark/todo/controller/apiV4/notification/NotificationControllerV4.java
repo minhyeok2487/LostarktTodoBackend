@@ -6,11 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.controller.dtoV2.notification.SearchNotificationResponse;
-import lostark.todo.domain.board.boards.entity.Boards;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.notification.entity.Notification;
-import lostark.todo.domain.board.boards.service.BoardsService;
-import lostark.todo.domain.board.comments.service.CommentsService;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.notification.service.NotificationService;
 import org.json.simple.JSONObject;
@@ -28,9 +25,7 @@ import java.util.List;
 public class NotificationControllerV4 {
 
     private final NotificationService notificationService;
-    private final BoardsService boardsService;
     private final MemberService memberService;
-    private final CommentsService commentsService;
 
     @ApiOperation(value = "알림 조회 API", response = SearchNotificationResponse.class)
     @GetMapping()
@@ -38,11 +33,8 @@ public class NotificationControllerV4 {
         // 멤버 정보 가져오기
         Member member = memberService.get(username);
 
-        // 게시물 검색
-        List<Boards> searchBoard = boardsService.search();
-
         // 알림 검색
-        List<Notification> notifications = notificationService.search(member, searchBoard);
+        List<Notification> notifications = notificationService.search(member);
 
         // 알림을 응답 객체로 변환
         List<SearchNotificationResponse> result = notifications.stream().map(notification -> {
@@ -51,7 +43,7 @@ public class NotificationControllerV4 {
             // 알림 타입에 따라 NotificationData 생성
             switch (notification.getNotificationType()) {
                 case BOARD -> {
-                    object.put("boardId", notification.getBoardId());
+//                    object.put("boardId", notification.getBoardId());
                 }
                 case FRIEND -> {
                     object.put("friendId", notification.getFriendId());

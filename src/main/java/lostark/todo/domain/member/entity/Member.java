@@ -5,7 +5,6 @@ import lombok.*;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.member.enums.Role;
-import lostark.todo.domain.board.boards.entity.Boards;
 import lostark.todo.domain.board.community.entity.Follow;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.board.comments.entity.Comments;
@@ -58,10 +57,6 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Friends> friends;
-
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Boards> boards;
 
     @OneToMany(mappedBy = "receiver", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
