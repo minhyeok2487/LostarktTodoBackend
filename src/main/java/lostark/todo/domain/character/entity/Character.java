@@ -119,6 +119,7 @@ public class Character extends BaseTimeEntity {
         this.characterLevel = dto.getCharacterLevel();
         this.characterClassName = dto.getCharacterClassName();
         this.characterImage = dto.getCharacterImage();
+        this.serverName = dto.getServerName();
         this.itemLevel = dto.getItemMaxLevel();
         this.dayTodo.setChaosName(dayContent.getChaosName());
         this.dayTodo.setChaos(dayContent.getChaos());
