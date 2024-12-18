@@ -48,25 +48,6 @@ public class BoardsController {
         return new ResponseEntity<>(boardsDto, HttpStatus.OK);
     }
 
-
-    @ApiOperation(value = "메인 공지 + 게시판 전체글 10개씩 가져오기", response = BoardListDto.class)
-    @GetMapping("/default")
-    public ResponseEntity<?> getAllNotNotice(@RequestParam(value="page") int page) {
-        log.info(String.valueOf(page));
-        Page<Boards> all = boardsService.findAllByNoticeFalse(page-1);
-        List<BoardResponseDto> boardResponseDtoList = all
-                .stream().map(board -> new BoardResponseDto().toDto(board))
-                .collect(Collectors.toList());
-        int totalPages = all.getTotalPages();
-
-        List<BoardResponseDto> noticeList = boardsService.findAllByNoticeIsTrue()
-                .stream().map(board -> new BoardResponseDto().toDto(board))
-                .collect(Collectors.toList());
-
-        BoardListDto response = new BoardListDto(boardResponseDtoList, totalPages, noticeList);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @ApiOperation(value = "사이트 공지사항 id로 가져오기", response = BoardResponseDto.class)
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable long id) {

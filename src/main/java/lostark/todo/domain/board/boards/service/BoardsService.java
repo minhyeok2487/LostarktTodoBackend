@@ -20,20 +20,12 @@ public class BoardsService {
 
     private final BoardsRepository boardsRepository;
 
-    public Page<Boards> findAllByNoticeFalse(int page) {
-        return boardsRepository.findAllByNoticeFalse(PageRequest.of(page, 10));
-    }
-
     public Page<Boards> findAll(int page, int size) {
         return boardsRepository.findAll(PageRequest.of(page, size));
     }
 
     public Boards findById(long id) {
         return boardsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 게시글 입니다."));
-    }
-
-    public List<Boards> findAllByNoticeIsTrue() {
-        return boardsRepository.findAllByNoticeIsTrue();
     }
 
     @Transactional(readOnly = true)
