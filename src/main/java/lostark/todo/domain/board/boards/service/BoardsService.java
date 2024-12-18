@@ -49,10 +49,6 @@ public class BoardsService {
         return boards.update(boardUpdateDto.getTitle(), boardUpdateDto.getContent());
     }
 
-    public void delete(long id) {
-        boardsRepository.delete(findById(id));
-    }
-
     @Transactional(readOnly = true)
     @Cacheable(value = "boardStore")
     public List<Boards> search() {
