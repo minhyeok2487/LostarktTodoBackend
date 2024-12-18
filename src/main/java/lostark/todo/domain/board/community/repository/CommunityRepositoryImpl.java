@@ -77,7 +77,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                         eqCommentParentId(0),
                         isDeleted(false)
                 )
-                .orderBy(community.id.desc())
+                .orderBy(community.createdDate.desc())
                 .limit(pageRequest.getPageSize() + 1)
                 .fetch();
 
@@ -154,7 +154,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                         eqCommunityId(communityId),
                         isDeleted(false)
                 )
-                .orderBy(community.id.desc())
+                .orderBy(community.createdDate.desc())
                 .fetchOne();
 
         if (fetch != null) {
