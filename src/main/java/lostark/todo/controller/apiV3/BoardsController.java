@@ -5,20 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.boardsDto.*;
-import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.board.boards.entity.Boards;
-import lostark.todo.domain.member.entity.Member;
 import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
-import lostark.todo.domain.board.boards.service.BoardImagesService;
 import lostark.todo.domain.board.boards.service.BoardsService;
-import lostark.todo.domain.member.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,9 +23,7 @@ import java.util.stream.Collectors;
 @Api(tags = {"사이트 공지사항"})
 public class BoardsController {
 
-    private final MemberService memberService;
     private final BoardsService boardsService;
-    private final BoardImagesService boardImagesService;
 
     @ApiOperation(value = "사이트 공지사항 page, size 크기로 가져오기",
             notes = "sort : 작성일 최근순, page : 1부터 시작",
@@ -82,32 +74,5 @@ public class BoardsController {
             throw new CustomIllegalArgumentException("사이트 공지사항 id로 가져오기 에러", "id는 0보다 커야합니다.", null);
         }
         return new ResponseEntity<>(new BoardResponseDto().toDto(boardsService.findById(id)), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "사이트 공지사항 저장",
-            notes = "어드민 권한 필요",
-            response = BoardResponseDto.class)
-    @PostMapping()
-    public ResponseEntity<?> save(@AuthenticationPrincipal String username,
-                                  @RequestBody BoardInsertDto boardInsertDto) {
-        Member member = memberService.get(username);
-
-        if (member.getRole().equals(Role.ADMIN)) {
-            Boards entity = Boards.builder()
-                    .member(member)
-                    .title(boardInsertDto.getTitle())
-                    .content(boardInsertDto.getContent())
-                    .boardImages(new ArrayList<>())
-                    .views(0)
-                    .build();
-
-            Boards save = boardsService.save(entity);
-            boardImagesService.saveByfileNames(boardInsertDto.getFileNames(), save);
-
-            log.info("사이트 공지사항을 성공적으로 저장하였습니다. Id: {}", save.getId());
-            return new ResponseEntity<>(new BoardResponseDto().toDto(save), HttpStatus.CREATED);
-        } else {
-            throw new CustomIllegalArgumentException("사이트 공지사항 저장 에러", "권한이 없습니다.", member);
-        }
     }
 }

@@ -50,11 +50,4 @@ public class Boards extends BaseTimeEntity {
                 ", views=" + views +
                 '}';
     }
-
-    // board 엔티티에 boardImage 리스트 저장
-    public Boards addImages(BoardImages image) {
-        boardImages.add(image);
-        image.setBoards(this);
-        return this;
-    }
 }
