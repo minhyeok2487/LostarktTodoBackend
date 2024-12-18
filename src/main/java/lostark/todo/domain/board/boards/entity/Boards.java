@@ -51,12 +51,6 @@ public class Boards extends BaseTimeEntity {
                 '}';
     }
 
-    public Boards update(String title, String content) {
-        this.title = title;
-        this.content = content;
-        return this;
-    }
-
     // board 엔티티에 boardImage 리스트 저장
     public Boards addImages(BoardImages image) {
         boardImages.add(image);

@@ -110,20 +110,4 @@ public class BoardsController {
             throw new CustomIllegalArgumentException("사이트 공지사항 저장 에러", "권한이 없습니다.", member);
         }
     }
-
-    @ApiOperation(value = "사이트 공지사항 수정",
-            notes = "어드민 권한 필요",
-            response = BoardResponseDto.class)
-    @PatchMapping()
-    public ResponseEntity<?> update(String username, BoardUpdateDto boardUpdateDto) {
-        Member member = memberService.get(username);
-
-        if (member.getRole().equals(Role.ADMIN)) {
-            Boards update = boardsService.update(boardUpdateDto);
-            log.info("사이트 공지사항을 성공적으로 수정하였습니다. Id: {}, 수정자 : {}", update.getId(), username);
-            return new ResponseEntity<>(new BoardResponseDto().toDto(update), HttpStatus.OK);
-        } else {
-            throw new CustomIllegalArgumentException("사이트 공지사항 수정 에러", "권한이 없습니다.", member);
-        }
-    }
 }

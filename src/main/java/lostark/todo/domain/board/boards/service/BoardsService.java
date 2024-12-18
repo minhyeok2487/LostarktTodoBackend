@@ -2,7 +2,6 @@ package lostark.todo.domain.board.boards.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.boardsDto.BoardUpdateDto;
 import lostark.todo.domain.board.boards.entity.Boards;
 import lostark.todo.domain.board.boards.repository.BoardsRepository;
 import org.springframework.cache.annotation.CacheEvict;
@@ -42,11 +41,6 @@ public class BoardsService {
 
     public List<Boards> findAllByNoticeIsTrue() {
         return boardsRepository.findAllByNoticeIsTrue();
-    }
-
-    public Boards update(BoardUpdateDto boardUpdateDto) {
-        Boards boards = findById(boardUpdateDto.getId());
-        return boards.update(boardUpdateDto.getTitle(), boardUpdateDto.getContent());
     }
 
     @Transactional(readOnly = true)
