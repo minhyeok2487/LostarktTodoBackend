@@ -231,6 +231,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
 
         return factory.selectFrom(community)
                 .where(
+                        eqRootParentId(0L),
                         eqCategory(CommunityCategory.BOARDS),
                         betweenDate(oneWeeksAgo, now)
                 )
