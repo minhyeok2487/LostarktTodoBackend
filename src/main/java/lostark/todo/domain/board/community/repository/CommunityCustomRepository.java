@@ -20,4 +20,6 @@ public interface CommunityCustomRepository {
     List<CommunityCommentResponse> getComments(long memberId, Long rootParentId);
 
     Community get(long communityId);
+
+    List<Community> searchBoards();
 }

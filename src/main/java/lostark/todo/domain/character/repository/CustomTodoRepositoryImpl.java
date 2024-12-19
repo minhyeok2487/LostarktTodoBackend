@@ -7,7 +7,6 @@ import lostark.todo.domain.character.entity.CustomTodo;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.member.entity.Member;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
                                 eqCharacterId(characterId)
                         )
                         .fetchOne()
-        ).orElseThrow(() -> new EntityNotFoundException(CUSTOM_TODO_NOT_FOUND));
+        ).orElseThrow(() -> new NullPointerException(CUSTOM_TODO_NOT_FOUND));
     }
 
     @Override

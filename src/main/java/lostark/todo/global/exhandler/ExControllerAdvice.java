@@ -44,7 +44,7 @@ public class ExControllerAdvice {
     public ResponseEntity<ErrorResponse> handlerException(Exception ex) {
         webHookService.callEvent(ex);
         log.warn(ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getLocalizedMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

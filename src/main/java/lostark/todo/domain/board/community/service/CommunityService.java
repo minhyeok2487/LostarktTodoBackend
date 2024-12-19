@@ -133,4 +133,9 @@ public class CommunityService {
             communityLikeRepository.save(CommunityLike.builder().communityId(communityId).memberId(member.getId()).build());
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<Community> searchBoards() {
+        return communityRepository.searchBoards();
+    }
 }

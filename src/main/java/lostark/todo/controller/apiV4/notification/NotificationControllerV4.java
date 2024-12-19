@@ -6,7 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
 import lostark.todo.controller.dtoV2.notification.SearchNotificationResponse;
+import lostark.todo.domain.board.community.entity.Community;
+import lostark.todo.domain.board.community.service.CommunityService;
 import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.notification.service.NotificationService;
@@ -26,6 +29,7 @@ public class NotificationControllerV4 {
 
     private final NotificationService notificationService;
     private final MemberService memberService;
+    private final CommunityService communityService;
 
     @ApiOperation(value = "알림 조회 API", response = SearchNotificationResponse.class)
     @GetMapping()
@@ -33,8 +37,18 @@ public class NotificationControllerV4 {
         // 멤버 정보 가져오기
         Member member = memberService.get(username);
 
-        // 알림 검색
-        List<Notification> notifications = notificationService.search(member);
+        List<Community> boards;
+        List<Notification> notifications;
+
+        if (!member.getRole().equals(Role.ADMIN)) {
+            // 공지사항 검색
+            boards = communityService.searchBoards();
+
+            // 알림 검색
+            notifications = notificationService.search(member, boards);
+        } else {
+            notifications = notificationService.search(member);
+        }
 
         // 알림을 응답 객체로 변환
         List<SearchNotificationResponse> result = notifications.stream().map(notification -> {
@@ -43,7 +57,7 @@ public class NotificationControllerV4 {
             // 알림 타입에 따라 NotificationData 생성
             switch (notification.getNotificationType()) {
                 case BOARD -> {
-//                    object.put("boardId", notification.getBoardId());
+                    object.put("boardId", notification.getBoardId());
                 }
                 case FRIEND -> {
                     object.put("friendId", notification.getFriendId());

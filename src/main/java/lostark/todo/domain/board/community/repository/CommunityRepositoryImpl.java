@@ -19,7 +19,7 @@ import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,7 +110,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
                         eqUsername(username),
                         eqCommunityId(communityId),
                         isDeleted(false)
-                ).fetchOne()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 게시글 입니다."));
+                ).fetchOne()).orElseThrow(()-> new NullPointerException("존재하지 않는 게시글 입니다."));
     }
 
     @Override
@@ -167,7 +167,7 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
             fetch.setImageList(images);
             return fetch;
         } else {
-            throw new EntityNotFoundException("존재하지 않는 게시글 입니다.");
+            throw new NullPointerException("존재하지 않는 게시글 입니다.");
         }
     }
 
@@ -224,6 +224,20 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
         ).orElseThrow(() -> new NotFoundException("데이터를 찾을 수 없습니다."));
     }
 
+    @Override
+    public List<Community> searchBoards() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneWeeksAgo = now.minusWeeks(1);
+
+        return factory.selectFrom(community)
+                .where(
+                        eqCategory(CommunityCategory.BOARDS),
+                        betweenDate(oneWeeksAgo, now)
+                )
+                .orderBy(community.createdDate.desc())
+                .fetch();
+    }
+
     private BooleanExpression ltCommunityId(Long communityId) {
         if (communityId != null) {
             return community.id.lt(communityId);
@@ -262,5 +276,9 @@ public class CommunityRepositoryImpl implements CommunityCustomRepository {
             return community.id.eq(communityId);
         }
         return null;
+    }
+
+    private BooleanExpression betweenDate(LocalDateTime beforeDate, LocalDateTime afterDate) {
+        return community.createdDate.between(beforeDate, afterDate);
     }
 }

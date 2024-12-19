@@ -3,6 +3,7 @@ package lostark.todo.domain.notification.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
+import lostark.todo.domain.board.community.entity.Community;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.domain.notification.repository.NotificationRepository;
@@ -24,13 +25,27 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public List<Notification> search(Member member) {
+    public List<Notification> search(Member member, List<Community> boards) {
         List<Notification> notifications = notificationRepository.searchBoard(member);
+
+        for (Community board : boards) {
+            if (!notifications.stream().map(Notification::getBoardId).toList().contains(board.getId())) {
+                notifications.add(createBoardNotification(board.getId(), member));
+            }
+        }
 
         List<Notification> search = notificationRepository.search(member);
         notifications.addAll(search);
 
         return notifications.stream()
+                .sorted(Comparator.comparing(Notification::getCreatedDate).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<Notification> search(Member member) {
+
+        return notificationRepository.search(member).stream()
                 .sorted(Comparator.comparing(Notification::getCreatedDate).reversed())
                 .collect(Collectors.toList());
     }
