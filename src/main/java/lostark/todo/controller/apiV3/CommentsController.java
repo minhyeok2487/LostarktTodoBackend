@@ -25,6 +25,7 @@ public class CommentsController {
 
     private final CommentsService commentsService;
 
+    // TODO 추후삭제
     @ApiOperation(value = "전체 Comments 불러오기", notes = "루트 코멘트 기준 page(기본 5)개씩 불러옴")
     @GetMapping()
     public ResponseEntity<?> findComments(@RequestParam(value="page", defaultValue = "5") int page) {
