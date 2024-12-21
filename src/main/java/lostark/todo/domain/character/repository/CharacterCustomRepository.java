@@ -1,6 +1,7 @@
 package lostark.todo.domain.character.repository;
 
 import lostark.todo.admin.dto.DashboardResponse;
+import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
@@ -29,4 +30,6 @@ public interface CharacterCustomRepository  {
     void updateDayContentPriceGuardian(DayContent dayContent, Double price);
 
     List<Character> getCharacter(String characterName);
+
+    List<DeletedCharacterResponse> getDeletedCharacter(String username);
 }

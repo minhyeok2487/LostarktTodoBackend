@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
 import lostark.todo.controller.dto.characterDto.CharacterSortDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
@@ -39,7 +40,7 @@ public class CharacterListApi {
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
-            notes="전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
+            notes = "전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
                     "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
                     "캐릭터 추가 및 삭제 ",
             response = CharacterDto.class)
@@ -72,6 +73,22 @@ public class CharacterListApi {
                 throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
             } else {
                 return new ResponseEntity<>(characterService.editSort(friendUsername, characterSortDtoList), HttpStatus.OK);
+            }
+        }
+    }
+
+    @ApiOperation(value = "삭제된 캐릭터 리스트 조회", response = DeletedCharacterResponse.class)
+    @GetMapping("/deleted")
+    public ResponseEntity<?> getDeletedCharacter(@AuthenticationPrincipal String username,
+                                                 @RequestParam(required = false) String friendUsername) {
+        if (friendUsername == null) {
+            return new ResponseEntity<>(characterService.getDeletedCharacter(username), HttpStatus.OK);
+        } else {
+            Friends friend = friendsService.findByFriendUsername(friendUsername, username);
+            if (!friend.getFriendSettings().isSetting()) {
+                throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            } else {
+                return new ResponseEntity<>(characterService.getDeletedCharacter(friendUsername), HttpStatus.OK);
             }
         }
     }

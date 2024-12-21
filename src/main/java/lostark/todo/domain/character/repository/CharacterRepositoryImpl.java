@@ -9,6 +9,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.admin.dto.QDashboardResponse;
+import lostark.todo.domain.character.dto.DeletedCharacterResponse;
+import lostark.todo.domain.character.dto.QDeletedCharacterResponse;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
@@ -38,8 +40,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .leftJoin(todoV2.weekContent, weekContent).fetchJoin()
                 .where(
                         eqMember(username),
-                        eqCharacterId(characterId),
-                        isDeleted(false)
+                        eqCharacterId(characterId)
                 )
                 .fetchOne());
     }
@@ -65,6 +66,22 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
         return factory.selectFrom(character)
                 .leftJoin(character.member, member).fetchJoin()
                 .where(character.characterName.eq(characterName)).fetch();
+    }
+
+    @Override
+    public List<DeletedCharacterResponse> getDeletedCharacter(String username) {
+        return factory.select(new QDeletedCharacterResponse(
+                        character.id, character.characterClassName,
+                        character.characterImage, character.characterName,
+                        character.itemLevel, character.serverName
+                ))
+                .from(character)
+                .leftJoin(character.member, member)
+                .where(
+                        eqMember(username),
+                        isDeleted(true)
+                )
+                .fetch();
     }
 
     @Override

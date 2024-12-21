@@ -8,6 +8,7 @@ import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
@@ -227,7 +228,7 @@ public class CharacterService {
     @Transactional
     public void delete(Long characterId, String username) {
         Character character = get(characterId, username);
-        character.delete();
+        character.updateDelete();
     }
 
     @Transactional
@@ -402,5 +403,15 @@ public class CharacterService {
 
         character.calculateDayTodo(marketRepository.findByNameIn(LEVEL_UP_RESOURCES).stream()
                 .collect(Collectors.toMap(Market::getName, market -> market)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<DeletedCharacterResponse> getDeletedCharacter(String username) {
+        return characterRepository.getDeletedCharacter(username);
+    }
+
+    @Transactional
+    public void updateDeletedCharacter(Character character) {
+        character.updateDelete();
     }
 }

@@ -212,7 +212,8 @@ public class Character extends BaseTimeEntity {
         return this;
     }
 
-    public void delete() {
+    public void updateDelete() {
         this.isDeleted = !this.isDeleted;
     }
+
 }

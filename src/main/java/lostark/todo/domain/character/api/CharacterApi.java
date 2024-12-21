@@ -6,10 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
+import lostark.todo.global.friendPermisson.FriendPermissionType;
+import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +30,8 @@ public class CharacterApi {
 
     private final CharacterService characterService;
     private final FriendsService friendsService;
+    private final UpdateCharacterMethod updateCharacterMethod;
+
 
     @ApiOperation(value = "캐릭터 출력 내용 수정", response = CharacterResponse.class)
     @PatchMapping("/settings")
@@ -45,5 +50,16 @@ public class CharacterApi {
             }
         }
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "삭제된 캐릭터 복구")
+    @PostMapping("/deleted")
+    public ResponseEntity<?> updateDeletedCharacter(@AuthenticationPrincipal String username,
+                                                    @RequestParam(required = false) String friendUsername,
+                                                    @RequestBody BaseCharacterRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+        characterService.updateDeletedCharacter(updateCharacter);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
