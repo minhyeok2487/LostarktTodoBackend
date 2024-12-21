@@ -228,6 +228,9 @@ public class CharacterService {
     @Transactional
     public void delete(Long characterId, String username) {
         Character character = get(characterId, username);
+        if (character.isGoldCharacter()) {
+            throw new IllegalStateException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
+        }
         character.updateDelete();
     }
 
