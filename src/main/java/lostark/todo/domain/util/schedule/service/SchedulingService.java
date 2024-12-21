@@ -10,20 +10,14 @@ import lostark.todo.domain.character.repository.CustomTodoRepository;
 import lostark.todo.global.keyvalue.KeyValueRepository;
 import lostark.todo.domain.util.market.enums.CategoryCode;
 import lostark.todo.domain.util.market.entity.Market;
-import lostark.todo.domain.lostark.notices.Notices;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.util.market.service.MarketService;
-import lostark.todo.domain.lostark.notices.NoticesService;
-import lostark.todo.global.service.webHook.WebHookService;
-import lostark.todo.global.service.webHook.DiscordWebhook;
 import lostark.todo.domain.lostark.client.LostarkMarketApiClient;
-import lostark.todo.domain.lostark.client.LostarkNoticeClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +33,6 @@ public class SchedulingService {
     private final CharacterRepository characterRepository;
     private final CustomTodoRepository customTodoRepository;
     private final ContentRepository contentRepository;
-    private final LostarkNoticeClient lostarkNoticeClient;
-    private final NoticesService noticesService;
-    private final WebHookService webHookService;
     private final ScheduleService scheduleService;
     private final KeyValueRepository keyValueRepository;
 
@@ -50,9 +41,6 @@ public class SchedulingService {
 
     @Value("${API-KEY3}")
     public String apiKey3;
-
-    @Value("${discord.noticeURL}")
-    private String noticeUrl;
 
     /**
      * 매일 오전 0시 거래소 데이터 갱신
@@ -176,22 +164,6 @@ public class SchedulingService {
         characterRepository.updateWeekDayTodoTotalGold();
 
         log.info("커스텀 주간 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.WEEKLY));
-    }
-
-
-    /*로스트아크 새로운 공지사항 가져와서 저장 (매 정각에 자동 실행)*/
-    @Scheduled(cron = "10 0 * * * *", zone = "Asia/Seoul")
-    public void getLostarkNotice() {
-        List<Notices> noticesList = lostarkNoticeClient.getNoticeList(apiKey3);
-        for (Notices notices : noticesList) {
-            if (noticesService.save(notices)) {
-                webHookService.sendMessage(new DiscordWebhook.EmbedObject()
-                        .setTitle("새로운 로스트아크 공지사항이 저장되었습니다.")
-                        .addField("제목", notices.getTitle(), true)
-                        .addField("링크", notices.getLink(), false)
-                        .setColor(Color.GREEN), noticeUrl);
-            }
-        }
     }
 
     // 10분 마다 해당 시간 이전 일정 체크
