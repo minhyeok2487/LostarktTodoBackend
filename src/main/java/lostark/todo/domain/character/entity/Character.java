@@ -182,10 +182,18 @@ public class Character extends BaseTimeEntity {
 
         int chaosGauge = this.dayTodo.getChaosGauge();
 
-        if (chaosGauge >= 40) {
-            price = price*4;
+        if (itemLevel < 1640) {
+            if (chaosGauge >= 40) {
+                price = price*4;
+            } else if (chaosGauge >= 20) {
+                price = price*3;
+            } else {
+                price = price*2;
+            }
         } else {
-            price = price*2;
+            if (chaosGauge >= 40) {
+                price = price*2;
+            }
         }
 
         price = Math.round(price * 100.0) / 100.0;
