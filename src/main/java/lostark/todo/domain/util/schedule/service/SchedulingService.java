@@ -7,12 +7,14 @@ import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
+import lostark.todo.domain.util.schedule.dto.AuctionRequestDto;
 import lostark.todo.global.keyvalue.KeyValueRepository;
 import lostark.todo.domain.util.market.enums.CategoryCode;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.util.market.service.MarketService;
 import lostark.todo.domain.lostark.client.LostarkMarketApiClient;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +45,29 @@ public class SchedulingService {
     @Value("${API-KEY3}")
     public String apiKey3;
 
-    /**
-     * 매일 오전 0시 거래소 데이터 갱신
-     */
+    // 매일 오전 0시 거래소 데이터 갱신
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
     public void updateMarketData() {
+        updateMarketItems();
+        updateAuctionItems();
+    }
+
+    private void updateMarketItems() {
         List<Market> marketList = lostarkMarketApiClient.getMarketData(CategoryCode.재련재료.getValue(), apiKey);
         marketService.updateMarketItemList(marketList, CategoryCode.재련재료.getValue());
+    }
+
+    private void updateAuctionItems() {
+        List<AuctionRequestDto> auctionRequests = List.of(
+                new AuctionRequestDto(3, CategoryCode.보석.getValue(), "5레벨"),
+                new AuctionRequestDto(4, CategoryCode.보석.getValue(), "5레벨")
+        );
+
+        List<JSONObject> auctionData = auctionRequests.stream()
+                .map(request -> lostarkMarketApiClient.getAuctionItems(request, apiKey))
+                .collect(Collectors.toList());
+
+        marketService.updateAuctionItemList(auctionData);
     }
 
     // 매일 오전 6시 일일 숙제 초기화

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +21,10 @@ public class MarketService {
 
     private final MarketRepository marketRepository;
 
-    public List<Market> findAll() {
-        return marketRepository.findAll();
-    }
-
     /**
      * 거래소 데이터 업데이트 메소드
      */
-    public List<Market> updateMarketItemList(List<Market> marketList, int categoryCode) {
+    public void updateMarketItemList(List<Market> marketList, int categoryCode) {
         exception(marketList);
         List<Market> oldList = marketRepository.findByCategoryCode(categoryCode);
         for (Market market : marketList) {
@@ -38,15 +35,25 @@ public class MarketService {
                 marketRepository.save(market);
             }
         }
-        return oldList;
+    }
+
+    public void updateAuctionItemList(List<JSONObject> jsonObjectList) {
+        Map<String, Market> jewelryMap = marketRepository.findByNameIn(List.of("3티어 1레벨 보석", "4티어 1레벨 보석"))
+                .stream()
+                .collect(Collectors.toMap(Market::getName, market -> market));
+
+        jsonObjectList.forEach(jsonObject -> {
+            String tierKey = jsonObject.get("Tier") + "티어 1레벨 보석";
+            Market market = jewelryMap.get(tierKey);
+            if (market != null) {
+                market.updatePrice(jsonObject);
+            }
+        });
     }
 
     private static void exception(List<Market> marketList) {
         if (marketList.isEmpty()) {
             throw new IllegalArgumentException("marketList is Empty");
-        }
-        if (marketList == null) {
-            throw new NullPointerException("marketList is Null");
         }
     }
 

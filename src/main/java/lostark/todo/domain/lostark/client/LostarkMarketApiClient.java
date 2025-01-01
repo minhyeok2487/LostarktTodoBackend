@@ -3,6 +3,7 @@ package lostark.todo.domain.lostark.client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.util.market.entity.Market;
+import lostark.todo.domain.util.schedule.dto.AuctionRequestDto;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -72,30 +73,27 @@ public class LostarkMarketApiClient {
 
     /**
      * 경매장 데이터 가져오기
-     * 3티어, 가장 값이 낮은 아이템 가져옴
+     * 가장 값이 낮은 아이템 가져옴
      */
-//    public JSONObject getAuctionItems(AuctionRequestDtoV1 auctionRequestDtoV1, String apiKey) {
-//        int categoryCode = auctionRequestDtoV1.getCategoryCode();
-//        String itemName = auctionRequestDtoV1.getItemName();
-//        try {
-//            String link = "https://developer-lostark.game.onstove.com/auctions/items";
-//            String parameter = "{"
-//                    + "Sort : \"BUY_PRICE\""
-//                    + ",CategoryCode : " + categoryCode
-//                    + ",ItemTier : 3"
-//                    + ",ItemName : \""+ itemName +"\""
-//                    + ",PageNo : 1"
-//                    + ",SortCondition : \"ASC\""
-//                    + "}";
-//            InputStreamReader inputStreamReader = lostarkApiService.lostarkPostApi(link, parameter, apiKey);
-//            JSONParser parser = new JSONParser();
-//            JSONObject jsonObject = (JSONObject) parser.parse(inputStreamReader);
-//
-//            JSONArray jsonArray = (JSONArray) jsonObject.get("Items");
-//            JSONObject item = (JSONObject) jsonArray.get(0);
-//            return item;
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public JSONObject getAuctionItems(AuctionRequestDto request, String apiKey) {
+        try {
+            String link = "https://developer-lostark.game.onstove.com/auctions/items";
+            String parameter = "{"
+                    + "Sort : \"BUY_PRICE\""
+                    + ",CategoryCode : " + request.getCategoryCode()
+                    + ",ItemTier : " + request.getItemTier()
+                    + ",ItemName : \""+ request.getItemName() +"\""
+                    + ",PageNo : 1"
+                    + ",SortCondition : \"ASC\""
+                    + "}";
+            InputStreamReader inputStreamReader = lostarkApiClient.lostarkPostApi(link, parameter, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(inputStreamReader);
+
+            JSONArray jsonArray = (JSONArray) jsonObject.get("Items");
+            return (JSONObject) jsonArray.get(0);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

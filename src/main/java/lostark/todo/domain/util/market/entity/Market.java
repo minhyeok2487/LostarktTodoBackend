@@ -37,26 +37,27 @@ public class Market extends BaseTimeEntity {
 
     private int categoryCode;
 
-
-    public static Market createAuctionItem(JSONObject item, String itemName, int categoryCode) {
-        JSONObject actionInfo = (JSONObject) item.get("AuctionInfo");
-        Market market = new Market();
-        market.lostarkMarketId = 0;
-        market.yDayAvgPrice = 0;
-        market.currentMinPrice = Integer.parseInt(actionInfo.get("BuyPrice").toString());
-        market.recentPrice = Integer.parseInt(actionInfo.get("BuyPrice").toString());
-        market.grade = item.get("Grade").toString();
-        market.icon = item.get("Icon").toString();
-        market.name = itemName;
-        market.bundleCount = 1;
-        market.categoryCode = categoryCode;
-        return market;
-    }
-
-    public Market changeData(Market news) {
+    public void changeData(Market news) {
         this.yDayAvgPrice = news.getYDayAvgPrice();
         this.currentMinPrice = news.getCurrentMinPrice();
         this.recentPrice = news.getRecentPrice();
-        return this;
     }
+
+    public void updatePrice(JSONObject jsonObject) {
+        JSONObject auctionInfo = (JSONObject) jsonObject.get("AuctionInfo");
+        if (auctionInfo == null || !auctionInfo.containsKey("BuyPrice")) {
+            throw new IllegalArgumentException("Invalid AuctionInfo data");
+        }
+
+        int price = calculatePrice(auctionInfo.get("BuyPrice").toString());
+        this.yDayAvgPrice = price;
+        this.currentMinPrice = price;
+        this.recentPrice = price;
+    }
+
+    private int calculatePrice(String buyPrice) {
+        final int CONVERSION_RATE = 81;
+        return Integer.parseInt(buyPrice) / CONVERSION_RATE;
+    }
+
 }
