@@ -48,6 +48,9 @@ public class Settings {
    @ColumnDefault("false")
    private boolean linkCubeCal;
 
+   @ColumnDefault("false")
+   private boolean dayTodoGroupCheck;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -60,6 +63,7 @@ public class Settings {
       this.goldCheckVersion = false;
       this.goldCheckPolicyEnum = GoldCheckPolicyEnum.TOP_THREE_POLICY;
       this.linkCubeCal = false;
+      this.dayTodoGroupCheck = false;
    }
 
    public void update(String name, boolean value) {
