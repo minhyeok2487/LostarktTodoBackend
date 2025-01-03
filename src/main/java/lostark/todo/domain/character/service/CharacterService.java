@@ -22,7 +22,6 @@ import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.TodoV2;
 import lostark.todo.domain.character.entity.Character;
-import lostark.todo.domain.character.enums.ChallengeContentEnum;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import org.springframework.stereotype.Service;
@@ -65,8 +64,8 @@ public class CharacterService {
 
     // 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
     @Transactional
-    public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {
-        return character.calculateDayTodo(character, contentResource);
+    public void calculateDayTodo(Character character, Map<String, Market> contentResource) {
+        character.calculateDayTodo(character, contentResource);
     }
 
     private void validateGauge(Integer gauge, int max) {
@@ -89,18 +88,6 @@ public class CharacterService {
             throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
         }
         return character.updateGoldCharacter();
-    }
-
-    public List<Character> findCharacterListServerName(Member member, String serverName) {
-        return characterRepository.findCharacterListServerName(member, serverName);
-    }
-
-    public List<Character> updateChallenge(Member member, String serverName, ChallengeContentEnum content) {
-        List<Character> characterList = findCharacterListServerName(member, serverName);
-        for (Character character : characterList) {
-            character.updateChallenge(content);
-        }
-        return characterList;
     }
 
     /**
@@ -142,21 +129,24 @@ public class CharacterService {
     @Transactional
     public void updateRaidGoldCheck(Character character, String weekCategory, boolean updateValue) {
         raidGoldCheckCount(character, updateValue);
-        long count = character.getTodoV2List().stream()
-                .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(weekCategory))
-                .peek(TodoV2::updateGoldCheck)
-                .count();
 
-        // 레이드를 등록한 다음 -> 골드 획득 지정
-        if (count == 0) {
+        List<TodoV2> todoV2List = character.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(weekCategory))
+                .toList();
+
+        // 레이드를 등록한 후 -> 골드 획득을 지정
+        if (todoV2List.isEmpty()) {
             throw new IllegalArgumentException("레이드를 먼저 등록해주십시오.");
         }
+
+        todoV2List.forEach(TodoV2::updateGoldCheck);
     }
 
 
-    public Character updateGoldCheckVersion(Character character) {
+
+    @Transactional
+    public void updateGoldCheckVersion(Character character) {
         character.getSettings().updateGoldCheckVersion();
-        return character;
     }
 
     public List<CharacterDto> updateDtoSortedList(List<Character> characterList) {

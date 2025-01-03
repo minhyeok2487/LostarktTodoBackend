@@ -8,7 +8,6 @@ import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.member.entity.Member;
-import lostark.todo.domain.character.enums.ChallengeContentEnum;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.StringUtils;
 
@@ -104,15 +103,6 @@ public class Character extends BaseTimeEntity {
     public void createImage(Object characterImage) {
         if (characterImage != null) {
             this.characterImage = characterImage.toString();
-        }
-    }
-
-    public void updateChallenge(ChallengeContentEnum content) {
-        if (content == ChallengeContentEnum.Guardian) {
-            this.challengeGuardian = !this.challengeGuardian;
-        }
-        if (content == ChallengeContentEnum.Abyss) {
-            this.challengeAbyss = !this.challengeAbyss;
         }
     }
 
