@@ -417,4 +417,10 @@ public class CharacterService {
     public void updateDeletedCharacter(Character character) {
         character.updateDelete();
     }
+
+    // 캐릭터 일일 컨텐츠 체크 전체 업데이트(출력한 내용만)
+    @Transactional
+    public void updateDayCheckAll(Character character) {
+        character.updateDayCheckAll();
+    }
 }

@@ -16,6 +16,8 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 
+import static lostark.todo.domain.util.GlobalMethods.checkAndUpdate;
+
 
 @Getter
 @Setter
@@ -224,4 +226,9 @@ public class Character extends BaseTimeEntity {
         this.isDeleted = !this.isDeleted;
     }
 
+    public void updateDayCheckAll() {
+        checkAndUpdate(this.getSettings().isShowEpona(), this.getDayTodo()::updateCheckEponaAll);
+        checkAndUpdate(this.getSettings().isShowChaos(), this.getDayTodo()::updateCheckChaos);
+        checkAndUpdate(this.getSettings().isShowGuardian(), this.getDayTodo()::updateCheckGuardian);
+    }
 }

@@ -47,8 +47,6 @@ public class DayTodo {
 
     private double guardianGold;
 
-    private boolean eponaCheck;
-
     @Size(max = 3)
     private int eponaCheck2;
 
@@ -78,7 +76,6 @@ public class DayTodo {
                 ", guardianCheck=" + guardianCheck +
                 ", guardianGauge=" + guardianGauge +
                 ", guardianGold=" + guardianGold +
-                ", eponaCheck=" + eponaCheck +
                 ", eponaCheck2=" + eponaCheck2 +
                 ", eponaGauge=" + eponaGauge +
                 '}';
