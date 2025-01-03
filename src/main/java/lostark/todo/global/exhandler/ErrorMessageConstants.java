@@ -16,7 +16,4 @@ public class ErrorMessageConstants {
     public static final String CUSTOM_TODO_NOT_FOUND = "등록되지 않은 커스텀숙제 입니다.";
 
     public static final String FRIEND_PERMISSION_DENIED = "깐부 권한이 없습니다.";
-
-    public static final String DAYTODO_GROUP_CHECK_IS_FALSE = "먼저 일일숙제 전체 체크 설정을 해주세요";
-
 }

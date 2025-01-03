@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import static lostark.todo.global.Constant.LEVEL_UP_RESOURCES;
 import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_FOUND;
-import static lostark.todo.global.exhandler.ErrorMessageConstants.DAYTODO_GROUP_CHECK_IS_FALSE;
 import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 
 @Service
@@ -412,10 +411,6 @@ public class CharacterService {
     // 캐릭터 일일 컨텐츠 체크 전체 업데이트(출력한 내용만)
     @Transactional
     public void updateDayCheckAll(Character character) {
-        if(character.getSettings().isDayTodoGroupCheck()) {
-            character.updateDayCheckAll();
-        } else {
-            throw new IllegalStateException(DAYTODO_GROUP_CHECK_IS_FALSE);
-        }
+        character.updateDayCheckAll();
     }
 }

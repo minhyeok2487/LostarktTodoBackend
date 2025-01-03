@@ -10,9 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static lostark.todo.global.exhandler.ErrorMessageConstants.DAYTODO_GROUP_CHECK_IS_FALSE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class CharacterServiceTest {
@@ -26,7 +23,6 @@ class CharacterServiceTest {
         //given
         Member mockMember = MemberTestData.createMockMember();
         Character mockCharacter = mockMember.getCharacters().get(0);
-        mockCharacter.getSettings().setDayTodoGroupCheck(true);
 
         //when
         characterService.updateDayCheckAll(mockCharacter);
@@ -43,7 +39,6 @@ class CharacterServiceTest {
         //given
         Member mockMember = MemberTestData.createMockMember();
         Character mockCharacter = mockMember.getCharacters().get(0);
-        mockCharacter.getSettings().setDayTodoGroupCheck(true);
 
         //when
         mockCharacter.getSettings().setShowEpona(false);
@@ -53,20 +48,5 @@ class CharacterServiceTest {
         Assertions.assertThat(mockCharacter.getDayTodo().getEponaCheck2()).isEqualTo(0);
         Assertions.assertThat(mockCharacter.getDayTodo().getChaosCheck()).isEqualTo(2);
         Assertions.assertThat(mockCharacter.getDayTodo().getGuardianCheck()).isEqualTo(1);
-    }
-
-    @DisplayName("캐릭터 일일컨텐츠 체크 전체 업데이트 실패 - 전체 체크 설정")
-    @Test
-    void updateDayCheckAll_Failed_IsDayTodoGroupCheck() {
-        //given
-        Member mockMember = MemberTestData.createMockMember();
-        Character mockCharacter = mockMember.getCharacters().get(0);
-
-        //when & then
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                characterService.updateDayCheckAll(mockCharacter));
-
-        assertThat(exception.getMessage())
-                .isEqualTo(DAYTODO_GROUP_CHECK_IS_FALSE);
     }
 }
