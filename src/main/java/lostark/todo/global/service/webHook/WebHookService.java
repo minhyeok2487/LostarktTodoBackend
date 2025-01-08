@@ -2,6 +2,7 @@ package lostark.todo.global.service.webHook;
 
 import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,7 +14,8 @@ import java.io.IOException;
 @Service
 public class WebHookService {
 
-    private String url = "https://discord.com/api/webhooks/1186118216452427776/FkY1W_sn60sZNyxGS5yjTzazuDL6x3op6kNkVeNXKamW1Kp5_Q7BoXdGxoBedcRFY3FQ";
+    @Value("${discord.webhookURL}")
+    private String url;
 
     public void sendMessage(DiscordWebhook.EmbedObject embedObject, String url) {
         DiscordWebhook webhook = new DiscordWebhook(url);
