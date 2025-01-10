@@ -6,6 +6,7 @@ import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
+import lostark.todo.controller.dtoV2.admin.UpdateAdsDateRequest;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
 import lostark.todo.domain.member.dto.SaveAdsRequest;
 import lostark.todo.domain.member.entity.Ads;
@@ -135,6 +136,7 @@ public class MemberService {
     }
 
     //광고 제거 기능 신청
+    @Transactional
     public void saveAds(String username, SaveAdsRequest request) {
         Member member = memberRepository.get(request.getMail());
         Ads ads = Ads.builder()
@@ -144,5 +146,11 @@ public class MemberService {
                 .check(false)
                 .build();
         adsRepository.save(ads);
+    }
+
+    @Transactional
+    public void updateAdsDate(UpdateAdsDateRequest request) {
+        Member member = memberRepository.get(request.getUsername());
+        member.updateAdsDate(request.getDate());
     }
 }

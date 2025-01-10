@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
+import lostark.todo.controller.dtoV2.admin.UpdateAdsDateRequest;
 import lostark.todo.domain.member.service.MemberService;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,5 +28,12 @@ public class AdminMemberController {
         PageRequest pageRequest = PageRequest.of(page-1, limit);
         PageImpl<SearchAdminMemberResponse> memberList = memberService.searchAdminMember(request, pageRequest);
         return new ResponseEntity<>(memberList, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "광고 제거 날짜 변경")
+    @PostMapping("/ads")
+    public ResponseEntity<?> updateAdsDate(@RequestBody UpdateAdsDateRequest request) {
+        memberService.updateAdsDate(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

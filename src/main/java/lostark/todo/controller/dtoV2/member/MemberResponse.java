@@ -7,6 +7,7 @@ import lostark.todo.domain.member.entity.Member;
 
 import javax.validation.constraints.NotEmpty;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static lostark.todo.global.Constant.TEST_USERNAME;
@@ -33,12 +34,17 @@ public class MemberResponse {
     @ApiModelProperty(example = "권한")
     private Role role;
 
+    @NotEmpty
+    @ApiModelProperty(example = "광고 제거 계졍")
+    private boolean ads;
+
     public static MemberResponse toDto(Member member) {
         return MemberResponse.builder()
                 .memberId(member.getId())
                 .username(createUsername(member))
                 .mainCharacter(createMainCharacter(member))
                 .role(member.getRole())
+                .ads(isAds(member))
                 .build();
     }
 
@@ -54,5 +60,13 @@ public class MemberResponse {
                 .findFirst()
                 .map(MainCharacterResponse::new)
                 .orElseGet(MainCharacterResponse::new);
+    }
+
+    private static boolean isAds(Member member) {
+        if (member.getAdsDate() == null) {
+            return false;
+        } else {
+            return member.getAdsDate().isAfter(LocalDateTime.now());
+        }
     }
 }

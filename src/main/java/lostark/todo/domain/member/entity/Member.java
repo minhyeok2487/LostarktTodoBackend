@@ -12,6 +12,7 @@ import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.notification.entity.Notification;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -45,6 +46,8 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private LocalDateTime adsDate;
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
@@ -106,5 +109,10 @@ public class Member extends BaseTimeEntity {
     public String getMainCharacterName() {
         return this.mainCharacter != null ? this.mainCharacter :
                 this.characters.get(0).getCharacterName();
+    }
+
+    // 광고 제거 기능 날짜 변경
+    public void updateAdsDate(long date) {
+        this.adsDate = LocalDateTime.now().plusDays(date);
     }
 }
