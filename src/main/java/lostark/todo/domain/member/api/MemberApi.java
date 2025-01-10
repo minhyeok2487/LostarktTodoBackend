@@ -9,8 +9,11 @@ import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
 import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
 import lostark.todo.controller.dtoV2.member.EditProviderRequest;
 import lostark.todo.controller.dtoV2.member.MemberResponse;
+import lostark.todo.domain.member.dto.SaveAdsRequest;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
+import lostark.todo.global.event.entity.GenericEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +29,7 @@ import javax.validation.Valid;
 public class MemberApi {
 
     private final MemberService memberService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @ApiOperation(value = "회원 정보 조회 API",
             response = MemberResponse.class)
@@ -65,6 +69,26 @@ public class MemberApi {
     public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
                                           @RequestBody EditProviderRequest request) {
         memberService.editProvider(username, request.getPassword());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "광고 제거 기능 신청")
+    @PostMapping("/ads")
+    @NotTestMember
+    public ResponseEntity<?> saveAds(
+            @AuthenticationPrincipal String username,
+            @RequestBody @Valid SaveAdsRequest request) {
+        memberService.saveAds(username, request);
+
+        String subject = "광고 제거 기능 신청";
+        String content = String.format("신청 이메일: %s, 입금자: %s", request.getMail(), request.getName());
+
+        eventPublisher.publishEvent(new GenericEvent(
+                eventPublisher,
+                subject,
+                content,
+                username
+        ));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.entity.Member;
-import lostark.todo.global.event.entity.CommentEvent;
+import lostark.todo.global.event.entity.GenericEvent;
 import lostark.todo.global.event.entity.MemberEvent;
 import lostark.todo.global.service.webHook.WebHookService;
 import lostark.todo.global.service.webHook.DiscordWebhook;
@@ -29,15 +29,13 @@ public class GenericEventListener {
     private String memberURL;
 
     @Async
-    @EventListener(classes = CommentEvent.class)
-    public void handleEvent(CommentEvent commentEvent) {
-        if (!commentEvent.getMember().getRole().equals(Role.ADMIN)) {
-            webHookService.sendMessage(new DiscordWebhook.EmbedObject()
-                    .setTitle("새로운 방명록이 작성되었습니다.")
-                    .setDescription("<@&1184700819308822570>")
-                    .addField("내용", commentEvent.getMessage(), true)
-                    .setColor(Color.BLUE), noticeUrl);
-        }
+    @EventListener(classes = GenericEvent.class)
+    public void handleEvent(GenericEvent genericEvent) {
+        webHookService.sendMessage(new DiscordWebhook.EmbedObject()
+                .setTitle(genericEvent.getTitle())
+                .setDescription(genericEvent.getUsername())
+                .addField("내용", genericEvent.getMessage(), true)
+                .setColor(Color.BLUE), noticeUrl);
     }
 
     @Async

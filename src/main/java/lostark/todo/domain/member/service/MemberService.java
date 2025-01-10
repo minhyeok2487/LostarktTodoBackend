@@ -7,6 +7,9 @@ import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.controller.dtoV2.auth.ResetPasswordRequest;
+import lostark.todo.domain.member.dto.SaveAdsRequest;
+import lostark.todo.domain.member.entity.Ads;
+import lostark.todo.domain.member.repository.AdsRepository;
 import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
@@ -38,6 +41,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final MarketRepository marketRepository;
+    private final AdsRepository adsRepository;
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
     @Transactional(readOnly = true)
@@ -128,5 +132,17 @@ public class MemberService {
     @Transactional(readOnly = true)
     public PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest) {
         return memberRepository.searchAdminMember(request, pageRequest);
+    }
+
+    //광고 제거 기능 신청
+    public void saveAds(String username, SaveAdsRequest request) {
+        Member member = memberRepository.get(request.getMail());
+        Ads ads = Ads.builder()
+                .name(request.getName())
+                .memberId(member.getId())
+                .proposerEmail(username)
+                .check(false)
+                .build();
+        adsRepository.save(ads);
     }
 }

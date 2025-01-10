@@ -7,15 +7,18 @@ import org.springframework.context.ApplicationEvent;
 
 @Slf4j
 @Getter
-public class CommentEvent extends ApplicationEvent {
+public class GenericEvent extends ApplicationEvent {
+
+    private String title;
 
     private String message;
 
-    private Member member;
+    private String username;
 
-    public CommentEvent(Object source, Member member, String message) {
+    public GenericEvent(Object source, String title, String message, String username) {
         super(source);
-        this.member = member;
+        this.username = username;
+        this.title = title;
         this.message = message;
     }
 }
