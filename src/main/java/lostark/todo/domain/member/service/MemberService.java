@@ -143,7 +143,7 @@ public class MemberService {
                 .name(request.getName())
                 .memberId(member.getId())
                 .proposerEmail(username)
-                .check(false)
+                .checked(false)
                 .build();
         adsRepository.save(ads);
     }

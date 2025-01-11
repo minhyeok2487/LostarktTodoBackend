@@ -26,5 +26,5 @@ public class Ads extends BaseTimeEntity {
 
     private long memberId;
 
-    private boolean check;
+    private boolean checked;
 }
