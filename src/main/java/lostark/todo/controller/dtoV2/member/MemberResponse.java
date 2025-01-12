@@ -38,6 +38,10 @@ public class MemberResponse {
     @ApiModelProperty(example = "광고 제거 계졍")
     private boolean ads;
 
+    @NotEmpty
+    @ApiModelProperty(example = "광고 날짜")
+    private LocalDateTime adsDate;
+
     public static MemberResponse toDto(Member member) {
         return MemberResponse.builder()
                 .memberId(member.getId())
@@ -45,6 +49,7 @@ public class MemberResponse {
                 .mainCharacter(createMainCharacter(member))
                 .role(member.getRole())
                 .ads(isAds(member))
+                .adsDate(member.getAdsDate())
                 .build();
     }
 
