@@ -211,6 +211,14 @@ public class CharacterService {
     }
 
     @Transactional
+    public void delete(Character character) {
+        if (character.isGoldCharacter()) {
+            throw new IllegalStateException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
+        }
+        character.updateDelete();
+    }
+
+    @Transactional
     public void updateCharacterList(String username) {
         // 1. 회원 조회
         Member member = memberRepository.get(username);

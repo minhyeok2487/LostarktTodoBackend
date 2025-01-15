@@ -43,11 +43,11 @@ public class CharacterControllerV4 {
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 
+    //TODO 추후삭제
     @ApiOperation(value = "등록 캐릭터 단일 삭제")
     @DeleteMapping("/{characterId}")
     public ResponseEntity<?> deleteCharacter(@AuthenticationPrincipal String username, @PathVariable Long characterId) {
         characterService.delete(characterId, username);
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 }

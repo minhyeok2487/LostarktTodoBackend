@@ -87,4 +87,15 @@ public class CharacterApi {
         characterService.updateMemo(updateCharacter, request.getMemo());
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "등록 캐릭터 단일 삭제")
+    @DeleteMapping("/{characterId}")
+    public ResponseEntity<?> deleteCharacter(@AuthenticationPrincipal String username,
+                                             @RequestParam(required = false) String friendUsername,
+                                             @PathVariable Long characterId) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                characterId, FriendPermissionType.UPDATE_SETTING);
+        characterService.delete(updateCharacter);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
