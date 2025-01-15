@@ -34,10 +34,6 @@ public class FriendsService {
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
 
-    public List<Friends> findAllByFromMember(Member member) {
-        return friendsRepository.findAllByFromMember(member.getId());
-    }
-
     public void addFriendsRequest(Member toMember, Member fromMember) {
         Friends friends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
         if (friends != null) {

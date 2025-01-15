@@ -141,42 +141,9 @@ public class CharacterService {
         todoV2List.forEach(TodoV2::updateGoldCheck);
     }
 
-
-
     @Transactional
     public void updateGoldCheckVersion(Character character) {
         character.getSettings().updateGoldCheckVersion();
-    }
-
-    public List<CharacterDto> updateDtoSortedList(List<Character> characterList) {
-        return characterList.stream()
-                .map(character -> new CharacterDto().toDtoV2(character))
-                .sorted(Comparator
-                        .comparingInt(CharacterDto::getSortNumber)
-                        .thenComparing(Comparator.comparingDouble(CharacterDto::getItemLevel).reversed()))
-                .collect(Collectors.toList());
-    }
-
-    // 주간 레이드 수익을 계산하는 메서드
-    public double calculateWeekTotalGold(List<Character> characterList) {
-        double weekTotalGold = 0;
-        for (Character character : characterList) {
-            if (!character.getTodoV2List().isEmpty()) {
-                for (TodoV2 todoV2 : character.getTodoV2List()) {
-                    if (todoV2.isChecked()) {
-                        weekTotalGold += todoV2.getGold();
-                    }
-                }
-            }
-        }
-        return weekTotalGold;
-    }
-
-    // 일간 총 수익을 계산하는 메서드
-    public double calculateDayTotalGold(List<Character> characterList) {
-        return characterList.stream()
-                .mapToDouble(character -> character.getDayTodo().getWeekTotalGold())
-                .sum();
     }
 
     public List<DashboardResponse> searchCharactersDashBoard(int limit) {
