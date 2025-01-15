@@ -11,7 +11,6 @@ import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 import static lostark.todo.domain.member.entity.QAds.ads;
 
@@ -53,8 +52,10 @@ public class AdsRepositoryImpl implements AdsCustomRepository {
     }
 
     @Override
-    public Optional<Ads> get(String proposerEmail) {
-        return Optional.ofNullable(factory.selectFrom(ads).where(ads.proposerEmail.eq(proposerEmail)).fetchOne());
+    public List<Ads> search(String proposerEmail) {
+        return factory.selectFrom(ads)
+                .where(ads.proposerEmail.eq(proposerEmail).and(ads.checked.eq(false)))
+                .fetch();
     }
 
     private BooleanExpression ltAdsId(Long adsId) {

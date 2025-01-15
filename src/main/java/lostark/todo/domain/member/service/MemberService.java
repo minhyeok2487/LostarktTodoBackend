@@ -153,7 +153,7 @@ public class MemberService {
         Member member = memberRepository.get(request.getProposerEmail());
         member.updateAdsDate(request.getPrice());
 
-        Optional<Ads> ads = adsRepository.get(request.getProposerEmail());
-        ads.ifPresent(Ads::updateCheck);
+        List<Ads> search = adsRepository.search(request.getProposerEmail());
+        search.forEach(Ads::updateCheck);
     }
 }
