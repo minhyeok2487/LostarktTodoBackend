@@ -27,4 +27,8 @@ public class Ads extends BaseTimeEntity {
     private long memberId;
 
     private boolean checked;
+
+    public void updateCheck() {
+        this.checked = true;
+    }
 }

@@ -7,5 +7,5 @@ public class UpdateAdsDateRequest {
 
     private String username;
 
-    private long date;
+    private long price;
 }

@@ -6,10 +6,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.admin.dto.AdminAdsSearchParams;
 import lostark.todo.domain.admin.dto.AdminAdsSearchResponse;
+import lostark.todo.domain.member.entity.Ads;
 import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static lostark.todo.domain.member.entity.QAds.ads;
 
@@ -48,6 +50,11 @@ public class AdsRepositoryImpl implements AdsCustomRepository {
         }
 
         return new CursorResponse<>(fetch, hasNext);
+    }
+
+    @Override
+    public Optional<Ads> get(String username) {
+        return Optional.ofNullable(factory.selectFrom(ads).where(ads.proposerEmail.eq(username)).fetchOne());
     }
 
     private BooleanExpression ltAdsId(Long adsId) {

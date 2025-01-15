@@ -14,6 +14,7 @@ import lostark.todo.domain.notification.entity.Notification;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 @Getter
@@ -112,7 +113,9 @@ public class Member extends BaseTimeEntity {
     }
 
     // 광고 제거 기능 날짜 변경
-    public void updateAdsDate(long date) {
-        this.adsDate = LocalDateTime.now().plusDays(date);
+    public void updateAdsDate(long donationPrice) {
+        double daysPerUnitPrice = 30.0 / 200.0;
+        long date = (long) Math.floor(donationPrice * daysPerUnitPrice) + 1;
+        this.adsDate = Objects.requireNonNullElseGet(adsDate, LocalDateTime::now).plusDays(date);
     }
 }
