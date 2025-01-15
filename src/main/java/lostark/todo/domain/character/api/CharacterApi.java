@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.SettingRequestDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
@@ -71,6 +74,17 @@ public class CharacterApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
         characterService.updateGoldCharacter(updateCharacter);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장", response = CharacterResponse.class)
+    @PostMapping("/memo")
+    public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username,
+                                        @RequestParam(required = false) String friendUsername,
+                                        @RequestBody @Valid UpdateMemoRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+        characterService.updateMemo(updateCharacter, request.getMemo());
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 }

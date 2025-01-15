@@ -197,6 +197,11 @@ public class CharacterService {
     }
 
     @Transactional
+    public void updateMemo(Character character, String memo) {
+        character.updateMemo(memo);
+    }
+
+    @Transactional
     public void delete(Long characterId, String username) {
         Character character = get(characterId, username);
         if (character.isGoldCharacter()) {

@@ -1,21 +1,13 @@
 package lostark.todo.controller.dtoV2.character;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lostark.todo.domain.character.dto.BaseCharacterRequest;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class UpdateMemoRequest {
-
-    @NotNull
-    private long characterId;
+@EqualsAndHashCode(callSuper = true)
+public class UpdateMemoRequest extends BaseCharacterRequest {
 
     @Size(max = 100)
     private String memo;
