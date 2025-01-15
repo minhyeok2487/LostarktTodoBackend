@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class UpdateAdsDateRequest {
 
-    private String username;
+    private String proposerEmail;
 
     private long price;
 }

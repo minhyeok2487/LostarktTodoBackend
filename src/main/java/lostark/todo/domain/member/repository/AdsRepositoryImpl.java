@@ -53,8 +53,8 @@ public class AdsRepositoryImpl implements AdsCustomRepository {
     }
 
     @Override
-    public Optional<Ads> get(String username) {
-        return Optional.ofNullable(factory.selectFrom(ads).where(ads.proposerEmail.eq(username)).fetchOne());
+    public Optional<Ads> get(String proposerEmail) {
+        return Optional.ofNullable(factory.selectFrom(ads).where(ads.proposerEmail.eq(proposerEmail)).fetchOne());
     }
 
     private BooleanExpression ltAdsId(Long adsId) {

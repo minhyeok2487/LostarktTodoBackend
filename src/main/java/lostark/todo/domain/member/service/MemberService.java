@@ -150,10 +150,10 @@ public class MemberService {
 
     @Transactional
     public void updateAdsDate(UpdateAdsDateRequest request) {
-        Member member = memberRepository.get(request.getUsername());
+        Member member = memberRepository.get(request.getProposerEmail());
         member.updateAdsDate(request.getPrice());
 
-        Optional<Ads> ads = adsRepository.get(request.getUsername());
+        Optional<Ads> ads = adsRepository.get(request.getProposerEmail());
         ads.ifPresent(Ads::updateCheck);
     }
 }

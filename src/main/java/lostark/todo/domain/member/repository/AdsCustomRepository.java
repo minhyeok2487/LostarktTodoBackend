@@ -12,5 +12,5 @@ public interface AdsCustomRepository {
 
     CursorResponse<AdminAdsSearchResponse> search(AdminAdsSearchParams params, PageRequest pageRequest);
 
-    Optional<Ads> get(String username);
+    Optional<Ads> get(String proposerEmail);
 }
