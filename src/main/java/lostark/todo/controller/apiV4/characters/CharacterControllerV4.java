@@ -26,6 +26,7 @@ public class CharacterControllerV4 {
 
     private final CharacterService characterService;
 
+    //TODO 추후삭제
     @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterResponse.class)
     @PatchMapping("/gold-character")
     public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,

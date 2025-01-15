@@ -62,4 +62,15 @@ public class CharacterApi {
         characterService.updateDeletedCharacter(updateCharacter);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterResponse.class)
+    @PatchMapping("/gold-character")
+    public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,
+                                                                 @RequestParam(required = false) String friendUsername,
+                                                                 @RequestBody BaseCharacterRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+        characterService.updateGoldCharacter(updateCharacter);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
 }

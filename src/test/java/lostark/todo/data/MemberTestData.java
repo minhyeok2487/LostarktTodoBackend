@@ -33,8 +33,76 @@ public class MemberTestData {
                 .itemLevel(1640.00)
                 .dayTodo(createMockDayTodo())
                 .settings(new Settings())
+                .goldCharacter(true)
+                .serverName("루페온")
+                .build();
+        Character mockCharacter2 = Character.builder()
+                .characterName("테스트 캐릭터2")
+                .characterLevel(70)
+                .member(member)
+                .itemLevel(1640.00)
+                .dayTodo(createMockDayTodo())
+                .settings(new Settings())
+                .goldCharacter(true)
+                .serverName("루페온")
+                .build();
+        Character mockCharacter3 = Character.builder()
+                .characterName("테스트 캐릭터3")
+                .characterLevel(70)
+                .member(member)
+                .itemLevel(1640.00)
+                .dayTodo(createMockDayTodo())
+                .settings(new Settings())
+                .goldCharacter(true)
+                .serverName("루페온")
+                .build();
+        Character mockCharacter4 = Character.builder()
+                .characterName("테스트 캐릭터4")
+                .characterLevel(70)
+                .member(member)
+                .itemLevel(1640.00)
+                .dayTodo(createMockDayTodo())
+                .settings(new Settings())
+                .goldCharacter(true)
+                .serverName("루페온")
+                .build();
+        Character mockCharacter5 = Character.builder()
+                .characterName("테스트 캐릭터5")
+                .characterLevel(70)
+                .member(member)
+                .itemLevel(1640.00)
+                .dayTodo(createMockDayTodo())
+                .settings(new Settings())
+                .goldCharacter(true)
+                .serverName("루페온")
+                .build();
+        Character mockCharacter6 = Character.builder()
+                .characterName("테스트 캐릭터6")
+                .characterLevel(70)
+                .member(member)
+                .itemLevel(1640.00)
+                .dayTodo(createMockDayTodo())
+                .settings(new Settings())
+                .goldCharacter(false)
+                .serverName("루페온")
+                .build();
+        Character mockCharacter7 = Character.builder()
+                .characterName("테스트 캐릭터7")
+                .characterLevel(70)
+                .member(member)
+                .itemLevel(1640.00)
+                .dayTodo(createMockDayTodo())
+                .settings(new Settings())
+                .goldCharacter(false)
+                .serverName("루페온")
                 .build();
         characterList.add(mockCharacter1);
+        characterList.add(mockCharacter2);
+        characterList.add(mockCharacter3);
+        characterList.add(mockCharacter4);
+        characterList.add(mockCharacter5);
+        characterList.add(mockCharacter6);
+        characterList.add(mockCharacter7);
         return characterList;
     }
 

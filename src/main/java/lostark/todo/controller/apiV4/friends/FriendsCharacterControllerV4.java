@@ -31,6 +31,7 @@ public class FriendsCharacterControllerV4 {
     private final CharacterService characterService;
     private final FriendsService friendsService;
 
+    //TODO 추후삭제
     @ApiOperation(value = "깐부 골드 획득 캐릭터 지정/해제", response = CharacterResponse.class)
     @PatchMapping("/{friendUsername}/gold-character")
     public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,
