@@ -93,8 +93,8 @@ public class CharacterWeekApi {
     @ApiOperation(value = "캐릭터 주간 레이드 버스 골드 수정", response = CharacterResponse.class)
     @PostMapping("/raid/bus")
     public ResponseEntity<?> updateWeekRaidBusGold(@AuthenticationPrincipal String username,
-                                                 @RequestParam(required = false) String friendUsername,
-                                                 @RequestBody UpdateWeekRaidBusGold request) {
+                                                   @RequestParam(required = false) String friendUsername,
+                                                   @RequestBody UpdateWeekRaidBusGold request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         raidBusGoldService.UpdateWeekRaidBusGold(updateCharacter, request);
@@ -185,14 +185,25 @@ public class CharacterWeekApi {
 
     @ApiOperation(value = "캐릭터 레이드 골드 체크 방식 업데이트", response = CharacterDto.class)
     @PatchMapping("/gold-check-version")
-    public ResponseEntity<?> updateDayTodoCheck(@AuthenticationPrincipal String username,
-                                                @RequestParam(required = false) String friendUsername,
-                                                @RequestBody @Valid BaseCharacterRequest request) {
+    public ResponseEntity<?> updateGoldCheckVersion(@AuthenticationPrincipal String username,
+                                                    @RequestParam(required = false) String friendUsername,
+                                                    @RequestBody @Valid BaseCharacterRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         characterService.updateGoldCheckVersion(updateCharacter);
 
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 레이드 관문 더보기 업데이트", response = CharacterResponse.class)
+    @PostMapping("/raid/more-reward")
+    public ResponseEntity<?> updateRaidMoreRewardCheck(@AuthenticationPrincipal String username,
+                                                       @RequestParam(required = false) String friendUsername,
+                                                       @RequestBody UpdateWeekRaidMoreRewardCheckRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_RAID);
+        todoServiceV2.updateRaidMoreRewardCheck(updateCharacter, request);
         return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 }

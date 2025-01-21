@@ -47,6 +47,9 @@ public class TodoV2 extends BaseTimeEntity {
     @ColumnDefault("false")
     private boolean goldCheck;
 
+    @ColumnDefault("false")
+    private boolean moreRewardCheck;
+
     public void updateMessage(String message) {
         this.message = StringUtils.hasText(message) ? message : null;
     }
@@ -71,5 +74,10 @@ public class TodoV2 extends BaseTimeEntity {
 
     public void updateGoldCheck() {
         this.goldCheck = !this.goldCheck;
+    }
+
+    public void updateRaidMoreRewardCheck() {
+        this.gold -= this.weekContent.getMoreRewardGold();
+        this.moreRewardCheck = true;
     }
 }

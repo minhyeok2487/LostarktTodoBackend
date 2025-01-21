@@ -32,6 +32,9 @@ public class TopThreePolicy implements GoldCheckPolicy {
                             exited.setCurrentGate(todo.getWeekContent().getGate());
                         }
                         exitedCheck = true;
+
+                        //더보기 리스트 업데이트
+                        exited.getMoreRewardCheckList().add(todo.isMoreRewardCheck());
                         break;
                     }
                 }

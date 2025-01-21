@@ -37,6 +37,8 @@ public class WeekContent extends Content{
 
     private int coolTime; //주기
 
+    private int moreRewardGold; //더보기 골드
+
     @Override
     public String toString() {
         return "WeekContent{" +

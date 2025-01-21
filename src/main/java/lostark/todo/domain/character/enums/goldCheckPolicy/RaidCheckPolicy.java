@@ -4,8 +4,7 @@ import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.entity.TodoV2;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class RaidCheckPolicy implements GoldCheckPolicy {
     @Override
@@ -33,6 +32,9 @@ public class RaidCheckPolicy implements GoldCheckPolicy {
                             exited.setCurrentGate(todo.getWeekContent().getGate());
                         }
                         exitedCheck = true;
+
+                        //더보기 리스트 업데이트
+                        exited.getMoreRewardCheckList().add(todo.isMoreRewardCheck());
                         break;
                     }
                 }

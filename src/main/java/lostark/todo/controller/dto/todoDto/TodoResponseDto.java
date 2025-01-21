@@ -4,6 +4,8 @@ import lombok.*;
 import lostark.todo.domain.util.content.enums.WeekContentCategory;
 import lostark.todo.domain.character.entity.TodoV2;
 
+import java.util.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +37,8 @@ public class TodoResponseDto {
 
     private boolean goldCheck;
 
+    private List<Boolean> moreRewardCheckList;
+
     public TodoResponseDto toDto(TodoV2 todo, boolean goldCheckVersion) {
         TodoResponseDto build = TodoResponseDto.builder()
                 .id(todo.getId())
@@ -51,6 +55,7 @@ public class TodoResponseDto {
                 .sortNumber(todo.getSortNumber())
                 .goldCheck(todo.isGoldCheck())
                 .characterClassName(todo.getCharacter().getCharacterClassName())
+                .moreRewardCheckList(new ArrayList<>(Collections.singleton(todo.isMoreRewardCheck())))
                 .build();
 
         if(goldCheckVersion && !todo.isGoldCheck()) {

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
 import lostark.todo.domain.character.dto.UpdateWeekRaidMessageRequest;
+import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
 import lostark.todo.domain.character.dto.UpdateWeekRaidSortRequest;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.util.content.entity.WeekContent;
@@ -236,5 +237,21 @@ public class TodoServiceV2 {
                                 .orElse(todoV2.getSortNumber())
                 )));
     }
+
+    @Transactional
+    public void updateRaidMoreRewardCheck(Character updateCharacter, UpdateWeekRaidMoreRewardCheckRequest request) {
+        updateCharacter.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(request.getWeekCategory())
+                        && todoV2.getWeekContent().getGate() == request.getGate())
+                .findFirst()
+                .ifPresent(todoV2 -> {
+                    if (todoV2.isMoreRewardCheck()) {
+                        throw new IllegalStateException("이미 더보기를 한 관문입니다.");
+                    }
+                    todoV2.updateRaidMoreRewardCheck();
+                });
+    }
+
+
 
 }
