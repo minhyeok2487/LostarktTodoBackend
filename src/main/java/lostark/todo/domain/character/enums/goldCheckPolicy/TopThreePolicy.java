@@ -26,7 +26,7 @@ public class TopThreePolicy implements GoldCheckPolicy {
                                 exited.setName(exited.getName() + " " + todo.getWeekContent().getWeekContentCategory()+ " " +todo.getWeekContent().getGate());
                             }
                         }
-                        exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                        exited.setGold(exited.getGold()+todo.getGold());
                         exited.setTotalGate(todo.getWeekContent().getGate());
                         if(todo.isChecked()) {
                             exited.setCurrentGate(todo.getWeekContent().getGate());

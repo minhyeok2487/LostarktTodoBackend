@@ -25,7 +25,7 @@ public class RaidCheckPolicy implements GoldCheckPolicy {
                             }
                         }
                         if (exited.isGoldCheck()) {
-                            exited.setGold(exited.getGold()+todo.getWeekContent().getGold());
+                            exited.setGold(exited.getGold()+todo.getGold());
                         }
                         exited.setTotalGate(todo.getWeekContent().getGate());
                         if(todo.isChecked()) {
