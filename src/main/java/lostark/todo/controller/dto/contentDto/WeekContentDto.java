@@ -26,6 +26,10 @@ public class WeekContentDto {
 
     private int gold; //골드
 
+    private boolean moreRewardCheck; //더보기 체크
+
+    private int busGold; //버스 골드
+
     private boolean checked; //선택
 
     private int coolTime; //주기
@@ -41,6 +45,8 @@ public class WeekContentDto {
                 .checked(false)
                 .gate(weekContent.getGate())
                 .gold(weekContent.getGold())
+                .moreRewardCheck(false)
+                .busGold(0)
                 .name(weekContent.getName())
                 .coolTime(weekContent.getCoolTime())
                 .goldCheck(false)

@@ -1,7 +1,9 @@
 package lostark.todo.domain.util.content.service;
 
 import lombok.RequiredArgsConstructor;
+import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
+import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.util.content.entity.Content;
 import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.util.content.repository.ContentRepository;
@@ -35,5 +37,26 @@ public class ContentService {
     @Transactional(readOnly = true)
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
         return contentRepository.getScheduleRaidCategory();
+    }
+
+    public List<WeekContentDto> getTodoForm(Character updateCharacter) {
+        List<WeekContent> allWeekContent = contentRepository.findAllWeekContent(updateCharacter.getItemLevel());
+        if (allWeekContent.isEmpty()) {
+            throw new IllegalStateException("아이템레벨: " + updateCharacter.getItemLevel() + "보다 작은 레이드가 없습니다.");
+        }
+
+        return allWeekContent.stream()
+                .map(weekContent -> {
+                    WeekContentDto weekContentDto = new WeekContentDto().toDto(weekContent);
+                    updateCharacter.getTodoV2List().stream()
+                            .filter(todo -> todo.getWeekContent().equals(weekContent))
+                            .findFirst()
+                            .ifPresent(todo -> {
+                                weekContentDto.setChecked(true);
+                                weekContentDto.setGoldCheck(todo.isGoldCheck());
+                            });
+                    return weekContentDto;
+                })
+                .toList();
     }
 }

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDto;
+import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
@@ -76,6 +77,18 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "캐릭터 주간 숙제 추가폼", response = WeekContentDto.class)
+    @GetMapping("/raid/form")
+    public ResponseEntity<?> getTodoForm(@AuthenticationPrincipal String username,
+                                         @RequestParam(required = false) String friendUsername,
+                                         @RequestParam Long characterId) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                characterId, FriendPermissionType.UPDATE_RAID);
+        List<WeekContentDto> result = contentService.getTodoForm(updateCharacter);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+
     @ApiOperation(value = "캐릭터 주간 레이드 check 수정", response = CharacterResponse.class)
     @PostMapping("/raid/check")
     public ResponseEntity<?> updateWeekRaidCheck(@AuthenticationPrincipal String username,
@@ -135,8 +148,8 @@ public class CharacterWeekApi {
     @ApiOperation(value = "캐릭터 큐브 티켓 업데이트", response = CharacterResponse.class)
     @PostMapping("/cube")
     public ResponseEntity<?> updateWeekCubeTicket(@AuthenticationPrincipal String username,
-                                            @RequestParam(required = false) String friendUsername,
-                                            @RequestBody UpdateWeekCubeRequest request) {
+                                                  @RequestParam(required = false) String friendUsername,
+                                                  @RequestBody UpdateWeekCubeRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateCubeTicket(updateCharacter, request.getNum());
