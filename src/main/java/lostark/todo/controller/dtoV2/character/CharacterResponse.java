@@ -163,6 +163,15 @@ public class CharacterResponse {
             }
         }
 
+        //버스 골드 계산
+        character.getRaidBusGoldList().forEach(gold -> {
+            characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + gold.getBusGold());
+            todoResponseDtoList.stream()
+                    .filter(todo -> todo.getWeekCategory().equals(gold.getWeekCategory()))
+                    .findFirst()
+                    .ifPresent(todoResponseDto -> todoResponseDto.setGold(todoResponseDto.getGold() + gold.getBusGold()));
+        });
+
         //한 컨텐츠 완료 했는지 체크
         for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
             if (todoResponseDto.getCurrentGate() == todoResponseDto.getTotalGate()) {

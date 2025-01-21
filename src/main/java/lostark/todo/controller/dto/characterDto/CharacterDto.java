@@ -6,14 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.controller.dto.todoDto.TodoResponseDto;
-import lostark.todo.domain.character.entity.Character;
-import lostark.todo.domain.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
 import lostark.todo.domain.character.entity.Settings;
 import lostark.todo.domain.util.content.entity.DayContent;
-import lostark.todo.domain.character.entity.TodoV2;
-
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -104,74 +98,4 @@ public class CharacterDto {
 
     @ApiModelProperty(notes = "큐브 티켓 갯수")
     private int cubeTicket;
-
-    public CharacterDto toDtoV2(Character character) {
-
-        CharacterDto characterDto = CharacterDto.builder()
-                .id(character.getId())
-                .characterName(character.getCharacterName())
-                .characterImage(character.getCharacterImage())
-                .characterClassName(character.getCharacterClassName())
-                .serverName(character.getServerName())
-                .itemLevel(character.getItemLevel())
-                .sortNumber(character.getSortNumber())
-                .chaosCheck(character.getDayTodo().getChaosCheck())
-                .chaosGauge(character.getDayTodo().getChaosGauge())
-                .chaos(character.getDayTodo().getChaos())
-                .chaosGold(character.getDayTodo().getChaosGold())
-                .guardianCheck(character.getDayTodo().getGuardianCheck())
-                .guardianGauge(character.getDayTodo().getGuardianGauge())
-                .guardian(character.getDayTodo().getGuardian())
-                .guardianGold(character.getDayTodo().getGuardianGold())
-                .eponaCheck(character.getDayTodo().getEponaCheck2())
-                .eponaGauge(character.getDayTodo().getEponaGauge())
-                .goldCharacter(character.isGoldCharacter())
-                .challengeAbyss(character.isChallengeAbyss())
-                .challengeGuardian(character.isChallengeGuardian())
-                .weekEpona(character.getWeekTodo().getWeekEpona())
-                .silmaelChange(character.getWeekTodo().isSilmaelChange())
-                .cubeTicket(character.getWeekTodo().getCubeTicket())
-                .settings(character.getSettings())
-                .build();
-
-        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
-
-        //주간레이드 entity -> dto
-        if (!character.getTodoV2List().isEmpty()) {
-            // dtoList 만들기
-            // goldCheckVersion별 따로
-            GoldCheckPolicyEnum goldCheckPolicyEnum = character.getSettings().getGoldCheckPolicyEnum();
-            goldCheckPolicyEnum.getPolicy().calcTodoResponseDtoList(character, todoResponseDtoList);
-
-            //sortNumber 순서대로 출력
-            todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));
-
-            // 캐릭터 주간 레이드 수익 저장
-            if (characterDto.isGoldCharacter()) {
-                for (TodoV2 todo : character.getTodoV2List()) {
-                    if (todo.isChecked()) {
-                        String weekCategory = todo.getWeekContent().getWeekCategory();
-                        int todoGold = todo.getGold();
-                        for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
-                            if (weekCategory.equals(todoResponseDto.getWeekCategory()) && todoResponseDto.getGold() != 0) {
-                                characterDto.setWeekGold(characterDto.getWeekGold() + todoGold);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        //한 컨텐츠 완료 했는지 체크
-        for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
-            if (todoResponseDto.getCurrentGate() == todoResponseDto.getTotalGate()) {
-                todoResponseDto.setCheck(true);
-            }
-        }
-
-        characterDto.setTodoList(todoResponseDtoList);
-
-        return characterDto;
-    }
-
 }
