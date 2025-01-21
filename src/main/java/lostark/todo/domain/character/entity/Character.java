@@ -68,6 +68,10 @@ public class Character extends BaseTimeEntity {
     @JsonManagedReference
     private List<TodoV2> todoV2List;
 
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
+    @JsonManagedReference
+    private List<RaidBusGold> raidBusGoldList;
+
     private boolean goldCharacter; //골드 획득 지정 캐릭터
 
     private boolean challengeGuardian; //도전 가디언 토벌

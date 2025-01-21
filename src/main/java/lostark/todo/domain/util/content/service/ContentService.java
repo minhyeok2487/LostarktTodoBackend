@@ -55,6 +55,10 @@ public class ContentService {
                                 weekContentDto.setChecked(true);
                                 weekContentDto.setGoldCheck(todo.isGoldCheck());
                             });
+                    updateCharacter.getRaidBusGoldList().stream()
+                            .filter(raidBusGold -> raidBusGold.getWeekCategory().equals(weekContent.getWeekCategory()))
+                            .findFirst()
+                            .ifPresent(raidBusGold -> weekContentDto.setBusGold(raidBusGold.getBusGold()));
                     return weekContentDto;
                 })
                 .toList();

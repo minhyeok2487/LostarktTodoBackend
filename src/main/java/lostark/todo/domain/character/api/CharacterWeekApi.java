@@ -9,6 +9,7 @@ import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.character.service.RaidBusGoldService;
 import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.util.content.service.ContentService;
@@ -37,6 +38,7 @@ public class CharacterWeekApi {
     private final ContentService contentService;
     private final TodoServiceV2 todoServiceV2;
     private final UpdateCharacterMethod updateCharacterMethod;
+    private final RaidBusGoldService raidBusGoldService;
 
     // TODO 추후 정리
     @ApiOperation(value = "캐릭터 레이드 추가/제거", response = CharacterResponse.class)
@@ -77,7 +79,7 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 숙제 추가폼", response = WeekContentDto.class)
+    @ApiOperation(value = "캐릭터 주간 레이드 추가폼", response = WeekContentDto.class)
     @GetMapping("/raid/form")
     public ResponseEntity<?> getTodoForm(@AuthenticationPrincipal String username,
                                          @RequestParam(required = false) String friendUsername,
@@ -86,6 +88,17 @@ public class CharacterWeekApi {
                 characterId, FriendPermissionType.UPDATE_RAID);
         List<WeekContentDto> result = contentService.getTodoForm(updateCharacter);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 주간 레이드 버스 골드 수정", response = CharacterResponse.class)
+    @PostMapping("/raid/bus")
+    public ResponseEntity<?> updateWeekRaidBusGold(@AuthenticationPrincipal String username,
+                                                 @RequestParam(required = false) String friendUsername,
+                                                 @RequestBody UpdateWeekRaidBusGold request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_RAID);
+        raidBusGoldService.UpdateWeekRaidBusGold(updateCharacter, request);
+        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
     }
 
 
