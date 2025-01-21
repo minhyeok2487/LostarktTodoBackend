@@ -175,7 +175,8 @@ public class SchedulingService {
 
         log.info("updateTodoV2 = {}", todoV2Repository.resetTodoV2CoolTime2()); // 2주기 레이드 처리
 
-        log.info("todoV2Repository.resetTodoV2() = {}", todoV2Repository.resetTodoV2()); // 주간 레이드 초기화
+        todoV2Repository.resetTodoV2();
+        log.info("todoV2Repository.resetTodoV2()"); // 주간 레이드 초기화
 
         log.info("updateWeekContent = {}", characterRepository.updateWeekContent()); // 주간 숙제 초기화
 
