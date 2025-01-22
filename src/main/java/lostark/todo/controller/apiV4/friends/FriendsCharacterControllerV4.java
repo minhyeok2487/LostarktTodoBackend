@@ -43,7 +43,7 @@ public class FriendsCharacterControllerV4 {
         }
 
         Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, friendUsername);
-        return new ResponseEntity<>(CharacterResponse.toDto(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(resultCharacter), HttpStatus.OK);
     }
 
     //TODO 추후삭제
@@ -58,6 +58,6 @@ public class FriendsCharacterControllerV4 {
         }
 
         Character updateCharacter = characterService.updateMemo(friendUsername, updateMemoRequest);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 }

@@ -63,4 +63,27 @@ public class TodoResponseDto {
         }
         return build;
     }
+
+    public TodoResponseDto toDtoV2(TodoV2 todo, boolean goldCheckVersion) {
+        TodoResponseDto build = TodoResponseDto.builder()
+                .id(todo.getId())
+                .check(false)
+                .name("")
+                .gold(todo.getGold())
+                .message(todo.getMessage())
+                .currentGate(todo.isChecked() ? todo.getWeekContent().getGate() : 0)
+                .totalGate(todo.getWeekContent().getGate())
+                .weekCategory(todo.getWeekContent().getWeekCategory())
+                .weekContentCategory(todo.getWeekContent().getWeekContentCategory())
+                .sortNumber(todo.getSortNumber())
+                .goldCheck(todo.isGoldCheck())
+                .characterClassName(todo.getCharacter().getCharacterClassName())
+                .moreRewardCheckList(new ArrayList<>(Collections.singleton(todo.isMoreRewardCheck())))
+                .build();
+
+        if(goldCheckVersion && !todo.isGoldCheck()) {
+            build.setGold(0);
+        }
+        return build;
+    }
 }

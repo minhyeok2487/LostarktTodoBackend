@@ -322,7 +322,7 @@ public class CharacterService {
     //    ----------------------------------------------------------------------------------------------------------------
     public List<CharacterResponse> convertAndSortCharacterList(List<Character> characterList) {
         return characterList.stream()
-                .map(CharacterResponse::toDto) // DTO로 변환
+                .map(new CharacterResponse()::toDto) // DTO로 변환
                 .sorted(
                         Comparator.comparingInt(CharacterResponse::getSortNumber)
                                 .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed())

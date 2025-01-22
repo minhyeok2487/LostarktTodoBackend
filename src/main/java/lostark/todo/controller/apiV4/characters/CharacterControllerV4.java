@@ -32,7 +32,7 @@ public class CharacterControllerV4 {
     public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,
                                                             @RequestBody CharacterDefaultDto characterDefaultDto) {
         Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, username);
-        return new ResponseEntity<>(CharacterResponse.toDto(resultCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(resultCharacter), HttpStatus.OK);
     }
 
     //TODO 추후삭제
@@ -40,7 +40,7 @@ public class CharacterControllerV4 {
     @PostMapping("/memo")
     public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username, @RequestBody @Valid UpdateMemoRequest updateMemoRequest) {
         Character updateCharacter = characterService.updateMemo(username, updateMemoRequest);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     //TODO 추후삭제

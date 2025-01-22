@@ -82,7 +82,7 @@ public class FriendsService {
                     //캐릭터 리스트
                     List<CharacterResponse> characterResponseList = fromFriend.getMember().getCharacters().stream()
                             .filter(character -> character.getSettings().isShowCharacter() & !character.isDeleted())
-                            .map(CharacterResponse::toDto)
+                            .map(new CharacterResponse()::toDto)
                             .sorted(Comparator
                                     .comparingInt(CharacterResponse::getSortNumber)
                                     .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))

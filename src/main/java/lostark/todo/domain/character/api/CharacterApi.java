@@ -52,7 +52,7 @@ public class CharacterApi {
                 updateCharacter = characterService.updateSetting(friendUsername, settingRequestDto);
             }
         }
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "삭제된 캐릭터 복구")
@@ -74,7 +74,7 @@ public class CharacterApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
         characterService.updateGoldCharacter(updateCharacter);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장", response = CharacterResponse.class)
@@ -85,7 +85,7 @@ public class CharacterApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
         characterService.updateMemo(updateCharacter, request.getMemo());
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "등록 캐릭터 단일 삭제")

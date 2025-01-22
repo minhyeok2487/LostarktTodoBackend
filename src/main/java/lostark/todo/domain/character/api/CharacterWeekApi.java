@@ -76,7 +76,7 @@ public class CharacterWeekApi {
             todoServiceV2.updateWeekRaidAll(character, weekContentList);
         }
 
-        return new ResponseEntity<>(CharacterResponse.toDto(character), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(character), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 추가폼", response = WeekContentDto.class)
@@ -98,7 +98,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         raidBusGoldService.UpdateWeekRaidBusGold(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
 
@@ -110,7 +110,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (1관문에 저장됨)",
@@ -122,7 +122,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekMessage(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 순서 변경", response = CharacterResponse.class)
@@ -133,7 +133,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekRaidSort(updateCharacter, request.getSortRequestList());
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 에포나 체크", response = CharacterResponse.class)
@@ -144,7 +144,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateWeekEpona(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 실마엘 교환 체크", response = CharacterResponse.class)
@@ -155,7 +155,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateWeekSilmael(updateCharacter);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 큐브 티켓 업데이트", response = CharacterResponse.class)
@@ -166,7 +166,7 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateCubeTicket(updateCharacter, request.getNum());
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "주간 레이드 컨텐츠 골드 획득/해제")
@@ -180,7 +180,7 @@ public class CharacterWeekApi {
         // 골드 체크 업데이트
         characterService.updateRaidGoldCheck(updateCharacter, request.getWeekCategory(), request.isUpdateValue());
 
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 레이드 골드 체크 방식 업데이트", response = CharacterDto.class)
@@ -193,7 +193,7 @@ public class CharacterWeekApi {
 
         characterService.updateGoldCheckVersion(updateCharacter);
 
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 레이드 관문 더보기 업데이트", response = CharacterResponse.class)
@@ -204,6 +204,6 @@ public class CharacterWeekApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         todoServiceV2.updateRaidMoreRewardCheck(updateCharacter, request);
-        return new ResponseEntity<>(CharacterResponse.toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 }

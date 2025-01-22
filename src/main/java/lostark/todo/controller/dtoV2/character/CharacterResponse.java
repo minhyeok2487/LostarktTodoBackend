@@ -11,10 +11,13 @@ import lostark.todo.domain.character.entity.Settings;
 import lostark.todo.domain.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.entity.TodoV2;
+import lostark.todo.domain.util.content.enums.WeekContentCategory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -105,7 +108,7 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "캐릭터 메모")
     private String memo;
 
-    public static CharacterResponse toDto(Character character) {
+    public CharacterResponse toDto(Character character) {
         CharacterResponse characterResponse = CharacterResponse.builder()
                 .characterId(character.getId())
                 .characterName(character.getCharacterName())
@@ -135,14 +138,14 @@ public class CharacterResponse {
                 .memo(character.getMemo())
                 .build();
 
-        List<TodoResponseDto> todoResponseDtoList = new ArrayList<>();
+        List<TodoResponseDto> todoResponseDtoList = getTodoResponseDtos(character);
 
         //주간레이드 entity -> dto
         if (!character.getTodoV2List().isEmpty()) {
             // dtoList 만들기
             // goldCheckVersion별 따로
             GoldCheckPolicyEnum goldCheckPolicyEnum = character.getSettings().getGoldCheckPolicyEnum();
-            goldCheckPolicyEnum.getPolicy().calcTodoResponseDtoList(character, todoResponseDtoList);
+            goldCheckPolicyEnum.getPolicy().calcTodoResponseDtoList(todoResponseDtoList);
 
             //sortNumber 순서대로 출력
             todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));
@@ -181,5 +184,85 @@ public class CharacterResponse {
 
         characterResponse.setTodoList(todoResponseDtoList);
         return characterResponse;
+    }
+
+    private List<TodoResponseDto> getTodoResponseDtos(Character character) {
+        List<TodoResponseDto> todoResponseDtoList = createTodoResponseDtos(character);
+
+        Map<String, Map<WeekContentCategory, List<Integer>>> categorizedMap = categorizeTodos(character);
+
+        categorizedMap.forEach((key, value) -> buildResultString(key, value, todoResponseDtoList));
+        return todoResponseDtoList;
+    }
+
+    private List<TodoResponseDto> createTodoResponseDtos(Character character) {
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        List<TodoV2> sortedTodos = getSortedTodos(character);
+        sortedTodos.forEach(todo -> addOrUpdateTodoDto(character, todo, todoResponseDtos));
+        return todoResponseDtos;
+    }
+
+    private List<TodoV2> getSortedTodos(Character character) {
+        return character.getTodoV2List().stream()
+                .filter(todo -> todo.getCoolTime() >= 1) //2주기 레이드 확인용
+                .sorted(Comparator.comparingLong(todo -> todo.getWeekContent().getGate()))
+                .collect(Collectors.toList());
+    }
+
+    private void addOrUpdateTodoDto(Character character, TodoV2 todo, List<TodoResponseDto> dtos) {
+        TodoResponseDto existingDto = findExistingDto(todo, dtos);
+        if (existingDto != null) {
+            updateExistingDto(existingDto, todo);
+            return;
+        }
+        dtos.add(new TodoResponseDto().toDtoV2(todo, character.getSettings().isGoldCheckVersion()));
+    }
+
+    private TodoResponseDto findExistingDto(TodoV2 todo, List<TodoResponseDto> dtos) {
+        return dtos.stream()
+                .filter(dto -> dto.getWeekCategory().equals(todo.getWeekContent().getWeekCategory()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void updateExistingDto(TodoResponseDto existingDto, TodoV2 todo) {
+        existingDto.setGold(existingDto.getGold() + todo.getGold());
+        existingDto.setTotalGate(todo.getWeekContent().getGate());
+        updateCurrentGateIfChecked(existingDto, todo);
+        existingDto.getMoreRewardCheckList().add(todo.isMoreRewardCheck());
+    }
+
+    private void updateCurrentGateIfChecked(TodoResponseDto dto, TodoV2 todo) {
+        if (todo.isChecked()) {
+            dto.setCurrentGate(todo.getWeekContent().getGate());
+        }
+    }
+
+    private Map<String, Map<WeekContentCategory, List<Integer>>> categorizeTodos(Character character) {
+        return character.getTodoV2List().stream()
+                .collect(Collectors.groupingBy(
+                        todo -> todo.getWeekContent().getWeekCategory(),
+                        Collectors.groupingBy(
+                                todo -> todo.getWeekContent().getWeekContentCategory(),
+                                Collectors.mapping(
+                                        todo -> todo.getWeekContent().getGate(),
+                                        Collectors.toList()
+                                )
+                        )
+                ));
+    }
+
+    private void buildResultString(String weekCategory, Map<WeekContentCategory, List<Integer>> weekContentCategoryMap, List<TodoResponseDto> todoResponseDtos) {
+        StringBuilder result = new StringBuilder(weekCategory).append(" <br />");
+
+        weekContentCategoryMap.forEach((weekContentCategory, gates) -> {
+            result.append(weekContentCategory).append(" ");
+            gates.forEach(gate -> result.append(gate).append(" "));
+        });
+
+        todoResponseDtos.stream()
+                .filter(dto -> dto.getWeekCategory().equals(weekCategory))
+                .findFirst()
+                .ifPresent(dto -> dto.setName(result.toString()));
     }
 }
