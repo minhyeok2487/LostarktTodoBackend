@@ -192,6 +192,7 @@ public class TodoServiceV2 {
             // 숙제 전체가 체크되어 있다면 전체 체크해제
             // 하나라도 체크가 안되어있으면 전체 체크
             todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
+            todoV2List.forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
             return;
         }
 
@@ -199,6 +200,7 @@ public class TodoServiceV2 {
         if (allChecked) {
             // 전체 체크 되어 있으면 체크 해제
             todoV2List.forEach(todoV2 -> todoV2.setChecked(false));
+            todoV2List.forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
         } else {
             // 마지막 체크된 항목 찾기
             List<TodoV2> findList = todoV2List.stream()
