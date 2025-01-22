@@ -77,7 +77,6 @@ public class TodoV2 extends BaseTimeEntity {
     }
 
     public void updateRaidMoreRewardCheck() {
-        this.gold -= this.weekContent.getMoreRewardGold();
-        this.moreRewardCheck = true;
+        this.moreRewardCheck = !this.moreRewardCheck;
     }
 }

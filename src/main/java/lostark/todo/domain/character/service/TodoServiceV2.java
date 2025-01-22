@@ -244,12 +244,7 @@ public class TodoServiceV2 {
                 .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(request.getWeekCategory())
                         && todoV2.getWeekContent().getGate() == request.getGate())
                 .findFirst()
-                .ifPresent(todoV2 -> {
-                    if (todoV2.isMoreRewardCheck()) {
-                        throw new IllegalStateException("이미 더보기를 한 관문입니다.");
-                    }
-                    todoV2.updateRaidMoreRewardCheck();
-                });
+                .ifPresent(TodoV2::updateRaidMoreRewardCheck);
     }
 
 

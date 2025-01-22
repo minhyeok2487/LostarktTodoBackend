@@ -155,10 +155,13 @@ public class CharacterResponse {
                 for (TodoV2 todo : character.getTodoV2List()) {
                     if (todo.isChecked()) {
                         String weekCategory = todo.getWeekContent().getWeekCategory();
-                        int todoGold = todo.getGold();
                         for (TodoResponseDto todoResponseDto : todoResponseDtoList) {
-                            if (weekCategory.equals(todoResponseDto.getWeekCategory()) && todoResponseDto.getGold() != 0) {
-                                characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + todoGold);
+                            if (weekCategory.equals(todoResponseDto.getWeekCategory()) && todoResponseDto.getRealGold() != 0) {
+                                if (todo.isMoreRewardCheck()) {
+                                    characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + todo.getGold() - todo.getWeekContent().getMoreRewardGold());
+                                } else {
+                                    characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + todo.getGold());
+                                }
                             }
                         }
                     }
@@ -215,7 +218,7 @@ public class CharacterResponse {
             updateExistingDto(existingDto, todo);
             return;
         }
-        dtos.add(new TodoResponseDto().toDtoV2(todo, character.getSettings().isGoldCheckVersion()));
+        dtos.add(new TodoResponseDto().toDto(todo, character.getSettings().isGoldCheckVersion()));
     }
 
     private TodoResponseDto findExistingDto(TodoV2 todo, List<TodoResponseDto> dtos) {
@@ -227,9 +230,13 @@ public class CharacterResponse {
 
     private void updateExistingDto(TodoResponseDto existingDto, TodoV2 todo) {
         existingDto.setGold(existingDto.getGold() + todo.getGold());
+        existingDto.setRealGold(existingDto.getRealGold() + todo.getGold());
         existingDto.setTotalGate(todo.getWeekContent().getGate());
         updateCurrentGateIfChecked(existingDto, todo);
         existingDto.getMoreRewardCheckList().add(todo.isMoreRewardCheck());
+        if(todo.isMoreRewardCheck()) {
+            existingDto.setRealGold(existingDto.getRealGold() - todo.getWeekContent().getMoreRewardGold());
+        }
     }
 
     private void updateCurrentGateIfChecked(TodoResponseDto dto, TodoV2 todo) {
@@ -252,7 +259,8 @@ public class CharacterResponse {
                 ));
     }
 
-    private void buildResultString(String weekCategory, Map<WeekContentCategory, List<Integer>> weekContentCategoryMap, List<TodoResponseDto> todoResponseDtos) {
+    private void buildResultString(String weekCategory, Map<WeekContentCategory, List<Integer>> weekContentCategoryMap,
+                                   List<TodoResponseDto> todoResponseDtos) {
         StringBuilder result = new StringBuilder(weekCategory).append(" <br />");
 
         weekContentCategoryMap.forEach((weekContentCategory, gates) -> {

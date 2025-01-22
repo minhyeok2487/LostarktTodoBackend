@@ -21,6 +21,8 @@ public class TodoResponseDto {
 
     private int gold;
 
+    private int realGold;
+
     private boolean check;
 
     private String message;
@@ -43,10 +45,9 @@ public class TodoResponseDto {
         TodoResponseDto build = TodoResponseDto.builder()
                 .id(todo.getId())
                 .check(false)
-                .name(todo.getWeekContent().getName()
-                        + "<br />" + todo.getWeekContent().getWeekContentCategory()
-                        + " " + todo.getWeekContent().getGate())
+                .name("")
                 .gold(todo.getGold())
+                .realGold(calcRealGold(todo))
                 .message(todo.getMessage())
                 .currentGate(todo.isChecked() ? todo.getWeekContent().getGate() : 0)
                 .totalGate(todo.getWeekContent().getGate())
@@ -64,26 +65,11 @@ public class TodoResponseDto {
         return build;
     }
 
-    public TodoResponseDto toDtoV2(TodoV2 todo, boolean goldCheckVersion) {
-        TodoResponseDto build = TodoResponseDto.builder()
-                .id(todo.getId())
-                .check(false)
-                .name("")
-                .gold(todo.getGold())
-                .message(todo.getMessage())
-                .currentGate(todo.isChecked() ? todo.getWeekContent().getGate() : 0)
-                .totalGate(todo.getWeekContent().getGate())
-                .weekCategory(todo.getWeekContent().getWeekCategory())
-                .weekContentCategory(todo.getWeekContent().getWeekContentCategory())
-                .sortNumber(todo.getSortNumber())
-                .goldCheck(todo.isGoldCheck())
-                .characterClassName(todo.getCharacter().getCharacterClassName())
-                .moreRewardCheckList(new ArrayList<>(Collections.singleton(todo.isMoreRewardCheck())))
-                .build();
-
-        if(goldCheckVersion && !todo.isGoldCheck()) {
-            build.setGold(0);
+    private int calcRealGold(TodoV2 todo) {
+        if(todo.isMoreRewardCheck()) {
+            return todo.getGold() - todo.getWeekContent().getMoreRewardGold();
+        } else {
+            return todo.getGold();
         }
-        return build;
     }
 }
