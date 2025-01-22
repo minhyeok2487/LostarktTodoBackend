@@ -9,6 +9,6 @@ public class RaidCheckPolicy implements GoldCheckPolicy {
     public void calcTodoResponseDtoList(List<TodoResponseDto> todoResponseDtoList) {
         todoResponseDtoList.stream()
                 .filter(todo -> !todo.isGoldCheck())
-                .forEach(todo -> todo.setGold(0));
+                .forEach(todo -> todo.setRealGold(0));
     }
 }
