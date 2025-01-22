@@ -175,7 +175,7 @@ public class CharacterResponse {
             todoResponseDtoList.stream()
                     .filter(todo -> todo.getWeekCategory().equals(gold.getWeekCategory()))
                     .findFirst()
-                    .ifPresent(todoResponseDto -> todoResponseDto.setGold(todoResponseDto.getGold() + gold.getBusGold()));
+                    .ifPresent(todoResponseDto -> todoResponseDto.setRealGold(todoResponseDto.getRealGold() + gold.getBusGold()));
         });
 
         //한 컨텐츠 완료 했는지 체크
