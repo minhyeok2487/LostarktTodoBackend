@@ -48,6 +48,9 @@ public class Settings {
    @ColumnDefault("false")
    private boolean linkCubeCal;
 
+   @ColumnDefault("true")
+   private boolean showMoreButton;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -60,6 +63,7 @@ public class Settings {
       this.goldCheckVersion = false;
       this.goldCheckPolicyEnum = GoldCheckPolicyEnum.TOP_THREE_POLICY;
       this.linkCubeCal = false;
+      this.showMoreButton = true;
    }
 
    public void update(String name, boolean value) {

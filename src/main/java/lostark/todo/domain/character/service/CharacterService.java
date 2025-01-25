@@ -169,7 +169,16 @@ public class CharacterService {
         Character character = get(
                 settingRequestDto.getCharacterId(), settingRequestDto.getCharacterName(), username);
         character.getSettings().update(settingRequestDto.getName(), settingRequestDto.isValue());
+
+        updateRelatedTodos(settingRequestDto, character);
         return character;
+    }
+
+    private static void updateRelatedTodos(SettingRequestDto settingRequestDto, Character character) {
+        // 더보기 버튼의 설정 값이 변하면 기존 더보기 해제
+        if(settingRequestDto.getName().equals("showMoreButton")) {
+            character.getTodoV2List().forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
+        }
     }
 
     @Transactional
