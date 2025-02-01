@@ -34,6 +34,8 @@ public class Cubes {
 
     private int unlock2;
 
+    private int unlock3;
+
     public static Cubes toEntity(long characterId) {
         return Cubes.builder()
                 .characterId(characterId)
@@ -44,6 +46,7 @@ public class Cubes {
                 .ban5(0)
                 .unlock1(0)
                 .unlock2(0)
+                .unlock3(0)
                 .build();
     }
 
@@ -55,6 +58,7 @@ public class Cubes {
         this.ban5 = request.getBan5();
         this.unlock1 = request.getUnlock1();
         this.unlock2 = request.getUnlock2();
+        this.unlock3 = request.getUnlock3();
         return this;
     }
 }

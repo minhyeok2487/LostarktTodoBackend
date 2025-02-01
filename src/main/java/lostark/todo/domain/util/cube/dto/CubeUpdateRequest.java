@@ -22,4 +22,6 @@ public class CubeUpdateRequest {
     private int unlock1;
 
     private int unlock2;
+
+    private int unlock3;
 }

@@ -30,6 +30,8 @@ public class CubeResponse {
 
     private int unlock2;
 
+    private int unlock3;
+
     @QueryProjection
     public CubeResponse(Character character, Cubes cubes) {
         this.cubeId = cubes.getId();
@@ -43,5 +45,6 @@ public class CubeResponse {
         this.ban5 = cubes.getBan5();
         this.unlock1 = cubes.getUnlock1();
         this.unlock2 = cubes.getUnlock2();
+        this.unlock3 = cubes.getUnlock3();
     }
 }
