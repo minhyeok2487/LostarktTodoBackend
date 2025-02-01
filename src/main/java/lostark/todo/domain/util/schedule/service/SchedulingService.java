@@ -3,6 +3,7 @@ package lostark.todo.domain.util.schedule.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.repository.CharacterRepository;
+import lostark.todo.domain.character.repository.RaidBusGoldRepository;
 import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
@@ -38,6 +39,7 @@ public class SchedulingService {
     private final ContentRepository contentRepository;
     private final ScheduleService scheduleService;
     private final KeyValueRepository keyValueRepository;
+    private final RaidBusGoldRepository raidBusGoldRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -184,6 +186,9 @@ public class SchedulingService {
         characterRepository.updateWeekDayTodoTotalGold();
 
         log.info("커스텀 주간 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.WEEKLY));
+
+        // 버스비 삭제
+        raidBusGoldRepository.deleteAllRaidBusGold();
     }
 
     // 10분 마다 해당 시간 이전 일정 체크
