@@ -13,7 +13,10 @@ public class TopThreePolicy implements GoldCheckPolicy {
         for (int i = 0; i < todoResponseDtoList.size(); i++) {
             TodoResponseDto todoResponseDto = todoResponseDtoList.get(i);
             if (i >= 3) {
-                todoResponseDto.setRealGold(0);
+                todoResponseDto.calcRaidCheckPolicyGold();
+                todoResponseDto.setGoldCheck(false);
+            } else {
+                todoResponseDto.setGoldCheck(true);
             }
         }
     }

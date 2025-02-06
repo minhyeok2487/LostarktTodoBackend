@@ -41,13 +41,13 @@ public class TodoResponseDto {
 
     private List<Boolean> moreRewardCheckList;
 
-    public TodoResponseDto toDto(TodoV2 todo, boolean goldCheckVersion) {
-        TodoResponseDto build = TodoResponseDto.builder()
+    public TodoResponseDto toDto(TodoV2 todo, boolean goldCharacter) {
+        return TodoResponseDto.builder()
                 .id(todo.getId())
                 .check(false)
                 .name("")
                 .gold(todo.getGold())
-                .realGold(calcRealGold(todo))
+                .realGold(calcRealGold(todo, goldCharacter))
                 .message(todo.getMessage())
                 .currentGate(todo.isChecked() ? todo.getWeekContent().getGate() : 0)
                 .totalGate(todo.getWeekContent().getGate())
@@ -58,18 +58,43 @@ public class TodoResponseDto {
                 .characterClassName(todo.getCharacter().getCharacterClassName())
                 .moreRewardCheckList(new ArrayList<>(Collections.singleton(todo.isMoreRewardCheck())))
                 .build();
-
-        if(goldCheckVersion && !todo.isGoldCheck()) {
-            build.setGold(0);
-        }
-        return build;
     }
 
-    private int calcRealGold(TodoV2 todo) {
-        if(todo.isMoreRewardCheck()) {
-            return todo.getGold() - todo.getWeekContent().getMoreRewardGold();
-        } else {
-            return todo.getGold();
+    private int calcRealGold(TodoV2 todo, boolean goldCharacter) {
+        int baseGold = todo.getGold();
+        int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
+
+        if (todo.isMoreRewardCheck()) {
+            return goldCharacter ? baseGold - moreRewardGold : -moreRewardGold;
+        }
+
+        return goldCharacter ? baseGold : 0;
+    }
+
+
+    public void calcRaidCheckPolicyGold() {
+        this.realGold = this.getRealGold() - this.getGold();
+    }
+
+    public void updateExistingTodo(TodoV2 todo, boolean goldCharacter) {
+        this.gold = this.getGold() + todo.getGold();
+        this.totalGate = todo.getWeekContent().getGate();
+        this.moreRewardCheckList.add(todo.isMoreRewardCheck());
+
+        int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
+        int goldToAdd = goldCharacter ? todo.getGold() : 0;
+
+        if (todo.isMoreRewardCheck()) {
+            goldToAdd -= moreRewardGold;
+        }
+
+        setRealGold(getRealGold() + goldToAdd);
+        updateCurrentGateIfChecked(todo);
+    }
+
+    public void updateCurrentGateIfChecked(TodoV2 todo) {
+        if (todo.isChecked()) {
+            setCurrentGate(todo.getWeekContent().getGate());
         }
     }
 }
