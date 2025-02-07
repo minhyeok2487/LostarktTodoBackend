@@ -190,8 +190,9 @@ public class CharacterResponse {
     private void calculateWeekRaidGold(Character character, CharacterResponse characterResponse, List<TodoResponseDto> todoResponseDtoList) {
         if (!character.getTodoV2List().isEmpty()) {
             GoldCheckPolicyEnum goldCheckPolicyEnum = character.getSettings().getGoldCheckPolicyEnum();
-            goldCheckPolicyEnum.getPolicy().calcTodoResponseDtoList(todoResponseDtoList);
-
+            if (character.isGoldCharacter()) {
+                goldCheckPolicyEnum.getPolicy().calcTodoResponseDtoList(todoResponseDtoList);
+            }
             todoResponseDtoList.sort(Comparator.comparingInt(TodoResponseDto::getSortNumber));
 
             character.getTodoV2List().stream()
