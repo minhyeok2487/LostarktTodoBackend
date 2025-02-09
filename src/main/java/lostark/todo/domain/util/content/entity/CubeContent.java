@@ -2,6 +2,7 @@ package lostark.todo.domain.util.content.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -27,4 +28,10 @@ public class CubeContent extends Content{
     private double solarProtection; //태양의 가호
 
     private double cardExp;
+
+    @ColumnDefault("0")
+    private double lavasBreath; //용암의 숨결
+
+    @ColumnDefault("0")
+    private double glaciersBreath; //빙하의 숨결
 }

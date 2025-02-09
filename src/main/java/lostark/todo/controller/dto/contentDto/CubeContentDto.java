@@ -31,6 +31,10 @@ public class CubeContentDto {
 
     private double jewelryPrice;
 
+    private double lavasBreath; //용암의 숨결
+
+    private double glaciersBreath; //빙하의 숨결
+
     public CubeContentDto toDto(CubeContent cubeContent, Market market) {
         return CubeContentDto.builder()
                 .name(cubeContent.getName())
@@ -40,6 +44,8 @@ public class CubeContentDto {
                 .solarGrace(cubeContent.getSolarGrace())
                 .solarBlessing(cubeContent.getSolarBlessing())
                 .solarProtection(cubeContent.getSolarProtection())
+                .lavasBreath(cubeContent.getLavasBreath())
+                .glaciersBreath(cubeContent.getGlaciersBreath())
                 .cardExp(cubeContent.getCardExp())
                 .jewelryPrice(market.getRecentPrice())
                 .build();
