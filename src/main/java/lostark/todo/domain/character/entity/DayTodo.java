@@ -59,8 +59,8 @@ public class DayTodo {
     @Size(max = 100)
     private int beforeEponaGauge; //이전 에포나 휴식게이지(0~100)
 
-    @Size(max = 100)
-    private int beforeChaosGauge; //이전 카오스던전 휴식게이지(0~100)
+    @Size(max = 200)
+    private int beforeChaosGauge; //이전 카오스던전 휴식게이지(0~200)
 
     @Size(max = 100)
     private int beforeGuardianGauge; //이전 가디언토벌 휴식게이지(0~100)

@@ -15,7 +15,7 @@ public class SettingRequestDto {
 
     private String characterName;
 
-    private boolean value;
+    private Object value;
 
     private String name;
 }

@@ -168,7 +168,7 @@ public class CharacterService {
     public Character updateSetting(String username, SettingRequestDto settingRequestDto) {
         Character character = get(
                 settingRequestDto.getCharacterId(), settingRequestDto.getCharacterName(), username);
-        character.getSettings().update(settingRequestDto.getName(), settingRequestDto.isValue());
+        character.getSettings().update(settingRequestDto.getName(), settingRequestDto.getValue());
 
         updateRelatedTodos(settingRequestDto, character);
         return character;

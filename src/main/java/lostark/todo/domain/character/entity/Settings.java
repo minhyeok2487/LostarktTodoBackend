@@ -20,11 +20,20 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showEpona;
 
+   @ColumnDefault("0")
+   private int thresholdEpona;
+
    @ColumnDefault("true")
    private boolean showChaos;
 
+   @ColumnDefault("0")
+   private int thresholdChaos;
+
    @ColumnDefault("true")
    private boolean showGuardian;
+
+   @ColumnDefault("0")
+   private int thresholdGuardian;
 
    @ColumnDefault("true")
    private boolean showWeekTodo;
@@ -54,8 +63,11 @@ public class Settings {
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
+      this.thresholdEpona = 0;
       this.showChaos = true;
+      this.thresholdChaos = 0;
       this.showGuardian = true;
+      this.thresholdGuardian = 0;
       this.showWeekTodo = true;
       this.showWeekEpona = true;
       this.showSilmaelChange = true;
@@ -66,7 +78,7 @@ public class Settings {
       this.showMoreButton = true;
    }
 
-   public void update(String name, boolean value) {
+   public void update(String name, Object value) {
       try {
          Field field = getClass().getDeclaredField(name);
          field.setAccessible(true); // 필드에 접근할 수 있도록 설정

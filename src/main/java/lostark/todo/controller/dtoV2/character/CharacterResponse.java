@@ -13,6 +13,7 @@ import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.entity.TodoV2;
 import lostark.todo.domain.util.content.enums.WeekContentCategory;
 
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -105,6 +106,15 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "주간 숙제 리스트")
     private List<TodoResponseDto> todoList;
 
+    @Size(max = 100)
+    private int beforeEponaGauge; //이전 에포나 휴식게이지(0~100)
+
+    @Size(max = 200)
+    private int beforeChaosGauge; //이전 카오스던전 휴식게이지(0~200)
+
+    @Size(max = 100)
+    private int beforeGuardianGauge; //이전 가디언토벌 휴식게이지(0~100)
+
     @ApiModelProperty(notes = "캐릭터 메모")
     private String memo;
 
@@ -148,6 +158,9 @@ public class CharacterResponse {
                 .settings(character.getSettings())
                 .weekDayTodoGold(character.getDayTodo().getWeekTotalGold())
                 .memo(character.getMemo())
+                .beforeEponaGauge(character.getDayTodo().getBeforeEponaGauge())
+                .beforeChaosGauge(character.getDayTodo().getBeforeChaosGauge())
+                .beforeGuardianGauge(character.getDayTodo().getBeforeGuardianGauge())
                 .build();
     }
 
