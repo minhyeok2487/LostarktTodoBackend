@@ -120,7 +120,7 @@ public class CharacterResponse {
 
     public CharacterResponse toDto(Character character) {
         CharacterResponse characterResponse = buildCharacterResponse(character);
-        List<TodoResponseDto> todoResponseDtoList = buildTodoResponseDtos(character);
+        List<TodoResponseDto> todoResponseDtoList = buildTodoResponseDtoList(character);
 
         calculateWeekRaidGold(character, characterResponse, todoResponseDtoList);
         markCompletedTodos(todoResponseDtoList);
@@ -164,19 +164,25 @@ public class CharacterResponse {
                 .build();
     }
 
-    private List<TodoResponseDto> buildTodoResponseDtos(Character character) {
-        List<TodoResponseDto> todoResponseDtos = createTodoResponseDtos(character);
+    //TodoResponseDto List 생성
+    private List<TodoResponseDto> buildTodoResponseDtoList(Character character) {
+        //기본 TodoResponseDto List 생성
+        List<TodoResponseDto> todoResponseDtoList = createTodoResponseDtos(character);
+
         Map<String, Map<WeekContentCategory, List<Integer>>> categorizedMap = categorizeTodos(character);
-        categorizedMap.forEach((key, value) -> buildResultString(key, value, todoResponseDtos));
-        return todoResponseDtos;
+        categorizedMap.forEach((key, value) -> buildResultString(key, value, todoResponseDtoList));
+        return todoResponseDtoList;
     }
 
+    //기본 TodoResponseDto List 생성
     private List<TodoResponseDto> createTodoResponseDtos(Character character) {
         List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
         getSortedTodos(character).forEach(todo -> addOrUpdateTodoDto(todo, todoResponseDtos, character.isGoldCharacter()));
         return todoResponseDtos;
     }
 
+    //TodoV2List 정렬(관문 기준 오름차순)
+    //coolTime이 1이상인 TodoV2만 정렬(전주 2주기 레이드 체크)
     private List<TodoV2> getSortedTodos(Character character) {
         return character.getTodoV2List().stream()
                 .filter(todo -> todo.getCoolTime() >= 1)  //2주기 레이드 확인용
@@ -184,6 +190,7 @@ public class CharacterResponse {
                 .collect(Collectors.toList());
     }
 
+    //WeekCategory가 동일한 TodoResponseDto가 존재하면 update, 없으면 add
     private void addOrUpdateTodoDto(TodoV2 todo, List<TodoResponseDto> dtos, boolean goldCharacter) {
         TodoResponseDto existingDto = findExistingDto(todo, dtos);
         if (existingDto != null) {
@@ -193,11 +200,44 @@ public class CharacterResponse {
         }
     }
 
+    //WeekCategory가 동일한 TodoResponseDto 찾는 Method
     private TodoResponseDto findExistingDto(TodoV2 todo, List<TodoResponseDto> dtos) {
         return dtos.stream()
                 .filter(dto -> dto.getWeekCategory().equals(todo.getWeekContent().getWeekCategory()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    //TodoV2List를 WeekCategory(레이드 이름), WeekContentCategory(노말, 하드)로 분류
+    private Map<String, Map<WeekContentCategory, List<Integer>>> categorizeTodos(Character character) {
+        return character.getTodoV2List().stream()
+                .filter(todoV2 -> todoV2.getCoolTime() >= 1)
+                .collect(Collectors.groupingBy(
+                        todo -> todo.getWeekContent().getWeekCategory(),
+                        Collectors.groupingBy(
+                                todo -> todo.getWeekContent().getWeekContentCategory(),
+                                Collectors.mapping(
+                                        todo -> todo.getWeekContent().getGate(),
+                                        Collectors.toList()
+                                )
+                        )
+                ));
+    }
+
+    //WeekCategory, WeekContentCategory, Gate를 문자열로 변환하여 TodoResponseDto에 저장
+    private void buildResultString(String weekCategory, Map<WeekContentCategory, List<Integer>> weekContentCategoryMap,
+                                   List<TodoResponseDto> todoResponseDtos) {
+        StringBuilder result = new StringBuilder(weekCategory).append(" <br />");
+
+        weekContentCategoryMap.forEach((weekContentCategory, gates) -> {
+            result.append(weekContentCategory).append(" ");
+            gates.forEach(gate -> result.append(gate).append(" "));
+        });
+
+        todoResponseDtos.stream()
+                .filter(dto -> dto.getWeekCategory().equals(weekCategory))
+                .findFirst()
+                .ifPresent(dto -> dto.setName(result.toString()));
     }
 
     private void calculateWeekRaidGold(Character character, CharacterResponse characterResponse, List<TodoResponseDto> todoResponseDtoList) {
@@ -267,34 +307,5 @@ public class CharacterResponse {
                     .findFirst()
                     .ifPresent(todoResponseDto -> characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + gold.getBusGold()));
         });
-    }
-
-    private Map<String, Map<WeekContentCategory, List<Integer>>> categorizeTodos(Character character) {
-        return character.getTodoV2List().stream()
-                .collect(Collectors.groupingBy(
-                        todo -> todo.getWeekContent().getWeekCategory(),
-                        Collectors.groupingBy(
-                                todo -> todo.getWeekContent().getWeekContentCategory(),
-                                Collectors.mapping(
-                                        todo -> todo.getWeekContent().getGate(),
-                                        Collectors.toList()
-                                )
-                        )
-                ));
-    }
-
-    private void buildResultString(String weekCategory, Map<WeekContentCategory, List<Integer>> weekContentCategoryMap,
-                                   List<TodoResponseDto> todoResponseDtos) {
-        StringBuilder result = new StringBuilder(weekCategory).append(" <br />");
-
-        weekContentCategoryMap.forEach((weekContentCategory, gates) -> {
-            result.append(weekContentCategory).append(" ");
-            gates.forEach(gate -> result.append(gate).append(" "));
-        });
-
-        todoResponseDtos.stream()
-                .filter(dto -> dto.getWeekCategory().equals(weekCategory))
-                .findFirst()
-                .ifPresent(dto -> dto.setName(result.toString()));
     }
 }
