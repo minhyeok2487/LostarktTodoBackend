@@ -196,7 +196,7 @@ public class CharacterResponse {
         if (existingDto != null) {
             existingDto.updateExistingTodo(todo, goldCharacter);
         } else {
-            dtos.add(new TodoResponseDto().toDto(todo,goldCharacter));
+            dtos.add(new TodoResponseDto().toDto(todo, goldCharacter));
         }
     }
 
@@ -263,8 +263,6 @@ public class CharacterResponse {
     private void processTodoForCharacterResponse(TodoResponseDto todoResponseDto, TodoV2 todo, CharacterResponse characterResponse) {
         if (characterResponse.isGoldCharacter()) {
             handleGoldCharacter(todoResponseDto, todo, characterResponse);
-        } else {
-            handleNonGoldCharacter(todo, characterResponse);
         }
     }
 
@@ -278,12 +276,6 @@ public class CharacterResponse {
             if (todo.isMoreRewardCheck()) {
                 characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() - todo.getWeekContent().getMoreRewardGold());
             }
-        }
-    }
-
-    private void handleNonGoldCharacter(TodoV2 todo, CharacterResponse characterResponse) {
-        if (todo.isMoreRewardCheck()) {
-            characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() - todo.getWeekContent().getMoreRewardGold());
         }
     }
 

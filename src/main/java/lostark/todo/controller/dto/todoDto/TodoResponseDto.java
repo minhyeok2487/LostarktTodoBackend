@@ -65,7 +65,7 @@ public class TodoResponseDto {
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
 
         if (todo.isMoreRewardCheck()) {
-            return goldCharacter ? baseGold - moreRewardGold : -moreRewardGold;
+            return goldCharacter ? baseGold - moreRewardGold : 0;
         }
 
         return goldCharacter ? baseGold : 0;
@@ -84,7 +84,7 @@ public class TodoResponseDto {
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
         int goldToAdd = goldCharacter ? todo.getGold() : 0;
 
-        if (todo.isMoreRewardCheck()) {
+        if (todo.isMoreRewardCheck() && goldCharacter) {
             goldToAdd -= moreRewardGold;
         }
 
