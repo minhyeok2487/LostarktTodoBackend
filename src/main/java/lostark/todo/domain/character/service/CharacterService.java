@@ -9,6 +9,7 @@ import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.DeletedCharacterResponse;
+import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
@@ -44,6 +45,7 @@ public class CharacterService {
     private final MemberRepository memberRepository;
     private final MarketRepository marketRepository;
     private final ContentRepository contentRepository;
+    private final TodoV2Repository todoV2Repository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
 
 
@@ -174,10 +176,16 @@ public class CharacterService {
         return character;
     }
 
-    private static void updateRelatedTodos(SettingRequestDto settingRequestDto, Character character) {
+    private void updateRelatedTodos(SettingRequestDto settingRequestDto, Character character) {
         // 더보기 버튼의 설정 값이 변하면 기존 더보기 해제
         if(settingRequestDto.getName().equals("showMoreButton")) {
             character.getTodoV2List().forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
+        }
+
+        // 캐릭터 출력이 false로 변경되면 레이드 골드 체크 해제, 숙제 제거
+        if (settingRequestDto.getName().equals("showCharacter") && settingRequestDto.getValue().equals(false)) {
+            character.setGoldCharacter(false);
+            todoV2Repository.removeCharacter(character);
         }
     }
 

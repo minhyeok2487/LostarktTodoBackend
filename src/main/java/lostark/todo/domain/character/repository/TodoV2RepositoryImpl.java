@@ -2,6 +2,8 @@ package lostark.todo.domain.character.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.domain.character.entity.Character;
+
 import static lostark.todo.domain.character.entity.QTodoV2.todoV2;
 
 @RequiredArgsConstructor
@@ -18,6 +20,13 @@ public class TodoV2RepositoryImpl implements TodoV2CustomRepository {
                                 .from(todoV2.weekContent)
                                 .where(todoV2.weekContent.id.eq(todoV2.weekContent.id)))
                 .set(todoV2.moreRewardCheck, false)
+                .execute();
+    }
+
+    @Override
+    public void removeCharacter(Character character) {
+        factory.delete(todoV2)
+                .where(todoV2.character.eq(character))
                 .execute();
     }
 }
