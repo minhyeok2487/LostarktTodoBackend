@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.board.community.dto.*;
 import lostark.todo.domain.board.community.entity.CommunityCategory;
 import lostark.todo.domain.board.community.service.CommunityService;
+import lostark.todo.global.customAnnotation.NotTestMember;
+import lostark.todo.global.customAnnotation.RateLimit;
 import lostark.todo.global.dto.ImageResponseV2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,8 @@ public class CommunityApi {
 
     @ApiOperation(value = "게시글 저장")
     @PostMapping()
+    @NotTestMember
+    @RateLimit(10)
     public ResponseEntity<?> save(@AuthenticationPrincipal String username,
                                   @RequestBody @Valid CommunitySaveRequest request) {
         service.save(username, request);
@@ -62,6 +66,8 @@ public class CommunityApi {
 
     @ApiOperation(value = "이미지 업로드", response = ImageResponseV2.class)
     @PostMapping("/image")
+    @NotTestMember
+    @RateLimit(10)
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal String username,
                                          @RequestPart("image") MultipartFile image) {
         return new ResponseEntity<>(service.uploadImage(username, image), HttpStatus.OK);
@@ -69,6 +75,7 @@ public class CommunityApi {
 
     @ApiOperation(value = "게시글 수정", notes = "15분이내 게시글만 수정 가능, 사진 수정은 불가능")
     @PatchMapping("")
+    @NotTestMember
     public ResponseEntity<?> update(@AuthenticationPrincipal String username,
                                     @RequestBody @Valid CommunityUpdateRequest request) {
         service.update(username, request);
@@ -77,6 +84,7 @@ public class CommunityApi {
 
     @ApiOperation(value = "게시글 삭제")
     @DeleteMapping("/{communityId}")
+    @NotTestMember
     public ResponseEntity<?> delete(@AuthenticationPrincipal String username,
                                     @PathVariable long communityId) {
         service.delete(username, communityId);

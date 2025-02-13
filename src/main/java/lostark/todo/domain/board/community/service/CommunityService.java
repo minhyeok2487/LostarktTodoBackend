@@ -16,7 +16,6 @@ import lostark.todo.domain.board.community.entity.Community;
 import lostark.todo.domain.board.community.entity.CommunityCategory;
 import lostark.todo.domain.board.community.entity.CommunityImages;
 import lostark.todo.domain.board.community.repository.CommunityRepository;
-import lostark.todo.global.customAnnotation.RateLimit;
 import lostark.todo.global.dto.CursorResponse;
 import lostark.todo.global.dto.ImageResponseV2;
 import lostark.todo.global.service.ImagesService;
@@ -48,7 +47,6 @@ public class CommunityService {
         return communityRepository.search(memberId, params, pageRequest);
     }
 
-    @RateLimit(10)
     @Transactional
     public void save(String username, CommunitySaveRequest request) {
         Member member = memberRepository.get(username);
