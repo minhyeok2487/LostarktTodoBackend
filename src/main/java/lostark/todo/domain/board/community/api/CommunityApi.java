@@ -67,7 +67,6 @@ public class CommunityApi {
     @ApiOperation(value = "이미지 업로드", response = ImageResponseV2.class)
     @PostMapping("/image")
     @NotTestMember
-    @RateLimit(10)
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal String username,
                                          @RequestPart("image") MultipartFile image) {
         return new ResponseEntity<>(service.uploadImage(username, image), HttpStatus.OK);
