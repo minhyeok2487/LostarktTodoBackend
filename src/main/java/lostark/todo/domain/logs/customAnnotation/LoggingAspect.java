@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -62,8 +63,15 @@ public class LoggingAspect {
     }
 
     private void saveOrDeleteLog(CharacterResponse result, LogContent content, boolean shouldSave, String message, double profit) {
+        // 현재 시간을 기준으로 오전 6시를 기준으로 날짜를 결정
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime adjustedDate = now.isBefore(now.toLocalDate().atStartOfDay().plusHours(6))
+                ? now.toLocalDate().minusDays(1).atStartOfDay().plusHours(6)
+                : now.toLocalDate().atStartOfDay().plusHours(6);
+        LocalDate logDate = adjustedDate.toLocalDate();
+
         Logs logs = Logs.builder()
-                .localDate(LocalDate.now())
+                .localDate(logDate)
                 .memberId(result.getMemberId())
                 .characterId(result.getCharacterId())
                 .logType(LogType.DAILY)
@@ -71,6 +79,7 @@ public class LoggingAspect {
                 .message(message)
                 .profit(profit)
                 .build();
+
         if (shouldSave) {
             service.saveLog(logs);
         } else {
