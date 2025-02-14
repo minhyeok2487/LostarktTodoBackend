@@ -10,6 +10,7 @@ import lostark.todo.domain.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.logs.customAnnotation.Loggable;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class CharacterDayApi {
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterResponse.class)
     @PostMapping("/check")
+    @Loggable()
     public ResponseEntity<?> updateDayCheck(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody UpdateDayCheckRequest request) {

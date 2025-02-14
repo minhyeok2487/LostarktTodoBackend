@@ -28,6 +28,8 @@ public class CharacterResponse {
 
     private long characterId;
 
+    private long memberId;
+
     @ApiModelProperty(notes = "캐릭터 클래스")
     private String characterClassName;
 
@@ -132,6 +134,7 @@ public class CharacterResponse {
 
     private CharacterResponse buildCharacterResponse(Character character) {
         return CharacterResponse.builder()
+                .memberId(character.getMember().getId())
                 .characterId(character.getId())
                 .characterName(character.getCharacterName())
                 .characterImage(character.getCharacterImage())
