@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.logs.service.LogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +23,7 @@ public class LogsApi {
 
     @ApiOperation(value = "전체 Logs 불러오기", notes = "최근 100개 로그 출력(임시)")
     @GetMapping()
-    public ResponseEntity<?> search() {
-        return new ResponseEntity<>(service.search(100), HttpStatus.OK);
+    public ResponseEntity<?> search(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(service.search(100, username), HttpStatus.OK);
     }
 }

@@ -3,6 +3,8 @@ package lostark.todo.domain.logs.service;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.repository.LogsRepository;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LogService {
     private final LogsRepository repository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void saveLog(Logs logs) {
@@ -32,8 +35,9 @@ public class LogService {
     }
 
     @Transactional(readOnly = true)
-    public List<Logs> search(int size) {
-        Page<Logs> allLogs = repository.findAll(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdDate")));
+    public List<Logs> search(int size, String username) {
+        Member member = memberRepository.get(username);
+        Page<Logs> allLogs = repository.findAllByMemberId(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdDate")), member.getId());
         return allLogs.getContent();
     }
 }
