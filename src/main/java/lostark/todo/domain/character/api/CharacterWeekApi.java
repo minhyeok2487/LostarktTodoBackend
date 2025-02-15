@@ -10,6 +10,7 @@ import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.RaidBusGoldService;
+import lostark.todo.domain.logs.customAnnotation.Loggable;
 import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.util.content.service.ContentService;
@@ -104,6 +105,7 @@ public class CharacterWeekApi {
 
     @ApiOperation(value = "캐릭터 주간 레이드 check 수정", response = CharacterResponse.class)
     @PostMapping("/raid/check")
+    @Loggable()
     public ResponseEntity<?> updateWeekRaidCheck(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody UpdateWeekRaidCheckRequest request) {

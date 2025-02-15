@@ -2,9 +2,10 @@ package lostark.todo.domain.logs.customAnnotation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.controller.dto.todoDto.TodoResponseDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.UpdateDayCheckRequest;
-import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
+import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.domain.logs.entity.Logs;
@@ -19,7 +20,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
 @Aspect
 @Component
 @Slf4j
@@ -30,51 +30,78 @@ public class LoggingAspect {
 
     @AfterReturning(pointcut = "@annotation(loggable)", returning = "resultObject")
     public void characterResponseLogs(JoinPoint joinPoint, Object resultObject, Loggable loggable) {
-        String methodName = joinPoint.getSignature().getName(); // 호출된 메서드명 추출
-
         if (!(resultObject instanceof ResponseEntity<?> responseEntity)) {
             log.warn("Unexpected return type: {}", resultObject.getClass().getName());
             return;
         }
 
-        if (!(responseEntity.getBody() instanceof CharacterResponse result)) {
+        if (!(responseEntity.getBody() instanceof CharacterResponse response)) {
             log.warn("Unexpected response body type: {}", Objects.requireNonNull(responseEntity.getBody()).getClass().getName());
             return;
         }
 
         for (Object arg : joinPoint.getArgs()) {
-            // 메서드 이름을 기준으로 조건 처리
-            if (methodName.equals("updateDayCheck")) {
-                if (arg instanceof UpdateDayCheckRequest request) {
-                    processLog(request, result);
-                }
+            if (arg instanceof UpdateDayCheckRequest request) {
+                processDayLog(request, response);
+            } else if (arg instanceof UpdateWeekRaidCheckRequest request) {
+                processWeekLog(request, response);
             }
         }
     }
 
-    private void processLog(UpdateDayCheckRequest request, CharacterResponse result) {
-        if (request.getCategory() == DayTodoCategoryEnum.chaos) {
-            saveOrDeleteLog(result, LogContent.CHAOS, result.getChaosCheck() == 2,
-                    result.getItemLevel() >= 1640 ? "쿠르잔전선 클리어" : "카오스던전 클리어", result.getChaosGold());
-        } else if (request.getCategory() == DayTodoCategoryEnum.guardian) {
-            saveOrDeleteLog(result, LogContent.GUARDIAN, result.getGuardianCheck() == 1,
-                    "가디언토벌 클리어", result.getGuardianGold());
+    private void processWeekLog(UpdateWeekRaidCheckRequest request, CharacterResponse response) {
+        response.getTodoList().stream()
+                .filter(todo -> todo.getWeekCategory().equals(request.getWeekCategory()))
+                .forEach(todo -> {
+                    int gold = (response.isGoldCharacter() && todo.isGoldCheck()) ? todo.getGold() : 0;
+                    String message = formatRaidLogMessage(todo, response);
+                    saveOrDeleteLog(response, LogType.WEEKLY, LogContent.RAID, todo.isCheck(), message, gold);
+                });
+    }
+
+    private void processDayLog(UpdateDayCheckRequest request, CharacterResponse response) {
+        LogType logType = LogType.DAILY;
+        String message;
+        double profit;
+
+        switch (request.getCategory()) {
+            case chaos:
+                message = (response.getItemLevel() >= 1640) ? "쿠르잔전선 클리어" : "카오스던전 클리어";
+                profit = response.getChaosGold();
+                saveOrDeleteLog(response, logType, LogContent.CHAOS, response.getChaosCheck() == 2, message, profit);
+                break;
+            case guardian:
+                message = "가디언토벌 클리어";
+                profit = response.getGuardianGold();
+                saveOrDeleteLog(response, logType, LogContent.GUARDIAN, response.getGuardianCheck() == 1, message, profit);
+                break;
+            default:
+                log.warn("Unsupported DayTodoCategoryEnum: {}", request.getCategory());
         }
     }
 
-    private void saveOrDeleteLog(CharacterResponse result, LogContent content, boolean shouldSave, String message, double profit) {
-        // 현재 시간을 기준으로 오전 6시를 기준으로 날짜를 결정
+    private String formatRaidLogMessage(TodoResponseDto todo, CharacterResponse response) {
+        String message = todo.getName() + " 클리어";
+        if (!(response.isGoldCharacter() && todo.isGoldCheck())) {
+            message += " (골드 미회득)";
+        }
+        return sanitizeMessage(message);
+    }
+
+    private String sanitizeMessage(String message) {
+        return message.replace("<br />", "").replace("</br>", "").replace("<br>", "");
+    }
+
+    private void saveOrDeleteLog(CharacterResponse result, LogType logType, LogContent content, boolean shouldSave, String message, double profit) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime adjustedDate = now.isBefore(now.toLocalDate().atStartOfDay().plusHours(6))
-                ? now.toLocalDate().minusDays(1).atStartOfDay().plusHours(6)
-                : now.toLocalDate().atStartOfDay().plusHours(6);
-        LocalDate logDate = adjustedDate.toLocalDate();
+        LocalDateTime resetTime = now.toLocalDate().atStartOfDay().plusHours(6);
+        LocalDate logDate = now.isBefore(resetTime) ? now.toLocalDate().minusDays(1) : now.toLocalDate();
 
         Logs logs = Logs.builder()
                 .localDate(logDate)
                 .memberId(result.getMemberId())
                 .characterId(result.getCharacterId())
-                .logType(LogType.DAILY)
+                .logType(logType)
                 .logContent(content)
                 .message(message)
                 .profit(profit)
@@ -87,6 +114,3 @@ public class LoggingAspect {
         }
     }
 }
-
-
-
