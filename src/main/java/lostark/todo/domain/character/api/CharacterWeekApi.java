@@ -200,6 +200,7 @@ public class CharacterWeekApi {
 
     @ApiOperation(value = "캐릭터 레이드 관문 더보기 업데이트", response = CharacterResponse.class)
     @PostMapping("/raid/more-reward")
+    @Loggable()
     public ResponseEntity<?> updateRaidMoreRewardCheck(@AuthenticationPrincipal String username,
                                                        @RequestParam(required = false) String friendUsername,
                                                        @RequestBody UpdateWeekRaidMoreRewardCheckRequest request) {

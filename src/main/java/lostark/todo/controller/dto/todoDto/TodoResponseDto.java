@@ -41,6 +41,8 @@ public class TodoResponseDto {
 
     private List<Boolean> moreRewardCheckList;
 
+    private List<Integer> moreRewardGoldList;
+
     public TodoResponseDto toDto(TodoV2 todo, boolean goldCharacter) {
         return TodoResponseDto.builder()
                 .id(todo.getId())
@@ -57,6 +59,7 @@ public class TodoResponseDto {
                 .goldCheck(todo.isGoldCheck())
                 .characterClassName(todo.getCharacter().getCharacterClassName())
                 .moreRewardCheckList(new ArrayList<>(Collections.singleton(todo.isMoreRewardCheck())))
+                .moreRewardGoldList(new ArrayList<>(Collections.singleton(todo.getWeekContent().getMoreRewardGold())))
                 .build();
     }
 
@@ -80,6 +83,7 @@ public class TodoResponseDto {
         this.gold = this.getGold() + todo.getGold();
         this.totalGate = todo.getWeekContent().getGate();
         this.moreRewardCheckList.add(todo.isMoreRewardCheck());
+        this.moreRewardGoldList.add(todo.getWeekContent().getMoreRewardGold());
 
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
         int goldToAdd = goldCharacter ? todo.getGold() : 0;

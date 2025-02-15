@@ -1,5 +1,5 @@
 package lostark.todo.domain.logs.enums;
 
 public enum LogContent {
-    CHAOS, GUARDIAN, RAID
+    CHAOS, GUARDIAN, RAID, RAID_MORE_REWARD
 }

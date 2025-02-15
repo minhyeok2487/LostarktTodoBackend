@@ -18,6 +18,17 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                         .and(logs.localDate.eq(logEntity.getLocalDate()))
                         .and(logs.logType.eq(logEntity.getLogType()))
                         .and(logs.logContent.eq(logEntity.getLogContent()))
+                        .and(logs.name.eq(logEntity.getName()))
+                )
+                .execute();
+    }
+
+    @Override
+    public void deleteMoreRewardLogs(long memberId, long characterId, String weekCategory) {
+        factory.delete(logs)
+                .where(logs.memberId.eq(memberId)
+                        .and(logs.characterId.eq(characterId))
+                        .and(logs.name.eq(weekCategory))
                 )
                 .execute();
     }

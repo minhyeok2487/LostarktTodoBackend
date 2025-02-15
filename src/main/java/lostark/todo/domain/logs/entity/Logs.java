@@ -35,6 +35,8 @@ public class Logs extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private LogContent logContent;
 
+    private String name;
+
     private String message;
 
     private double profit;

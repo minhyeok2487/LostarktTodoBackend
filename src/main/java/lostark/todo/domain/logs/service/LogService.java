@@ -20,4 +20,9 @@ public class LogService {
     public void deleteLog(Logs logs) {
         repository.deleteLogsByLogs(logs);
     }
+
+    @Transactional
+    public void deleteMoreRewardLogs(long memberId, long characterId, String weekCategory) {
+        repository.deleteMoreRewardLogs(memberId, characterId, weekCategory);
+    }
 }
