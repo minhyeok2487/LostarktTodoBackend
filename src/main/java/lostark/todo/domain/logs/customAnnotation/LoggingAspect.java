@@ -54,14 +54,18 @@ public class LoggingAspect {
     }
 
     private void processWeekMoreRewardLog(UpdateWeekRaidMoreRewardCheckRequest request, CharacterResponse response) {
+        StringBuilder message = new StringBuilder(response.getServerName() + " 서버의 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 ");
         response.getTodoList().stream()
                 .filter(todo -> todo.getWeekCategory().equals(request.getWeekCategory()))
                 .forEach(todo -> {
                     for (int i = 0; i < todo.getMoreRewardCheckList().size(); i++) {
                         if (i == request.getGate() - 1) {
                             int gold = response.isGoldCharacter() ? -todo.getMoreRewardGoldList().get(i) : 0;
-                            String message = todo.getWeekCategory() + " " + request.getGate() + "관문 더보기 체크";
-                            saveOrDeleteLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD, todo.getWeekCategory(), todo.getMoreRewardCheckList().get(i), message, gold);
+                            message.append(todo.getWeekCategory()).append(" ").append(request.getGate()).append("관문 더보기를 체크하여 ");
+                            message.append(gold).append("골드를 소모했습니다.");
+                            saveOrDeleteLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD,
+                                    todo.getWeekCategory(), todo.getMoreRewardCheckList().get(i), message.toString(), gold);
                             break;
                         }
                     }
@@ -73,7 +77,7 @@ public class LoggingAspect {
                 .filter(todo -> todo.getWeekCategory().equals(request.getWeekCategory()))
                 .forEach(todo -> {
                     int gold = (response.isGoldCharacter() && todo.isGoldCheck()) ? todo.getGold() : 0;
-                    String message = formatRaidLogMessage(todo, response);
+                    String message = formatRaidLogMessage(todo, response, gold);
                     saveOrDeleteLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold);
 
                     // 취소하면 더보기도 초기화
@@ -85,31 +89,41 @@ public class LoggingAspect {
 
     private void processDayLog(UpdateDayCheckRequest request, CharacterResponse response) {
         LogType logType = LogType.DAILY;
-        String message;
+        StringBuilder message = new StringBuilder(response.getServerName() + " 서버의 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 ");
+        String name;
         double profit;
 
         switch (request.getCategory()) {
             case chaos:
-                message = (response.getItemLevel() >= 1640) ? "쿠르잔전선" : "카오스던전";
+                name = (response.getItemLevel() >= 1640) ? "쿠르잔전선" : "카오스던전";
+                message.append(name).append("에서 ");
                 profit = response.getChaosGold();
-                saveOrDeleteLog(response, logType, LogContent.CHAOS, message, response.getChaosCheck() == 2, message + " 클리어", profit);
+                message.append(profit).append("골드를 획득했습니다.");
+                saveOrDeleteLog(response, logType, LogContent.CHAOS, name, response.getChaosCheck() == 2, message.toString(), profit);
                 break;
             case guardian:
-                message = "가디언토벌";
+                name = "가디언토벌";
+                message.append(response.getGuardian().getName());
+                message.append("(").append(name).append(")").append("에서 ");
                 profit = response.getGuardianGold();
-                saveOrDeleteLog(response, logType, LogContent.GUARDIAN, message, response.getGuardianCheck() == 1, message + " 클리어", profit);
+                message.append(profit).append("골드를 획득했습니다.");
+                saveOrDeleteLog(response, logType, LogContent.GUARDIAN, name, response.getGuardianCheck() == 1, message.toString(), profit);
                 break;
             default:
                 log.warn("Unsupported DayTodoCategoryEnum: {}", request.getCategory());
         }
     }
 
-    private String formatRaidLogMessage(TodoResponseDto todo, CharacterResponse response) {
-        String message = todo.getName() + " 클리어";
+    private String formatRaidLogMessage(TodoResponseDto todo, CharacterResponse response, int gold) {
+        StringBuilder message = new StringBuilder(response.getServerName() + " 서버의 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 ");
+        message.append(todo.getName()).append("를 클리어해서 ");
+        message.append(gold).append("골드를 획득했습니다.");
         if (!(response.isGoldCharacter() && todo.isGoldCheck())) {
-            message += " (골드 미회득)";
+            message.append(" (골드 미회득 레이드)");
         }
-        return sanitizeMessage(message);
+        return sanitizeMessage(message.toString());
     }
 
     private String sanitizeMessage(String message) {
