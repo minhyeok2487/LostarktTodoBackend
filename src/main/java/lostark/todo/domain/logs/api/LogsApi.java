@@ -35,7 +35,6 @@ public class LogsApi {
     @GetMapping("/profit")
     public ResponseEntity<?> getLogsProfit(@AuthenticationPrincipal String username,
                                            @Valid GetLogsProfitRequest request) {
-        log.info("username: {}, request: {}", username, request);
         return new ResponseEntity<>(service.getProfit(username, request), HttpStatus.OK);
     }
 }
