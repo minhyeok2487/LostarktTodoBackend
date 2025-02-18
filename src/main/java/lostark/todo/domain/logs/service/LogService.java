@@ -1,6 +1,8 @@
 package lostark.todo.domain.logs.service;
 
 import lombok.RequiredArgsConstructor;
+import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
+import lostark.todo.domain.logs.dto.LogProfitResponse;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.repository.LogsRepository;
 import lostark.todo.domain.member.entity.Member;
@@ -39,5 +41,11 @@ public class LogService {
         Member member = memberRepository.get(username);
         Page<Logs> allLogs = repository.findAllByMemberId(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdDate")), member.getId());
         return allLogs.getContent();
+    }
+
+    @Transactional
+    public List<LogProfitResponse> getProfit(String username, GetLogsProfitRequest request) {
+        Member member = memberRepository.get(username);
+        return repository.getProfit(member.getId(), request);
     }
 }
