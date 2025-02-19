@@ -4,10 +4,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
-import lostark.todo.domain.logs.dto.LogProfitResponse;
-import lostark.todo.domain.logs.dto.QLogProfitResponse;
+import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
+import lostark.todo.domain.logs.enums.LogContent;
+import lostark.todo.global.dto.CursorResponse;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +20,36 @@ import static lostark.todo.domain.logs.entity.QLogs.logs;
 public class LogsRepositoryImpl implements LogsCustomRepository {
 
     private final JPAQueryFactory factory;
+
+    @Override
+    public CursorResponse<LogsSearchResponse> search(long member, LogsSearchParams params, PageRequest pageRequest) {
+        List<LogsSearchResponse> fetch = factory.select(new QLogsSearchResponse(
+                        logs.id,
+                        logs.localDate,
+                        logs.logType,
+                        logs.logContent,
+                        logs.name,
+                        logs.message,
+                        logs.profit
+                ))
+                .from(logs)
+                .where(
+                        eqMember(member),
+                        eqCharacter(params.getCharacterId()),
+                        eqLogContent(params.getLogContent())
+                )
+                .orderBy(logs.id.desc())
+                .limit(pageRequest.getPageSize() + 1)
+                .fetch();
+        boolean hasNext = false;
+
+        if (fetch.size() > pageRequest.getPageSize()) {
+            fetch.remove(pageRequest.getPageSize());
+            hasNext = true;
+        }
+
+        return new CursorResponse<>(fetch, hasNext);
+    }
 
     @Override
     public List<LogProfitResponse> getProfit(long memberId, GetLogsProfitRequest request) {
@@ -57,6 +88,13 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
 
     private BooleanExpression eqMember(long memberId) {
         return logs.memberId.eq(memberId);
+    }
+
+    private BooleanExpression eqLogContent(LogContent logContent) {
+        if (logContent == null) {
+            return null;
+        }
+        return logs.logContent.eq(logContent);
     }
 
 

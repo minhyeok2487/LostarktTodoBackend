@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
 import lostark.todo.domain.logs.dto.LogProfitResponse;
+import lostark.todo.domain.logs.dto.LogsSearchParams;
 import lostark.todo.domain.logs.service.LogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +26,11 @@ public class LogsApi {
 
     private final LogService service;
 
-    @ApiOperation(value = "전체 Logs 불러오기", notes = "최근 100개 로그 출력(임시)")
+    @ApiOperation(value = "최근 Logs 불러오기", notes = "최근 100개 단위")
     @GetMapping()
-    public ResponseEntity<?> search(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(service.search(100, username), HttpStatus.OK);
+    public ResponseEntity<?> search(@AuthenticationPrincipal String username,
+                                    @Valid LogsSearchParams params) {
+        return new ResponseEntity<>(service.search(username, params), HttpStatus.OK);
     }
 
     @ApiOperation(value = "날짜별 숙제 수익", notes = "기본 2주", response = LogProfitResponse.class)

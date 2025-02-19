@@ -3,13 +3,14 @@ package lostark.todo.domain.logs.service;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
 import lostark.todo.domain.logs.dto.LogProfitResponse;
+import lostark.todo.domain.logs.dto.LogsSearchParams;
+import lostark.todo.domain.logs.dto.LogsSearchResponse;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.repository.LogsRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
-import org.springframework.data.domain.Page;
+import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +38,10 @@ public class LogService {
     }
 
     @Transactional(readOnly = true)
-    public List<Logs> search(int size, String username) {
+    public CursorResponse<LogsSearchResponse> search(String username, LogsSearchParams params) {
+        PageRequest pageRequest = PageRequest.of(0, 100);
         Member member = memberRepository.get(username);
-        Page<Logs> allLogs = repository.findAllByMemberId(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdDate")), member.getId());
-        return allLogs.getContent();
+        return repository.search(member.getId(), params, pageRequest);
     }
 
     @Transactional
