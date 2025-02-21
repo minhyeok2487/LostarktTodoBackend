@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.characterDto;
+package lostark.todo.controller.dtoV2.character;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -6,16 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CharacterSortDto {
+public class CharacterSortRequest {
 
     @NotEmpty()
     @ApiModelProperty(notes = "캐릭터 이름")

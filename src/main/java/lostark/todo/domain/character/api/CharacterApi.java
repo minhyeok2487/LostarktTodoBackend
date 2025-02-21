@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.SettingRequestDto;
+import lostark.todo.controller.dtoV2.character.CharacterSettingRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
@@ -40,16 +40,16 @@ public class CharacterApi {
     @PatchMapping("/settings")
     public ResponseEntity<?> updateSettings(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
-                                            @RequestBody SettingRequestDto settingRequestDto) {
+                                            @RequestBody CharacterSettingRequest characterSettingRequest) {
         Character updateCharacter;
         if (friendUsername == null) {
-            updateCharacter = characterService.updateSetting(username, settingRequestDto);
+            updateCharacter = characterService.updateSetting(username, characterSettingRequest);
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
                 throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
             } else {
-                updateCharacter = characterService.updateSetting(friendUsername, settingRequestDto);
+                updateCharacter = characterService.updateSetting(friendUsername, characterSettingRequest);
             }
         }
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);

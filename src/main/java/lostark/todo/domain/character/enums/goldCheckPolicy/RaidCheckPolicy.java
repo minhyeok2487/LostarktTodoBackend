@@ -1,6 +1,6 @@
 package lostark.todo.domain.character.enums.goldCheckPolicy;
 
-import lostark.todo.controller.dto.todoDto.TodoResponseDto;
+import lostark.todo.domain.character.dto.TodoResponseDto;
 
 import java.util.*;
 

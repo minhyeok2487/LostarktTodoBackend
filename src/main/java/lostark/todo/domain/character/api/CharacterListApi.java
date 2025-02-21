@@ -4,8 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterDto;
-import lostark.todo.controller.dto.characterDto.CharacterSortDto;
+import lostark.todo.controller.dtoV2.character.CharacterSortRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.friend.entity.Friends;
@@ -40,10 +39,9 @@ public class CharacterListApi {
     }
 
     @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
-            notes = "전투 레벨, 아이템 레벨, 이미지url 업데이트 \n" +
-                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 \n" +
-                    "캐릭터 추가 및 삭제 ",
-            response = CharacterDto.class)
+            notes = "전투 레벨, 아이템 레벨, 이미지url 업데이트 " +
+                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 " +
+                    "캐릭터 추가 및 삭제 ")
     @PutMapping()
     public ResponseEntity<?> updateCharacterList(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername) {
@@ -64,15 +62,15 @@ public class CharacterListApi {
     @PatchMapping("/sorting")
     public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,
                                         @RequestParam(required = false) String friendUsername,
-                                        @RequestBody @Valid List<CharacterSortDto> characterSortDtoList) {
+                                        @RequestBody @Valid List<CharacterSortRequest> characterSortRequestList) {
         if (friendUsername == null) {
-            return new ResponseEntity<>(characterService.editSort(username, characterSortDtoList), HttpStatus.OK);
+            return new ResponseEntity<>(characterService.editSort(username, characterSortRequestList), HttpStatus.OK);
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
                 throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
             } else {
-                return new ResponseEntity<>(characterService.editSort(friendUsername, characterSortDtoList), HttpStatus.OK);
+                return new ResponseEntity<>(characterService.editSort(friendUsername, characterSortRequestList), HttpStatus.OK);
             }
         }
     }

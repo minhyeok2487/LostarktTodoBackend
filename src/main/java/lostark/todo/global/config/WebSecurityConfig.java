@@ -49,6 +49,7 @@ public class WebSecurityConfig {
             "/v2/boards/**","/v3/boards/**", "/v2/comments", "/v3/home/test", "/auth/authorize",
             "/login/oauth2/**",
             "/api/v1/auth/signup", "/api/v1/member/character", "/api/v1/auth/login", "/api/v1/mail/**",
+            "/actuator/**"
     };
 
     public static final String[] PERMIT_GET_LINK = {
@@ -86,7 +87,7 @@ public class WebSecurityConfig {
                 .exceptionHandling()
                 .authenticationEntryPoint(new Http403ForbiddenEntryPoint()); // 403에러 리턴
 
-        /**
+        /*
          * filter 등록.
          * 매 요청마다
          * CorsFilter 실행한 후에

@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.todoDto;
+package lostark.todo.domain.character.dto;
 
 import lombok.*;
 import lostark.todo.domain.util.content.enums.WeekContentCategory;

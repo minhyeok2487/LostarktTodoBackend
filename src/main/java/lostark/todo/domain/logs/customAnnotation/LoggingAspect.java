@@ -2,7 +2,7 @@ package lostark.todo.domain.logs.customAnnotation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.todoDto.TodoResponseDto;
+import lostark.todo.domain.character.dto.TodoResponseDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
