@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
 import lostark.todo.controller.dtoV2.member.EditProviderRequest;
-import lostark.todo.controller.dtoV2.member.MemberResponse;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
@@ -35,13 +34,6 @@ public class MemberControllerV4 {
     private final FriendsService friendsService;
     private final LostarkApiClient lostarkApiClient;
     private final CustomTodoService customTodoService;
-
-    @ApiOperation(value = "회원 정보 조회 API",
-            response = MemberResponse.class)
-    @GetMapping()
-    public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(MemberResponse.toDto(memberService.get(username)), HttpStatus.OK);
-    }
 
     @ApiOperation(value = "대표 캐릭터 변경 API")
     @PatchMapping("/main-character")
