@@ -52,9 +52,6 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	implementation "io.awspring.cloud:spring-cloud-aws-starter-parameter-store"
 
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'io.micrometer:micrometer-registry-prometheus'
-
 	//json
 	implementation 'org.jsoup:jsoup:1.15.3'
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
@@ -84,6 +81,10 @@ dependencies {
 
 	//cache
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+	//monitoring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 //QueryDSL 플로그인 설정 START

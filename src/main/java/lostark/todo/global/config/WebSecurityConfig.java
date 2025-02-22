@@ -49,11 +49,11 @@ public class WebSecurityConfig {
             "/v2/boards/**","/v3/boards/**", "/v2/comments", "/v3/home/test", "/auth/authorize",
             "/login/oauth2/**",
             "/api/v1/auth/signup", "/api/v1/member/character", "/api/v1/auth/login", "/api/v1/mail/**",
-            "/actuator/**"
+            "/manage/health", "/manage/info", "/manage/prometheus"
     };
 
     public static final String[] PERMIT_GET_LINK = {
-        "/v3/comments", "/api/v1/recruting-board/**", "/api/v1/community/**"
+        "/v3/comments", "/api/v1/recruting-board/**", "/api/v1/community/**",
     };
 
 
