@@ -36,6 +36,7 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                 .from(logs)
                 .where(
                         eqMember(member),
+                        ltLogsId(params.getLogsId()),
                         eqCharacter(params.getCharacterId()),
                         eqLogContent(params.getLogContent())
                 )
@@ -73,7 +74,7 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
     }
 
     private BooleanExpression eqCharacter(Long characterId) {
-        if (characterId == null) {
+        if (characterId == null || characterId == 0) {
             return null;
         }
         return logs.characterId.eq(characterId);
@@ -96,6 +97,13 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
             return null;
         }
         return logs.logContent.eq(logContent);
+    }
+
+    private BooleanExpression ltLogsId(Long logsId) {
+        if (logsId != null) {
+            return logs.id.lt(logsId);
+        }
+        return null;
     }
 
 

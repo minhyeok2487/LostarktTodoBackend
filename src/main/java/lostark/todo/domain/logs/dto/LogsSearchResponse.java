@@ -28,7 +28,7 @@ public class LogsSearchResponse {
 
     private String message;
 
-    private double profit;
+    private int profit;
 
     @QueryProjection
     public LogsSearchResponse(Long logsId, LocalDateTime createdDate, LocalDate localDate, LogType logType, LogContent logContent, String name, String message, double profit) {
@@ -39,6 +39,6 @@ public class LogsSearchResponse {
         this.logContent = logContent;
         this.name = name;
         this.message = message;
-        this.profit = profit;
+        this.profit = (int) profit;
     }
 }
