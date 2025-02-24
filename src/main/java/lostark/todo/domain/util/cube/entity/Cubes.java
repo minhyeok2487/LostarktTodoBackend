@@ -2,8 +2,10 @@ package lostark.todo.domain.util.cube.entity;
 
 import lombok.*;
 import lostark.todo.domain.util.cube.dto.CubeUpdateRequest;
+import lostark.todo.domain.util.cube.enums.CubeContentName;
 
 import javax.persistence.*;
+import java.lang.reflect.Field;
 
 @Getter
 @Setter
@@ -60,5 +62,20 @@ public class Cubes {
         this.unlock2 = request.getUnlock2();
         this.unlock3 = request.getUnlock3();
         return this;
+    }
+
+    public void spend(CubeContentName cubeContentName) {
+        String name = cubeContentName.getVariable();
+        try {
+            Field field = getClass().getDeclaredField(name);
+            field.setAccessible(true); // 필드에 접근할 수 있도록 설정
+            int value = field.getInt(this);
+            if (value < 1) {
+                throw new IllegalArgumentException("소모할 수 있는 티켓이 없습니다.");
+            }
+            field.set(this, value - 1);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalArgumentException("존재하지 않는 필드이거나 접근할 수 없는 필드입니다. " + name);
+        }
     }
 }

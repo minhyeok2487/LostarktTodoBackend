@@ -2,15 +2,13 @@ package lostark.todo.domain.logs.customAnnotation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.character.dto.TodoResponseDto;
+import lostark.todo.domain.character.dto.*;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.domain.character.dto.UpdateDayCheckRequest;
-import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
-import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.service.LogService;
+import lostark.todo.domain.util.cube.dto.SpendCubeResponse;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -37,6 +35,15 @@ public class LoggingAspect {
             return;
         }
 
+        String category = loggable.category().trim();
+        if (category.equalsIgnoreCase("CUBE")) {
+            handleCubeLogs(responseEntity);
+        } else {
+            handleCharacterLogs(joinPoint, responseEntity);
+        }
+    }
+
+    private void handleCharacterLogs(JoinPoint joinPoint, ResponseEntity<?> responseEntity) {
         if (!(responseEntity.getBody() instanceof CharacterResponse response)) {
             log.warn("Unexpected response body type: {}", Objects.requireNonNull(responseEntity.getBody()).getClass().getName());
             return;
@@ -53,6 +60,21 @@ public class LoggingAspect {
         }
     }
 
+    private void handleCubeLogs(ResponseEntity<?> responseEntity) {
+        if (!(responseEntity.getBody() instanceof SpendCubeResponse response)) {
+            log.warn("Unexpected response body type: {}", Objects.requireNonNull(responseEntity.getBody()).getClass().getName());
+            return;
+        }
+        processCubeLog(response);
+    }
+
+    private void processCubeLog(SpendCubeResponse response) {
+        String message = response.getServerName() + " 서버의 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 " + response.getName() + "를 클리어하여 " +
+                response.getProfit() + "골드를 획득했습니다.";
+        saveCubeLog(response, message, response.getProfit());
+    }
+
     private void processWeekMoreRewardLog(UpdateWeekRaidMoreRewardCheckRequest request, CharacterResponse response) {
         StringBuilder message = new StringBuilder(response.getServerName() + " 서버의 " +
                 response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 ");
@@ -64,7 +86,7 @@ public class LoggingAspect {
                             int gold = response.isGoldCharacter() ? -todo.getMoreRewardGoldList().get(i) : 0;
                             message.append(todo.getWeekCategory()).append(" ").append(request.getGate()).append("관문 더보기를 체크하여 ");
                             message.append(gold).append("골드를 소모했습니다.");
-                            saveOrDeleteLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD,
+                            saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD,
                                     todo.getWeekCategory(), todo.getMoreRewardCheckList().get(i), message.toString(), gold);
                             break;
                         }
@@ -78,7 +100,7 @@ public class LoggingAspect {
                 .forEach(todo -> {
                     int gold = (response.isGoldCharacter() && todo.isGoldCheck()) ? todo.getGold() : 0;
                     String message = formatRaidLogMessage(todo, response, gold);
-                    saveOrDeleteLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold);
+                    saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold);
 
                     // 취소하면 더보기도 초기화
                     if (!todo.isCheck()) {
@@ -100,7 +122,7 @@ public class LoggingAspect {
                 message.append(name).append("에서 ");
                 profit = response.getChaosGold();
                 message.append(profit).append("골드를 획득했습니다.");
-                saveOrDeleteLog(response, logType, LogContent.CHAOS, name, response.getChaosCheck() == 2, message.toString(), profit);
+                saveCharacterResponseLog(response, logType, LogContent.CHAOS, name, response.getChaosCheck() == 2, message.toString(), profit);
                 break;
             case guardian:
                 name = "가디언토벌";
@@ -108,7 +130,7 @@ public class LoggingAspect {
                 message.append("(").append(name).append(")").append("에서 ");
                 profit = response.getGuardianGold();
                 message.append(profit).append("골드를 획득했습니다.");
-                saveOrDeleteLog(response, logType, LogContent.GUARDIAN, name, response.getGuardianCheck() == 1, message.toString(), profit);
+                saveCharacterResponseLog(response, logType, LogContent.GUARDIAN, name, response.getGuardianCheck() == 1, message.toString(), profit);
                 break;
             default:
                 log.warn("Unsupported DayTodoCategoryEnum: {}", request.getCategory());
@@ -130,7 +152,7 @@ public class LoggingAspect {
         return message.replace("<br />", "").replace("</br>", "").replace("<br>", "");
     }
 
-    private void saveOrDeleteLog(CharacterResponse result, LogType logType, LogContent content, String name, boolean shouldSave, String message, double profit) {
+    private void saveCharacterResponseLog(CharacterResponse result, LogType logType, LogContent content, String name, boolean shouldSave, String message, double profit) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime resetTime = now.toLocalDate().atStartOfDay().plusHours(6);
         LocalDate logDate = now.isBefore(resetTime) ? now.toLocalDate().minusDays(1) : now.toLocalDate();
@@ -151,5 +173,24 @@ public class LoggingAspect {
         } else {
             service.deleteLog(logs);
         }
+    }
+
+    private void saveCubeLog(SpendCubeResponse result, String message, double profit) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime resetTime = now.toLocalDate().atStartOfDay().plusHours(6);
+        LocalDate logDate = now.isBefore(resetTime) ? now.toLocalDate().minusDays(1) : now.toLocalDate();
+
+        Logs logs = Logs.builder()
+                .localDate(logDate)
+                .memberId(result.getMemberId())
+                .characterId(result.getCharacterId())
+                .logType(LogType.ETC)
+                .logContent(LogContent.CUBE)
+                .name("큐브")
+                .message(message)
+                .profit(profit)
+                .build();
+        service.saveLog(logs);
+
     }
 }
