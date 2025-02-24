@@ -70,7 +70,7 @@ public class LoggingAspect {
 
     private void processCubeLog(SpendCubeResponse response) {
         String message = response.getServerName() + " 서버의 " +
-                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 " + response.getName() + "를 클리어하여 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 " + response.getName() + "큐브를 클리어하여 " +
                 response.getProfit() + "골드를 획득했습니다.";
         saveCubeLog(response, message, response.getProfit());
     }

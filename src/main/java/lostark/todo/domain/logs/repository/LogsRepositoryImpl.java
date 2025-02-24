@@ -61,6 +61,8 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                                 "SUM(CASE WHEN {0} = 'DAILY' THEN {1} ELSE 0 END)", logs.logType, logs.profit),
                         Expressions.numberTemplate(Double.class,
                                 "SUM(CASE WHEN {0} = 'WEEKLY' THEN {1} ELSE 0 END)", logs.logType, logs.profit),
+                        Expressions.numberTemplate(Double.class,
+                                "SUM(CASE WHEN {0} = 'ETC' THEN {1} ELSE 0 END)", logs.logType, logs.profit),
                         logs.profit.sum().as("totalProfit")
                 ))
                 .from(logs)

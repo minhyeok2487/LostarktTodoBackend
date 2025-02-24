@@ -14,13 +14,16 @@ public class LogProfitResponse {
 
     private int weekProfit;
 
+    private int etcProfit;
+
     private int totalProfit;
 
     @QueryProjection
-    public LogProfitResponse(LocalDate localDate, double dayProfit, double weekProfit, double totalProfit) {
+    public LogProfitResponse(LocalDate localDate, double dayProfit, double weekProfit, double etcProfit, double totalProfit) {
         this.localDate = localDate;
         this.dayProfit = (int) dayProfit;
         this.weekProfit = (int) weekProfit;
+        this.etcProfit = (int) etcProfit;
         this.totalProfit = (int) totalProfit;
     }
 }
