@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.contentDto.CubeContentDto;
 import lostark.todo.domain.character.dto.SpendWeekCubeRequest;
+import lostark.todo.domain.logs.customAnnotation.Loggable;
 import lostark.todo.domain.util.cube.dto.CubeResponse;
 import lostark.todo.domain.util.cube.dto.CubeUpdateRequest;
 import lostark.todo.domain.character.entity.Character;
@@ -72,6 +73,7 @@ public class CubeApi {
 
     @ApiOperation(value = "캐릭터 큐브 티켓 소모(로그 저장)", response = SpendCubeResponse.class)
     @PostMapping("/spend")
+    @Loggable(category = "cube")
     public ResponseEntity<?> spendWeekCubeTicket(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody SpendWeekCubeRequest request) {

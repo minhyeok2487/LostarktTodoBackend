@@ -9,7 +9,11 @@ public class SpendCubeResponse {
 
     private Long characterId;
 
+    private Long memberId;
+
     private String characterName;
+
+    private String serverName;
 
     private double itemLevel;
 
@@ -20,7 +24,9 @@ public class SpendCubeResponse {
     @QueryProjection
     public SpendCubeResponse(Character character, String name, double profit) {
         this.characterId = character.getId();
+        this.memberId = character.getMember().getId();
         this.characterName = character.getCharacterName();
+        this.serverName = character.getServerName();
         this.itemLevel = character.getItemLevel();
         this.name = name;
         this.profit = (int) profit;
