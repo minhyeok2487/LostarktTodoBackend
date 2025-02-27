@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.global.exhandler.exceptions.RateLimitExceededException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
@@ -34,60 +36,71 @@ import static lostark.todo.global.config.WebSecurityConfig.PERMIT_GET_LINK;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String INVALID_TOKEN_MESSAGE = "유효하지 않은 토큰입니다.";
+    private static final String AUTH_REQUIRED_MESSAGE = "인증이 필요한 서비스입니다.";
+    private static final String ADMIN_REQUIRED_MESSAGE = "관리자 권한이 필요합니다.";
+    private static final String AUTH_ERROR_MESSAGE = "인증 처리 중 오류가 발생했습니다.";
+
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
+        String token = parseBearerToken(request);
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
         try {
-            // 요청에서 토큰 가져오기
-            String token = parseBearerToken(request);
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-
             if (token != null && !token.equalsIgnoreCase("null")) {
-                try {
-                    // username 값 가져옴. 위조된 경우 예외 처리
-                    String username = tokenProvider.validToken(token);
-
-                    // 인증 완료
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.NO_AUTHORITIES);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    securityContext.setAuthentication(authentication);
-
-                    // Admin 권한 체크
-                    if (request.getRequestURI().startsWith("/admin")) {
-                        Member member = memberService.get(username);
-                        if (member.getRole() != Role.ADMIN) {
-                            sendErrorResponse(response, "관리자 권한이 필요합니다.");
-                            return;
-                        }
-                    }
-                } catch (Exception e) {
-                    log.debug("Invalid token: {}", e.getMessage());
-                    if (!isPermitAllPath(request)) {
-                        sendErrorResponse(response, "유효하지 않은 토큰입니다.");
-                        return;
-                    }
-                    // 인증이 필요없는 경로면 null로 설정
-                    setNullAuthentication(securityContext, request);
-                }
+                processToken(request, response, securityContext, token);
             } else {
-                // 토큰이 없는 경우
-                if (!isPermitAllPath(request)) {
-                    sendErrorResponse(response, "인증이 필요한 서비스입니다.");
-                    return;
-                }
-                // 인증이 필요없는 경로면 null로 설정
-                setNullAuthentication(securityContext, request);
+                processNoToken(request, response, securityContext);
             }
-
             SecurityContextHolder.setContext(securityContext);
             filterChain.doFilter(request, response);
-
-        } catch (Exception e) {
+        } catch (ServletException e) {
             log.error("Auth Error = {}", e.getMessage());
-            sendErrorResponse(response, "인증 처리 중 오류가 발생했습니다.");
+            sendErrorResponse(response, AUTH_ERROR_MESSAGE);
+        } catch (RateLimitExceededException e) {
+            sendRateLimitResponse(response, e.getMessage());
+        }
+    }
+
+    private void processToken(HttpServletRequest request, HttpServletResponse response, SecurityContext securityContext, String token) throws IOException {
+        try {
+            String username = tokenProvider.validToken(token);
+            authenticateUser(request, securityContext, username);
+            checkAdminRole(request, username);
+        } catch (Exception e) {
+            log.debug("Invalid token: {}", e.getMessage());
+            if (!isPermitAllPath(request)) {
+                sendErrorResponse(response, INVALID_TOKEN_MESSAGE);
+            } else {
+                setNullAuthentication(securityContext, request);
+            }
+        }
+    }
+
+    private void processNoToken(HttpServletRequest request, HttpServletResponse response, SecurityContext securityContext) throws IOException {
+        if (!isPermitAllPath(request)) {
+            sendErrorResponse(response, AUTH_REQUIRED_MESSAGE);
+        } else {
+            setNullAuthentication(securityContext, request);
+        }
+    }
+
+    private void authenticateUser(HttpServletRequest request, SecurityContext securityContext, String username) {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.NO_AUTHORITIES);
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        securityContext.setAuthentication(authentication);
+    }
+
+    private void checkAdminRole(HttpServletRequest request, String username) throws IOException {
+        if (request.getRequestURI().startsWith("/admin")) {
+            Member member = memberService.get(username);
+            if (member.getRole() != Role.ADMIN) {
+                sendErrorResponse(null, ADMIN_REQUIRED_MESSAGE);
+            }
         }
     }
 
@@ -102,37 +115,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // 모든 메소드 허용 패턴 체크
-        if (checkPatternMatch(path, PERMIT_ALL_LINK)) {
-            return true;
-        }
-
-        // GET 메소드 전용 패턴 체크
-        return "GET".equals(method) && checkPatternMatch(path, PERMIT_GET_LINK);
+        return checkPatternMatch(path, PERMIT_ALL_LINK) || ("GET".equals(method) && checkPatternMatch(path, PERMIT_GET_LINK));
     }
 
     private boolean checkPatternMatch(String path, String[] patterns) {
         for (String pattern : patterns) {
             if (pattern.endsWith("/**")) {
-                // /** 패턴 처리
                 String basePattern = pattern.substring(0, pattern.length() - 3);
                 if (path.startsWith(basePattern)) {
                     return true;
                 }
-            } else {
-                // 정확한 경로 매칭
-                if (path.equals(pattern)) {
-                    return true;
-                }
+            } else if (path.equals(pattern)) {
+                return true;
             }
         }
         return false;
     }
 
     private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        if (response != null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json;charset=UTF-8");
+            String jsonResponse = String.format("{\"message\": \"%s\"}", message);
+            response.getWriter().write(jsonResponse);
+        } else {
+            log.error(message); // 응답 객체가 없는 경우 로그로 기록
+        }
+    }
+
+    private void sendRateLimitResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.setContentType("application/json;charset=UTF-8");
-        String jsonResponse = String.format("{\"message\": \"%s\"}", message);
+        String jsonResponse = String.format("{\"errorMessage\": \"%s\"}", message);
         response.getWriter().write(jsonResponse);
     }
 

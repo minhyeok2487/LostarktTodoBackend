@@ -133,7 +133,6 @@ public class LoggingAspect {
                 saveCharacterResponseLog(response, logType, LogContent.GUARDIAN, name, response.getGuardianCheck() == 1, message.toString(), profit);
                 break;
             default:
-                log.warn("Unsupported DayTodoCategoryEnum: {}", request.getCategory());
         }
     }
 

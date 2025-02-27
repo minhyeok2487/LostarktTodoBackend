@@ -85,6 +85,9 @@ dependencies {
 	//monitoring
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	//bucket4j
+	implementation group: 'com.github.vladimir-bukhtoyarov', name: 'bucket4j-core', version: '7.6.0'
 }
 
 //QueryDSL 플로그인 설정 START
