@@ -1,6 +1,7 @@
 package lostark.todo.domain.notification.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.notification.enums.NotificationType;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.notification.entity.QNotification.notification;
 
 
@@ -54,7 +56,7 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
     @Override
     public Optional<Notification> get(long notificationId, String username) {
         Notification result = factory.selectFrom(notification)
-                .leftJoin(notification.receiver, QMember.member).fetchJoin()
+                .leftJoin(notification.receiver, member).fetchJoin()
                 .where(
                         eqId(notificationId),
                         eqUsername(username)
@@ -65,12 +67,11 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
 
     @Override
     public LocalDateTime getRecent(String username) {
-        return factory.select(notification.createdDate)
+        return factory.select(notification.createdDate.max())
                 .from(notification)
                 .where(
                         eqUsername(username)
                 )
-                .orderBy(notification.createdDate.desc())
                 .fetchFirst();
     }
 
@@ -79,15 +80,14 @@ public class NotificationRepositoryImpl implements NotificationCustomRepository 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneMonthAgo = now.minusMonths(1);
 
-        return factory.select(notification.id.count())
+        return Optional.ofNullable(factory.select(Wildcard.count)
                 .from(notification)
                 .where(
                         eqUsername(username),
                         betweenDate(oneMonthAgo, now),
                         eqUnread()
                 )
-                .orderBy(notification.createdDate.desc())
-                .fetchCount();
+                .fetchOne()).orElse(0L);
     }
 
     @Override
