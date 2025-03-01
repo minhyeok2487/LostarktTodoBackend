@@ -40,12 +40,12 @@ public class IpRateLimitingFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    // 1. 일반 사용자를 위한 요청 제한: 5초 3회
-    // 2. 공격 방지를 위한 제한: 1분 30회
+    // 1. 일반 사용자를 위한 요청 제한: 10초 8회
+    // 2. 공격 방지를 위한 제한: 1분 50회
     private Bucket createNewBucket(String key) {
         return Bucket4j.builder()
-                .addLimit(Bandwidth.classic(3, Refill.greedy(3, Duration.ofSeconds(5))))
-                .addLimit(Bandwidth.classic(30, Refill.greedy(30, Duration.ofMinutes(1))))
+                .addLimit(Bandwidth.classic(8, Refill.greedy(8, Duration.ofSeconds(10))))
+                .addLimit(Bandwidth.classic(50, Refill.greedy(50, Duration.ofMinutes(1))))
                 .build();
     }
 
