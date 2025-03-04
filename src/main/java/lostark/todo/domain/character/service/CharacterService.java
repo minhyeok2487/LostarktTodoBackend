@@ -6,14 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.*;
-import lostark.todo.domain.character.dto.DeletedCharacterResponse;
+import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
-import lostark.todo.domain.character.dto.UpdateDayCheckRequest;
-import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
-import lostark.todo.domain.character.dto.UpdateWeekEponaRequest;
 import lostark.todo.domain.character.entity.*;
 import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.domain.util.content.entity.DayContent;
@@ -176,7 +173,7 @@ public class CharacterService {
 
     private void updateRelatedTodos(CharacterSettingRequest characterSettingRequest, Character character) {
         // 더보기 버튼의 설정 값이 변하면 기존 더보기 해제
-        if(characterSettingRequest.getName().equals("showMoreButton")) {
+        if (characterSettingRequest.getName().equals("showMoreButton")) {
             character.getTodoV2List().forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
         }
 
@@ -415,5 +412,56 @@ public class CharacterService {
     @Transactional
     public void updateDeletedCharacter(Character character) {
         character.updateDelete();
+    }
+
+    /**
+     * 일일 컨텐츠 전체 체크 업데이트
+     * 출력된 상태인 컨텐츠가 하나라도 체크된 상태면 전체 false
+     * 출력된 상태인 컨텐츠 중 전체 체크가 아닌 상태면 전체 true
+     */
+    @Transactional
+    public void updateDayCheckAll(Character updateCharacter) {
+        DayTodo dayTodo = updateCharacter.getDayTodo();
+        Settings settings = updateCharacter.getSettings();
+
+        // 현재 캐릭터의 일일 컨텐츠 상태를 기반으로 ContentUpdater 리스트 생성
+        List<ContentUpdater> updaters = ContentUpdater.toDto(dayTodo, settings);
+
+        // 모든 컨텐츠가 완료 상태인지 확인
+        boolean checkAllCompleted = isCheckAllCompleted(updaters);
+
+        // 전체 체크 상태를 반영
+        calculateUpadteDayCheckAll(updaters, checkAllCompleted);
+    }
+
+    /**
+     * 출력된 컨텐츠(활성화된 컨텐츠) 중 모든 항목이 체크 완료 상태인지 확인
+     * - 하나라도 체크 해제된 항목이 있으면 false 반환
+     *
+     * @param updaters 컨텐츠 리스트
+     * @return 모든 컨텐츠가 완료 상태이면 true, 하나라도 미완료면 false
+     */
+    private boolean isCheckAllCompleted(List<ContentUpdater> updaters) {
+        return updaters.stream()
+                .filter(ContentUpdater::isDisplayed)
+                .allMatch(ContentUpdater::isChecked);
+    }
+
+    /**
+     * 전체 체크 상태를 업데이트
+     * - 모든 컨텐츠가 체크 완료 상태이면 -> 전체 체크 해제 (0)
+     * - 하나라도 체크 해제된 상태이면 -> 전체 체크 (각 컨텐츠의 완료 값으로 설정)
+     *
+     * @param updaters          컨텐츠 리스트
+     * @param checkAllCompleted 전체 체크 여부
+     */
+    private void calculateUpadteDayCheckAll(List<ContentUpdater> updaters, boolean checkAllCompleted) {
+        updaters.stream()
+                .filter(ContentUpdater::isDisplayed) // 표시되는 컨텐츠만 처리
+                .forEach(updater -> {
+                    // 전체 체크면 해제(0), 아니면 완료 값(1, 2, 3)
+                    updater.updateCheck(checkAllCompleted ? 0 : updater.getCompletedValue());
+                    updater.runUpdateMethod(); // 변경 사항을 업데이트
+                });
     }
 }
