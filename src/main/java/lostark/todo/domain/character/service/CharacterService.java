@@ -431,7 +431,7 @@ public class CharacterService {
         boolean checkAllCompleted = isCheckAllCompleted(updaters);
 
         // 전체 체크 상태를 반영
-        calculateUpadteDayCheckAll(updaters, checkAllCompleted);
+        calculateUpdateDayCheckAll(updaters, checkAllCompleted);
     }
 
     /**
@@ -449,18 +449,18 @@ public class CharacterService {
 
     /**
      * 전체 체크 상태를 업데이트
-     * - 모든 컨텐츠가 체크 완료 상태이면 -> 전체 체크 해제 (0)
+     * - 모든 컨텐츠가 체크 완료 상태이면 -> 활성화 된 전체 체크 해제 (0)
      * - 하나라도 체크 해제된 상태이면 -> 전체 체크 (각 컨텐츠의 완료 값으로 설정)
      *
      * @param updaters          컨텐츠 리스트
      * @param checkAllCompleted 전체 체크 여부
      */
-    private void calculateUpadteDayCheckAll(List<ContentUpdater> updaters, boolean checkAllCompleted) {
+    private void calculateUpdateDayCheckAll(List<ContentUpdater> updaters, boolean checkAllCompleted) {
         updaters.stream()
                 .filter(ContentUpdater::isDisplayed) // 표시되는 컨텐츠만 처리
                 .forEach(updater -> {
-                    // 전체 체크면 해제(0), 아니면 완료 값(1, 2, 3)
-                    updater.updateCheck(checkAllCompleted ? 0 : updater.getCompletedValue());
+                    // 전체 체크면 완료 값(1, 2, 3), 아니면 0
+                    updater.updateCheck(checkAllCompleted ? updater.getCompletedValue() : 0);
                     updater.runUpdateMethod(); // 변경 사항을 업데이트
                 });
     }
