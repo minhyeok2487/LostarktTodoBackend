@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import static lostark.todo.domain.logs.entity.QLogs.logs;
 
@@ -20,6 +21,19 @@ import static lostark.todo.domain.logs.entity.QLogs.logs;
 public class LogsRepositoryImpl implements LogsCustomRepository {
 
     private final JPAQueryFactory factory;
+
+    @Override
+    public Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate) {
+        return Optional.ofNullable(
+                factory.selectFrom(logs)
+                        .where(
+                                eqCharacter(characterId),
+                                eqLogContent(logContent),
+                                eqLocalDate(localDate)
+                        )
+                        .fetchOne()
+        );
+    }
 
     @Override
     public CursorResponse<LogsSearchResponse> search(long member, LogsSearchParams params, PageRequest pageRequest) {
@@ -92,6 +106,13 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
 
     private BooleanExpression eqMember(long memberId) {
         return logs.memberId.eq(memberId);
+    }
+
+    private BooleanExpression eqLocalDate(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        return logs.localDate.eq(localDate);
     }
 
     private BooleanExpression eqLogContent(LogContent logContent) {

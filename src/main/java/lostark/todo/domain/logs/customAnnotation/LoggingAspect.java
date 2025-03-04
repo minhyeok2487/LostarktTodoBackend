@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.domain.logs.entity.Logs;
@@ -51,14 +52,18 @@ public class LoggingAspect {
 
         for (Object arg : joinPoint.getArgs()) {
             if (arg instanceof UpdateDayCheckRequest request) {
-                processDayLog(request, response);
+                processDayLog(request.getCategory(), response, false);
             } else if (arg instanceof UpdateWeekRaidCheckRequest request) {
                 processWeekLog(request, response);
             } else if (arg instanceof UpdateWeekRaidMoreRewardCheckRequest request) {
                 processWeekMoreRewardLog(request, response);
+            } else if (arg instanceof UpdateDayCheckAllRequest){
+                processDayLog(DayTodoCategoryEnum.chaos, response, true);
+                processDayLog(DayTodoCategoryEnum.guardian, response,true);
             }
         }
     }
+
 
     private void handleCubeLogs(ResponseEntity<?> responseEntity) {
         if (!(responseEntity.getBody() instanceof SpendCubeResponse response)) {
@@ -87,7 +92,7 @@ public class LoggingAspect {
                             message.append(todo.getWeekCategory()).append(" ").append(request.getGate()).append("관문 더보기를 체크하여 ");
                             message.append(gold).append("골드를 소모했습니다.");
                             saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD,
-                                    todo.getWeekCategory(), todo.getMoreRewardCheckList().get(i), message.toString(), gold);
+                                    todo.getWeekCategory(), todo.getMoreRewardCheckList().get(i), message.toString(), gold, false);
                             break;
                         }
                     }
@@ -100,7 +105,7 @@ public class LoggingAspect {
                 .forEach(todo -> {
                     int gold = (response.isGoldCharacter() && todo.isGoldCheck()) ? todo.getGold() : 0;
                     String message = formatRaidLogMessage(todo, response, gold);
-                    saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold);
+                    saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold, false);
 
                     // 취소하면 더보기도 초기화
                     if (!todo.isCheck()) {
@@ -109,20 +114,21 @@ public class LoggingAspect {
                 });
     }
 
-    private void processDayLog(UpdateDayCheckRequest request, CharacterResponse response) {
+    private void processDayLog(DayTodoCategoryEnum category, CharacterResponse response, boolean checkAll) {
         LogType logType = LogType.DAILY;
         StringBuilder message = new StringBuilder(response.getServerName() + " 서버의 " +
                 response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 ");
         String name;
         double profit;
 
-        switch (request.getCategory()) {
+        switch (category) {
             case chaos:
                 name = (response.getItemLevel() >= 1640) ? "쿠르잔전선" : "카오스던전";
                 message.append(name).append("에서 ");
                 profit = response.getChaosGold();
                 message.append(profit).append("골드를 획득했습니다.");
-                saveCharacterResponseLog(response, logType, LogContent.CHAOS, name, response.getChaosCheck() == 2, message.toString(), profit);
+                saveCharacterResponseLog(response, logType, LogContent.CHAOS, name,
+                        response.getChaosCheck() == 2, message.toString(), profit, checkAll);
                 break;
             case guardian:
                 name = "가디언토벌";
@@ -130,7 +136,8 @@ public class LoggingAspect {
                 message.append("(").append(name).append(")").append("에서 ");
                 profit = response.getGuardianGold();
                 message.append(profit).append("골드를 획득했습니다.");
-                saveCharacterResponseLog(response, logType, LogContent.GUARDIAN, name, response.getGuardianCheck() == 1, message.toString(), profit);
+                saveCharacterResponseLog(response, logType, LogContent.GUARDIAN, name,
+                        response.getGuardianCheck() == 1, message.toString(), profit, checkAll);
                 break;
             default:
         }
@@ -151,7 +158,8 @@ public class LoggingAspect {
         return message.replace("<br />", "").replace("</br>", "").replace("<br>", "");
     }
 
-    private void saveCharacterResponseLog(CharacterResponse result, LogType logType, LogContent content, String name, boolean shouldSave, String message, double profit) {
+    private void saveCharacterResponseLog(CharacterResponse result, LogType logType, LogContent content, String name,
+                                          boolean shouldSave, String message, double profit, boolean checkAll) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime resetTime = now.toLocalDate().atStartOfDay().plusHours(6);
         LocalDate logDate = now.isBefore(resetTime) ? now.toLocalDate().minusDays(1) : now.toLocalDate();
@@ -168,7 +176,7 @@ public class LoggingAspect {
                 .build();
 
         if (shouldSave) {
-            service.saveLog(logs);
+            service.saveLog(logs, checkAll);
         } else {
             service.deleteLog(logs);
         }
@@ -189,7 +197,7 @@ public class LoggingAspect {
                 .message(message)
                 .profit(profit)
                 .build();
-        service.saveLog(logs);
+        service.saveLog(logs, false);
 
     }
 }

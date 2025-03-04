@@ -1,11 +1,13 @@
 package lostark.todo.domain.logs.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
 import lostark.todo.domain.logs.dto.LogProfitResponse;
 import lostark.todo.domain.logs.dto.LogsSearchParams;
 import lostark.todo.domain.logs.dto.LogsSearchResponse;
 import lostark.todo.domain.logs.entity.Logs;
+import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.repository.LogsRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,10 +25,23 @@ public class LogService {
     private final LogsRepository repository;
     private final MemberRepository memberRepository;
 
-    @Transactional
-    public void saveLog(Logs logs) {
-        repository.save(logs);
+    @Transactional(readOnly = true)
+    public Logs get(long characterId, LogContent logContent) {
+        return repository.get(characterId, logContent, LocalDate.now())
+                .orElseThrow(() -> new NotFoundException("데이터를 찾을 수 없습니다."));
     }
+
+    @Transactional
+    public void saveLog(Logs logs, boolean checkAll) {
+        if (!checkAll || !isLogExist(logs)) {
+            repository.save(logs);
+        }
+    }
+
+    private boolean isLogExist(Logs logs) {
+        return repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate()).isPresent();
+    }
+
 
     @Transactional
     public void deleteLog(Logs logs) {
