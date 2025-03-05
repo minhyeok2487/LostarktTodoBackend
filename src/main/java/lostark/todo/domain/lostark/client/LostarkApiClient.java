@@ -19,8 +19,7 @@ public class LostarkApiClient {
             String link = "https://developer-lostark.game.onstove.com/news/events";
             InputStreamReader inputStreamReader = lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(inputStreamReader);
-            return jsonArray;
+            return (JSONArray) parser.parse(inputStreamReader);
         } catch (IllegalArgumentException e) {
             throw e;
         }
@@ -82,14 +81,16 @@ public class LostarkApiClient {
             InputStream inputStream;
             if(result == 200) {
                 inputStream = httpURLConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                return inputStreamReader;
+                return new InputStreamReader(inputStream);
             }
             else if(result == 401) {
                 throw new IllegalArgumentException("올바르지 않은 apiKey 입니다.");
             }
             else if(result == 429) {
                 throw new IllegalArgumentException("사용한도 (1분에 100개)를 초과했습니다.");
+            }
+            else if (result == 503) {
+                throw new IllegalArgumentException("로스트아크 서버가 점검중 입니다.");
             }
             else {
                 throw new RuntimeException("API 응답 오류: " + httpURLConnection.getResponseMessage());
