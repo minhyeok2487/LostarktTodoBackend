@@ -12,6 +12,7 @@ import lostark.todo.domain.character.entity.DayTodo;
 import lostark.todo.domain.character.entity.Settings;
 import lostark.todo.domain.character.entity.WeekTodo;
 import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -83,11 +84,8 @@ public class LostarkCharacterApiClient {
                     .collect(Collectors.toList());
             return sortedList;
         } catch (NullPointerException e) {
-            throw new IllegalArgumentException("존재하지 않는 캐릭터명 입니다.");
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
-        catch (Exception e) {
+            throw new ConditionNotMetException("존재하지 않는 캐릭터명 입니다.");
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

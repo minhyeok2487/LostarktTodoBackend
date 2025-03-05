@@ -14,6 +14,7 @@ import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.lostark.client.LostarkApiClient;
 import lostark.todo.domain.character.service.CustomTodoService;
 import lostark.todo.global.customAnnotation.NotTestMember;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,12 +57,12 @@ public class MemberControllerV4 {
     @DeleteMapping("/characters")
     public ResponseEntity<?> deleteCharacters(@AuthenticationPrincipal String username) {
         if (username.equals(TEST_USERNAME)) {
-            throw new IllegalArgumentException("테스트 계정은 삭제할 수 없습니다.");
+            throw new ConditionNotMetException("테스트 계정은 삭제할 수 없습니다.");
         }
         Member member = memberService.get(username);
 
         if (member.getCharacters().isEmpty()) {
-            throw new IllegalStateException("등록된 캐릭터가 없습니다.");
+            throw new ConditionNotMetException("등록된 캐릭터가 없습니다.");
         }
         customTodoService.deleteMyMember(member);
         characterService.deleteByMember(member);
@@ -76,10 +77,10 @@ public class MemberControllerV4 {
         // 1. 검증
         Member member = memberService.get(username);
         if (saveCharacterRequest.getApiKey() == null || saveCharacterRequest.getApiKey().isEmpty()) {
-            throw new IllegalArgumentException("API KEY를 입력하여 주십시오");
+            throw new ConditionNotMetException("API KEY를 입력하여 주십시오");
         }
         if (member.getApiKey() != null && member.getApiKey().equals(saveCharacterRequest.getApiKey())) {
-            throw new IllegalArgumentException("동일한 API KEY입니다.");
+            throw new ConditionNotMetException("동일한 API KEY입니다.");
         }
 
         // 2. API KEY 인증 확인

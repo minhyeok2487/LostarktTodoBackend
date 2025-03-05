@@ -8,6 +8,7 @@ import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.domain.notification.repository.NotificationRepository;
 import lostark.todo.domain.notification.enums.NotificationType;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +98,7 @@ public class NotificationService {
 
     @Transactional
     public void updateRead(long notificationId, String username) {
-        Notification notification = notificationRepository.get(notificationId, username).orElseThrow(() -> new IllegalArgumentException("없는 알림 입니다."));
+        Notification notification = notificationRepository.get(notificationId, username).orElseThrow(() -> new ConditionNotMetException("없는 알림 입니다."));
         notification.updateRead();
     }
 

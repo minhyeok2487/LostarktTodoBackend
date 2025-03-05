@@ -20,6 +20,7 @@ import lostark.todo.domain.character.entity.TodoV2;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,13 +50,13 @@ public class CharacterService {
     @Transactional(readOnly = true)
     public Character get(long characterId, String characterName, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
-                () -> new IllegalArgumentException("characterName = " + characterName + " / username = " + username + " : 존재하지 않는 캐릭터"));
+                () -> new ConditionNotMetException("characterName = " + characterName + " / username = " + username + " : 존재하지 않는 캐릭터"));
     }
 
     @Transactional(readOnly = true)
     public Character get(long characterId, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
-                () -> new IllegalArgumentException("캐릭터가 존재하지 않습니다. ID: " + characterId + ", 사용자 이름: " + username));
+                () -> new ConditionNotMetException("캐릭터가 존재하지 않습니다. ID: " + characterId + ", 사용자 이름: " + username));
     }
 
     // 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
@@ -66,7 +67,7 @@ public class CharacterService {
 
     private void validateGauge(Integer gauge, int max) {
         if (gauge < 0 || gauge > max || gauge % 10 != 0) {
-            throw new IllegalArgumentException(String.format("휴식게이지는 0~%d 사이이며, 10단위여야 합니다.", max));
+            throw new ConditionNotMetException(String.format("휴식게이지는 0~%d 사이이며, 10단위여야 합니다.", max));
         }
     }
 
@@ -81,7 +82,7 @@ public class CharacterService {
 
         //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
         if (!character.isGoldCharacter() && goldCharacter >= 6) {
-            throw new IllegalArgumentException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
+            throw new ConditionNotMetException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
         }
         return character.updateGoldCharacter();
     }
@@ -94,7 +95,7 @@ public class CharacterService {
 
         //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
         if (!character.isGoldCharacter() && goldCharacter >= 6) {
-            throw new IllegalArgumentException("골드 획득 지정 캐릭터는 서버별로 6캐릭까지 가능합니다.");
+            throw new ConditionNotMetException("골드 획득 지정 캐릭터는 서버별로 6캐릭까지 가능합니다.");
         }
 
         character.updateGoldCharacter();
@@ -132,7 +133,7 @@ public class CharacterService {
 
         // 등록된 골드획득 컨텐츠가 3개 이상 && 또다른 레이드를 골드획득 체크를 한다면(true)
         if (weekCategoryList.size() >= 3 && updateValue) {
-            throw new IllegalArgumentException("골드 획득은 3개까지 가능합니다.");
+            throw new ConditionNotMetException("골드 획득은 3개까지 가능합니다.");
         }
     }
 
@@ -146,7 +147,7 @@ public class CharacterService {
 
         // 레이드를 등록한 후 -> 골드 획득을 지정
         if (todoV2List.isEmpty()) {
-            throw new IllegalArgumentException("레이드를 먼저 등록해주십시오.");
+            throw new ConditionNotMetException("레이드를 먼저 등록해주십시오.");
         }
 
         todoV2List.forEach(TodoV2::updateGoldCheck);
@@ -217,7 +218,7 @@ public class CharacterService {
     public void delete(Long characterId, String username) {
         Character character = get(characterId, username);
         if (character.isGoldCharacter()) {
-            throw new IllegalStateException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
+            throw new ConditionNotMetException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
         }
         character.updateDelete();
     }
@@ -225,7 +226,7 @@ public class CharacterService {
     @Transactional
     public void delete(Character character) {
         if (character.isGoldCharacter()) {
-            throw new IllegalStateException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
+            throw new ConditionNotMetException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
         }
         character.updateDelete();
     }
@@ -264,7 +265,7 @@ public class CharacterService {
                 })
                 .map(Character::getCharacterName)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(CHARACTER_NOT_FOUND));
+                .orElseThrow(() -> new ConditionNotMetException(CHARACTER_NOT_FOUND));
     }
 
 

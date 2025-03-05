@@ -1,5 +1,6 @@
 package lostark.todo.domain.lostark.client;
 
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,7 @@ public class LostarkApiClient {
             InputStreamReader inputStreamReader = lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             return (JSONArray) parser.parse(inputStreamReader);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -35,8 +33,6 @@ public class LostarkApiClient {
         try {
             HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET", apiKey);
             return getInputStreamReader(httpURLConnection);
-        } catch (IllegalArgumentException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage());
         }
@@ -51,8 +47,6 @@ public class LostarkApiClient {
             stream.write(out);
 
             return getInputStreamReader(httpURLConnection);
-        } catch (IllegalArgumentException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage());
         }
@@ -68,8 +62,6 @@ public class LostarkApiClient {
             httpURLConnection.setRequestProperty("content-Type", "application/json");
             httpURLConnection.setDoOutput(true);
             return httpURLConnection;
-        } catch (IllegalArgumentException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("API 연결 중 오류 발생: " + e.getMessage());
         }
@@ -84,19 +76,17 @@ public class LostarkApiClient {
                 return new InputStreamReader(inputStream);
             }
             else if(result == 401) {
-                throw new IllegalArgumentException("올바르지 않은 apiKey 입니다.");
+                throw new ConditionNotMetException("올바르지 않은 apiKey 입니다.");
             }
             else if(result == 429) {
-                throw new IllegalArgumentException("사용한도 (1분에 100개)를 초과했습니다.");
+                throw new ConditionNotMetException("사용한도 (1분에 100개)를 초과했습니다.");
             }
             else if (result == 503) {
-                throw new IllegalArgumentException("로스트아크 서버가 점검중 입니다.");
+                throw new ConditionNotMetException("로스트아크 서버가 점검중 입니다.");
             }
             else {
                 throw new RuntimeException("API 응답 오류: " + httpURLConnection.getResponseMessage());
             }
-        } catch (IllegalArgumentException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("API 응답 처리 중 오류 발생: " + e.getMessage());
         }

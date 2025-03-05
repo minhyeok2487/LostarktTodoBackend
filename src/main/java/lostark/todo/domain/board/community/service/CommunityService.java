@@ -18,6 +18,7 @@ import lostark.todo.domain.board.community.entity.CommunityImages;
 import lostark.todo.domain.board.community.repository.CommunityRepository;
 import lostark.todo.global.dto.CursorResponse;
 import lostark.todo.global.dto.ImageResponseV2;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.service.ImagesService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -80,10 +81,10 @@ public class CommunityService {
     private void validateSaveRequest(Member member, CommunitySaveRequest request) {
         if ((request.getCategory().equals(CommunityCategory.BOARDS)) &&
                 (!member.getRole().equals(Role.ADMIN)) && (request.getRootParentId() == 0)) {
-            throw new IllegalArgumentException("공지사항은 관리자만 올릴 수 있습니다.");
+            throw new ConditionNotMetException("공지사항은 관리자만 올릴 수 있습니다.");
         }
         if (request.getCommentParentId() != 0 && request.getRootParentId() == 0) {
-            throw new IllegalArgumentException("댓글 답글은 댓글 ID가 필요합니다");
+            throw new ConditionNotMetException("댓글 답글은 댓글 ID가 필요합니다");
         }
     }
 

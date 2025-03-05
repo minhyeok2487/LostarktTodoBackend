@@ -12,6 +12,7 @@ import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class CharacterApi {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
-                throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+                throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
             } else {
                 updateCharacter = characterService.updateSetting(friendUsername, characterSettingRequest);
             }

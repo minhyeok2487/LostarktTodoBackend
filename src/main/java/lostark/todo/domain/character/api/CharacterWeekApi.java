@@ -14,6 +14,7 @@ import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.util.content.service.ContentService;
 import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import lostark.todo.domain.friend.service.FriendsService;
@@ -55,12 +56,12 @@ public class CharacterWeekApi {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
-                throw new IllegalArgumentException("권한이 없습니다.");
+                throw new ConditionNotMetException("권한이 없습니다.");
             }
             character = friend.getMember().getCharacters().stream()
                     .filter(c -> c.getId() == request.getCharacterId())
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 캐릭터 입니다."));
+                    .orElseThrow(() -> new ConditionNotMetException("등록되지 않은 캐릭터 입니다."));
         }
 
         // 주간 콘텐츠 목록 가져오기

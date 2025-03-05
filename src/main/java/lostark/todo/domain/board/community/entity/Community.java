@@ -6,6 +6,7 @@ import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.board.community.dto.CommunitySaveRequest;
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -89,7 +90,7 @@ public class Community extends BaseTimeEntity {
         long minutesDifference = ChronoUnit.MINUTES.between(createdTime, currentTime);
 
         if (minutesDifference > 15) {
-            throw new IllegalStateException("게시글 작성 후 15분이 지나 수정할 수 없습니다.");
+            throw new ConditionNotMetException("게시글 작성 후 15분이 지나 수정할 수 없습니다.");
         }
 
         // 15분이 지나지 않았다면 내용 업데이트

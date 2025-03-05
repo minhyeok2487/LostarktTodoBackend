@@ -2,6 +2,7 @@ package lostark.todo.domain.util.market.entity;
 
 import lombok.*;
 import lostark.todo.global.entity.BaseTimeEntity;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
@@ -46,7 +47,7 @@ public class Market extends BaseTimeEntity {
     public void updatePrice(JSONObject jsonObject) {
         JSONObject auctionInfo = (JSONObject) jsonObject.get("AuctionInfo");
         if (auctionInfo == null || !auctionInfo.containsKey("BuyPrice")) {
-            throw new IllegalArgumentException("Invalid AuctionInfo data");
+            throw new ConditionNotMetException("Invalid AuctionInfo data");
         }
 
         int price = calculatePrice(auctionInfo.get("BuyPrice").toString());

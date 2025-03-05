@@ -1,5 +1,6 @@
 package lostark.todo.global.customAnnotation;
 
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -19,7 +20,7 @@ public class NotTestMemberAspect {
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
             if (TEST_USERNAME.equals(username)) {
-                throw new IllegalStateException(notTestMember.message());
+                throw new ConditionNotMetException(notTestMember.message());
             }
         }
     }

@@ -10,6 +10,7 @@ import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -50,7 +51,7 @@ public class CharacterListApi {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
-                throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+                throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
             } else {
                 characterService.updateCharacterList(friendUsername);
             }
@@ -68,7 +69,7 @@ public class CharacterListApi {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
-                throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+                throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
             } else {
                 return new ResponseEntity<>(characterService.editSort(friendUsername, characterSortRequestList), HttpStatus.OK);
             }
@@ -84,7 +85,7 @@ public class CharacterListApi {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             if (!friend.getFriendSettings().isSetting()) {
-                throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+                throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
             } else {
                 return new ResponseEntity<>(characterService.getDeletedCharacter(friendUsername), HttpStatus.OK);
             }

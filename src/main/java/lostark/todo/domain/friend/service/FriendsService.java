@@ -15,6 +15,7 @@ import lostark.todo.domain.friend.repository.FriendsRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.friend.enums.FriendRequestCategory;
 import lostark.todo.domain.friend.enums.FriendStatus;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.utils.GlobalMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class FriendsService {
     public void addFriendsRequest(Member toMember, Member fromMember) {
         Friends friends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
         if (friends != null) {
-            throw new IllegalStateException("먼저 기존 요청을 삭제하여 주십시오.");
+            throw new ConditionNotMetException("먼저 기존 요청을 삭제하여 주십시오.");
         }
         Friends toFriends = Friends.builder()
                 .member(toMember)
@@ -111,7 +112,7 @@ public class FriendsService {
     }
 
     public FriendSettings updateSetting(UpdateFriendSettingRequest request ) {
-        Friends friends = friendsRepository.findById(request.getId()).orElseThrow(() -> new IllegalArgumentException("없는 데이터 입니다."));
+        Friends friends = friendsRepository.findById(request.getId()).orElseThrow(() -> new ConditionNotMetException("없는 데이터 입니다."));
         friends.getFriendSettings().update(request.getName(), request.isValue());
         return friends.getFriendSettings();
     }
@@ -130,13 +131,13 @@ public class FriendsService {
     }
 
     public Friends findByFriendUsername(String friendUsername, String username) {
-        return friendsRepository.findByFriendUsername(friendUsername, username).orElseThrow(() -> new IllegalArgumentException("등록되지 않은 정보입니다."));
+        return friendsRepository.findByFriendUsername(friendUsername, username).orElseThrow(() -> new ConditionNotMetException("등록되지 않은 정보입니다."));
     }
 
     @Transactional
     public void deleteById(Member member, long friendId) {
         Friends friends = friendsRepository.findByMemberAndId(member, friendId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 깐부 입니다."));
+                .orElseThrow(() -> new ConditionNotMetException("없는 깐부 입니다."));
         friendsRepository.deleteByMemberFriend(friends.getMember().getId(), friends.getFromMember());
         friendsRepository.deleteByMemberFriend(friends.getFromMember(), friends.getMember().getId());
     }
@@ -159,7 +160,7 @@ public class FriendsService {
         List<Character> characterList = characterRepository.getCharacter(characterName);
 
         if (characterList.isEmpty()) {
-            throw new IllegalArgumentException(CHARACTER_NOT_FOUND);
+            throw new ConditionNotMetException(CHARACTER_NOT_FOUND);
         }
 
         return characterList.stream()

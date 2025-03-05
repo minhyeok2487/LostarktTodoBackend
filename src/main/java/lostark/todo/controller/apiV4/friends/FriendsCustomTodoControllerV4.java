@@ -15,6 +15,7 @@ import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,7 +53,7 @@ public class FriendsCustomTodoControllerV4 {
                                     @RequestBody CreateCustomTodoRequest request, @PathVariable String friendUsername) {
         Friends friend = friendsService.findByFriendUsername(friendUsername, username);
         if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
         }
 
         Character character = characterService.get(request.getCharacterId(), friendUsername);
@@ -67,7 +68,7 @@ public class FriendsCustomTodoControllerV4 {
                                     @PathVariable Long customTodoId, @PathVariable String friendUsername) {
         Friends friend = friendsService.findByFriendUsername(friendUsername, username);
         if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
         }
 
         Character character = characterService.get(request.getCharacterId(), friendUsername);
@@ -91,7 +92,7 @@ public class FriendsCustomTodoControllerV4 {
                                     @PathVariable String friendUsername) {
         Friends friend = friendsService.findByFriendUsername(friendUsername, username);
         if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
         }
 
         List<Long> characterIdList = memberService.get(friendUsername).getCharacters().stream().map(Character::getId).toList();

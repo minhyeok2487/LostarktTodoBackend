@@ -1,5 +1,7 @@
 package lostark.todo.global.utils;
 
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +15,7 @@ public class GlobalMethod {
         Set<Long> set2 = new HashSet<>(list2);
 
         if (!set1.equals(set2)) {
-            throw new IllegalArgumentException(message);
+            throw new ConditionNotMetException(message);
         }
     }
 

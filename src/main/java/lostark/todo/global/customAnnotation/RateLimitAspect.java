@@ -1,6 +1,7 @@
 package lostark.todo.global.customAnnotation;
 
 import lombok.RequiredArgsConstructor;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -30,7 +31,7 @@ public class RateLimitAspect {
         if (cache != null) {
             Cache.ValueWrapper valueWrapper = cache.get(key);
             if (valueWrapper != null) {
-                throw new IllegalStateException(rateLimit.value() + "초 후 재요청이 가능합니다.");
+                throw new ConditionNotMetException(rateLimit.value() + "초 후 재요청이 가능합니다.");
             }
 
             // 캐시에 저장
@@ -66,6 +67,6 @@ public class RateLimitAspect {
             return authentication.getName();
         }
 
-        throw new IllegalStateException("사용자를 찾을 수 없습니다.");
+        throw new ConditionNotMetException("사용자를 찾을 수 없습니다.");
     }
 }

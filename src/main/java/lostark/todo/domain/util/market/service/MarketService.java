@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.market.repository.MarketRepository;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +54,7 @@ public class MarketService {
 
     private static void exception(List<Market> marketList) {
         if (marketList.isEmpty()) {
-            throw new IllegalArgumentException("marketList is Empty");
+            throw new ConditionNotMetException("marketList is Empty");
         }
     }
 

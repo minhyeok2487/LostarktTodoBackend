@@ -8,6 +8,7 @@ import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
 import lostark.todo.domain.character.dto.UpdateWeekRaidSortRequest;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.util.content.entity.WeekContent;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.keyvalue.KeyValueRepository;
 import lostark.todo.domain.character.entity.TodoV2;
 import lostark.todo.domain.character.repository.TodoV2Repository;
@@ -75,7 +76,7 @@ public class TodoServiceV2 {
             character.getTodoV2List().add(newTodo);
             todoV2Repository.save(newTodo);
         } else {
-            throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
+            throw new ConditionNotMetException("이전 관문을 먼저 선택해주십시오.");
         }
     }
 
@@ -101,7 +102,7 @@ public class TodoServiceV2 {
             character.getTodoV2List().add(newTodo);
             todoV2Repository.save(newTodo);
         } else if (!hasPreviousGate) {
-            throw new IllegalArgumentException("이전 관문을 먼저 선택해주십시오.");
+            throw new ConditionNotMetException("이전 관문을 먼저 선택해주십시오.");
         }
     }
 
@@ -124,7 +125,7 @@ public class TodoServiceV2 {
                         todo.getWeekContent().getGate() > weekContent.getGate());
 
         if (hasHigherGate) {
-            throw new IllegalStateException("상위 관문을 먼저 제거하여 주십이오.");
+            throw new ConditionNotMetException("상위 관문을 먼저 제거하여 주십이오.");
         }
 
         // 상위 관문이 존재하지 않으면 해당 TodoV2 삭제
@@ -183,7 +184,7 @@ public class TodoServiceV2 {
     public void updateWeekRaidCheck(Character character, UpdateWeekRaidCheckRequest request) {
         List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, request.getWeekCategory());
         if (todoV2List.isEmpty()) {
-            throw new IllegalArgumentException("등록된 숙제가 아닙니다.");
+            throw new ConditionNotMetException("등록된 숙제가 아닙니다.");
         }
         boolean allChecked = todoV2List.stream().allMatch(TodoV2::isChecked);
 

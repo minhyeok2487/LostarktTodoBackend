@@ -11,6 +11,7 @@ import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +40,7 @@ public class FriendsCharacterControllerV4 {
                                                                  @PathVariable String friendUsername) {
         Friends friend = friendsService.findByFriendUsername(friendUsername, username);
         if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
         }
 
         Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, friendUsername);
@@ -54,7 +55,7 @@ public class FriendsCharacterControllerV4 {
                                         @PathVariable String friendUsername) {
         Friends friend = friendsService.findByFriendUsername(friendUsername, username);
         if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
         }
 
         Character updateCharacter = characterService.updateMemo(friendUsername, updateMemoRequest);

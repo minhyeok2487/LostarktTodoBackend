@@ -12,6 +12,7 @@ import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.config.TokenProvider;
 import lostark.todo.global.dto.GlobalResponseDto;
 import lostark.todo.domain.member.entity.Member;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +40,10 @@ public class AuthService {
     @Transactional
     public AuthResponse signUp(SignUpRequest request) {
         if (!request.getPassword().equals(request.getEqualPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new ConditionNotMetException("비밀번호가 일치하지 않습니다.");
         }
         authMailRepository.getAuthMail(request.getMail(), request.getNumber())
-                .orElseThrow(() -> new IllegalStateException("이메일 인증이 실패하였습니다."));
+                .orElseThrow(() -> new ConditionNotMetException("이메일 인증이 실패하였습니다."));
         Member signupMember = createMember(request.getMail(), request.getPassword());
         authMailRepository.deleteAllByMail(request.getMail());
         String token = tokenProvider.createToken(signupMember);
@@ -52,7 +53,7 @@ public class AuthService {
     // 회원 생성
     private Member createMember(String mail, String password) {
         if (memberRepository.existsByUsername(mail)) {
-            throw new IllegalArgumentException(EMAIL_ALREADY_EXISTS);
+            throw new ConditionNotMetException(EMAIL_ALREADY_EXISTS);
         }
 
         Member member = Member.builder()
@@ -84,7 +85,7 @@ public class AuthService {
         if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             return member;
         } else {
-            throw new IllegalArgumentException(LOGIN_FAIL);
+            throw new ConditionNotMetException(LOGIN_FAIL);
         }
     }
 

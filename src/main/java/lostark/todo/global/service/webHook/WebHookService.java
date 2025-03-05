@@ -1,6 +1,5 @@
 package lostark.todo.global.service.webHook;
 
-import lostark.todo.global.exhandler.exceptions.CustomIllegalArgumentException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -28,28 +27,13 @@ public class WebHookService {
         }
     }
 
-    public void callEvent(Exception ex) {
+    public void callEvent(Exception ex, String requestInfo) {
         JSONObject data = new JSONObject();
         String message = "```" + ex.getClass().getSimpleName() + "발생";
         message += "\n";
         message += ex.getMessage();
-        message += "```";
-        data.put("content", message);
-        send(data, url);
-    }
-
-    public void callEvent(CustomIllegalArgumentException ex) {
-        StackTraceElement[] stackTrace = ex.getStackTrace();
-        for (StackTraceElement stackTraceElement : stackTrace) {
-            System.out.println("stackTraceElement = " + stackTraceElement);
-        }
-        JSONObject data = new JSONObject();
-        String message = "``` [" + ex.getMethod() + "]  발생";
         message += "\n";
-        if (ex.getMember() != null) {
-            message += ex.getMember().getId() + " / " + ex.getMember().getUsername() + " / ";
-        }
-        message += ex.getMessage();
+        message += requestInfo;
         message += "```";
         data.put("content", message);
         send(data, url);

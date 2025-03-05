@@ -19,6 +19,7 @@ import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domain.member.infra.MemberLockManager;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,7 +69,7 @@ public class MemberService {
 
     private static void validateCreateCharacter(Member member) {
         if (!member.getCharacters().isEmpty()) {
-            throw new IllegalStateException(CHARACTER_ALREADY_EXISTS);
+            throw new ConditionNotMetException(CHARACTER_ALREADY_EXISTS);
         }
     }
 
@@ -92,7 +93,7 @@ public class MemberService {
         Member member = get(username);
         if (member.getCharacters().stream()
                 .noneMatch(character -> character.getCharacterName().equals(mainCharacter))) {
-            throw new IllegalArgumentException(MEMBER_CHARACTER_NOT_FOUND);
+            throw new ConditionNotMetException(MEMBER_CHARACTER_NOT_FOUND);
         }
         member.editMainCharacter(mainCharacter);
     }
@@ -102,7 +103,7 @@ public class MemberService {
     public void editProvider(String username, String newPassword) {
         Member member = get(username);
         if (member.getAuthProvider().equals("none")) {
-            throw new IllegalArgumentException(MEMBER_NOT_SOCIAL);
+            throw new ConditionNotMetException(MEMBER_NOT_SOCIAL);
         }
         member.changeAuthToNone(passwordEncoder.encode(newPassword));
     }
@@ -111,7 +112,7 @@ public class MemberService {
     @Transactional
     public void updatePassword(ResetPasswordRequest request) {
         authMailRepository.getAuthMail(request.getMail(), request.getNumber())
-                .orElseThrow(() -> new IllegalStateException("이메일 인증이 실패하였습니다."));
+                .orElseThrow(() -> new ConditionNotMetException("이메일 인증이 실패하였습니다."));
         Member member = get(request.getMail());
         member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
         authMailRepository.deleteAllByMail(request.getMail());

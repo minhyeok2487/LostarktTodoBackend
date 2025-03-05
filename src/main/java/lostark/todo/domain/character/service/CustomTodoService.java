@@ -11,6 +11,7 @@ import lostark.todo.domain.character.entity.CustomTodo;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
 import lostark.todo.domain.friend.entity.Friends;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,7 +66,7 @@ public class CustomTodoService {
         if (characterIdList.contains(customTodo.getCharacter().getId())) {
             customTodoRepository.deleteById(customTodoId);
         } else {
-            throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
+            throw new ConditionNotMetException(CUSTOM_TODO_NOT_FOUND);
         }
     }
 
@@ -74,7 +75,7 @@ public class CustomTodoService {
         CustomTodo customTodo = get(request.getCustomTodoId());
 
         if (customTodo.getCharacter().getId() != character.getId()) {
-            throw new IllegalArgumentException(CUSTOM_TODO_NOT_FOUND);
+            throw new ConditionNotMetException(CUSTOM_TODO_NOT_FOUND);
         }
 
         boolean canCheckTodo = customTodo.getFrequency().equals(CustomTodoFrequencyEnum.DAILY)
@@ -84,7 +85,7 @@ public class CustomTodoService {
         if (canCheckTodo) {
             customTodo.check();
         } else {
-            throw new IllegalArgumentException(FRIEND_PERMISSION_DENIED);
+            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
         }
     }
 

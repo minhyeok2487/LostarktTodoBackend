@@ -2,6 +2,7 @@ package lostark.todo.domain.character.entity;
 
 import lombok.*;
 import lostark.todo.domain.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -84,7 +85,7 @@ public class Settings {
          field.setAccessible(true); // 필드에 접근할 수 있도록 설정
          field.set(this, value);
       } catch (Exception e) {
-         throw new IllegalArgumentException("없는 필드 값 입니다.");
+         throw new ConditionNotMetException("없는 필드 값 입니다.");
       }
    }
 

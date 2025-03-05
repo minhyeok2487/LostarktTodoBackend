@@ -8,6 +8,7 @@ import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.dto.GlobalResponseDto;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class EmailService {
 
     public GlobalResponseDto sendSignUpMail(String email){
         if (memberRepository.existsByUsername(email)) {
-            throw new IllegalArgumentException("이미 가입된 회원입니다.");
+            throw new ConditionNotMetException("이미 가입된 회원입니다.");
         }
         MimeMessage message = createSignUpMail(email);
         javaMailSender.send(message);
@@ -68,7 +69,7 @@ public class EmailService {
 
     public GlobalResponseDto checkMail(MailCheckDto mailCheckDto) {
         AuthMail authMail = emailRepository.findByMailAndNumber(mailCheckDto.getMail(), mailCheckDto.getNumber())
-                .orElseThrow(() -> new IllegalStateException("유효하지 않은 인증번호 입니다."));
+                .orElseThrow(() -> new ConditionNotMetException("유효하지 않은 인증번호 입니다."));
         if (authMail.getNumber() == mailCheckDto.getNumber()
                 && Duration.between(authMail.getCreatedDate(), LocalDateTime.now()).toMinutes() <= 3) {
             authMail.setAuth(true);
@@ -101,7 +102,7 @@ public class EmailService {
     public void sendResetPasswordMail(String email) {
         Member member = memberRepository.get(email);
         if (!member.getAuthProvider().equals("none")) {
-            throw new IllegalStateException("SNS 가입자는 비밀번호 변경이 불가능 합니다.");
+            throw new ConditionNotMetException("SNS 가입자는 비밀번호 변경이 불가능 합니다.");
         }
         MimeMessage message = createResetPasswordMail(email);
         javaMailSender.send(message);

@@ -15,6 +15,7 @@ import lostark.todo.domain.character.entity.TodoV2;
 import lostark.todo.domain.util.content.service.ContentService;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,7 +70,7 @@ public class FriendsControllerV4 {
         // 다른 아이디면 자동으로 Exception 처리
         Friends friend = friendsService.findByFriendUsername(friendUsername, username);
         if (!friend.getFriendSettings().isSetting()) {
-            throw new IllegalArgumentException("권한이 없습니다.");
+            throw new ConditionNotMetException("권한이 없습니다.");
         }
 
         Character character = friendsService.findFriendCharacter(friendUsername, characterId);

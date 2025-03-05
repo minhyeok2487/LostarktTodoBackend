@@ -1,6 +1,7 @@
 package lostark.todo.domain.friend.entity;
 
 import lombok.*;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 
 import javax.persistence.Embeddable;
 import java.lang.reflect.Field;
@@ -48,7 +49,7 @@ public class FriendSettings {
             field.setAccessible(true); // 필드에 접근할 수 있도록 설정
             field.set(this, value);
         } catch (Exception e) {
-            throw new IllegalArgumentException("없는 필드 값 입니다.");
+            throw new ConditionNotMetException("없는 필드 값 입니다.");
         }
     }
 }

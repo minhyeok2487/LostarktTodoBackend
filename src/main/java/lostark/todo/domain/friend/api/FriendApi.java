@@ -14,6 +14,7 @@ import lostark.todo.domain.friend.enums.FriendRequestCategory;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.notification.service.NotificationService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,7 +46,7 @@ public class FriendApi {
                                             @RequestBody FriendRequest request) {
         Member toMember = memberService.get(username);
         if (toMember.getCharacters().isEmpty()) {
-            throw new IllegalArgumentException("등록된 캐릭터가 존재하지 않아 깐부 요청이 불가능합니다.");
+            throw new ConditionNotMetException("등록된 캐릭터가 존재하지 않아 깐부 요청이 불가능합니다.");
         }
         Member fromMember = memberService.get(request.getFriendUsername());
 

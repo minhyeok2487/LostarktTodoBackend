@@ -7,6 +7,7 @@ import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.util.content.entity.Content;
 import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.util.content.repository.ContentRepository;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class ContentService {
     public List<WeekContent> findAllWeekContent(double itemLevel) {
         List<WeekContent> allWeekContent = contentRepository.findAllWeekContent(itemLevel);
         if (allWeekContent.isEmpty()) {
-            throw new IllegalStateException("컨텐츠 불러오기 오류");
+            throw new ConditionNotMetException("컨텐츠 불러오기 오류");
         }
         return allWeekContent;
     }
@@ -42,7 +43,7 @@ public class ContentService {
     public List<WeekContentDto> getTodoForm(Character updateCharacter) {
         List<WeekContent> allWeekContent = contentRepository.findAllWeekContent(updateCharacter.getItemLevel());
         if (allWeekContent.isEmpty()) {
-            throw new IllegalStateException("아이템레벨: " + updateCharacter.getItemLevel() + "보다 작은 레이드가 없습니다.");
+            throw new ConditionNotMetException("아이템레벨: " + updateCharacter.getItemLevel() + "보다 작은 레이드가 없습니다.");
         }
 
         return allWeekContent.stream()

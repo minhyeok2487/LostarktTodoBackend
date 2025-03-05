@@ -1,6 +1,7 @@
 package lostark.todo.domain.member.infra;
 
 import com.google.common.annotations.VisibleForTesting;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +34,7 @@ public class MemberLockManager {
             this.locks = locks;
             this.username = username;
             if (locks.putIfAbsent(username, true) != null) {
-                throw new IllegalStateException(EMAIL_REGISTRATION_IN_PROGRESS);
+                throw new ConditionNotMetException(EMAIL_REGISTRATION_IN_PROGRESS);
             }
         }
 

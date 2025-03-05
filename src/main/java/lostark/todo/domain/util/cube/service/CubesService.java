@@ -13,6 +13,7 @@ import lostark.todo.domain.util.cube.dto.CubeResponse;
 import lostark.todo.domain.util.cube.dto.CubeUpdateRequest;
 import lostark.todo.domain.util.cube.entity.Cubes;
 import lostark.todo.domain.util.cube.repository.CubesRepository;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class CubesService {
 
     @Transactional
     public Cubes getByCharacterId(Long characterId) {return cubeRepository.getByCharacterId(characterId)
-            .orElseThrow(() -> new IllegalArgumentException("cube not found"));}
+            .orElseThrow(() -> new ConditionNotMetException("cube not found"));}
 
     @Transactional
     public Cubes create(long characterId) {
@@ -47,7 +48,7 @@ public class CubesService {
 
     @Transactional
     public Cubes update(CubeUpdateRequest request) {
-        Cubes cubes = cubeRepository.findById(request.getCubeId()).orElseThrow(() -> new IllegalArgumentException("cube not found"));
+        Cubes cubes = cubeRepository.findById(request.getCubeId()).orElseThrow(() -> new ConditionNotMetException("cube not found"));
         return cubes.update(request);
     }
 
@@ -68,7 +69,7 @@ public class CubesService {
                     Market market = jewelryMap.get(tierName);
 
                     if (market == null) {
-                        throw new IllegalArgumentException("해당하는 보석이 없습니다: " + tierName);
+                        throw new ConditionNotMetException("해당하는 보석이 없습니다: " + tierName);
                     }
 
                     return new CubeContentDto().toDto(content, market);
@@ -118,7 +119,7 @@ public class CubesService {
                 .stream()
                 .filter(content -> content.getName().equals(cubeContentName.getName()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 큐브 컨텐츠가 존재하지 않습니다: " + cubeContentName.getName()));
+                .orElseThrow(() -> new ConditionNotMetException("해당하는 큐브 컨텐츠가 존재하지 않습니다: " + cubeContentName.getName()));
     }
 
     // 보석 티어에 따른 시장 가격 계산
@@ -126,7 +127,7 @@ public class CubesService {
         String tierName = determineJewelryTier(cubeContent);
         Market market = jewelryMarketMap.get(tierName);
         if (market == null) {
-            throw new IllegalArgumentException("해당 티어의 보석 시장 데이터가 존재하지 않습니다: " + tierName);
+            throw new ConditionNotMetException("해당 티어의 보석 시장 데이터가 존재하지 않습니다: " + tierName);
         }
         return market;
     }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.util.market.entity.Market;
 import lostark.todo.domain.util.schedule.dto.AuctionRequestDto;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -66,7 +67,7 @@ public class LostarkMarketApiClient {
             JSONParser parser = new JSONParser();
             return (JSONObject) parser.parse(inputStreamReader);
         } catch (Exception e) {
-            throw new IllegalArgumentException("올바르지 않은 categoryCode");
+            throw new ConditionNotMetException("올바르지 않은 categoryCode");
         }
     }
 
