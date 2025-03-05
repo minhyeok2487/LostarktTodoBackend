@@ -37,8 +37,7 @@ public class CubesService {
     }
 
     @Transactional
-    public Cubes getByCharacterId(Long characterId) {return cubeRepository.getByCharacterId(characterId)
-            .orElseThrow(() -> new ConditionNotMetException("cube not found"));}
+    public List<Cubes> getByCharacterId(Long characterId) {return cubeRepository.searchByCharacterId(characterId);}
 
     @Transactional
     public Cubes create(long characterId) {
@@ -54,8 +53,8 @@ public class CubesService {
 
     @Transactional
     public void delete(Long characterId) {
-        Cubes cubes = getByCharacterId(characterId);
-        cubeRepository.delete(cubes);
+        List<Cubes> cubes = getByCharacterId(characterId);
+        cubeRepository.deleteAll(cubes);
     }
 
     @Transactional(readOnly = true)
@@ -87,10 +86,12 @@ public class CubesService {
     @Transactional
     public double spendWeekCubeTicket(Character character, CubeContentName cubeContentName) {
         // 1. 캐릭터 ID로 Cubes 엔티티 조회 및 검증
-        Cubes cubes = getByCharacterId(character.getId());
+        List<Cubes> cubes = getByCharacterId(character.getId());
 
         // 2. 큐브 티켓 소모
-        cubes.spend(cubeContentName);
+        for (Cubes cube : cubes) {
+            cube.spend(cubeContentName);
+        }
 
         // 3. 보석 시장 데이터 조회 및 매핑
         Map<String, Market> jewelryMarketMap = fetchJewelryMarketPrices();

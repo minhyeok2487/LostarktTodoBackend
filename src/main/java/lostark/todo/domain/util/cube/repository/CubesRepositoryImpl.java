@@ -9,7 +9,6 @@ import lostark.todo.domain.util.cube.entity.Cubes;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
@@ -34,11 +33,10 @@ public class CubesRepositoryImpl implements CubesCustomRepository {
     }
 
     @Override
-    public Optional<Cubes> getByCharacterId(Long characterId) {
-        Cubes fetchOne = factory.selectFrom(cubes)
+    public List<Cubes> searchByCharacterId(Long characterId) {
+        return factory.selectFrom(cubes)
                 .where(cubes.characterId.eq(characterId))
-                .fetchOne();
-        return Optional.ofNullable(fetchOne);
+                .fetch();
     }
 
     private BooleanExpression eqUsername(String username) {
