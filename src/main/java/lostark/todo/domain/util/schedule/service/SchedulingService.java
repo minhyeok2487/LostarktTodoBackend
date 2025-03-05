@@ -37,7 +37,6 @@ public class SchedulingService {
     private final CharacterRepository characterRepository;
     private final CustomTodoRepository customTodoRepository;
     private final ContentRepository contentRepository;
-    private final ScheduleService scheduleService;
     private final KeyValueRepository keyValueRepository;
     private final RaidBusGoldRepository raidBusGoldRepository;
 
@@ -189,11 +188,5 @@ public class SchedulingService {
 
         // 버스비 삭제
         raidBusGoldRepository.deleteAllRaidBusGold();
-    }
-
-    // 10분 마다 해당 시간 이전 일정 체크
-    @Scheduled(cron = "0 */10 * * * *", zone = "Asia/Seoul")
-    public void checkSchedule() {
-        log.info("스케줄 일정 체크 = {}", scheduleService.checkSchedule());
     }
 }
