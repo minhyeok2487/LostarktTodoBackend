@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.List;
 
 @RestControllerAdvice
@@ -55,8 +56,24 @@ public class ExControllerAdvice {
         String requestInfo = String.format("%s %s", request.getMethod(), request.getRequestURI());
 
         if (sendWebHook) {
+            // 에러 로그 먼저 호출
             log.error("{} - {}", requestInfo, ex.getMessage());
-            webHookService.callEvent(ex, requestInfo);
+
+            // requestInfo에 헤더를 추가하기 위한 StringBuilder
+            StringBuilder headerDetails = new StringBuilder();
+
+            // 헤더 수집 및 로그 출력
+            Collections.list(request.getHeaderNames())
+                    .forEach(headerName -> {
+                        String headerValue = request.getHeader(headerName);
+                        headerDetails.append(String.format("Header [%s] = %s%n", headerName, headerValue));
+                    });
+
+            // 기존 requestInfo에 헤더 정보 추가
+            String updatedRequestInfo = requestInfo + "\n" + headerDetails;
+
+            // callEvent 호출
+            webHookService.callEvent(ex, updatedRequestInfo);
         } else {
             log.warn("{} - {}", requestInfo, ex.getMessage());
         }
