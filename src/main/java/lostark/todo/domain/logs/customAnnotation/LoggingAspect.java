@@ -64,7 +64,6 @@ public class LoggingAspect {
         }
     }
 
-
     private void handleCubeLogs(ResponseEntity<?> responseEntity) {
         if (!(responseEntity.getBody() instanceof SpendCubeResponse response)) {
             log.warn("Unexpected response body type: {}", Objects.requireNonNull(responseEntity.getBody()).getClass().getName());
@@ -103,7 +102,7 @@ public class LoggingAspect {
         response.getTodoList().stream()
                 .filter(todo -> todo.getWeekCategory().equals(request.getWeekCategory()))
                 .forEach(todo -> {
-                    int gold = (response.isGoldCharacter() && todo.isGoldCheck()) ? todo.getGold() : 0;
+                    int gold = (response.isGoldCharacter() && todo.isGoldCheck()) ? todo.getRealGold() : 0;
                     String message = formatRaidLogMessage(todo, response, gold);
                     saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold, false);
 
