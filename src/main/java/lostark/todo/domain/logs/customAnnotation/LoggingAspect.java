@@ -33,7 +33,7 @@ public class LoggingAspect {
 
     @AfterReturning(pointcut = "@annotation(loggable)", returning = "resultObject")
     public void characterResponseLogs(JoinPoint joinPoint, Object resultObject, Loggable loggable) {
-        taskExecutor.execute(() -> {
+//        taskExecutor.execute(() -> {
             if (!(resultObject instanceof ResponseEntity<?> responseEntity)) {
                 log.warn("Unexpected return type: {}", resultObject.getClass().getName());
                 return;
@@ -44,7 +44,7 @@ public class LoggingAspect {
             } else {
                 handleCharacterLogs(joinPoint, responseEntity);
             }
-        });
+//        });
     }
 
     private void handleCharacterLogs(JoinPoint joinPoint, ResponseEntity<?> responseEntity) {
