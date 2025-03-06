@@ -73,7 +73,7 @@ public class CubeApi {
 
     @ApiOperation(value = "캐릭터 큐브 티켓 소모(로그 저장)", response = SpendCubeResponse.class)
     @PostMapping("/spend")
-    @Loggable(category = "cube")
+//    @Loggable(category = "cube")
     public ResponseEntity<?> spendWeekCubeTicket(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody SpendWeekCubeRequest request) {
