@@ -13,6 +13,7 @@ import lostark.todo.domain.util.cube.dto.SpendCubeResponse;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -28,20 +29,22 @@ public class LoggingAspect {
 
     private final LogService service;
     private final LogService logService;
+    private final TaskExecutor taskExecutor;
 
     @AfterReturning(pointcut = "@annotation(loggable)", returning = "resultObject")
     public void characterResponseLogs(JoinPoint joinPoint, Object resultObject, Loggable loggable) {
-        if (!(resultObject instanceof ResponseEntity<?> responseEntity)) {
-            log.warn("Unexpected return type: {}", resultObject.getClass().getName());
-            return;
-        }
-
-        String category = loggable.category().trim();
-        if (category.equalsIgnoreCase("CUBE")) {
-            handleCubeLogs(responseEntity);
-        } else {
-            handleCharacterLogs(joinPoint, responseEntity);
-        }
+        taskExecutor.execute(() -> {
+            if (!(resultObject instanceof ResponseEntity<?> responseEntity)) {
+                log.warn("Unexpected return type: {}", resultObject.getClass().getName());
+                return;
+            }
+            String category = loggable.category().trim();
+            if (category.equalsIgnoreCase("CUBE")) {
+                handleCubeLogs(responseEntity);
+            } else {
+                handleCharacterLogs(joinPoint, responseEntity);
+            }
+        });
     }
 
     private void handleCharacterLogs(JoinPoint joinPoint, ResponseEntity<?> responseEntity) {
