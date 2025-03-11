@@ -45,14 +45,6 @@ public class CharacterService {
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
 
 
-    // 캐릭터 조회(member에 포함된 캐릭터인지 검증, id 형식)
-    // 로그인한 아이디에 등록된 캐릭터인지 검증
-    @Transactional(readOnly = true)
-    public Character get(long characterId, String characterName, String username) {
-        return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
-                () -> new ConditionNotMetException("characterName = " + characterName + " / username = " + username + " : 존재하지 않는 캐릭터"));
-    }
-
     @Transactional(readOnly = true)
     public Character get(long characterId, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
@@ -74,7 +66,7 @@ public class CharacterService {
     @Transactional
     public Character updateGoldCharacter(CharacterDefaultDto characterDefaultDto, String username) {
         Character character = get(
-                characterDefaultDto.getCharacterId(), characterDefaultDto.getCharacterName(), username);
+                characterDefaultDto.getCharacterId(), username);
 
         // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
         int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
@@ -164,8 +156,7 @@ public class CharacterService {
 
     @Transactional
     public Character updateSetting(String username, CharacterSettingRequest characterSettingRequest) {
-        Character character = get(
-                characterSettingRequest.getCharacterId(), characterSettingRequest.getCharacterName(), username);
+        Character character = get(characterSettingRequest.getCharacterId(), username);
         character.getSettings().update(characterSettingRequest.getName(), characterSettingRequest.getValue());
 
         updateRelatedTodos(characterSettingRequest, character);
