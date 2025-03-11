@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,20 +33,17 @@ public class LogService {
     }
 
     @Transactional
-    public void saveLog(Logs logs, boolean checkAll) {
-        if (!checkAll || !isLogExist(logs)) {
+    public void saveLog(Logs logs) {
+        Optional<Logs> exist = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate());
+        if (exist.isEmpty()) {
             repository.save(logs);
         }
     }
 
-    private boolean isLogExist(Logs logs) {
-        return repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate()).isPresent();
-    }
-
-
     @Transactional
     public void deleteLog(Logs logs) {
-        repository.deleteLogsByLogs(logs);
+        Optional<Logs> exist = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate());
+        exist.ifPresent(repository::delete);
     }
 
     @Transactional
