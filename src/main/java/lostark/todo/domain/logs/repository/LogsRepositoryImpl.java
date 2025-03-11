@@ -133,13 +133,7 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
     @Override
     public void deleteLogsByLogs(Logs logEntity) {
         factory.delete(logs)
-                .where(logs.memberId.eq(logEntity.getMemberId())
-                        .and(logs.characterId.eq(logEntity.getCharacterId()))
-                        .and(logs.localDate.eq(logEntity.getLocalDate()))
-                        .and(logs.logType.eq(logEntity.getLogType()))
-                        .and(logs.logContent.eq(logEntity.getLogContent()))
-                        .and(logs.name.eq(logEntity.getName()))
-                )
+                .where(logs.id.eq(logEntity.getId()))
                 .execute();
     }
 
