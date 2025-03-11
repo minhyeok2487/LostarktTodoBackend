@@ -291,16 +291,18 @@ public class CharacterResponse {
     }
 
     private void calculateBusGold(Character character, List<TodoResponseDto> todoResponseDtoList, CharacterResponse characterResponse) {
-        character.getRaidBusGoldList().forEach(gold -> {
-            todoResponseDtoList.stream()
-                    .filter(todo -> todo.getWeekCategory().equals(gold.getWeekCategory()))
-                    .findFirst()
-                    .ifPresent(todoResponseDto -> todoResponseDto.setRealGold(todoResponseDto.getRealGold() + gold.getBusGold()));
+        Map<String, TodoResponseDto> categoryMap = todoResponseDtoList.stream()
+                .collect(Collectors.toMap(TodoResponseDto::getWeekCategory, todo -> todo, (existing, replacement) -> existing));
 
-            todoResponseDtoList.stream()
-                    .filter(todo -> todo.getWeekCategory().equals(gold.getWeekCategory()) && todo.isCheck())
-                    .findFirst()
-                    .ifPresent(todoResponseDto -> characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + gold.getBusGold()));
+        character.getRaidBusGoldList().forEach(gold -> {
+            String weekCategory = gold.getWeekCategory();
+            TodoResponseDto todo = categoryMap.get(weekCategory);
+            if (todo != null) {
+                todo.setRealGold(todo.getRealGold() + gold.getBusGold());
+                if (todo.isCheck()) {
+                    characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + gold.getBusGold());
+                }
+            }
         });
     }
 }
