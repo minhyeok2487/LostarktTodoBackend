@@ -1,4 +1,4 @@
-package lostark.todo.global.config;
+package lostark.todo.global.config.filter;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;

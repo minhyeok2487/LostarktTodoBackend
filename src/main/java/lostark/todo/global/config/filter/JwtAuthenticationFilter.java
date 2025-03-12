@@ -1,10 +1,11 @@
-package lostark.todo.global.config;
+package lostark.todo.global.config.filter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.global.config.TokenProvider;
 import lostark.todo.global.exhandler.exceptions.RateLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
