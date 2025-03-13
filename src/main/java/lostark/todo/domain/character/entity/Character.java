@@ -119,6 +119,25 @@ public class Character extends BaseTimeEntity {
         this.dayTodo.setGuardianName(dayContent.getGuardianName());
         this.dayTodo.setGuardian(dayContent.getGuardian());
         calculateDayTodo(this, contentResource);
+
+        if (!this.getMember().getMainCharacter().equals(this.getCharacterName())) {
+            this.getMember().setMainCharacter(dto.getCharacterName());
+        }
+    }
+
+    public void updateCharacterV2(CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
+        this.characterLevel = dto.getCharacterLevel();
+        this.characterImage = dto.getCharacterImage();
+        this.itemLevel = dto.getItemMaxLevel();
+        this.dayTodo.setChaosName(dayContent.getChaosName());
+        this.dayTodo.setChaos(dayContent.getChaos());
+        this.dayTodo.setGuardianName(dayContent.getGuardianName());
+        this.dayTodo.setGuardian(dayContent.getGuardian());
+        calculateDayTodo(this, contentResource);
+
+        if (!this.getMember().getMainCharacter().equals(this.getCharacterName())) {
+            this.getMember().setMainCharacter(dto.getCharacterName());
+        }
     }
 
     public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {

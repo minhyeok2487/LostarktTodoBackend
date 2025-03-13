@@ -456,4 +456,26 @@ public class CharacterService {
                     updater.runUpdateMethod(); // 변경 사항을 업데이트
                 });
     }
+
+    @Transactional
+    public void updateCharacter(Character character) {
+        CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(character.getCharacterName(),
+                character.getMember().getApiKey());
+
+        if (updatedCharacter == null) {
+            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다. " +
+                    "캐릭터 이름이 바뀐 경우 설정 탭에서 닉네임을 변경해주세요.");
+        }
+
+        Map<String, Market> contentResource = marketRepository.findByNameIn(LEVEL_UP_RESOURCES)
+                .stream()
+                .collect(Collectors.toMap(Market::getName, market -> market));
+        Map<Category, List<DayContent>> dayContents = contentRepository.getDayContents();
+        List<DayContent> chaosDungeons = dayContents.get(Category.카오스던전);
+        List<DayContent> guardianRaids = dayContents.get(Category.가디언토벌);
+
+        DayTodo dayContent = new DayTodo().createDayContent(chaosDungeons, guardianRaids, updatedCharacter.getItemMaxLevel());
+
+        character.updateCharacterV2(updatedCharacter, dayContent, contentResource);
+    }
 }

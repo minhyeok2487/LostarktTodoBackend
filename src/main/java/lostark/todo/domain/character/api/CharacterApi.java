@@ -99,4 +99,15 @@ public class CharacterApi {
         characterService.delete(updateCharacter);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @ApiOperation(value = "단건 캐릭터 업데이트", notes = "인게임 캐릭터 이름이 바뀌면 작동하지 않음")
+    @PutMapping()
+    public ResponseEntity<?> updateCharacter(@AuthenticationPrincipal String username,
+                                             @RequestParam(required = false) String friendUsername,
+                                             @RequestBody BaseCharacterRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+        characterService.updateCharacter(updateCharacter);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+    }
 }
