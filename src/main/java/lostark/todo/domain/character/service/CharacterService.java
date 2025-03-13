@@ -478,4 +478,16 @@ public class CharacterService {
 
         character.updateCharacterV2(updatedCharacter, dayContent, contentResource);
     }
+
+    @Transactional
+    public void updateCharacterName(Character character, String newCharacterName) {
+        CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(newCharacterName,
+                character.getMember().getApiKey());
+
+        if (updatedCharacter == null) {
+            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
+        }
+
+        character.updateCharacterName(newCharacterName);
+    }
 }

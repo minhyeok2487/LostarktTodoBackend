@@ -8,6 +8,7 @@ import lostark.todo.controller.dtoV2.character.CharacterSettingRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
+import lostark.todo.domain.character.dto.UpdateCharacterNameRequest;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
@@ -108,6 +109,17 @@ public class CharacterApi {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
         characterService.updateCharacter(updateCharacter);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 닉네임 변경")
+    @PatchMapping("/name")
+    public ResponseEntity<?> updateCharacterName(@AuthenticationPrincipal String username,
+                                             @RequestParam(required = false) String friendUsername,
+                                             @RequestBody @Valid UpdateCharacterNameRequest request) {
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+        characterService.updateCharacterName(updateCharacter, request.getCharacterName());
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 }

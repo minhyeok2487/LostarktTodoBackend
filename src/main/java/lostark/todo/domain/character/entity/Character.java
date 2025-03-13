@@ -119,10 +119,6 @@ public class Character extends BaseTimeEntity {
         this.dayTodo.setGuardianName(dayContent.getGuardianName());
         this.dayTodo.setGuardian(dayContent.getGuardian());
         calculateDayTodo(this, contentResource);
-
-        if (!this.getMember().getMainCharacter().equals(this.getCharacterName())) {
-            this.getMember().setMainCharacter(dto.getCharacterName());
-        }
     }
 
     public void updateCharacterV2(CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
@@ -135,9 +131,7 @@ public class Character extends BaseTimeEntity {
         this.dayTodo.setGuardian(dayContent.getGuardian());
         calculateDayTodo(this, contentResource);
 
-        if (!this.getMember().getMainCharacter().equals(this.getCharacterName())) {
-            this.getMember().setMainCharacter(dto.getCharacterName());
-        }
+        updateMainCharacterName(dto.getCharacterName());
     }
 
     public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {
@@ -234,5 +228,16 @@ public class Character extends BaseTimeEntity {
 
     public void updateDelete() {
         this.isDeleted = !this.isDeleted;
+    }
+
+    public void updateCharacterName(String newCharacterName) {
+        this.characterName = newCharacterName;
+        updateMainCharacterName(newCharacterName);
+    }
+
+    private void updateMainCharacterName(String newCharacterName) {
+        if (!this.getMember().getMainCharacter().equals(this.getCharacterName())) {
+            this.getMember().setMainCharacter(newCharacterName);
+        }
     }
 }
