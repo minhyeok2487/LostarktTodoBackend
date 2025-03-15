@@ -67,15 +67,6 @@ public class CharacterService {
     public Character updateGoldCharacter(CharacterDefaultDto characterDefaultDto, String username) {
         Character character = get(
                 characterDefaultDto.getCharacterId(), username);
-
-        // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
-        int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
-                character.getMember(), character.getServerName());
-
-        //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
-        if (!character.isGoldCharacter() && goldCharacter >= 6) {
-            throw new ConditionNotMetException("골드 획득 지정 캐릭터는 6캐릭까지 가능합니다.");
-        }
         return character.updateGoldCharacter();
     }
 
