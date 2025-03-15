@@ -479,6 +479,11 @@ public class CharacterService {
         CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(newCharacterName,
                 character.getMember().getApiKey());
 
+        for (Character exist : character.getMember().getCharacters()) {
+            if (newCharacterName.equals(exist.getCharacterName())) {
+                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다.");
+            }
+        }
         if (updatedCharacter == null) {
             throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
         }
