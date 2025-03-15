@@ -481,7 +481,7 @@ public class CharacterService {
 
         for (Character exist : character.getMember().getCharacters()) {
             if (newCharacterName.equals(exist.getCharacterName())) {
-                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다.");
+                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다. 삭제된 캐릭터도 확인해주세요.");
             }
         }
         if (updatedCharacter == null) {
@@ -496,7 +496,7 @@ public class CharacterService {
     public void addCharacter(Member member, String characterName) {
         for (Character character : member.getCharacters()) {
             if (characterName.equals(character.getCharacterName())) {
-                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다.");
+                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다. 삭제된 캐릭터도 확인해주세요.");
             }
         }
 
