@@ -123,6 +123,8 @@ public class Character extends BaseTimeEntity {
 
     public void updateCharacterV2(CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
         this.characterLevel = dto.getCharacterLevel();
+        this.characterClassName = dto.getCharacterClassName();
+        this.serverName = dto.getServerName();
         this.characterImage = dto.getCharacterImage();
         this.itemLevel = dto.getItemMaxLevel();
         this.dayTodo.setChaosName(dayContent.getChaosName());
