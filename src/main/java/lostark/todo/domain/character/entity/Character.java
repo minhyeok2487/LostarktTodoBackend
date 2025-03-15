@@ -231,13 +231,9 @@ public class Character extends BaseTimeEntity {
     }
 
     public void updateCharacterName(String newCharacterName) {
-        this.characterName = newCharacterName;
-        updateMainCharacterName(newCharacterName);
-    }
-
-    private void updateMainCharacterName(String newCharacterName) {
-        if (!this.getMember().getMainCharacter().equals(this.getCharacterName())) {
-            this.getMember().setMainCharacter(newCharacterName);
+        if (this.characterName.equals(this.getMember().getMainCharacter())) {
+            this.member.setMainCharacter(newCharacterName);
         }
+        this.characterName = newCharacterName;
     }
 }
