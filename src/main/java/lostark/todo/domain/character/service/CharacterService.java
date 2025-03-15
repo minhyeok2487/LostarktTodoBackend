@@ -490,4 +490,43 @@ public class CharacterService {
 
         character.updateCharacterName(newCharacterName);
     }
+
+    @Transactional
+    public void addCharacter(Member member, String characterName) {
+        for (Character character : member.getCharacters()) {
+            if (characterName.equals(character.getCharacterName())) {
+                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다.");
+            }
+        }
+
+        CharacterJsonDto newCharacter = lostarkCharacterApiClient.getCharacter(characterName,
+                member.getApiKey());
+
+        if (newCharacter == null) {
+            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
+        }
+
+        Map<Category, List<DayContent>> dayContent = contentRepository.getDayContents();
+
+        Character character = Character.builder()
+                .member(member)
+                .characterName(newCharacter.getCharacterName())
+                .characterLevel(newCharacter.getCharacterLevel())
+                .characterClassName(newCharacter.getCharacterClassName())
+                .serverName(newCharacter.getServerName())
+                .itemLevel(newCharacter.getItemMaxLevel())
+                .sortNumber(0)
+                .dayTodo(new DayTodo())
+                .weekTodo(new WeekTodo())
+                .build();
+        character.setSettings(new Settings());
+        character.setTodoV2List(new ArrayList<>());
+        character.setCharacterImage(newCharacter.getCharacterImage());
+        character.getDayTodo().createDayContent(
+                dayContent.get(Category.카오스던전), dayContent.get(Category.가디언토벌), character.getItemLevel());
+
+        characterRepository.save(character);
+        member.getCharacters().add(character);
+
+    }
 }

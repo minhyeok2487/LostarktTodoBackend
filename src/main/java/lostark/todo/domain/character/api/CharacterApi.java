@@ -7,12 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CharacterSettingRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domain.character.dto.AddCharacterRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
-import lostark.todo.domain.character.dto.UpdateCharacterNameRequest;
+import lostark.todo.domain.character.dto.CharacterNameRequest;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
@@ -36,6 +39,7 @@ public class CharacterApi {
     private final CharacterService characterService;
     private final FriendsService friendsService;
     private final UpdateCharacterMethod updateCharacterMethod;
+    private final MemberService memberService;
 
 
     @ApiOperation(value = "캐릭터 출력 내용 수정", response = CharacterResponse.class)
@@ -116,10 +120,19 @@ public class CharacterApi {
     @PatchMapping("/name")
     public ResponseEntity<?> updateCharacterName(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
-                                             @RequestBody @Valid UpdateCharacterNameRequest request) {
+                                             @RequestBody @Valid CharacterNameRequest request) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
         characterService.updateCharacterName(updateCharacter, request.getCharacterName());
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "단일 캐릭터 추가")
+    @PostMapping()
+    public ResponseEntity<?> addCharacter(@AuthenticationPrincipal String username,
+                                          @RequestBody @Valid AddCharacterRequest request) {
+        Member member = memberService.get(username);
+        characterService.addCharacter(member, request.getCharacterName());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
