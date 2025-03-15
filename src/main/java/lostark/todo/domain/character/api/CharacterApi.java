@@ -16,6 +16,7 @@ import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.global.customAnnotation.NotTestMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
@@ -107,6 +108,7 @@ public class CharacterApi {
 
     @ApiOperation(value = "단건 캐릭터 업데이트", notes = "인게임 캐릭터 이름이 바뀌면 작동하지 않음")
     @PutMapping()
+    @NotTestMember
     public ResponseEntity<?> updateCharacter(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
                                              @RequestBody BaseCharacterRequest request) {
@@ -118,6 +120,7 @@ public class CharacterApi {
 
     @ApiOperation(value = "캐릭터 닉네임 변경")
     @PatchMapping("/name")
+    @NotTestMember
     public ResponseEntity<?> updateCharacterName(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
                                              @RequestBody @Valid CharacterNameRequest request) {
@@ -129,6 +132,7 @@ public class CharacterApi {
 
     @ApiOperation(value = "단일 캐릭터 추가")
     @PostMapping()
+    @NotTestMember
     public ResponseEntity<?> addCharacter(@AuthenticationPrincipal String username,
                                           @RequestBody @Valid AddCharacterRequest request) {
         Member member = memberService.get(username);

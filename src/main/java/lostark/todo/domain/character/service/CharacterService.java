@@ -458,6 +458,10 @@ public class CharacterService {
                     "캐릭터 이름이 바뀐 경우 설정 탭에서 닉네임을 변경해주세요.");
         }
 
+        updateCharacterV2(character, updatedCharacter);
+    }
+
+    private void updateCharacterV2(Character character, CharacterJsonDto updatedCharacter) {
         Map<String, Market> contentResource = marketRepository.findByNameIn(LEVEL_UP_RESOURCES)
                 .stream()
                 .collect(Collectors.toMap(Market::getName, market -> market));
@@ -480,6 +484,7 @@ public class CharacterService {
         }
 
         character.updateCharacterName(newCharacterName);
+        updateCharacterV2(character, updatedCharacter);
     }
 
     @Transactional

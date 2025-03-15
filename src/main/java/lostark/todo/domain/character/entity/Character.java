@@ -130,8 +130,6 @@ public class Character extends BaseTimeEntity {
         this.dayTodo.setGuardianName(dayContent.getGuardianName());
         this.dayTodo.setGuardian(dayContent.getGuardian());
         calculateDayTodo(this, contentResource);
-
-        updateMainCharacterName(dto.getCharacterName());
     }
 
     public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {
