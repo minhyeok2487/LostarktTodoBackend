@@ -53,8 +53,7 @@ public class CubesService {
 
     @Transactional
     public void delete(Long characterId) {
-        List<Cubes> cubes = getByCharacterId(characterId);
-        cubeRepository.deleteAll(cubes);
+        cubeRepository.deleteAllByCharacterId(characterId);
     }
 
     @Transactional(readOnly = true)

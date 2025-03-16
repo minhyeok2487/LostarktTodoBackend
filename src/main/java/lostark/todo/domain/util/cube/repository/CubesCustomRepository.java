@@ -10,4 +10,6 @@ public interface CubesCustomRepository {
     List<CubeResponse> get(String username);
 
     List<Cubes> searchByCharacterId(Long characterId);
+
+    void deleteAllByCharacterId(Long characterId);
 }

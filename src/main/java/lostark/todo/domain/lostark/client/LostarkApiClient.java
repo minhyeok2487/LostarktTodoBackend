@@ -76,7 +76,7 @@ public class LostarkApiClient {
                 return new InputStreamReader(inputStream);
             }
             else if(result == 401) {
-                throw new ConditionNotMetException("올바르지 않은 apiKey 입니다.");
+                throw new ConditionNotMetException("올바르지 않은 apiKey 입니다. (크롬 자동 번역을 확인해주세요.)");
             }
             else if(result == 429) {
                 throw new ConditionNotMetException("사용한도 (1분에 100개)를 초과했습니다.");
@@ -85,10 +85,10 @@ public class LostarkApiClient {
                 throw new ConditionNotMetException("로스트아크 서버가 점검중 입니다.");
             }
             else {
-                throw new RuntimeException("API 응답 오류: " + httpURLConnection.getResponseMessage());
+                throw new ConditionNotMetException("API 응답 오류: " + httpURLConnection.getResponseMessage());
             }
         } catch (Exception e) {
-            throw new RuntimeException("API 응답 처리 중 오류 발생: " + e.getMessage());
+            throw new ConditionNotMetException("API 응답 처리 중 오류 발생: " + e.getMessage());
         }
     }
 

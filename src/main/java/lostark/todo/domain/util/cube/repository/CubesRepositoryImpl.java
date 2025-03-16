@@ -39,6 +39,14 @@ public class CubesRepositoryImpl implements CubesCustomRepository {
                 .fetch();
     }
 
+    @Override
+    public void deleteAllByCharacterId(Long characterId) {
+        if (characterId == null) {
+            return;
+        }
+        factory.delete(cubes).where(cubes.characterId.eq(characterId)).execute();
+    }
+
     private BooleanExpression eqUsername(String username) {
         if (StringUtils.hasText(username)) {
             return member.username.eq(username);

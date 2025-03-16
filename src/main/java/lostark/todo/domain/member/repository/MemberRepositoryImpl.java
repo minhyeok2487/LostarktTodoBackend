@@ -13,11 +13,11 @@ import lostark.todo.controller.dtoV2.admin.SearchAdminMemberRequest;
 import lostark.todo.controller.dtoV2.admin.SearchAdminMemberResponse;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.entity.QMember;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -51,7 +51,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                         .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                         .where(whereCondition.apply(member))
                         .fetchOne()
-        ).orElseThrow(() -> new EntityNotFoundException(MEMER_NOT_FOUND));
+        ).orElseThrow(() -> new ConditionNotMetException(MEMER_NOT_FOUND));
     }
 
     @Override
@@ -96,13 +96,6 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
         ).fetchCount();
 
         return new PageImpl<>(fetch, pageRequest, total);
-    }
-
-    private BooleanExpression eqUsername(String username) {
-        if (StringUtils.hasText(username)) {
-            return member.username.eq(username);
-        }
-        return null;
     }
 
     private BooleanExpression containsUsername(String username) {
