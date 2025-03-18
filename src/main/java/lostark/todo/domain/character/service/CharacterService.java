@@ -492,7 +492,6 @@ public class CharacterService {
         updateCharacterV2(character, updatedCharacter);
     }
 
-    @Transactional(readOnly = true)
     public void existCharacter(List<Character> characters, String characterName) {
         characters.stream()
                 .filter(character -> character.getCharacterName().equals(characterName))
