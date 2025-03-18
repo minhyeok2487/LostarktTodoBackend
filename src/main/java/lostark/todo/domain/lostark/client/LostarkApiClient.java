@@ -34,7 +34,7 @@ public class LostarkApiClient {
             HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET", apiKey);
             return getInputStreamReader(httpURLConnection);
         } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -48,7 +48,7 @@ public class LostarkApiClient {
 
             return getInputStreamReader(httpURLConnection);
         } catch (Exception e) {
-            throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -63,7 +63,7 @@ public class LostarkApiClient {
             httpURLConnection.setDoOutput(true);
             return httpURLConnection;
         } catch (Exception e) {
-            throw new RuntimeException("API 연결 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -85,10 +85,10 @@ public class LostarkApiClient {
                 throw new ConditionNotMetException("로스트아크 서버가 점검중 입니다.");
             }
             else {
-                throw new ConditionNotMetException("API 응답 오류: " + httpURLConnection.getResponseMessage());
+                throw new ConditionNotMetException(httpURLConnection.getResponseMessage());
             }
         } catch (Exception e) {
-            throw new ConditionNotMetException("API 응답 처리 중 오류 발생: " + e.getMessage());
+            throw new ConditionNotMetException(e.getMessage());
         }
     }
 

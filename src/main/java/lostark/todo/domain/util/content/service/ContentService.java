@@ -5,7 +5,9 @@ import lostark.todo.controller.dto.contentDto.WeekContentDto;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.util.content.entity.Content;
+import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.util.content.entity.WeekContent;
+import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
@@ -63,5 +65,10 @@ public class ContentService {
                     return weekContentDto;
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Category, List<DayContent>> getDayContnet() {
+        return contentRepository.getDayContents();
     }
 }

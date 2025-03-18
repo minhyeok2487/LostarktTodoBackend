@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.util.market.entity.Market;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +96,34 @@ public class Character extends BaseTimeEntity {
                 ", sortNumber=" + sortNumber +
                 ", characterDayContent=" + dayTodo +
                 '}';
+    }
+
+    public Character toEntity(Member member, CharacterJsonDto newCharacter, Map<Category, List<DayContent>> dayContents) {
+        Character build = Character.builder()
+                .serverName(newCharacter.getServerName())
+                .characterName(newCharacter.getCharacterName())
+                .characterLevel(newCharacter.getCharacterLevel())
+                .characterClassName(newCharacter.getCharacterClassName())
+                .characterImage(newCharacter.getCharacterImage())
+                .itemLevel(newCharacter.getItemMaxLevel())
+                .sortNumber(0)
+                .memo(null)
+                .member(member)
+                .dayTodo(new DayTodo())
+                .weekTodo(new WeekTodo())
+                .todoV2List(new ArrayList<>())
+                .raidBusGoldList(new ArrayList<>())
+                .goldCharacter(false)
+                .settings(new Settings())
+                .isDeleted(false)
+                .build();
+        build.createDayTodo(dayContents);
+        return build;
+    }
+
+    public void createDayTodo(Map<Category, List<DayContent>> dayContents) {
+        this.getDayTodo().createDayContent(
+                dayContents.get(Category.카오스던전), dayContents.get(Category.가디언토벌), this.getItemLevel());
     }
 
     public Character updateGoldCharacter() {

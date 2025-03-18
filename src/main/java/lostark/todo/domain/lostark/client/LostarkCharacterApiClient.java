@@ -202,9 +202,37 @@ public class LostarkCharacterApiClient {
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);
-
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public CharacterJsonDto getCharacterWithException(String characterName, String apiKey) {
+        try {
+            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
+
+            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            CharacterJsonDto characterJsonDto = objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);
+
+            validateCharacter(characterJsonDto);
+            return characterJsonDto;
+        } catch (ConditionNotMetException e) {
+            throw new ConditionNotMetException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void validateCharacter(CharacterJsonDto characterJsonDto) {
+        if (characterJsonDto == null) {
+            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
+        }
+
+        if (characterJsonDto.getItemMaxLevel() < 1415.00) {
+            throw new ConditionNotMetException("로아투두는 아이템 레벨 1415 이상 캐릭터만 저장할 수 있습니다.");
         }
     }
 }
