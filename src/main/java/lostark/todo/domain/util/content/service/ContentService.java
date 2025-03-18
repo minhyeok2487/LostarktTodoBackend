@@ -10,6 +10,7 @@ import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +69,8 @@ public class ContentService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Category, List<DayContent>> getDayContnet() {
+    @Cacheable(cacheNames = "content", key = "'dayContent'")
+    public Map<Category, List<DayContent>> getDayContent() {
         return contentRepository.getDayContents();
     }
 }

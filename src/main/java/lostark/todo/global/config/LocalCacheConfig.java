@@ -15,8 +15,7 @@ public class LocalCacheConfig {
     @Bean
     public CacheManager cacheManager() {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-        cacheManager.setCacheNames(List.of("rateLimitCache"));
-        cacheManager.setCacheNames(List.of("boardStore"));
+        cacheManager.setCacheNames(List.of("rateLimitCache", "content"));
         return cacheManager;
     }
 

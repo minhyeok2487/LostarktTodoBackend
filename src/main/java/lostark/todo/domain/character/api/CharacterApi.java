@@ -154,7 +154,7 @@ public class CharacterApi {
                 request.getCharacterName(), member.getApiKey());
 
         // 3. 컨텐츠 검색
-        Map<Category, List<DayContent>> dayContent = contentService.getDayContnet();
+        Map<Category, List<DayContent>> dayContent = contentService.getDayContent();
 
         // 4. 저장
         characterService.addCharacter(member, newCharacter, dayContent);
