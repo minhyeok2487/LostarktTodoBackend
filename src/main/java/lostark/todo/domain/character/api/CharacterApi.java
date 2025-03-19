@@ -14,10 +14,9 @@ import lostark.todo.domain.character.dto.CharacterUpdateContext;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.member.entity.Member;
-import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
-import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
+import lostark.todo.global.friendPermisson.CharacterMemberQueryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,8 +33,7 @@ import javax.validation.Valid;
 public class CharacterApi {
 
     private final CharacterService characterService;
-    private final UpdateCharacterMethod updateCharacterMethod;
-    private final MemberService memberService;
+    private final CharacterMemberQueryService characterMemberQueryService;
 
     @ApiOperation(value = "캐릭터 출력 내용 수정", response = CharacterResponse.class)
     @PatchMapping("/settings")
@@ -43,7 +41,7 @@ public class CharacterApi {
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody UpdateCharacterSettingRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 캐릭터 출력 내용 수정
@@ -57,7 +55,7 @@ public class CharacterApi {
                                                                  @RequestParam(required = false) String friendUsername,
                                                                  @RequestBody BaseCharacterRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 골드 획득 캐릭터 지정/해제
@@ -71,7 +69,7 @@ public class CharacterApi {
                                         @RequestParam(required = false) String friendUsername,
                                         @RequestBody @Valid UpdateMemoRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 캐릭터 메모 업데이트
@@ -85,7 +83,7 @@ public class CharacterApi {
                                                    @RequestParam(required = false) String friendUsername,
                                                    @RequestBody BaseCharacterRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 캐릭터 상태변경(삭제/복구)
@@ -100,7 +98,7 @@ public class CharacterApi {
                                              @RequestParam(required = false) String friendUsername,
                                              @RequestBody BaseCharacterRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 캐릭터 검색
@@ -119,7 +117,7 @@ public class CharacterApi {
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody @Valid CharacterNameRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 중복 검사
@@ -138,9 +136,11 @@ public class CharacterApi {
     @PostMapping()
     @NotTestMember
     public ResponseEntity<?> addCharacter(@AuthenticationPrincipal String username,
+                                          @RequestParam(required = false) String friendUsername,
                                           @RequestBody @Valid AddCharacterRequest request) {
         // 1. 회원 호출
-        Member member = memberService.get(username);
+        Member member = characterMemberQueryService
+                .getUpdateMember(username, friendUsername, FriendPermissionType.UPDATE_SETTING);
 
         // 2. 중복 검사
         member.existCharacter(request.getCharacterName());

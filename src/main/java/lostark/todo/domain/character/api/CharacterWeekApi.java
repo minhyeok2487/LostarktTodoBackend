@@ -9,14 +9,13 @@ import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.RaidBusGoldService;
-import lostark.todo.domain.logs.customAnnotation.Loggable;
 import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.util.content.service.ContentService;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
-import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
+import lostark.todo.global.friendPermisson.CharacterMemberQueryService;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.character.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ public class CharacterWeekApi {
     private final FriendsService friendsService;
     private final ContentService contentService;
     private final TodoServiceV2 todoServiceV2;
-    private final UpdateCharacterMethod updateCharacterMethod;
+    private final CharacterMemberQueryService characterMemberQueryService;
     private final RaidBusGoldService raidBusGoldService;
 
     // TODO 추후 정리
@@ -85,7 +84,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> getTodoForm(@AuthenticationPrincipal String username,
                                          @RequestParam(required = false) String friendUsername,
                                          @RequestParam Long characterId) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 characterId, FriendPermissionType.UPDATE_RAID);
         List<WeekContentDto> result = contentService.getTodoForm(updateCharacter);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -96,7 +95,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekRaidBusGold(@AuthenticationPrincipal String username,
                                                    @RequestParam(required = false) String friendUsername,
                                                    @RequestBody UpdateWeekRaidBusGold request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         raidBusGoldService.UpdateWeekRaidBusGold(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -109,7 +108,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekRaidCheck(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody UpdateWeekRaidCheckRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -121,7 +120,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekRaidMessage(@AuthenticationPrincipal String username,
                                                    @RequestParam(required = false) String friendUsername,
                                                    @RequestBody UpdateWeekRaidMessageRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekMessage(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -132,7 +131,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekRaidSort(@AuthenticationPrincipal String username,
                                                 @RequestParam(required = false) String friendUsername,
                                                 @RequestBody UpdateWeekRaidSortRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
         todoServiceV2.updateWeekRaidSort(updateCharacter, request.getSortRequestList());
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -143,7 +142,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekEpona(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
                                              @RequestBody UpdateWeekEponaRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateWeekEpona(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -154,7 +153,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekSilmael(@AuthenticationPrincipal String username,
                                                @RequestParam(required = false) String friendUsername,
                                                @RequestBody BaseCharacterRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateWeekSilmael(updateCharacter);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -165,7 +164,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateWeekCubeTicket(@AuthenticationPrincipal String username,
                                                   @RequestParam(required = false) String friendUsername,
                                                   @RequestBody UpdateWeekCubeRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         characterService.updateCubeTicket(updateCharacter, request.getNum());
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
@@ -176,7 +175,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateRaidGoldCheck(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody UpdateRaidGoldCheckRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_RAID);
 
         // 골드 체크 업데이트
@@ -190,7 +189,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateGoldCheckVersion(@AuthenticationPrincipal String username,
                                                     @RequestParam(required = false) String friendUsername,
                                                     @RequestBody @Valid BaseCharacterRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         characterService.updateGoldCheckVersion(updateCharacter);
@@ -204,7 +203,7 @@ public class CharacterWeekApi {
     public ResponseEntity<?> updateRaidMoreRewardCheck(@AuthenticationPrincipal String username,
                                                        @RequestParam(required = false) String friendUsername,
                                                        @RequestBody UpdateWeekRaidMoreRewardCheckRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         todoServiceV2.updateRaidMoreRewardCheck(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
