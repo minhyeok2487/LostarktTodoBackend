@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "cubes", indexes = @Index(name = "idx_characterId", columnList = "characterId"))
 public class Cubes {
 
     @Id

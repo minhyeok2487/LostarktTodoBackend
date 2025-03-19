@@ -47,4 +47,20 @@ public class CubeResponse {
         this.unlock2 = cubes.getUnlock2();
         this.unlock3 = cubes.getUnlock3();
     }
+
+    @QueryProjection
+    public CubeResponse(Cubes cubes, long characterId, String characterName, double itemLevel) {
+        this.cubeId = cubes.getId();
+        this.characterId = characterId;
+        this.characterName = characterName;
+        this.itemLevel = itemLevel;
+        this.ban1 = cubes.getBan1();
+        this.ban2 = cubes.getBan2();
+        this.ban3 = cubes.getBan3();
+        this.ban4 = cubes.getBan4();
+        this.ban5 = cubes.getBan5();
+        this.unlock1 = cubes.getUnlock1();
+        this.unlock2 = cubes.getUnlock2();
+        this.unlock3 = cubes.getUnlock3();
+    }
 }

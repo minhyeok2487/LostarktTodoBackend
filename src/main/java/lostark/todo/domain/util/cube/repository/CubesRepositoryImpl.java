@@ -21,7 +21,7 @@ public class CubesRepositoryImpl implements CubesCustomRepository {
 
     @Override
     public List<CubeResponse> get(String username) {
-        return factory.select(new QCubeResponse(character, cubes))
+        return factory.select(new QCubeResponse(cubes, character.id, character.characterName, character.itemLevel))
                 .from(cubes)
                 .join(character).on(character.id.eq(cubes.characterId))
                 .join(member).on(member.id.eq(character.member.id))
