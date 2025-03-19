@@ -221,7 +221,7 @@ public class CharacterService {
         if (character.isGoldCharacter()) {
             throw new ConditionNotMetException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
         }
-        character.updateDelete();
+        character.updateCharacterStatus();
     }
 
     @Transactional
@@ -229,7 +229,7 @@ public class CharacterService {
         if (character.isGoldCharacter()) {
             throw new ConditionNotMetException("골드 획득 캐릭터는 삭제 할 수 없습니다.");
         }
-        character.updateDelete();
+        character.updateCharacterStatus();
     }
 
     @Transactional
@@ -414,7 +414,7 @@ public class CharacterService {
 
     @Transactional
     public void updateDeletedCharacter(Character character) {
-        character.updateDelete();
+        character.updateCharacterStatus();
     }
 
     /**
@@ -486,5 +486,11 @@ public class CharacterService {
     public void addCharacter(Member member, CharacterUpdateContext characterUpdateContext) {
         Character character = new Character().toEntity(member, characterUpdateContext);
         characterRepository.save(character);
+    }
+
+    // 캐릭터 상태 변경(삭제, 복구)
+    @Transactional
+    public void updateCharacterStatus(Character character) {
+        character.updateCharacterStatus();
     }
 }

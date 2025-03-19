@@ -15,11 +15,8 @@ import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
-import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
-import lostark.todo.domain.util.content.service.ContentService;
-import lostark.todo.domain.util.market.service.MarketService;
 import lostark.todo.global.customAnnotation.NotTestMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
@@ -45,10 +42,6 @@ public class CharacterApi {
     private final FriendsService friendsService;
     private final UpdateCharacterMethod updateCharacterMethod;
     private final MemberService memberService;
-    private final LostarkCharacterApiClient lostarkCharacterApiClient;
-    private final ContentService contentService;
-    private final MarketService marketService;
-
 
     @ApiOperation(value = "캐릭터 출력 내용 수정", response = CharacterResponse.class)
     @PatchMapping("/settings")
@@ -67,17 +60,6 @@ public class CharacterApi {
             }
         }
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "삭제된 캐릭터 복구")
-    @PostMapping("/deleted")
-    public ResponseEntity<?> updateDeletedCharacter(@AuthenticationPrincipal String username,
-                                                    @RequestParam(required = false) String friendUsername,
-                                                    @RequestBody BaseCharacterRequest request) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
-        characterService.updateDeletedCharacter(updateCharacter);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterResponse.class)
@@ -104,12 +86,41 @@ public class CharacterApi {
 
     @ApiOperation(value = "등록 캐릭터 단일 삭제")
     @DeleteMapping("/{characterId}")
+    //TODO 추후 삭제
     public ResponseEntity<?> deleteCharacter(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
                                              @PathVariable Long characterId) {
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 characterId, FriendPermissionType.UPDATE_SETTING);
         characterService.delete(updateCharacter);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "삭제된 캐릭터 복구")
+    @PostMapping("/deleted")
+    //TODO 추후 삭제
+    public ResponseEntity<?> updateDeletedCharacter(@AuthenticationPrincipal String username,
+                                                    @RequestParam(required = false) String friendUsername,
+                                                    @RequestBody BaseCharacterRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+
+        characterService.updateDeletedCharacter(updateCharacter);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "캐릭터 상태변경(삭제/복구)")
+    @PatchMapping("/deleted/{characterId}")
+    public ResponseEntity<?> updateCharacterStatus(@AuthenticationPrincipal String username,
+                                                    @RequestParam(required = false) String friendUsername,
+                                                    @PathVariable Long characterId) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                characterId, FriendPermissionType.UPDATE_SETTING);
+
+        // 2. 캐릭터 상태변경(삭제/복구)
+        characterService.updateCharacterStatus(updateCharacter);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

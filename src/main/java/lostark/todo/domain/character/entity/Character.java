@@ -252,7 +252,12 @@ public class Character extends BaseTimeEntity {
         return this;
     }
 
-    public void updateDelete() {
+    public void updateCharacterStatus() {
+        // 1. 골득 획득 캐릭터면 골득 획득 해제
+        if (this.goldCharacter) {
+            this.goldCharacter = false;
+        }
+
         this.isDeleted = !this.isDeleted;
     }
 
