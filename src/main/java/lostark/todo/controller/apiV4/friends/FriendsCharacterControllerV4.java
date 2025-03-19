@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.service.CharacterService;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
@@ -45,20 +43,5 @@ public class FriendsCharacterControllerV4 {
 
         Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, friendUsername);
         return new ResponseEntity<>(new CharacterResponse().toDto(resultCharacter), HttpStatus.OK);
-    }
-
-    //TODO 추후삭제
-    @ApiOperation(value = "캐릭터 메모 업데이트", notes = "기본 값 null / 길이 제한 100 / null 혹은 빈 칸으로 입력시 null로 저장")
-    @PostMapping("/{friendUsername}/memo")
-    public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username,
-                                        @RequestBody @Valid UpdateMemoRequest updateMemoRequest,
-                                        @PathVariable String friendUsername) {
-        Friends friend = friendsService.findByFriendUsername(friendUsername, username);
-        if (!friend.getFriendSettings().isSetting()) {
-            throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
-        }
-
-        Character updateCharacter = characterService.updateMemo(friendUsername, updateMemoRequest);
-        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 }

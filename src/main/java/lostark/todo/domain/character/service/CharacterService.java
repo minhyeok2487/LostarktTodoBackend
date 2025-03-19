@@ -205,12 +205,6 @@ public class CharacterService {
     }
 
     @Transactional
-    public Character updateMemo(String username, UpdateMemoRequest updateMemoRequest) {
-        Character character = get(updateMemoRequest.getCharacterId(), username);
-        return character.updateMemo(updateMemoRequest.getMemo());
-    }
-
-    @Transactional
     public void updateMemo(Character character, String memo) {
         character.updateMemo(memo);
     }

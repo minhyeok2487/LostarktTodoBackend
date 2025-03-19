@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CharacterSettingRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
+import lostark.todo.domain.character.dto.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.AddCharacterRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.character.dto.CharacterNameRequest;
@@ -78,8 +78,11 @@ public class CharacterApi {
     public ResponseEntity<?> updateMemo(@AuthenticationPrincipal String username,
                                         @RequestParam(required = false) String friendUsername,
                                         @RequestBody @Valid UpdateMemoRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+
+        // 2. 캐릭터 메모 업데이트
         characterService.updateMemo(updateCharacter, request.getMemo());
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }

@@ -1,7 +1,6 @@
-package lostark.todo.controller.dtoV2.character;
+package lostark.todo.domain.character.dto;
 
 import lombok.*;
-import lostark.todo.domain.character.dto.BaseCharacterRequest;
 
 import javax.validation.constraints.Size;
 
