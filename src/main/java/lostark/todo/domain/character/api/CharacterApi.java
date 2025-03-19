@@ -90,32 +90,6 @@ public class CharacterApi {
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "등록 캐릭터 단일 삭제")
-    @DeleteMapping("/{characterId}")
-    //TODO 추후 삭제
-    public ResponseEntity<?> deleteCharacter(@AuthenticationPrincipal String username,
-                                             @RequestParam(required = false) String friendUsername,
-                                             @PathVariable Long characterId) {
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                characterId, FriendPermissionType.UPDATE_SETTING);
-        characterService.delete(updateCharacter);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "삭제된 캐릭터 복구")
-    @PostMapping("/deleted")
-    //TODO 추후 삭제
-    public ResponseEntity<?> updateDeletedCharacter(@AuthenticationPrincipal String username,
-                                                    @RequestParam(required = false) String friendUsername,
-                                                    @RequestBody BaseCharacterRequest request) {
-        // 1. 캐릭터 호출 (깐부면 권한 체크)
-        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
-
-        characterService.updateDeletedCharacter(updateCharacter);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @ApiOperation(value = "캐릭터 상태변경(삭제/복구)")
     @PatchMapping("/deleted")
     public ResponseEntity<?> updateCharacterStatus(@AuthenticationPrincipal String username,
