@@ -111,13 +111,13 @@ public class CharacterApi {
     }
 
     @ApiOperation(value = "캐릭터 상태변경(삭제/복구)")
-    @PatchMapping("/deleted/{characterId}")
+    @PatchMapping("/deleted")
     public ResponseEntity<?> updateCharacterStatus(@AuthenticationPrincipal String username,
-                                                    @RequestParam(required = false) String friendUsername,
-                                                    @PathVariable Long characterId) {
+                                                   @RequestParam(required = false) String friendUsername,
+                                                   @RequestBody BaseCharacterRequest request) {
         // 1. 캐릭터 호출 (깐부면 권한 체크)
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
-                characterId, FriendPermissionType.UPDATE_SETTING);
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 2. 캐릭터 상태변경(삭제/복구)
         characterService.updateCharacterStatus(updateCharacter);
