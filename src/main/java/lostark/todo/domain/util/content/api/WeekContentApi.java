@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV4.content;
+package lostark.todo.domain.util.content.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/v4/content/week")
+@RequestMapping("/api/v1/content/week")
 @Api(tags = {"주간 콘텐츠 API"})
-// TODO 추후 삭제
-public class WeekContentController {
+public class WeekContentApi {
 
     private final ContentService contentService;
 

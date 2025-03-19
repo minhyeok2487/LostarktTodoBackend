@@ -39,6 +39,7 @@ public class ContentService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "content", key = "'raid-category'")
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
         return contentRepository.getScheduleRaidCategory();
     }

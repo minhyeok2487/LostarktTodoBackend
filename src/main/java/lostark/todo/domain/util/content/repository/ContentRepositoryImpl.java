@@ -26,15 +26,20 @@ public class ContentRepositoryImpl implements ContentCustomRepository {
 
     @Override
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
-        return factory.select(new QRaidCategoryResponse(
-                    weekContent.id, weekContent.name, weekContent.weekContentCategory, weekContent.level
+        return factory
+                .select(new QRaidCategoryResponse(
+                        weekContent.id,
+                        weekContent.name,
+                        weekContent.weekContentCategory,
+                        weekContent.level.max()
                 ))
                 .from(weekContent)
-                .where(weekContent.weekContentCategory.isNotNull())
-                .orderBy(weekContent.level.desc())
-                .groupBy(weekContent.name, weekContent.weekContentCategory)
+                .where(weekContent.weekContentCategory.isNotNull().and(weekContent.gate.eq(1)))
+                .groupBy(weekContent.id, weekContent.name, weekContent.weekContentCategory)
+                .orderBy(weekContent.level.max().desc())
                 .fetch();
     }
+
 
     @Override
     public List<WeekContent> findAllWeekContent(double itemLevel) {
