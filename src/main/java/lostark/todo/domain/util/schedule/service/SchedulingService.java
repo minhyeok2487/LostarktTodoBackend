@@ -85,7 +85,7 @@ public class SchedulingService {
     }
 
     public void updateDayTodoGold() {
-        Map<String, Market> contentResource = marketService.findContentResource();
+        Map<String, Market> contentResource = marketService.findLevelUpResource();
 
         List<DayContent> allByDayContent = contentRepository.findAllByDayContent();
         Map<DayContent, Double> chaosPrices = new HashMap<>();

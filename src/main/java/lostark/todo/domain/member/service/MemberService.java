@@ -13,12 +13,12 @@ import lostark.todo.domain.member.entity.Ads;
 import lostark.todo.domain.member.repository.AdsRepository;
 import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.util.market.entity.Market;
-import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domain.member.infra.MemberLockManager;
+import lostark.todo.domain.util.market.service.MarketService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static lostark.todo.global.exhandler.ErrorMessageConstants.*;
 
@@ -42,7 +41,7 @@ public class MemberService {
     private final AuthMailRepository authMailRepository;
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
-    private final MarketRepository marketRepository;
+    private final MarketService marketService;
     private final AdsRepository adsRepository;
 
     // 회원 - 캐릭터 조인 조회 - Test Code X
@@ -79,12 +78,14 @@ public class MemberService {
                 request.getCharacterName(), request.getApiKey());
 
         // 재련재료 데이터 리스트로 거래소 데이터 호출
-        Map<String, Market> contentResource = marketRepository.findLevelUpResource();
+        Map<String, Market> contentResource = marketService.findLevelUpResource();
 
-        // 일일숙제 예상 수익 계산(휴식 게이지 포함)
-        return characterList.stream()
-                .map(character -> character.calculateDayTodo(character, contentResource))
-                .collect(Collectors.toList());
+        // 일일숙제 예상 수익 계산 (휴식 게이지 포함)
+        characterList.forEach(character ->
+                character.getDayTodo().calculateDayTodo(character, contentResource)
+        );
+
+        return characterList;
     }
 
     // 대표 캐릭터 변경

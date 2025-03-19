@@ -8,7 +8,6 @@ import lostark.todo.controller.dtoV2.character.*;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.util.content.service.ContentService;
-import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.character.entity.*;
 import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.domain.util.content.entity.DayContent;
@@ -24,9 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static lostark.todo.global.Constant.LEVEL_UP_RESOURCES;
 
 @Service
 @Slf4j
@@ -34,7 +30,6 @@ import static lostark.todo.global.Constant.LEVEL_UP_RESOURCES;
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
-    private final MarketRepository marketRepository;
     private final TodoV2Repository todoV2Repository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ContentService contentService;
@@ -47,7 +42,7 @@ public class CharacterService {
                 newCharacterName, apiKey);
 
         // 2. 필요 데이터 호출(거래소, 통계)
-        Map<String, Market> contentResource = marketService.findContentResource();
+        Map<String, Market> contentResource = marketService.findLevelUpResource();
         Map<Category, List<DayContent>> dayContent = contentService.getDayContent();
         return new CharacterUpdateContext(newCharacter, dayContent, contentResource);
     }
@@ -234,19 +229,14 @@ public class CharacterService {
 
     @Transactional
     public void updateDayGauge(Character character, UpdateDayGaugeRequest request) {
-        Integer dtoChaosGauge = request.getChaosGauge();
-        validateGauge(dtoChaosGauge, 200); //검증
-
-        Integer dtoGuardianGauge = request.getGuardianGauge();
-        validateGauge(dtoGuardianGauge, 100); //검증
-
-        Integer dtoEponGauge = request.getEponaGauge();
-        validateGauge(dtoEponGauge, 100); //검증
-
         character.getDayTodo().updateDayContentGauge(request);
+        character.getDayTodo().calculateDayTodo(character, marketService.findLevelUpResource());
+    }
 
-        character.calculateDayTodo(marketRepository.findByNameIn(LEVEL_UP_RESOURCES).stream()
-                .collect(Collectors.toMap(Market::getName, market -> market)));
+    public void validateUpdateDayGauge(UpdateDayGaugeRequest request) {
+        validateGauge(request.getChaosGauge(), 200); //카오스 게이지 검증
+        validateGauge(request.getGuardianGauge(), 100); //가디언 게이지 검증
+        validateGauge(request.getEponaGauge(), 100); //에포나 게이지 검증
     }
 
     @Transactional(readOnly = true)

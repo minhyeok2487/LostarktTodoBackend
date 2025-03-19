@@ -4,6 +4,7 @@ import lombok.*;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
 import lostark.todo.domain.util.content.enums.Category;
+import lostark.todo.domain.util.market.entity.Market;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
@@ -202,6 +203,7 @@ public class DayTodo {
         }
     }
 
+    // 휴식 게이지 관련
     public void updateDayContentGauge(UpdateDayGaugeRequest request) {
         this.chaosGauge = request.getChaosGauge();
         this.beforeChaosGauge = chaosGauge;
@@ -209,5 +211,71 @@ public class DayTodo {
         this.beforeGuardianGauge = guardianGauge;
         this.eponaGauge = request.getEponaGauge();
         this.beforeEponaGauge = eponaGauge;
+    }
+
+    public void calculateDayTodo(Character character, Map<String, Market> contentResource) {
+        Market jewelry = getJewelry(character.getItemLevel(), contentResource);
+        Market destruction = getMarketItem(character.getItemLevel(), contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
+        Market guardian = getMarketItem(character.getItemLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
+        Market leapStone = getMarketItem(character.getItemLevel(), contentResource, "위대한 명예의 돌파석", "경이로운 명예의 돌파석", "찬란한 명예의 돌파석", "운명의 돌파석");
+
+        // 카오스 던전 계산
+        this.calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry);
+
+        // 가디언 토벌 계산
+        this.calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone);
+    }
+
+    private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
+        if (itemLevel >= 1415 && itemLevel < 1640) {
+            return contentResource.get("3티어 1레벨 보석");
+        } else {
+            return contentResource.get("4티어 1레벨 보석");
+        }
+    }
+
+    private Market getMarketItem(double itemLevel, Map<String, Market> contentResource,
+                                 String level1Item, String level2Item, String level3Item, String level4Item) {
+        if (itemLevel >= 1415 && itemLevel < 1490) {
+            return contentResource.get(level1Item);
+        } else if (itemLevel >= 1490 && itemLevel < 1580) {
+            return contentResource.get(level2Item);
+        } else if (itemLevel >= 1580 && itemLevel < 1640) {
+            return contentResource.get(level3Item);
+        } else {
+            return contentResource.get(level4Item);
+        }
+    }
+
+    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry) {
+        double price = 0;
+        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += jewelry.getRecentPrice() * dayContent.getJewelry();
+
+        int chaosGauge = this.getChaosGauge();
+
+        if (chaosGauge >= 40) {
+            price *= 2;
+        }
+
+        price = Math.round(price * 100.0) / 100.0;
+        this.setChaosGold(price);
+    }
+
+    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone) {
+        double price = 0;
+        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
+
+        int guardianGauge = this.getGuardianGauge();
+
+        if (guardianGauge >= 20) {
+            price = price*2;
+        }
+
+        price = Math.round(price * 100.0) / 100.0;
+        this.setGuardianGold(price);
     }
 }

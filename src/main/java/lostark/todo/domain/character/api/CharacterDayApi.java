@@ -46,8 +46,14 @@ public class CharacterDayApi {
     public ResponseEntity<?> updateDayGauge(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody UpdateDayGaugeRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_GAUGE);
+
+        // 2. 값 검증
+        characterService.validateUpdateDayGauge(request);
+
+        // 3. 휴식 게이지 업데이트
         characterService.updateDayGauge(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }

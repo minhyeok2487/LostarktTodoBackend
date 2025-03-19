@@ -60,7 +60,7 @@ public class MarketService {
 
     // 거래소 데이터 호출
     // TODO 추후 캐시화
-    public Map<String, Market> findContentResource() {
+    public Map<String, Market> findLevelUpResource() {
         return marketRepository.findByNameIn(LEVEL_UP_RESOURCES).stream()
                 .collect(Collectors.toMap(Market::getName, market -> market));
     }
