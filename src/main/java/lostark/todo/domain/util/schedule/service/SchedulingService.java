@@ -111,59 +111,46 @@ public class SchedulingService {
     }
 
     private double calculateChaosPrice(DayContent dayContent, Map<String, Market> contentResource) {
-        int jewelryPrice = dayContent.getLevel() >= 1640 ? contentResource.get("4티어 1레벨 보석").getRecentPrice() : contentResource.get("3티어 1레벨 보석").getRecentPrice();
-        double destructionStonePrice = getDestructionStonePrice(dayContent.getLevel(), contentResource);
-        double guardianStonePrice = getGuardianStonePrice(dayContent.getLevel(), contentResource);
-        double price = jewelryPrice * dayContent.getJewelry()
-                + destructionStonePrice * dayContent.getDestructionStone() / 10
-                + guardianStonePrice * dayContent.getGuardianStone() / 10;
+        Market jewelry = getJewelry(dayContent.getLevel(), contentResource);
+        Market destruction = getMarketItem(dayContent.getLevel(), contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
+        Market guardian = getMarketItem(dayContent.getLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
+
+        double price = destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += jewelry.getRecentPrice() * dayContent.getJewelry();
         return Math.round(price * 100.0) / 100.0;
     }
 
     private double calculateGuardianPrice(DayContent dayContent, Map<String, Market> contentResource) {
-        double destructionStonePrice = getDestructionStonePrice(dayContent.getLevel(), contentResource);
-        double guardianStonePrice = getGuardianStonePrice(dayContent.getLevel(), contentResource);
-        double leapStonePrice = getLeapStonePrice(dayContent.getLevel(), contentResource);
+        Market destruction = getMarketItem(dayContent.getLevel(), contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
+        Market guardian = getMarketItem(dayContent.getLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
+        Market leapStone = getMarketItem(dayContent.getLevel(), contentResource, "위대한 명예의 돌파석", "경이로운 명예의 돌파석", "찬란한 명예의 돌파석", "운명의 돌파석");
 
-        double price = destructionStonePrice * dayContent.getDestructionStone() / 10
-                + guardianStonePrice * dayContent.getGuardianStone() / 10
-                + leapStonePrice * dayContent.getLeapStone();
+        double price = destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
+        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
+        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
+
         return Math.round(price * 100.0) / 100.0;
     }
 
-    private double getDestructionStonePrice(double level, Map<String, Market> contentResource) {
-        if (level >= 1640) {
-            return contentResource.get("운명의 파괴석").getRecentPrice();
-        } else if (level >= 1580) {
-            return contentResource.get("정제된 파괴강석").getRecentPrice();
-        } else if (level >= 1490) {
-            return contentResource.get("파괴강석").getRecentPrice();
+    private Market getMarketItem(double itemLevel, Map<String, Market> contentResource,
+                                 String level1Item, String level2Item, String level3Item, String level4Item) {
+        if (itemLevel >= 1415 && itemLevel < 1490) {
+            return contentResource.get(level1Item);
+        } else if (itemLevel >= 1490 && itemLevel < 1580) {
+            return contentResource.get(level2Item);
+        } else if (itemLevel >= 1580 && itemLevel < 1640) {
+            return contentResource.get(level3Item);
         } else {
-            return contentResource.get("파괴석 결정").getRecentPrice();
+            return contentResource.get(level4Item);
         }
     }
 
-    private double getGuardianStonePrice(double level, Map<String, Market> contentResource) {
-        if (level >= 1640) {
-            return contentResource.get("운명의 수호석").getRecentPrice();
-        } else if (level >= 1580) {
-            return contentResource.get("정제된 수호강석").getRecentPrice();
-        } else if (level >= 1490) {
-            return contentResource.get("수호강석").getRecentPrice();
+    private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
+        if (itemLevel >= 1415 && itemLevel < 1640) {
+            return contentResource.get("3티어 1레벨 보석");
         } else {
-            return contentResource.get("수호석 결정").getRecentPrice();
-        }
-    }
-
-    private double getLeapStonePrice(double level, Map<String, Market> contentResource) {
-        if (level >= 1640) {
-            return contentResource.get("운명의 돌파석").getRecentPrice();
-        } else if (level >= 1580) {
-            return contentResource.get("찬란한 명예의 돌파석").getRecentPrice();
-        } else if (level >= 1490) {
-            return contentResource.get("경이로운 명예의 돌파석").getRecentPrice();
-        } else {
-            return contentResource.get("위대한 명예의 돌파석").getRecentPrice();
+            return contentResource.get("4티어 1레벨 보석");
         }
     }
 
