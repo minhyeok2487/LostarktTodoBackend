@@ -4,13 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.controller.dtoV2.character.CharacterSettingRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.character.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.AddCharacterRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.character.dto.CharacterNameRequest;
+import lostark.todo.domain.character.dto.CharacterUpdateContext;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
@@ -18,9 +18,8 @@ import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
-import lostark.todo.domain.util.content.entity.DayContent;
-import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.domain.util.content.service.ContentService;
+import lostark.todo.domain.util.market.service.MarketService;
 import lostark.todo.global.customAnnotation.NotTestMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
@@ -31,9 +30,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import java.util.List;
-import java.util.Map;
 
 import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
@@ -51,6 +47,7 @@ public class CharacterApi {
     private final MemberService memberService;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ContentService contentService;
+    private final MarketService marketService;
 
 
     @ApiOperation(value = "캐릭터 출력 내용 수정", response = CharacterResponse.class)
@@ -122,9 +119,16 @@ public class CharacterApi {
     public ResponseEntity<?> updateCharacter(@AuthenticationPrincipal String username,
                                              @RequestParam(required = false) String friendUsername,
                                              @RequestBody BaseCharacterRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
-        characterService.updateCharacter(updateCharacter);
+
+        // 2. 캐릭터 검색
+        CharacterUpdateContext characterUpdateContext = characterService.loadCharacterUpdateResources(
+                updateCharacter.getMember().getApiKey(), updateCharacter.getCharacterName());
+
+        // 3. 캐릭터 업데이트
+        characterService.updateCharacter(updateCharacter, characterUpdateContext);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
@@ -134,9 +138,19 @@ public class CharacterApi {
     public ResponseEntity<?> updateCharacterName(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody @Valid CharacterNameRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
-        characterService.updateCharacterName(updateCharacter, request.getCharacterName());
+
+        // 2. 중복 검사
+        updateCharacter.getMember().existCharacter(request.getCharacterName());
+
+        // 3. 캐릭터 검색
+        CharacterUpdateContext characterUpdateContext = characterService.loadCharacterUpdateResources(
+                updateCharacter.getMember().getApiKey(), request.getCharacterName());
+
+        // 4. 닉네임 변경
+        characterService.updateCharacterName(updateCharacter, characterUpdateContext);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
@@ -145,19 +159,18 @@ public class CharacterApi {
     @NotTestMember
     public ResponseEntity<?> addCharacter(@AuthenticationPrincipal String username,
                                           @RequestBody @Valid AddCharacterRequest request) {
-        // 1. 중복체크
+        // 1. 회원 호출
         Member member = memberService.get(username);
-        characterService.existCharacter(member.getCharacters(), request.getCharacterName());
 
-        // 2. 캐릭터 검색
-        CharacterJsonDto newCharacter = lostarkCharacterApiClient.getCharacterWithException(
-                request.getCharacterName(), member.getApiKey());
+        // 2. 중복 검사
+        member.existCharacter(request.getCharacterName());
 
-        // 3. 컨텐츠 검색
-        Map<Category, List<DayContent>> dayContent = contentService.getDayContent();
+        // 3. 캐릭터 검색
+        CharacterUpdateContext characterUpdateContext = characterService.loadCharacterUpdateResources(
+                member.getApiKey(), request.getCharacterName());
 
         // 4. 저장
-        characterService.addCharacter(member, newCharacter, dayContent);
+        characterService.addCharacter(member, characterUpdateContext);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

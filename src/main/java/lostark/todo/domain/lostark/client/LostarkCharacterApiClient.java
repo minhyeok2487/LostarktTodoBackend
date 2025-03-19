@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class LostarkCharacterApiClient {
 
     private final LostarkApiClient apiClient;
@@ -42,10 +41,12 @@ public class LostarkCharacterApiClient {
 
     /**
      * 대표캐릭터와 연동된 캐릭터 호출(api 검증)
+     *
      * @param characterName
      * @param apiKey
      * @return
      */
+    @Transactional
     public List<Character> createCharacterList(String characterName, String apiKey) {
         try {
             JSONArray jsonArray = findCharacters(characterName, apiKey);
@@ -95,7 +96,7 @@ public class LostarkCharacterApiClient {
      */
     public JSONArray findCharacters(String characterName, String apiKey) {
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-        String link = "https://developer-lostark.game.onstove.com/characters/"+encodeCharacterName+"/siblings";
+        String link = "https://developer-lostark.game.onstove.com/characters/" + encodeCharacterName + "/siblings";
         InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
         JSONParser parser = new JSONParser();
         try {
@@ -116,7 +117,8 @@ public class LostarkCharacterApiClient {
             ObjectMapper objectMapper = new ObjectMapper();
             List<CharacterJsonDto> characterList = objectMapper.readValue(
                     reader,
-                    new TypeReference<List<CharacterJsonDto>>() {}
+                    new TypeReference<List<CharacterJsonDto>>() {
+                    }
             );
 
             return characterList.stream()
@@ -153,34 +155,10 @@ public class LostarkCharacterApiClient {
         return filteredArray;
     }
 
-    // 캐릭터 imageUrl 가져오기
-    private JSONArray getCharacterImage(JSONArray jsonArray, String apiKey) {
-        JSONArray result = new JSONArray();
-        for (Object obj : jsonArray) {
-            try {
-                JSONObject jsonObject = (JSONObject) obj;
-                String characterName = jsonObject.get("CharacterName").toString();
-                String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-                String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
-                InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-                JSONParser parser = new JSONParser();
-                JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
-
-                if (profile.get("CharacterImage") != null) {
-                    jsonObject.put("CharacterImage", profile.get("CharacterImage").toString());
-                }
-                result.add(jsonObject);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return result;
-    }
-
     public String getCharacterImageUrl(String characterName, String apiKey) {
         try {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/armories/characters/"+encodeCharacterName+"/profiles";
+            String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
@@ -202,28 +180,17 @@ public class LostarkCharacterApiClient {
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);
+        } catch (ConditionNotMetException e) {
+            throw new ConditionNotMetException(e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public CharacterJsonDto getCharacterWithException(String characterName, String apiKey) {
-        try {
-            String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
-
-            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            CharacterJsonDto characterJsonDto = objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);
-
-            validateCharacter(characterJsonDto);
-            return characterJsonDto;
-        } catch (ConditionNotMetException e) {
-            throw new ConditionNotMetException(e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        CharacterJsonDto characterJsonDto = getCharacter(characterName, apiKey);
+        validateCharacter(characterJsonDto);
+        return characterJsonDto;
     }
 
     private static void validateCharacter(CharacterJsonDto characterJsonDto) {

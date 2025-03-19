@@ -3,6 +3,7 @@ package lostark.todo.domain.character.entity;
 import lombok.*;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
+import lostark.todo.domain.util.content.enums.Category;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
@@ -10,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Map;
 
 @Embeddable
 @Getter
@@ -87,6 +89,21 @@ public class DayTodo {
         this.guardianName = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get().getName();
         this.guardian = guardian.stream().filter(dayContent -> dayContent.getLevel() <= itemLevel).findFirst().get();
         return this;
+    }
+
+    public DayTodo createDayContent(Map<Category, List<DayContent>> dayContents, double itemLevel) {
+        this.chaos = findContentByLevel(dayContents.get(Category.카오스던전), itemLevel);
+        this.guardian = findContentByLevel(dayContents.get(Category.가디언토벌), itemLevel);
+        this.chaosName = this.chaos.getName();
+        this.guardianName = this.guardian.getName();
+        return this;
+    }
+
+    private DayContent findContentByLevel(List<DayContent> contents, double itemLevel) {
+        return contents.stream()
+                .filter(content -> content.getLevel() <= itemLevel)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No content found for item level: " + itemLevel));
     }
 
     private void addWeekTotalGold(double gold) {

@@ -10,6 +10,7 @@ import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.board.comments.entity.Comments;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.notification.entity.Notification;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -118,5 +119,15 @@ public class Member extends BaseTimeEntity {
         double daysPerUnitPrice = 30.0 / 200.0;
         long date = (long) Math.floor(donationPrice * daysPerUnitPrice) + 1;
         this.adsDate = Objects.requireNonNullElseGet(adsDate, LocalDateTime::now).plusDays(date);
+    }
+
+    // 이미 등록된 캐릭터인지 확인
+    public void existCharacter(String characterName) {
+        this.characters.stream()
+                .filter(character -> character.getCharacterName().equals(characterName))
+                .findFirst()
+                .ifPresent(character -> {
+                    throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다. 삭제된 캐릭터도 확인해주세요.");
+                });
     }
 }

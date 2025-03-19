@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
-import lostark.todo.domain.util.content.enums.Category;
+import lostark.todo.domain.character.dto.CharacterUpdateContext;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.util.market.entity.Market;
@@ -98,8 +98,9 @@ public class Character extends BaseTimeEntity {
                 '}';
     }
 
-    public Character toEntity(Member member, CharacterJsonDto newCharacter, Map<Category, List<DayContent>> dayContents) {
-        Character build = Character.builder()
+    public Character toEntity(Member member, CharacterUpdateContext characterUpdateContext) {
+        CharacterJsonDto newCharacter = characterUpdateContext.getNewCharacter();
+        return Character.builder()
                 .serverName(newCharacter.getServerName())
                 .characterName(newCharacter.getCharacterName())
                 .characterLevel(newCharacter.getCharacterLevel())
@@ -109,7 +110,7 @@ public class Character extends BaseTimeEntity {
                 .sortNumber(0)
                 .memo(null)
                 .member(member)
-                .dayTodo(new DayTodo())
+                .dayTodo(characterUpdateContext.getDayTodo())
                 .weekTodo(new WeekTodo())
                 .todoV2List(new ArrayList<>())
                 .raidBusGoldList(new ArrayList<>())
@@ -117,14 +118,8 @@ public class Character extends BaseTimeEntity {
                 .settings(new Settings())
                 .isDeleted(false)
                 .build();
-        build.createDayTodo(dayContents);
-        return build;
     }
 
-    public void createDayTodo(Map<Category, List<DayContent>> dayContents) {
-        this.getDayTodo().createDayContent(
-                dayContents.get(Category.카오스던전), dayContents.get(Category.가디언토벌), this.getItemLevel());
-    }
 
     public Character updateGoldCharacter() {
         this.goldCharacter = !this.goldCharacter;
@@ -151,17 +146,18 @@ public class Character extends BaseTimeEntity {
         calculateDayTodo(this, contentResource);
     }
 
-    public void updateCharacterV2(CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
-        this.characterLevel = dto.getCharacterLevel();
-        this.characterClassName = dto.getCharacterClassName();
-        this.serverName = dto.getServerName();
-        this.characterImage = dto.getCharacterImage();
-        this.itemLevel = dto.getItemMaxLevel();
-        this.dayTodo.setChaosName(dayContent.getChaosName());
-        this.dayTodo.setChaos(dayContent.getChaos());
-        this.dayTodo.setGuardianName(dayContent.getGuardianName());
-        this.dayTodo.setGuardian(dayContent.getGuardian());
-        calculateDayTodo(this, contentResource);
+    public void updateCharacter(CharacterUpdateContext updateContext) {
+        this.characterName = updateContext.getNewCharacter().getCharacterName();
+        this.characterLevel = updateContext.getNewCharacter().getCharacterLevel();
+        this.characterClassName = updateContext.getNewCharacter().getCharacterClassName();
+        this.characterImage = updateContext.getNewCharacter().getCharacterImage();
+        this.serverName = updateContext.getNewCharacter().getServerName();
+        this.itemLevel = updateContext.getNewCharacter().getItemMaxLevel();
+        this.dayTodo.setChaosName(updateContext.getDayTodo().getChaosName());
+        this.dayTodo.setChaos(updateContext.getDayTodo().getChaos());
+        this.dayTodo.setGuardianName(updateContext.getDayTodo().getGuardianName());
+        this.dayTodo.setGuardian(updateContext.getDayTodo().getGuardian());
+        calculateDayTodo(this, updateContext.getContentResource());
     }
 
     public Character calculateDayTodo(Character character, Map<String, Market> contentResource) {

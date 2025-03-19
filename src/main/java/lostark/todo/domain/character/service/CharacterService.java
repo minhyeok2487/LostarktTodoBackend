@@ -9,6 +9,7 @@ import lostark.todo.controller.dtoV2.character.*;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.util.content.repository.ContentRepository;
+import lostark.todo.domain.util.content.service.ContentService;
 import lostark.todo.domain.util.market.repository.MarketRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.character.entity.*;
@@ -20,6 +21,7 @@ import lostark.todo.domain.character.entity.TodoV2;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
+import lostark.todo.domain.util.market.service.MarketService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,6 @@ import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
@@ -43,7 +44,22 @@ public class CharacterService {
     private final ContentRepository contentRepository;
     private final TodoV2Repository todoV2Repository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
+    private final ContentService contentService;
+    private final MarketService marketService;
 
+    // 외부 API를 이용하므로 트랜잭션 분리
+    public CharacterUpdateContext loadCharacterUpdateResources(String apiKey, String newCharacterName) {
+        // 1. 캐릭터 검색
+        CharacterJsonDto newCharacter = lostarkCharacterApiClient.getCharacterWithException(
+                newCharacterName, apiKey);
+
+        // 2. 필요 데이터 호출(거래소, 통계)
+        Map<String, Market> contentResource = marketService.findContentResource();
+        Map<Category, List<DayContent>> dayContent = contentService.getDayContent();
+        return new CharacterUpdateContext(newCharacter, dayContent, contentResource);
+    }
+
+    // ------------------------------------------------------------------------------------------- //
 
     @Transactional(readOnly = true)
     public Character get(long characterId, String username) {
@@ -87,6 +103,7 @@ public class CharacterService {
     /**
      * 실마엘 교환 업데이트
      */
+    @Transactional
     public void updateWeekSilmael(Character character) {
         character.getWeekTodo().updateSilmael();
     }
@@ -94,11 +111,12 @@ public class CharacterService {
     /**
      * 큐브 티켓 업데이트
      */
+    @Transactional
     public void updateCubeTicket(Character character, int num) {
         character.getWeekTodo().updateCubeTicket(num);
     }
 
-
+    @Transactional
     public boolean deleteByMember(Member member) {
         long result = characterRepository.deleteByMember(member);
         return result != 0;
@@ -141,6 +159,7 @@ public class CharacterService {
         character.getSettings().updateGoldCheckVersion();
     }
 
+    @Transactional
     public List<DashboardResponse> searchCharactersDashBoard(int limit) {
         return characterRepository.searchCharactersDashBoard(limit);
     }
@@ -315,6 +334,7 @@ public class CharacterService {
     }
 
     //    ----------------------------------------------------------------------------------------------------------------
+    @Transactional
     public List<CharacterResponse> convertAndSortCharacterList(List<Character> characterList) {
         return characterList.stream()
                 .map(new CharacterResponse()::toDto) // DTO로 변환
@@ -448,62 +468,23 @@ public class CharacterService {
                 });
     }
 
+    // 캐릭터 업데이트
     @Transactional
-    public void updateCharacter(Character character) {
-        CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(character.getCharacterName(),
-                character.getMember().getApiKey());
-
-        if (updatedCharacter == null) {
-            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다. " +
-                    "캐릭터 이름이 바뀐 경우 설정 탭에서 닉네임을 변경해주세요.");
-        }
-
-        updateCharacterV2(character, updatedCharacter);
+    public void updateCharacter(Character character, CharacterUpdateContext updateContext) {
+        character.updateCharacter(updateContext);
     }
 
-    private void updateCharacterV2(Character character, CharacterJsonDto updatedCharacter) {
-        Map<String, Market> contentResource = marketRepository.findByNameIn(LEVEL_UP_RESOURCES)
-                .stream()
-                .collect(Collectors.toMap(Market::getName, market -> market));
-        Map<Category, List<DayContent>> dayContents = contentRepository.getDayContents();
-        List<DayContent> chaosDungeons = dayContents.get(Category.카오스던전);
-        List<DayContent> guardianRaids = dayContents.get(Category.가디언토벌);
-
-        DayTodo dayContent = new DayTodo().createDayContent(chaosDungeons, guardianRaids, updatedCharacter.getItemMaxLevel());
-
-        character.updateCharacterV2(updatedCharacter, dayContent, contentResource);
-    }
-
+    // 캐릭터 이름 업데이트
     @Transactional
-    public void updateCharacterName(Character character, String newCharacterName) {
-        CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(newCharacterName,
-                character.getMember().getApiKey());
-
-        for (Character exist : character.getMember().getCharacters()) {
-            if (newCharacterName.equals(exist.getCharacterName())) {
-                throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다. 삭제된 캐릭터도 확인해주세요.");
-            }
-        }
-        if (updatedCharacter == null) {
-            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
-        }
-
-        character.updateCharacterName(newCharacterName);
-        updateCharacterV2(character, updatedCharacter);
+    public void updateCharacterName(Character character, CharacterUpdateContext updateContext) {
+        character.updateCharacterName(updateContext.getNewCharacter().getCharacterName());
+        updateCharacter(character, updateContext);
     }
 
-    public void existCharacter(List<Character> characters, String characterName) {
-        characters.stream()
-                .filter(character -> character.getCharacterName().equals(characterName))
-                .findFirst()
-                .ifPresent(character -> {
-                    throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다. 삭제된 캐릭터도 확인해주세요.");
-                });
-    }
-
+    // 캐릭터 추가
     @Transactional
-    public void addCharacter(Member member, CharacterJsonDto newCharacter, Map<Category, List<DayContent>> dayContents) {
-        Character character = new Character().toEntity(member, newCharacter, dayContents);
+    public void addCharacter(Member member, CharacterUpdateContext characterUpdateContext) {
+        Character character = new Character().toEntity(member, characterUpdateContext);
         characterRepository.save(character);
     }
 }
