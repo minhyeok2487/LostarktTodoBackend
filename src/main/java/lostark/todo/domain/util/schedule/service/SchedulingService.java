@@ -51,6 +51,7 @@ public class SchedulingService {
     public void updateMarketData() {
         updateMarketItems();
         updateAuctionItems();
+        log.info("거래소 데이터 갱신을 완료 하였습니다.");
     }
 
     private void updateMarketItems() {
