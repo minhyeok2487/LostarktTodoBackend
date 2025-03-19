@@ -4,21 +4,18 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.character.CharacterSettingRequest;
+import lostark.todo.domain.character.dto.UpdateCharacterSettingRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.AddCharacterRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.character.dto.CharacterNameRequest;
 import lostark.todo.domain.character.dto.CharacterUpdateContext;
-import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
-import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.customAnnotation.NotTestMember;
-import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.UpdateCharacterMethod;
 import org.springframework.http.HttpStatus;
@@ -27,8 +24,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISSION_DENIED;
 
 
 @RestController
@@ -39,7 +34,6 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISS
 public class CharacterApi {
 
     private final CharacterService characterService;
-    private final FriendsService friendsService;
     private final UpdateCharacterMethod updateCharacterMethod;
     private final MemberService memberService;
 
@@ -47,18 +41,13 @@ public class CharacterApi {
     @PatchMapping("/settings")
     public ResponseEntity<?> updateSettings(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
-                                            @RequestBody CharacterSettingRequest characterSettingRequest) {
-        Character updateCharacter;
-        if (friendUsername == null) {
-            updateCharacter = characterService.updateSetting(username, characterSettingRequest);
-        } else {
-            Friends friend = friendsService.findByFriendUsername(friendUsername, username);
-            if (!friend.getFriendSettings().isSetting()) {
-                throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
-            } else {
-                updateCharacter = characterService.updateSetting(friendUsername, characterSettingRequest);
-            }
-        }
+                                            @RequestBody UpdateCharacterSettingRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
+        Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+
+        // 2. 캐릭터 출력 내용 수정
+        characterService.updateSetting(updateCharacter, request);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 

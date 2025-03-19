@@ -149,22 +149,20 @@ public class CharacterService {
     }
 
     @Transactional
-    public Character updateSetting(String username, CharacterSettingRequest characterSettingRequest) {
-        Character character = get(characterSettingRequest.getCharacterId(), username);
-        character.getSettings().update(characterSettingRequest.getName(), characterSettingRequest.getValue());
+    public void updateSetting(Character character, UpdateCharacterSettingRequest updateCharacterSettingRequest) {
+        character.getSettings().update(updateCharacterSettingRequest.getName(), updateCharacterSettingRequest.getValue());
 
-        updateRelatedTodos(characterSettingRequest, character);
-        return character;
+        updateRelatedTodos(updateCharacterSettingRequest, character);
     }
 
-    private void updateRelatedTodos(CharacterSettingRequest characterSettingRequest, Character character) {
+    private void updateRelatedTodos(UpdateCharacterSettingRequest updateCharacterSettingRequest, Character character) {
         // 더보기 버튼의 설정 값이 변하면 기존 더보기 해제
-        if (characterSettingRequest.getName().equals("showMoreButton")) {
+        if (updateCharacterSettingRequest.getName().equals("showMoreButton")) {
             character.getTodoV2List().forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
         }
 
         // 캐릭터 출력이 false로 변경되면 레이드 골드 체크 해제, 숙제 제거
-        if (characterSettingRequest.getName().equals("showCharacter") && characterSettingRequest.getValue().equals(false)) {
+        if (updateCharacterSettingRequest.getName().equals("showCharacter") && updateCharacterSettingRequest.getValue().equals(false)) {
             character.setGoldCharacter(false);
             todoV2Repository.removeCharacter(character);
         }
@@ -388,11 +386,6 @@ public class CharacterService {
     @Transactional(readOnly = true)
     public List<DeletedCharacterResponse> getDeletedCharacter(String username) {
         return characterRepository.getDeletedCharacter(username);
-    }
-
-    @Transactional
-    public void updateDeletedCharacter(Character character) {
-        character.updateCharacterStatus();
     }
 
     /**
