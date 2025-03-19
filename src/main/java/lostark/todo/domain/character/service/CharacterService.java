@@ -7,10 +7,8 @@ import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.controller.dtoV2.character.*;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.repository.TodoV2Repository;
-import lostark.todo.domain.util.content.repository.ContentRepository;
 import lostark.todo.domain.util.content.service.ContentService;
 import lostark.todo.domain.util.market.repository.MarketRepository;
-import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.character.entity.*;
 import lostark.todo.domain.util.content.enums.Category;
 import lostark.todo.domain.util.content.entity.DayContent;
@@ -29,8 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static lostark.todo.global.Constant.LEVEL_UP_RESOURCES;
-import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_FOUND;
-import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 
 @Service
 @Slf4j
@@ -38,9 +34,7 @@ import static lostark.todo.global.utils.GlobalMethod.isSameUUID;
 public class CharacterService {
 
     private final CharacterRepository characterRepository;
-    private final MemberRepository memberRepository;
     private final MarketRepository marketRepository;
-    private final ContentRepository contentRepository;
     private final TodoV2Repository todoV2Repository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ContentService contentService;
@@ -58,18 +52,10 @@ public class CharacterService {
         return new CharacterUpdateContext(newCharacter, dayContent, contentResource);
     }
 
-    // ------------------------------------------------------------------------------------------- //
-
     @Transactional(readOnly = true)
     public Character get(long characterId, String username) {
         return characterRepository.getByIdAndUsername(characterId, username).orElseThrow(
                 () -> new ConditionNotMetException("캐릭터가 존재하지 않습니다. ID: " + characterId + ", 사용자 이름: " + username));
-    }
-
-    // 캐릭터 일일 컨텐츠 수익 계산(휴식게이지 포함)
-    @Transactional
-    public void calculateDayTodo(Character character, Map<String, Market> contentResource) {
-        character.calculateDayTodo(character, contentResource);
     }
 
     private void validateGauge(Integer gauge, int max) {
@@ -169,24 +155,6 @@ public class CharacterService {
     }
 
     @Transactional
-    public Character addCharacter(CharacterJsonDto dto, DayTodo dayContent, Member member) {
-        Character character = Character.builder()
-                .member(member)
-                .characterName(dto.getCharacterName())
-                .characterLevel(dto.getCharacterLevel())
-                .characterClassName(dto.getCharacterClassName())
-                .serverName(dto.getServerName())
-                .itemLevel(dto.getItemMaxLevel())
-                .dayTodo(dayContent)
-                .weekTodo(new WeekTodo())
-                .build();
-        character.setSettings(new Settings());
-        character.setTodoV2List(new ArrayList<>());
-        character.createImage(dto.getCharacterImage());
-        return characterRepository.save(character);
-    }
-
-    @Transactional
     public void updateMemo(Character character, String memo) {
         character.updateMemo(memo);
     }
@@ -208,108 +176,6 @@ public class CharacterService {
         character.updateCharacterStatus();
     }
 
-    @Transactional
-    public void updateCharacterList(String username) {
-        // 1. 회원 조회
-        Member member = memberRepository.get(username);
-
-        // 2. 대표 캐릭터 이름 조회
-        String mainCharacter = member.getMainCharacterName();
-
-        // 3. 원정대 검색할 캐릭터 닉네임 찾기
-        String searchCharacterName = findSiblingCharacterName(member);
-
-        // 4. 콘텐츠 통계 데이터 조회
-        Map<String, Market> contentResource = marketRepository.findByNameIn(LEVEL_UP_RESOURCES)
-                .stream()
-                .collect(Collectors.toMap(Market::getName, market -> market));
-        Map<Category, List<DayContent>> dayContents = contentRepository.getDayContents();
-        List<DayContent> chaosDungeons = dayContents.get(Category.카오스던전);
-        List<DayContent> guardianRaids = dayContents.get(Category.가디언토벌);
-
-        // 5. 원정대 캐릭터 업데이트 로직
-        updateSiblings(searchCharacterName, member, chaosDungeons, guardianRaids, contentResource, mainCharacter);
-    }
-
-    // 원정대 검색할 캐릭터 닉네임 찾기
-    // 캐릭터 이미지가 있으면서 UUID가 일치하는 첫번째 캐릭터
-    private String findSiblingCharacterName(Member member) {
-        return member.getCharacters().stream()
-                .filter(character -> character.getCharacterImage() != null)
-                .filter(character -> {
-                    CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(character.getCharacterName(), member.getApiKey());
-                    return isMatchingCharacter(character, updatedCharacter);
-                })
-                .map(Character::getCharacterName)
-                .findFirst()
-                .orElseThrow(() -> new ConditionNotMetException(CHARACTER_NOT_FOUND));
-    }
-
-
-    private boolean isMatchingCharacter(Character character, CharacterJsonDto updatedCharacter) {
-        if (updatedCharacter == null || updatedCharacter.getCharacterImage() == null) {
-            return false;
-        } else {
-            return isSameUUID(updatedCharacter.getCharacterImage(), character.getCharacterImage());
-        }
-    }
-
-    // 원정대 업데이트
-    private void updateSiblings(String searchCharacterName, Member member, List<DayContent> chaos, List<DayContent> guardian,
-                                Map<String, Market> contentResource, String mainCharacter) {
-        List<CharacterJsonDto> siblings = lostarkCharacterApiClient.getSiblings(searchCharacterName, member.getApiKey());
-
-        siblings.stream()
-                .map(dto -> {
-                    // 캐릭터 이미지 업데이트
-                    CharacterJsonDto updatedCharacter = lostarkCharacterApiClient.getCharacter(dto.getCharacterName(), member.getApiKey());
-                    if (updatedCharacter != null && updatedCharacter.getCharacterImage() != null) {
-                        dto = updatedCharacter;
-                    }
-                    return dto;
-                })
-                .forEach(dto -> updateCharacter(dto, member, chaos, guardian, contentResource, mainCharacter));
-    }
-
-    private void updateCharacter(CharacterJsonDto dto, Member member, List<DayContent> chaos, List<DayContent> guardian,
-                                 Map<String, Market> contentResource, String mainCharacter) {
-
-        List<Character> findCharacterListUUID = member.getCharacters().stream()
-                .filter(character -> character.getCharacterImage() != null)
-                .filter(character -> isSameUUID(character.getCharacterImage(), dto.getCharacterImage()))
-                .toList();
-
-        DayTodo dayContent = new DayTodo().createDayContent(chaos, guardian, dto.getItemMaxLevel());
-
-        if (!findCharacterListUUID.isEmpty()) {
-            for (Character character : findCharacterListUUID) {
-                // 캐릭터가 존재할 경우 업데이트
-                if (character.getCharacterName().equals(mainCharacter)) {
-                    member.setMainCharacter(dto.getCharacterName()); // 메인 캐릭터 이름 변경
-                }
-                character.updateCharacter(dto, dayContent, contentResource);
-            }
-        } else {
-            // UUID가 일치하지 않으면 이름으로 캐릭터 찾기
-            List<Character> findCharacterListName = member.getCharacters().stream()
-                    .filter(character -> character.getCharacterName().equals(dto.getCharacterName()))
-                    .toList();
-
-            if (!findCharacterListName.isEmpty()) {
-                // 이름으로 찾은 캐릭터가 있으면 업데이트
-                for (Character character : findCharacterListName) {
-                    character.updateCharacter(dto, dayContent, contentResource);
-                }
-            } else {
-                // UUID도, 이름도 일치하는 캐릭터가 없으면 새로 추가
-                Character newCharacter = addCharacter(dto, dayContent, member);
-                calculateDayTodo(newCharacter, contentResource);
-                member.getCharacters().add(newCharacter);
-            }
-        }
-    }
-
-    //    ----------------------------------------------------------------------------------------------------------------
     @Transactional
     public List<CharacterResponse> convertAndSortCharacterList(List<Character> characterList) {
         return characterList.stream()

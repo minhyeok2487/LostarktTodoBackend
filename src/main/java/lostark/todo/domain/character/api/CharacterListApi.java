@@ -39,26 +39,6 @@ public class CharacterListApi {
         return new ResponseEntity<>(characterService.getCharacterList(username), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "회원 캐릭터 리스트 업데이트",
-            notes = "전투 레벨, 아이템 레벨, 이미지url 업데이트 " +
-                    "캐릭터 아이템 레벨이 달라지면 예상 수익골드 다시 계산 " +
-                    "캐릭터 추가 및 삭제 ")
-    @PutMapping()
-    public ResponseEntity<?> updateCharacterList(@AuthenticationPrincipal String username,
-                                                 @RequestParam(required = false) String friendUsername) {
-        if (friendUsername == null) {
-            characterService.updateCharacterList(username);
-        } else {
-            Friends friend = friendsService.findByFriendUsername(friendUsername, username);
-            if (!friend.getFriendSettings().isSetting()) {
-                throw new ConditionNotMetException(FRIEND_PERMISSION_DENIED);
-            } else {
-                characterService.updateCharacterList(friendUsername);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @ApiOperation(value = "캐릭터 리스트 순서변경 저장", response = CharacterResponse.class)
     @PatchMapping("/sorting")
     public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,

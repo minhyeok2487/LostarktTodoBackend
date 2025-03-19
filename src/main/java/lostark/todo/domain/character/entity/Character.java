@@ -124,26 +124,6 @@ public class Character extends BaseTimeEntity {
         this.goldCharacter = !this.goldCharacter;
     }
 
-    public void createImage(Object characterImage) {
-        if (characterImage != null) {
-            this.characterImage = characterImage.toString();
-        }
-    }
-
-    public void updateCharacter(CharacterJsonDto dto, DayTodo dayContent, Map<String, Market> contentResource) {
-        this.characterName = dto.getCharacterName();
-        this.characterLevel = dto.getCharacterLevel();
-        this.characterClassName = dto.getCharacterClassName();
-        this.characterImage = dto.getCharacterImage();
-        this.serverName = dto.getServerName();
-        this.itemLevel = dto.getItemMaxLevel();
-        this.dayTodo.setChaosName(dayContent.getChaosName());
-        this.dayTodo.setChaos(dayContent.getChaos());
-        this.dayTodo.setGuardianName(dayContent.getGuardianName());
-        this.dayTodo.setGuardian(dayContent.getGuardian());
-        calculateDayTodo(this, contentResource);
-    }
-
     public void updateCharacter(CharacterUpdateContext updateContext) {
         this.characterName = updateContext.getNewCharacter().getCharacterName();
         this.characterLevel = updateContext.getNewCharacter().getCharacterLevel();
