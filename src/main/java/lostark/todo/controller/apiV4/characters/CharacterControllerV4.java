@@ -4,9 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
-import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class CharacterControllerV4 {
 
     private final CharacterService characterService;
-
-    //TODO 추후삭제
-    @ApiOperation(value = "골드 획득 캐릭터 지정/해제", response = CharacterResponse.class)
-    @PatchMapping("/gold-character")
-    public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,
-                                                            @RequestBody CharacterDefaultDto characterDefaultDto) {
-        Character resultCharacter = characterService.updateGoldCharacter(characterDefaultDto, username);
-        return new ResponseEntity<>(new CharacterResponse().toDto(resultCharacter), HttpStatus.OK);
-    }
 
     //TODO 추후삭제
     @ApiOperation(value = "등록 캐릭터 단일 삭제")

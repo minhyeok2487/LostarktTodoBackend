@@ -120,10 +120,8 @@ public class Character extends BaseTimeEntity {
                 .build();
     }
 
-
-    public Character updateGoldCharacter() {
+    public void updateGoldCharacter() {
         this.goldCharacter = !this.goldCharacter;
-        return this;
     }
 
     public void createImage(Object characterImage) {
@@ -247,9 +245,8 @@ public class Character extends BaseTimeEntity {
         this.dayTodo.setGuardianGold(price);
     }
 
-    public Character updateMemo(String memo) {
+    public void updateMemo(String memo) {
         this.memo = StringUtils.hasText(memo) ? memo : null;
-        return this;
     }
 
     public void updateCharacterStatus() {

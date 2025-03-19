@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.admin.dto.DashboardResponse;
-import lostark.todo.controller.dto.characterDto.*;
 import lostark.todo.controller.dtoV2.character.*;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.repository.TodoV2Repository;
@@ -79,24 +78,9 @@ public class CharacterService {
         }
     }
 
-    @Transactional
-    public Character updateGoldCharacter(CharacterDefaultDto characterDefaultDto, String username) {
-        Character character = get(
-                characterDefaultDto.getCharacterId(), username);
-        return character.updateGoldCharacter();
-    }
-
+    // 골드 획득 캐릭터 지정/해제
     @Transactional
     public void updateGoldCharacter(Character character) {
-        // 골드 획득 지정 캐릭터 : 서버별 6캐릭 이상인지 확인
-        int goldCharacter = characterRepository.countByMemberAndServerNameAndGoldCharacterIsTrue(
-                character.getMember(), character.getServerName());
-
-        //골드획득 지정 캐릭터가 아닌데 6개가 넘으면
-        if (!character.isGoldCharacter() && goldCharacter >= 6) {
-            throw new ConditionNotMetException("골드 획득 지정 캐릭터는 서버별로 6캐릭까지 가능합니다.");
-        }
-
         character.updateGoldCharacter();
     }
 

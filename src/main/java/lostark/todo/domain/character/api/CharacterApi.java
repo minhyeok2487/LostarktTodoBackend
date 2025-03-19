@@ -67,8 +67,11 @@ public class CharacterApi {
     public ResponseEntity<CharacterResponse> updateGoldCharacter(@AuthenticationPrincipal String username,
                                                                  @RequestParam(required = false) String friendUsername,
                                                                  @RequestBody BaseCharacterRequest request) {
+        // 1. 캐릭터 호출 (깐부면 권한 체크)
         Character updateCharacter = updateCharacterMethod.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
+
+        // 2. 골드 획득 캐릭터 지정/해제
         characterService.updateGoldCharacter(updateCharacter);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }

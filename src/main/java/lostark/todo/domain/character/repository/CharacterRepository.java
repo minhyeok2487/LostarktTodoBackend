@@ -1,14 +1,11 @@
 package lostark.todo.domain.character.repository;
 
-import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface CharacterRepository extends JpaRepository<Character, Long>, CharacterCustomRepository {
-
-    int countByMemberAndServerNameAndGoldCharacterIsTrue(Member member, String serverName);
 
     @Modifying
     @Query(value = "UPDATE Character c SET " +
