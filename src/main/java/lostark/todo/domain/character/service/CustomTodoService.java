@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
 import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
+import lostark.todo.controller.dtoV2.character.CustomTodoResponse;
 import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
@@ -48,6 +49,11 @@ public class CustomTodoService {
     @Transactional(readOnly = true)
     public List<CustomTodo> search(String username) {
         return customTodoRepository.search(username);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CustomTodoResponse> searchResonse(String username) {
+        return customTodoRepository.searchResonse(username);
     }
 
     @Transactional

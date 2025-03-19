@@ -7,6 +7,7 @@ import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,10 @@ public class CharacterMemberQueryService {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             permissionType.validate(friend);
-            return characterService.get(characterId, friendUsername);
+            return friend.getMember().getCharacters()
+                    .stream().filter(character -> character.getId() == characterId)
+                    .findFirst()
+                    .orElseThrow(() -> new ConditionNotMetException("캐릭터가 존재하지 않습니다. ID: " + characterId + ", 사용자 이름: " + username));
         }
     }
 
@@ -36,7 +40,7 @@ public class CharacterMemberQueryService {
         } else {
             Friends friend = friendsService.findByFriendUsername(friendUsername, username);
             permissionType.validate(friend);
-            return memberService.get(friendUsername);
+            return friend.getMember();
         }
     }
 }

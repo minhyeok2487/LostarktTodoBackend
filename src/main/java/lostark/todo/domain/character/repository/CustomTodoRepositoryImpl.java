@@ -3,6 +3,8 @@ package lostark.todo.domain.character.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.controller.dtoV2.character.CustomTodoResponse;
+import lostark.todo.controller.dtoV2.character.QCustomTodoResponse;
 import lostark.todo.domain.character.entity.CustomTodo;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.member.entity.Member;
@@ -36,6 +38,20 @@ public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
     @Override
     public List<CustomTodo> search(String username) {
         return factory.select(customTodo)
+                .from(customTodo)
+                .leftJoin(customTodo.character, character).fetchJoin()
+                .leftJoin(character.member, member).fetchJoin()
+                .where(
+                        member.username.eq(username)
+                ).fetch();
+    }
+
+    @Override
+    public List<CustomTodoResponse> searchResonse(String username) {
+        return factory.select(new QCustomTodoResponse(
+                        customTodo.id, customTodo.character.id,
+                        customTodo.contentName, customTodo.isChecked, customTodo.frequency
+                ))
                 .from(customTodo)
                 .leftJoin(customTodo.character, character).fetchJoin()
                 .leftJoin(character.member, member).fetchJoin()
