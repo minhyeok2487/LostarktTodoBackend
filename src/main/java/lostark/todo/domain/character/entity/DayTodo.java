@@ -254,7 +254,6 @@ public class DayTodo {
         price += jewelry.getRecentPrice() * dayContent.getJewelry();
 
         int chaosGauge = this.getChaosGauge();
-        System.out.println("chaosGauge = " + chaosGauge);
 
         if (chaosGauge >= 40) {
             price *= 2;
@@ -271,7 +270,6 @@ public class DayTodo {
         price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
 
         int guardianGauge = this.getGuardianGauge();
-        System.out.println("guardianGauge = " + guardianGauge);
 
         if (guardianGauge >= 20) {
             price = price*2;
