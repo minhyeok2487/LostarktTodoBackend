@@ -104,7 +104,7 @@ public class Character extends BaseTimeEntity {
                 .characterClassName(newCharacter.getCharacterClassName())
                 .characterImage(newCharacter.getCharacterImage())
                 .itemLevel(newCharacter.getItemMaxLevel())
-                .sortNumber(0)
+                .sortNumber(99999)
                 .memo(null)
                 .member(member)
                 .dayTodo(characterUpdateContext.getDayTodo())
