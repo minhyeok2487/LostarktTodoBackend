@@ -1,6 +1,7 @@
 package lostark.todo.domain.friend.repository;
 
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.friend.enums.FriendStatus;
@@ -24,4 +25,6 @@ public interface FriendsCustomRepository {
     void updateSort(Map<Long, Integer> idOrderingMap);
 
     FriendStatus isFriend(long toMemberId, long fromMemberId);
+
+    Map<Long, FriendshipPair> findFriendshipPairs(long memberId);
 }

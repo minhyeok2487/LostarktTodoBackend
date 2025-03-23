@@ -39,6 +39,7 @@ public class FriendsControllerV4 {
     @ApiOperation(value = "깐부 리스트 조회",
             response = FriendsResponse.class)
     @GetMapping()
+    // TODO 추후삭제
     public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
         return new ResponseEntity<>(friendsService.getFriendListV2(memberService.get(username).getId()), HttpStatus.OK);
     }

@@ -5,14 +5,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.friend.entity.QFriends;
+import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.entity.QMember;
 import lostark.todo.domain.friend.enums.FriendStatus;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static lostark.todo.domain.util.content.entity.QDayContent.dayContent;
 import static lostark.todo.domain.member.entity.QMember.member;
@@ -69,6 +70,7 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
                 .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
                 .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
                 .where(friends.member.id.eq(memberId).or(friends.fromMember.eq(memberId)))
+                .orderBy(friends.ordering.asc())
                 .fetch();
     }
 
@@ -135,6 +137,29 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
         return FriendStatus.FRIEND_SEND;
     }
 
+    public Map<Long, FriendshipPair> findFriendshipPairs(long memberId) {
+        QFriends toFriends = new QFriends("toFriends");
+        QFriends fromFriends = new QFriends("fromFriends");
+
+        return factory
+                .select(toFriends, fromFriends)
+                .from(toFriends)
+                .innerJoin(fromFriends)
+                .on(toFriends.fromMember.eq(fromFriends.member.id)
+                        .and(toFriends.member.id.eq(memberId))
+                        .and(fromFriends.fromMember.eq(memberId)))
+                .orderBy(toFriends.ordering.asc())
+                .leftJoin(toFriends.member, member)
+                .leftJoin(member.characters, character)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> Objects.requireNonNull(tuple.get(toFriends)).getFromMember(),
+                        tuple -> new FriendshipPair(tuple.get(toFriends), tuple.get(fromFriends)),
+                        (p1, p2) -> p1,
+                        LinkedHashMap::new
+                ));
+    }
 
     private BooleanExpression FriendCondition(long toMemberId, long fromMemberId) {
         return friends.member.id.eq(toMemberId).and(friends.fromMember.eq(fromMemberId));

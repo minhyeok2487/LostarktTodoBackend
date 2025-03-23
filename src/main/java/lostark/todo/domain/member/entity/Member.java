@@ -3,6 +3,7 @@ package lostark.todo.domain.member.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
+import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.board.community.entity.Follow;
@@ -14,8 +15,10 @@ import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -129,5 +132,16 @@ public class Member extends BaseTimeEntity {
                 .ifPresent(character -> {
                     throw new ConditionNotMetException("이미 등록된 캐릭터 이름입니다. 삭제된 캐릭터도 확인해주세요.");
                 });
+    }
+
+    // CharacterList to Response Dto List
+    public List<CharacterResponse> toDtoList() {
+        return this.getCharacters().stream()
+                .filter(c -> c.getSettings().isShowCharacter() && !c.isDeleted())
+                .map(new CharacterResponse()::toDto)
+                .sorted(Comparator
+                        .comparingInt(CharacterResponse::getSortNumber)
+                        .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
+                .collect(Collectors.toList());
     }
 }

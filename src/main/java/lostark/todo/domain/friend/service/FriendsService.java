@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domain.character.repository.CharacterRepository;
+import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
@@ -34,6 +35,43 @@ public class FriendsService {
     private final FriendsRepository friendsRepository;
     private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
+
+    @Transactional(readOnly = true)
+    public List<FriendsResponse> get(long memberId) {
+        Map<Long, FriendshipPair> friendshipPairs = friendsRepository.findFriendshipPairs(memberId);
+
+        return friendshipPairs.values().stream()
+                .map(pair -> {
+                    Friends toFriend = pair.toFriend();
+                    Friends fromFriend = pair.fromFriend();
+
+                    String areWeFriend = determineFriendshipStatus(
+                            toFriend.isAreWeFriend(),
+                            fromFriend.isAreWeFriend()
+                    );
+
+                    List<CharacterResponse> characterResponseList = fromFriend.getMember().toDtoList();
+
+                    return FriendsResponse.builder()
+                            .friendId(toFriend.getId())
+                            .friendUsername(fromFriend.getMember().getUsername())
+                            .areWeFriend(areWeFriend)
+                            .nickName(getMainCharacterName(fromFriend.getMember()))
+                            .ordering(toFriend.getOrdering())
+                            .characterList(characterResponseList)
+                            .toFriendSettings(toFriend.getFriendSettings())
+                            .fromFriendSettings(fromFriend.getFriendSettings())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    private String determineFriendshipStatus(boolean toFriends, boolean fromFriends) {
+        if (toFriends && fromFriends) return "깐부";
+        if (toFriends) return "깐부 요청 진행중";
+        if (fromFriends) return "깐부 요청 받음";
+        return "요청 거부";
+    }
 
     public void addFriendsRequest(Member toMember, Member fromMember) {
         Friends friends = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());

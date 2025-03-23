@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
+import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.domain.friend.entity.FriendSettings;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;
@@ -31,6 +32,13 @@ public class FriendApi {
     private final FriendsService friendsService;
     private final MemberService memberService;
     private final NotificationService notificationService;
+
+    @ApiOperation(value = "깐부 리스트 조회",
+            response = FriendsResponse.class)
+    @GetMapping()
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(friendsService.get(memberService.get(username).getId()), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "캐릭터 검색", response = FriendFindCharacterResponse.class)
     @GetMapping("/character/{characterName}")
