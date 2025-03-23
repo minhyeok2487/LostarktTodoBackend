@@ -164,10 +164,6 @@ public class FriendsService {
         }
     }
 
-    public Character findFriendCharacter(String friendUsername, long characterId) {
-        return friendsRepository.findFriendCharacter(friendUsername, characterId);
-    }
-
     public Friends findByFriendUsername(String friendUsername, String username) {
         return friendsRepository.findByFriendUsername(friendUsername, username).orElseThrow(() -> new ConditionNotMetException("등록되지 않은 정보입니다."));
     }
