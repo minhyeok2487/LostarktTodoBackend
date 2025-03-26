@@ -47,7 +47,7 @@ public class SchedulingService {
     public String apiKey3;
 
     // 매일 오전 0시 거래소 데이터 갱신
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 1 * * ?", zone = "Asia/Seoul")
     public void updateMarketData() {
         updateMarketItems();
         updateAuctionItems();

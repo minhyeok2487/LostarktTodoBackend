@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.friend.enums.FriendshipPair;
-import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
@@ -33,7 +32,6 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.CHARACTER_NOT_
 public class FriendsService {
 
     private final FriendsRepository friendsRepository;
-    private final MemberRepository memberRepository;
     private final CharacterRepository characterRepository;
 
     @Transactional(readOnly = true)
@@ -100,8 +98,8 @@ public class FriendsService {
     public List<FriendsResponse> getFriendListV2(long memberId) {
         List<FriendsResponse> returnDtoList = new ArrayList<>();
         List<Friends> friendList = friendsRepository.getFriendList(memberId);
-        List<Friends> byMember = friendList.stream().filter(friend -> friend.getMember().getId() == memberId).distinct().collect(Collectors.toList());
-        List<Friends> fromMember = friendList.stream().filter(friend -> friend.getFromMember() == memberId).distinct().collect(Collectors.toList());
+        List<Friends> byMember = friendList.stream().filter(friend -> friend.getMember().getId() == memberId).distinct().toList();
+        List<Friends> fromMember = friendList.stream().filter(friend -> friend.getFromMember() == memberId).distinct().toList();
         for (Friends friends : byMember) {
             boolean toFriends = friends.isAreWeFriend();
             for (Friends fromFriend : fromMember) {
@@ -157,11 +155,7 @@ public class FriendsService {
 
     public boolean deleteByMember(Member member) {
         long result = friendsRepository.deleteByMember(member);
-        if (result != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return result != 0;
     }
 
     public Friends findByFriendUsername(String friendUsername, String username) {
@@ -190,7 +184,6 @@ public class FriendsService {
 
     @Transactional(readOnly = true)
     public List<FriendFindCharacterResponse> findCharacter(String username, String characterName) {
-        Member member = memberRepository.get(username);
         List<Character> characterList = characterRepository.getCharacter(characterName);
 
         if (characterList.isEmpty()) {
@@ -198,8 +191,9 @@ public class FriendsService {
         }
 
         return characterList.stream()
-                .filter(character -> !character.getMember().equals(member)) //본인 제외
+                .filter(character -> !character.getMember().getUsername().equals(username)) //본인 제외
                 .map(character -> {
+                    Member member = character.getMember();
                     FriendStatus friendDaoFriend = friendsRepository.isFriend(member.getId(), character.getMember().getId());
                     return FriendFindCharacterResponse.builder()
                             .id(character.getMember().getId())
