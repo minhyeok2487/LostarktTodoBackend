@@ -19,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class SchedulingService {
     private final LostarkMarketApiClient lostarkMarketApiClient;
@@ -48,6 +48,7 @@ public class SchedulingService {
 
     // 매일 오전 0시 거래소 데이터 갱신
     @Scheduled(cron = "0 0 1 * * ?", zone = "Asia/Seoul")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateMarketData() {
         updateMarketItems();
         updateAuctionItems();
@@ -74,6 +75,7 @@ public class SchedulingService {
 
     // 매일 오전 6시 일일 숙제 초기화
     @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void resetDayTodo() {
         log.info("휴식게이지 업데이트 = {}",characterRepository.updateDayContentGauge());
         log.info("이전 휴식게이지 저장 = {}",characterRepository.saveBeforeGauge());
@@ -85,7 +87,7 @@ public class SchedulingService {
         log.info("커스텀 일일 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.DAILY));
     }
 
-    public void updateDayTodoGold() {
+    private void updateDayTodoGold() {
         Map<String, Market> contentResource = marketService.findLevelUpResource();
 
         List<DayContent> allByDayContent = contentRepository.findAllByDayContent();
@@ -156,9 +158,10 @@ public class SchedulingService {
 
 
     /**
-     * 수요일 오전 6시 1분 주간 숙제 초기화
+     * 수요일 오전 6시 2분 주간 숙제 초기화
      */
-    @Scheduled(cron = "0 1 6 * * 3", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 2 6 * * 3", zone = "Asia/Seoul")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void resetWeekTodo() {
         log.info("2주기 체크 값 변경 = {}", keyValueRepository.updateTwoCycle());
 
