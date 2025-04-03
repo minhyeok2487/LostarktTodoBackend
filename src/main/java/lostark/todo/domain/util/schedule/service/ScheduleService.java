@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.util.schedule.dto.SearchScheduleRequest;
 import lostark.todo.domain.util.schedule.entity.Schedule;
 import lostark.todo.domain.util.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.util.schedule.repository.ScheduleRepository;
@@ -142,5 +143,10 @@ public class ScheduleService {
                 scheduleRepository.save(schedule);
             });
         }
+    }
+
+    @Transactional
+    public List<WeekScheduleResponse> search(String username, SearchScheduleRequest request) {
+        return scheduleRepository.search(username, request);
     }
 }

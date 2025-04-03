@@ -7,6 +7,7 @@ import lostark.todo.domain.util.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.util.schedule.enums.ScheduleRaidCategory;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,12 @@ public class WeekScheduleResponse {
 
     @ApiModelProperty(example = "일정 요일")
     private DayOfWeek dayOfWeek;
+
+    @ApiModelProperty(example = "주간 반복")
+    private boolean repeatWeek;
+
+    @ApiModelProperty(example = "날짜")
+    private LocalDate date;
 
     @ApiModelProperty(example = "일정 시간 / 10분 단위")
     private LocalTime time;
@@ -52,7 +59,7 @@ public class WeekScheduleResponse {
     @QueryProjection
     public WeekScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory,
                                 String raidName, DayOfWeek dayOfWeek, LocalTime time, String memo, Boolean isLeader, long leaderScheduleId,
-                                String characterName, String leaderCharacterName) {
+                                String characterName, String leaderCharacterName, boolean repeatWeek, LocalDate date) {
         this.scheduleId = scheduleId;
         this.scheduleCategory = scheduleCategory;
         this.scheduleRaidCategory = scheduleRaidCategory;
@@ -64,6 +71,8 @@ public class WeekScheduleResponse {
         this.leaderScheduleId = leaderScheduleId;
         this.characterName = characterName;
         this.leaderCharacterName = leaderCharacterName;
+        this.repeatWeek = repeatWeek;
+        this.date = date;
         this.friendCharacterNames = new ArrayList<>();
     }
 }

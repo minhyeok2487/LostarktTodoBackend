@@ -8,6 +8,7 @@ import lostark.todo.domain.util.schedule.enums.ScheduleRaidCategory;
 import lostark.todo.global.entity.BaseTimeEntity;
 import javax.persistence.*;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
@@ -53,6 +54,8 @@ public class Schedule extends BaseTimeEntity {
     private long leaderScheduleId;
 
     private boolean checked;
+
+    private LocalDate date; // 주간 반복이 아닐때 날짜
 
     public static Schedule toEntity(CreateScheduleRequest request, Long characterId, Long leaderScheduleId, boolean isLeader) {
         return Schedule.builder()
