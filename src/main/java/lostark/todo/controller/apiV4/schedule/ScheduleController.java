@@ -46,6 +46,7 @@ public class ScheduleController {
 
     @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
     @GetMapping("/{scheduleId}")
+    // TODO 추후 삭제
     public ResponseEntity<?> get(@AuthenticationPrincipal String username,
                                  @PathVariable long scheduleId,
                                  @RequestParam(required = false) Long leaderScheduleId) {
@@ -59,6 +60,7 @@ public class ScheduleController {
 
     @ApiOperation(value = "일정 수정 API")
     @PatchMapping("/{scheduleId}")
+    // TODO 추후 삭제
     public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
                                   @RequestBody EditScheduleRequest request,
                                   @PathVariable long scheduleId) {
