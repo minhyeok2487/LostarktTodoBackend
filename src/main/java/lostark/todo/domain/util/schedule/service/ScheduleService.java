@@ -33,7 +33,7 @@ public class ScheduleService {
         validate(request);
 
         Schedule leader = scheduleRepository.save(Schedule.toEntity(request, character.getId(), 0L, true));
-        if (!CollectionUtils.isEmpty(request.getFriendCharacterIdList())){
+        if (!CollectionUtils.isEmpty(request.getFriendCharacterIdList())) {
             List<Schedule> schedules = request.getFriendCharacterIdList().stream()
                     .map(friendCharacterId -> Schedule.toEntity(request, friendCharacterId, leader.getId(), false))
                     .toList();
@@ -147,6 +147,25 @@ public class ScheduleService {
 
     @Transactional
     public List<WeekScheduleResponse> search(String username, SearchScheduleRequest request) {
-        return scheduleRepository.search(username, request);
+        return scheduleRepository.search(username, request).stream()
+                .peek(response -> {
+                    if (response.getScheduleCategory().equals(ScheduleCategory.PARTY)) {
+                        if (response.getIsLeader()) {
+                            response.setFriendCharacterNames(
+                                    scheduleRepository.getLeaderScheduleId(response.getScheduleId())
+                                            .stream()
+                                            .map(ScheduleCharacterResponse::getCharacterName)
+                                            .toList());
+                        } else {
+                            response.setFriendCharacterNames(
+                                    scheduleRepository.getLeaderScheduleId(response.getLeaderScheduleId())
+                                            .stream()
+                                            .map(ScheduleCharacterResponse::getCharacterName)
+                                            .toList());
+                        }
+
+                    }
+                })
+                .toList();
     }
 }
