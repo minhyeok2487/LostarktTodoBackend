@@ -29,9 +29,7 @@ public class ScheduleService {
 
     @Transactional
     public void create(Character character, CreateScheduleRequest request) {
-
         validate(request);
-
         Schedule leader = scheduleRepository.save(Schedule.toEntity(request, character.getId(), 0L, true));
         if (!CollectionUtils.isEmpty(request.getFriendCharacterIdList())) {
             List<Schedule> schedules = request.getFriendCharacterIdList().stream()

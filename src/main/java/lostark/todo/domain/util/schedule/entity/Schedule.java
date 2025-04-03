@@ -70,6 +70,7 @@ public class Schedule extends BaseTimeEntity {
                 .repeatWeek(request.isRepeatWeek())
                 .leader(isLeader)
                 .leaderScheduleId(leaderScheduleId)
+                .date(request.getDate())
                 .build();
     }
 
@@ -86,6 +87,7 @@ public class Schedule extends BaseTimeEntity {
                 .repeatWeek(main.isRepeatWeek())
                 .leader(false)
                 .leaderScheduleId(main.id)
+                .date(main.date)
                 .build();
     }
 

@@ -9,6 +9,7 @@ import lostark.todo.domain.util.schedule.enums.ScheduleRaidCategory;
 
 import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -41,6 +42,10 @@ public class CreateScheduleRequest {
 
     @ApiModelProperty(example = "주간 반복")
     private boolean repeatWeek;
+
+    @ApiModelProperty(example = "날짜")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     @ApiModelProperty(example = "메모")
     private String memo;

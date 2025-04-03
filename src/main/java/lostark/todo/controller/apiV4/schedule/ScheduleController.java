@@ -28,6 +28,7 @@ public class ScheduleController {
 
     @ApiOperation(value = "일정 저장 API")
     @PostMapping()
+    // TODO 추후 삭제
     public ResponseEntity<?> create(@AuthenticationPrincipal String username,
                                     @RequestBody CreateScheduleRequest request) {
         Character character = characterService.get(request.getLeaderCharacterId(), username);
@@ -37,6 +38,7 @@ public class ScheduleController {
 
     @ApiOperation(value = "주간 일정 리스트 출력 API", response = WeekScheduleResponse.class)
     @GetMapping()
+    // TODO 추후 삭제
     public ResponseEntity<?> getWeek(GetWeekScheduleRequest request,
             @AuthenticationPrincipal String username) {
         return new ResponseEntity<>(scheduleService.getWeek(username, request), HttpStatus.OK);
