@@ -8,6 +8,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class SearchScheduleRequest {
 
+    @ApiModelProperty(example = "년")
+    @NotNull
+    private int year;
+
     @ApiModelProperty(example = "월")
     @NotNull
     private int month;

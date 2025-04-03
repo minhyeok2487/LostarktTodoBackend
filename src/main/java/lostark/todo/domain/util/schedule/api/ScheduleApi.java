@@ -8,11 +8,14 @@ import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.util.schedule.dto.SearchScheduleRequest;
+import lostark.todo.domain.util.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.util.schedule.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +41,28 @@ public class ScheduleApi {
     public ResponseEntity<?> search(SearchScheduleRequest request,
                                     @AuthenticationPrincipal String username) {
         return new ResponseEntity<>(scheduleService.search(username, request), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "일정 자세히 보기 API", response = GetScheduleResponse.class)
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<?> get(@AuthenticationPrincipal String username,
+                                 @PathVariable long scheduleId,
+                                 @RequestParam(required = false) Long leaderScheduleId) {
+        GetScheduleResponse getScheduleResponse = scheduleService.getResponseIsReader(scheduleId, username, leaderScheduleId);
+        if (getScheduleResponse.getScheduleCategory() == ScheduleCategory.PARTY) {
+            Long idToUse = Optional.ofNullable(leaderScheduleId).orElse(scheduleId);
+            getScheduleResponse.setFriendList(scheduleService.getLeaderScheduleId(idToUse));
+        }
+        return new ResponseEntity<>(getScheduleResponse, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "일정 수정 API")
+    @PatchMapping("/{scheduleId}")
+    public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
+                                  @RequestBody EditScheduleRequest request,
+                                  @PathVariable long scheduleId) {
+        log.info(request.toString());
+        scheduleService.edit(username, request, scheduleId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

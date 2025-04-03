@@ -101,5 +101,8 @@ public class Schedule extends BaseTimeEntity {
         if (request.getMemo() != null) {
             this.memo = request.getMemo();
         }
+        if (request.getDate() != null) {
+            this.date = request.getDate();
+        }
     }
 }

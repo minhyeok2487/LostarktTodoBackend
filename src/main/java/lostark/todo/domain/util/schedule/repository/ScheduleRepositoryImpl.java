@@ -80,7 +80,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     // 반복이 없는 건 해당 월에 것들만, 반복이 있으면 다
     private BooleanExpression isCurrent(SearchScheduleRequest request) {
-        YearMonth yearMonth = YearMonth.of(LocalDate.now().getYear(), request.getMonth());
+        YearMonth yearMonth = YearMonth.of(request.getYear(), request.getMonth());
         LocalDate startOfMonth = yearMonth.atDay(1);  // 해당 월의 첫째 날
         LocalDate endOfMonth = yearMonth.atEndOfMonth(); // 해당 월의 마지막 날
 
@@ -112,7 +112,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                         new QScheduleCharacterResponse(
                                 character.id, character.characterName, character.characterClassName,
                                 character.itemLevel, character.characterImage
-                        )
+                        ), schedule.date
                 ))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()

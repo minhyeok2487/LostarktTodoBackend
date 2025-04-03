@@ -1,9 +1,11 @@
 package lostark.todo.controller.dtoV2.schedule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
@@ -11,6 +13,10 @@ import java.time.LocalTime;
 public class EditScheduleRequest {
 
     @ApiModelProperty(example = "날짜")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
+
+    @ApiModelProperty(example = "요일")
     private DayOfWeek dayOfWeek;
 
     @ApiModelProperty(example = "일정 시간 / 10분 단위")
