@@ -64,7 +64,7 @@ public class Character extends BaseTimeEntity {
     @JsonManagedReference
     private List<TodoV2> todoV2List;
 
-    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "character", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<RaidBusGold> raidBusGoldList;
 
@@ -79,6 +79,7 @@ public class Character extends BaseTimeEntity {
 
     @ColumnDefault("false")
     private boolean isDeleted;
+
 
     @Override
     public String toString() {

@@ -18,6 +18,7 @@ import lostark.todo.domain.character.entity.Character;
 import java.util.List;
 import java.util.Optional;
 
+import static lostark.todo.domain.character.entity.QRaidBusGold.*;
 import static lostark.todo.domain.util.content.entity.QDayContent.dayContent;
 import static lostark.todo.domain.util.content.entity.QWeekContent.weekContent;
 import static lostark.todo.domain.character.entity.QTodoV2.todoV2;
@@ -88,6 +89,10 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
     public long deleteByMember(Member member) {
         factory.delete(todoV2)
                 .where(todoV2.character.in(member.getCharacters()))
+                .execute();
+
+        factory.delete(raidBusGold)
+                .where(raidBusGold.character.in(member.getCharacters()))
                 .execute();
 
         return factory.delete(character)
