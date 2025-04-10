@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -320,4 +321,42 @@ public class CharacterService {
     public void updateCharacterStatus(Character character) {
         character.updateCharacterStatus();
     }
+
+    // 전체 캐릭터 일일컨텐츠 전체 체크(출력된 것만)
+    @Transactional
+    public UpdateDayCheckAllCharactersResponse updateDayCheckAllCharacters(String username, String serverName) {
+        List<Character> characterList = characterRepository.getCharacterList(username);
+
+        // 출력 캐릭터 필터링 (isShowCharacter && 서버 필터)
+        List<Character> displayedCharacters = characterList.stream()
+                .filter(c -> c.getSettings().isShowCharacter())
+                .filter(c -> serverName.equals("전체") || c.getServerName().equals(serverName))
+                .toList();
+
+        // 캐릭터별 표시되는 컨텐츠 리스트를 미리 계산 (중복 방지)
+        Map<Character, List<ContentUpdater>> updaterMap = displayedCharacters.stream()
+                .collect(Collectors.toMap(
+                        c -> c,
+                        c -> ContentUpdater.toDto(c.getDayTodo(), c.getSettings()).stream()
+                                .filter(ContentUpdater::isDisplayed)
+                                .toList()
+                ));
+
+        // 전체 체크 상태인지 판별 (모든 컨텐츠가 체크 완료)
+        boolean allCompleted = updaterMap.values().stream()
+                .flatMap(List::stream)
+                .allMatch(ContentUpdater::isChecked);
+
+        // 체크 상태를 업데이트
+        for (Map.Entry<Character, List<ContentUpdater>> entry : updaterMap.entrySet()) {
+            for (ContentUpdater updater : entry.getValue()) {
+                updater.updateCheck(allCompleted ? updater.getCompletedValue() : 0); // 전체 체크면 해제, 아니면 완료
+                updater.runUpdateMethod(); // 변경 반영
+            }
+        }
+
+        return new UpdateDayCheckAllCharactersResponse(serverName, allCompleted);
+    }
+
+
 }

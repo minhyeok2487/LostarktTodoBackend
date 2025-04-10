@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.UpdateDayCheckAllCharactersRequest;
 import lostark.todo.domain.character.dto.UpdateDayCheckAllRequest;
 import lostark.todo.domain.character.dto.UpdateDayCheckRequest;
 import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
@@ -68,5 +69,14 @@ public class CharacterDayApi {
                 request.getCharacterId(), FriendPermissionType.CHECK_DAY_TODO);
         characterService.updateDayCheckAll(updateCharacter);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "전체 캐릭터 일일컨텐츠 전체 체크(출력된 것만)", response = CharacterResponse.class)
+    @PostMapping("/check/all-characters")
+    // TODO 추후 깐부 작업
+    public ResponseEntity<?> updateDayCheckAllCharacters(@AuthenticationPrincipal String username,
+                                                         @RequestParam(required = false) String friendUsername,
+                                                         @RequestBody UpdateDayCheckAllCharactersRequest request) {
+        return new ResponseEntity<>(characterService.updateDayCheckAllCharacters(username, request.getServerName()), HttpStatus.OK);
     }
 }
