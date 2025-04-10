@@ -3,6 +3,7 @@ package lostark.todo.domain.character.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.global.entity.BaseTimeEntity;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -27,6 +28,9 @@ public class RaidBusGold extends BaseTimeEntity {
     private String weekCategory;
 
     private int busGold;
+
+    @ColumnDefault("true")
+    private boolean fixed;
 
     public void updateWeekRaidBusGold(int busGold) {
         this.busGold = busGold;

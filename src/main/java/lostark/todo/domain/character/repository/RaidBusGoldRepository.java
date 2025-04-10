@@ -13,6 +13,6 @@ public interface RaidBusGoldRepository extends JpaRepository<RaidBusGold, Long> 
     Optional<RaidBusGold> findByCharacterAndWeekCategory(Character character, String weekCategory);
 
     @Modifying
-    @Query("delete from RaidBusGold r where r.id > 0")
+    @Query("delete from RaidBusGold r where r.fixed = false")
     void deleteAllRaidBusGold();
 }

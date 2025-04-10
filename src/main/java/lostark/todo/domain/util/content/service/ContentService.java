@@ -63,7 +63,7 @@ public class ContentService {
                     updateCharacter.getRaidBusGoldList().stream()
                             .filter(raidBusGold -> raidBusGold.getWeekCategory().equals(weekContent.getWeekCategory()))
                             .findFirst()
-                            .ifPresent(raidBusGold -> weekContentDto.setBusGold(raidBusGold.getBusGold()));
+                            .ifPresent(weekContentDto::updateBusGold);
                     return weekContentDto;
                 })
                 .toList();

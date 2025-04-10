@@ -31,6 +31,7 @@ public class RaidBusGoldService {
                     .character(updateCharacter)
                     .weekCategory(request.getWeekCategory())
                     .busGold(request.getBusGold())
+                    .fixed(request.isFixed())
                     .build();
             raidBusGoldRepository.save(newRaidBusGold);
         }

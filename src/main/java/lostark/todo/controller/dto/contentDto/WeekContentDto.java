@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lostark.todo.domain.character.entity.RaidBusGold;
 import lostark.todo.domain.util.content.entity.WeekContent;
 import lostark.todo.domain.util.content.enums.WeekContentCategory;
 
@@ -36,6 +37,8 @@ public class WeekContentDto {
 
     private boolean goldCheck; //골드 획득
 
+    private boolean busGoldFixed; // 버스 골드 고정 여부
+
     public WeekContentDto toDto(WeekContent weekContent) {
         return WeekContentDto.builder()
                 .id(weekContent.getId())
@@ -51,5 +54,10 @@ public class WeekContentDto {
                 .coolTime(weekContent.getCoolTime())
                 .goldCheck(false)
                 .build();
+    }
+
+    public void updateBusGold(RaidBusGold raidBusGold) {
+        this.busGold = raidBusGold.getBusGold();
+        this.busGoldFixed =raidBusGold.isFixed();
     }
 }

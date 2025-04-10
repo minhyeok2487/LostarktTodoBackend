@@ -14,4 +14,6 @@ public class UpdateWeekRaidBusGold extends BaseCharacterRequest {
 
     @NotEmpty
     private int busGold;
+
+    private boolean fixed;
 }
