@@ -61,7 +61,6 @@ public class ScheduleApi {
     public ResponseEntity<?> edit(@AuthenticationPrincipal String username,
                                   @RequestBody EditScheduleRequest request,
                                   @PathVariable long scheduleId) {
-        log.info(request.toString());
         scheduleService.edit(username, request, scheduleId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

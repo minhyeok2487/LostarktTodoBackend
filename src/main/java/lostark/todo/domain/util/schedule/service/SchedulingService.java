@@ -9,6 +9,7 @@ import lostark.todo.domain.util.content.entity.DayContent;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
 import lostark.todo.domain.util.schedule.dto.AuctionRequestDto;
+import lostark.todo.domain.util.schedule.repository.ScheduleRepository;
 import lostark.todo.global.keyvalue.KeyValueRepository;
 import lostark.todo.domain.util.market.enums.CategoryCode;
 import lostark.todo.domain.util.market.entity.Market;
@@ -39,6 +40,7 @@ public class SchedulingService {
     private final ContentRepository contentRepository;
     private final KeyValueRepository keyValueRepository;
     private final RaidBusGoldRepository raidBusGoldRepository;
+    private final ScheduleRepository scheduleRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -77,9 +79,9 @@ public class SchedulingService {
     @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void resetDayTodo() {
-        log.info("휴식게이지 업데이트 = {}",characterRepository.updateDayContentGauge());
-        log.info("이전 휴식게이지 저장 = {}",characterRepository.saveBeforeGauge());
-        log.info("일일 숙제 초기화 = {}",characterRepository.updateDayContentCheck());
+        log.info("휴식게이지 업데이트 = {}", characterRepository.updateDayContentGauge());
+        log.info("이전 휴식게이지 저장 = {}", characterRepository.saveBeforeGauge());
+        log.info("일일 숙제 초기화 = {}", characterRepository.updateDayContentCheck());
 
         log.info("일일 숙제 수익 계산");
         updateDayTodoGold();
@@ -179,5 +181,12 @@ public class SchedulingService {
 
         // 버스비 삭제
         raidBusGoldRepository.deleteAllRaidBusGold();
+    }
+
+    // 매일 10분마다 일정 레이드 자동 체크
+    @Scheduled(cron = "0 */10 * * * *", zone = "Asia/Seoul")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void checkScheduleRaids() {
+        scheduleRepository.checkScheduleRaids();
     }
 }

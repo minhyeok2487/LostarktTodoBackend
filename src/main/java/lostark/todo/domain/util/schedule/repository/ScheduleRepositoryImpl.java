@@ -2,17 +2,19 @@ package lostark.todo.domain.util.schedule.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.QCharacter;
+import lostark.todo.domain.character.entity.QTodoV2;
 import lostark.todo.domain.util.schedule.dto.SearchScheduleRequest;
 import lostark.todo.domain.util.schedule.entity.QSchedule;
 import lostark.todo.domain.util.schedule.entity.Schedule;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.YearMonth;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,7 @@ import static lostark.todo.domain.character.entity.QCharacter.character;
 import static lostark.todo.domain.util.schedule.entity.QSchedule.schedule;
 
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     private final JPAQueryFactory factory;
@@ -149,6 +152,71 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .where(
                         eqId(scheduleId).or(eqLeaderScheduleId(scheduleId))
                 ).execute();
+    }
+
+    @Override
+    public void checkScheduleRaids() {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        DayOfWeek today = now.getDayOfWeek();
+        LocalDate currentDate = now.toLocalDate();
+        LocalTime currentTime = now.toLocalTime().withSecond(0).withNano(0);
+
+        QTodoV2 todo = QTodoV2.todoV2;
+        QSchedule schedule = QSchedule.schedule;
+
+        // ✅ 1. 반복 일정 대상 bulk update (EXISTS 서브쿼리 사용)
+        long repeatUpdated = factory
+                .update(todo)
+                .set(todo.isChecked, true)
+                .where(
+                        JPAExpressions
+                                .selectOne()
+                                .from(schedule)
+                                .where(
+                                        schedule.repeatWeek.isTrue(),
+                                        schedule.dayOfWeek.eq(today),
+                                        schedule.time.eq(currentTime),
+                                        schedule.characterId.eq(todo.character.id),
+                                        schedule.raidName.eq(
+                                                Expressions.stringTemplate(
+                                                        "concat({0}, ' ', {1})",
+                                                        todo.weekContent.name,
+                                                        todo.weekContent.weekContentCategory.stringValue()
+                                                )
+                                        )
+                                )
+                                .exists()
+                )
+                .execute();
+
+        log.info(now + " 반복 레이드 일정 체크, " + repeatUpdated + "개");
+
+        // ✅ 2. 단건 일정 대상 bulk update
+        long onceUpdated = factory
+                .update(todo)
+                .set(todo.isChecked, true)
+                .where(
+                        JPAExpressions
+                                .selectOne()
+                                .from(schedule)
+                                .where(
+                                        schedule.repeatWeek.isFalse(),
+                                        schedule.date.eq(currentDate),
+                                        schedule.time.eq(currentTime),
+                                        schedule.characterId.eq(todo.character.id),
+                                        schedule.raidName.eq(
+                                                Expressions.stringTemplate(
+                                                        "concat({0}, ' ', {1})",
+                                                        todo.weekContent.name,
+                                                        todo.weekContent.weekContentCategory.stringValue()
+                                                )
+                                        )
+                                )
+                                .exists()
+                )
+                .execute();
+
+        log.info(now + " 단건 레이드 일정 체크, " + onceUpdated + "개");
     }
 
     @Override
