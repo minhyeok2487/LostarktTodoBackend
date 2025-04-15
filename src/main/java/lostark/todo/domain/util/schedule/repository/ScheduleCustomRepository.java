@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface ScheduleCustomRepository {
 
-    List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request);
-
     List<WeekScheduleResponse> search(String username, SearchScheduleRequest request);
 
     List<ScheduleCharacterResponse> getLeaderScheduleId(long leaderScheduleId);

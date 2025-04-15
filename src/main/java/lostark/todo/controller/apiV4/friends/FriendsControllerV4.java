@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.friend.service.FriendsService;
@@ -25,14 +24,6 @@ public class FriendsControllerV4 {
 
     private final FriendsService friendsService;
     private final MemberService memberService;
-
-    @ApiOperation(value = "깐부 리스트 조회",
-            response = FriendsResponse.class)
-    @GetMapping()
-    // TODO 추후삭제
-    public ResponseEntity<?> get(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(friendsService.getFriendListV2(memberService.get(username).getId()), HttpStatus.OK);
-    }
 
     @ApiOperation(value = "깐부 삭제")
     @DeleteMapping("/{friendId}")

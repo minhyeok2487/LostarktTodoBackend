@@ -52,31 +52,6 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
-        return scheduleRepository.getWeek(username, request).stream()
-                .peek(response -> {
-                    if (response.getScheduleCategory().equals(ScheduleCategory.PARTY)) {
-                        if (response.getIsLeader()) {
-                            response.setFriendCharacterNames(
-                                    scheduleRepository.getLeaderScheduleId(response.getScheduleId())
-                                            .stream()
-                                            .map(ScheduleCharacterResponse::getCharacterName)
-                                            .toList());
-                        } else {
-                            response.setFriendCharacterNames(
-                                    scheduleRepository.getLeaderScheduleId(response.getLeaderScheduleId())
-                                            .stream()
-                                            .map(ScheduleCharacterResponse::getCharacterName)
-                                            .toList());
-                        }
-
-                    }
-                })
-                .toList();
-    }
-
-
-    @Transactional(readOnly = true)
     public GetScheduleResponse getResponseIsReader(long scheduleId, String username, Long leaderScheduleId) {
         return scheduleRepository.getResponse(scheduleId, username, leaderScheduleId).orElseThrow(() -> new ConditionNotMetException("없는 일정 입니다."));
     }

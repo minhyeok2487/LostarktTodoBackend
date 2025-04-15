@@ -28,33 +28,6 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
     private final JPAQueryFactory factory;
 
-
-    @Override
-    public List<WeekScheduleResponse> getWeek(String username, GetWeekScheduleRequest request) {
-        QSchedule ls = new QSchedule("ls");
-        QCharacter lc = new QCharacter("lc");
-
-        return factory
-                .select(new QWeekScheduleResponse(
-                        schedule.id,
-                        schedule.scheduleCategory, schedule.scheduleRaidCategory,
-                        schedule.raidName, schedule.dayOfWeek, schedule.time, schedule.memo,
-                        schedule.leader, schedule.leaderScheduleId,
-                        character.characterName,
-                        new CaseBuilder().when(schedule.leader.eq(true)).then(character.characterName)
-                                .otherwise(lc.characterName).as("leaderCharacterName"), schedule.repeatWeek, schedule.date))
-                .from(schedule)
-                .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
-                .leftJoin(member).on(character.member.eq(member))
-                .leftJoin(ls).on(schedule.leaderScheduleId.eq(ls.id))
-                .leftJoin(lc).on(ls.characterId.eq(lc.id))
-                .where(
-                        eqUsername(username),
-                        isCurrentWeekSchedule(request)
-                )
-                .fetch();
-    }
-
     @Override
     public List<WeekScheduleResponse> search(String username, SearchScheduleRequest request) {
         QSchedule ls = new QSchedule("ls");
@@ -90,19 +63,6 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
         return schedule.repeatWeek.eq(true).or(
                 schedule.repeatWeek.eq(false).and(
                         schedule.date.between(startOfMonth, endOfMonth)
-                )
-        );
-    }
-
-
-    private BooleanExpression isCurrentWeekSchedule(GetWeekScheduleRequest request) {
-        // 반복이 없는 건 날짜가 포함된 주 것만, 반복이 있으면 다
-        return schedule.repeatWeek.eq(true).or(
-                schedule.repeatWeek.eq(false).and(
-                        schedule.createdDate.between(
-                                request.getDate().with(DayOfWeek.MONDAY).atStartOfDay(),
-                                request.getDate().with(DayOfWeek.SUNDAY).plusDays(1).atStartOfDay()
-                        )
                 )
         );
     }
@@ -164,7 +124,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
         QTodoV2 todo = QTodoV2.todoV2;
         QSchedule schedule = QSchedule.schedule;
 
-        // ✅ 1. 반복 일정 대상 bulk update (EXISTS 서브쿼리 사용)
+        // 1. 반복 일정 대상 bulk update
         long repeatUpdated = factory
                 .update(todo)
                 .set(todo.isChecked, true)
@@ -191,7 +151,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
 
         log.info(now + " 반복 레이드 일정 체크, " + repeatUpdated + "개");
 
-        // ✅ 2. 단건 일정 대상 bulk update
+        // 2. 단건 일정 대상 bulk update
         long onceUpdated = factory
                 .update(todo)
                 .set(todo.isChecked, true)

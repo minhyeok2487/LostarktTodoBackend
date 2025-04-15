@@ -27,17 +27,6 @@ public class ContentService {
         return contentRepository.findAllById(idList);
     }
 
-    /**
-     * 아이템 레벨보다 작은 주간 컨텐츠 조회
-     */
-    public List<WeekContent> findAllWeekContent(double itemLevel) {
-        List<WeekContent> allWeekContent = contentRepository.findAllWeekContent(itemLevel);
-        if (allWeekContent.isEmpty()) {
-            throw new ConditionNotMetException("컨텐츠 불러오기 오류");
-        }
-        return allWeekContent;
-    }
-
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = "content", key = "'raid-category'")
     public List<RaidCategoryResponse> getScheduleRaidCategory() {
