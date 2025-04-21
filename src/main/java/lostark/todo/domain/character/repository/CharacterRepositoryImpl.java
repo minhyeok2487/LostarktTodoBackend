@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static lostark.todo.domain.character.entity.QRaidBusGold.*;
-import static lostark.todo.domain.util.content.entity.QDayContent.dayContent;
-import static lostark.todo.domain.util.content.entity.QWeekContent.weekContent;
+import static lostark.todo.domain.content.entity.QDayContent.dayContent;
+import static lostark.todo.domain.content.entity.QWeekContent.weekContent;
 import static lostark.todo.domain.character.entity.QTodoV2.todoV2;
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;

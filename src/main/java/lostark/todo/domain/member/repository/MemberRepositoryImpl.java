@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
-import static lostark.todo.domain.util.content.entity.QDayContent.dayContent;
+import static lostark.todo.domain.content.entity.QDayContent.dayContent;
 import static lostark.todo.global.exhandler.ErrorMessageConstants.MEMER_NOT_FOUND;
 
 @RequiredArgsConstructor

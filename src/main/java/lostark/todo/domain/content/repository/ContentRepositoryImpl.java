@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.controller.dtoV2.content.QRaidCategoryResponse;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 import lostark.todo.domain.content.entity.WeekContent;
-import lostark.todo.domain.util.content.entity.QDayContent;
-import lostark.todo.domain.util.content.entity.QWeekContent;
+import lostark.todo.domain.content.entity.QDayContent;
+import lostark.todo.domain.content.entity.QWeekContent;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.enums.WeekContentCategory;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static lostark.todo.domain.util.content.entity.QWeekContent.weekContent;
+import static lostark.todo.domain.content.entity.QWeekContent.weekContent;
 
 @RequiredArgsConstructor
 public class ContentRepositoryImpl implements ContentCustomRepository {

@@ -5,14 +5,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.cube.dto.CubeResponse;
 import lostark.todo.domain.cube.entity.Cubes;
-import lostark.todo.domain.util.cube.dto.QCubeResponse;
+import lostark.todo.domain.cube.dto.QCubeResponse;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
-import static lostark.todo.domain.util.cube.entity.QCubes.cubes;
+import static lostark.todo.domain.cube.entity.QCubes.cubes;
 
 @RequiredArgsConstructor
 public class CubesRepositoryImpl implements CubesCustomRepository {

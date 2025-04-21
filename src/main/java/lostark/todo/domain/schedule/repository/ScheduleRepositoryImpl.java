@@ -11,7 +11,7 @@ import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.QCharacter;
 import lostark.todo.domain.character.entity.QTodoV2;
 import lostark.todo.domain.schedule.dto.SearchScheduleRequest;
-import lostark.todo.domain.util.schedule.entity.QSchedule;
+import lostark.todo.domain.schedule.entity.QSchedule;
 import lostark.todo.domain.schedule.entity.Schedule;
 
 import java.time.*;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
-import static lostark.todo.domain.util.schedule.entity.QSchedule.schedule;
+import static lostark.todo.domain.schedule.entity.QSchedule.schedule;
 
 @RequiredArgsConstructor
 @Slf4j

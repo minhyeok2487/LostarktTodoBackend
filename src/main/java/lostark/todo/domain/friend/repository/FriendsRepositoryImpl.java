@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static lostark.todo.domain.util.content.entity.QDayContent.dayContent;
+import static lostark.todo.domain.content.entity.QDayContent.dayContent;
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
 import static lostark.todo.domain.friend.entity.QFriends.friends;
