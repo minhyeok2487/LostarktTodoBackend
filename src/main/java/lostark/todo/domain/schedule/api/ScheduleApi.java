@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.content.service.ContentService;
 import lostark.todo.domain.schedule.dto.SearchScheduleRequest;
 import lostark.todo.domain.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.schedule.service.ScheduleService;
@@ -26,6 +27,13 @@ public class ScheduleApi {
 
     private final ScheduleService scheduleService;
     private final CharacterService characterService;
+    private final ContentService contentService;
+
+    @ApiOperation(value = "일정용 레이드 카테고리 리스트 API")
+    @GetMapping("/raid/category")
+    public ResponseEntity<?> getScheduleRaidCategory() {
+        return new ResponseEntity<>(contentService.getScheduleRaidCategory(), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "일정 저장 API")
     @PostMapping()
