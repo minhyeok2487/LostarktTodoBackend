@@ -1,6 +1,6 @@
 package lostark.todo.data;
 
-import lostark.todo.domain.util.market.entity.Market;
+import lostark.todo.domain.market.entity.Market;
 
 import java.util.Arrays;
 import java.util.List;

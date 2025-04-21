@@ -2,8 +2,8 @@ package lostark.todo.domain.lostark.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.util.market.entity.Market;
-import lostark.todo.domain.util.schedule.dto.AuctionRequestDto;
+import lostark.todo.domain.market.entity.Market;
+import lostark.todo.domain.schedule.dto.AuctionRequestDto;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -9,9 +9,9 @@ import lostark.todo.domain.character.dto.TodoResponseDto;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.entity.Settings;
 import lostark.todo.domain.character.enums.goldCheckPolicy.GoldCheckPolicyEnum;
-import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.character.entity.TodoV2;
-import lostark.todo.domain.util.content.enums.WeekContentCategory;
+import lostark.todo.domain.content.enums.WeekContentCategory;
 
 import javax.validation.constraints.Size;
 import java.util.ArrayList;

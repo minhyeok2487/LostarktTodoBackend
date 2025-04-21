@@ -7,7 +7,7 @@ import lostark.todo.domain.character.dto.UpdateWeekRaidMessageRequest;
 import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
 import lostark.todo.domain.character.dto.UpdateWeekRaidSortRequest;
 import lostark.todo.domain.character.entity.Character;
-import lostark.todo.domain.util.content.entity.WeekContent;
+import lostark.todo.domain.content.entity.WeekContent;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.keyvalue.KeyValueRepository;
 import lostark.todo.domain.character.entity.TodoV2;

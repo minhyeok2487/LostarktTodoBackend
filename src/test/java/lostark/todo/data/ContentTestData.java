@@ -1,8 +1,8 @@
 package lostark.todo.data;
 
-import lostark.todo.domain.util.content.enums.Category;
-import lostark.todo.domain.util.content.entity.Content;
-import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.content.enums.Category;
+import lostark.todo.domain.content.entity.Content;
+import lostark.todo.domain.content.entity.DayContent;
 
 import java.util.Arrays;
 import java.util.List;

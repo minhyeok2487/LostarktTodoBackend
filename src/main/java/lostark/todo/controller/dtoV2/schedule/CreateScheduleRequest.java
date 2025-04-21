@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lostark.todo.domain.util.schedule.enums.ScheduleCategory;
-import lostark.todo.domain.util.schedule.enums.ScheduleRaidCategory;
+import lostark.todo.domain.schedule.enums.ScheduleCategory;
+import lostark.todo.domain.schedule.enums.ScheduleRaidCategory;
 
 import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;

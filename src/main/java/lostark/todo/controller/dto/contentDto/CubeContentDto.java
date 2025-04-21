@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.domain.util.content.entity.CubeContent;
-import lostark.todo.domain.util.market.entity.Market;
+import lostark.todo.domain.content.entity.CubeContent;
+import lostark.todo.domain.market.entity.Market;
 
 @AllArgsConstructor
 @NoArgsConstructor

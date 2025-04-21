@@ -3,7 +3,7 @@ package lostark.todo.domain.character.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lostark.todo.domain.util.cube.enums.CubeContentName;
+import lostark.todo.domain.cube.enums.CubeContentName;
 
 import javax.validation.constraints.NotNull;
 

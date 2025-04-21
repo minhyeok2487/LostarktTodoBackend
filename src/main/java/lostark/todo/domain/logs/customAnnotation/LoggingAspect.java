@@ -9,7 +9,7 @@ import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.service.LogService;
-import lostark.todo.domain.util.cube.dto.SpendCubeResponse;
+import lostark.todo.domain.cube.dto.SpendCubeResponse;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;

@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domain.character.entity.RaidBusGold;
-import lostark.todo.domain.util.content.entity.WeekContent;
-import lostark.todo.domain.util.content.enums.WeekContentCategory;
+import lostark.todo.domain.content.entity.WeekContent;
+import lostark.todo.domain.content.enums.WeekContentCategory;
 
 @AllArgsConstructor
 @NoArgsConstructor

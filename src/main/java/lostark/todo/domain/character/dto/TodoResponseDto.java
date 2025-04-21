@@ -1,7 +1,7 @@
 package lostark.todo.domain.character.dto;
 
 import lombok.*;
-import lostark.todo.domain.util.content.enums.WeekContentCategory;
+import lostark.todo.domain.content.enums.WeekContentCategory;
 import lostark.todo.domain.character.entity.TodoV2;
 
 import java.util.*;

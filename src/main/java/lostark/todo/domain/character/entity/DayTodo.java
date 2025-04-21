@@ -1,10 +1,10 @@
 package lostark.todo.domain.character.entity;
 
 import lombok.*;
-import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.character.dto.UpdateDayGaugeRequest;
-import lostark.todo.domain.util.content.enums.Category;
-import lostark.todo.domain.util.market.entity.Market;
+import lostark.todo.domain.content.enums.Category;
+import lostark.todo.domain.market.entity.Market;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;

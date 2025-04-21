@@ -1,7 +1,7 @@
 package lostark.todo.data;
 
-import lostark.todo.domain.util.content.enums.Category;
-import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.content.enums.Category;
+import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.entity.DayTodo;
 import lostark.todo.domain.character.entity.Settings;

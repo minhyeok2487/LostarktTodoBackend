@@ -3,8 +3,8 @@ package lostark.todo.controller.dtoV2.schedule;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.domain.util.schedule.enums.ScheduleCategory;
-import lostark.todo.domain.util.schedule.enums.ScheduleRaidCategory;
+import lostark.todo.domain.schedule.enums.ScheduleCategory;
+import lostark.todo.domain.schedule.enums.ScheduleRaidCategory;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

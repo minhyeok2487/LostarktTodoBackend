@@ -11,7 +11,7 @@ import lostark.todo.admin.dto.DashboardResponse;
 import lostark.todo.admin.dto.QDashboardResponse;
 import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.character.dto.QDeletedCharacterResponse;
-import lostark.todo.domain.util.content.entity.DayContent;
+import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
 
