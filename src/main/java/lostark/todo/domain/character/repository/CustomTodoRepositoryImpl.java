@@ -47,14 +47,14 @@ public class CustomTodoRepositoryImpl implements CustomTodoCustomRepository {
     }
 
     @Override
-    public List<CustomTodoResponse> searchResonse(String username) {
+    public List<CustomTodoResponse> searchResponse(String username) {
         return factory.select(new QCustomTodoResponse(
                         customTodo.id, customTodo.character.id,
                         customTodo.contentName, customTodo.isChecked, customTodo.frequency
                 ))
                 .from(customTodo)
-                .leftJoin(customTodo.character, character).fetchJoin()
-                .leftJoin(character.member, member).fetchJoin()
+                .leftJoin(customTodo.character, character)
+                .leftJoin(character.member, member)
                 .where(
                         member.username.eq(username)
                 ).fetch();

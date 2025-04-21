@@ -31,6 +31,7 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISS
 @Slf4j
 @RequestMapping("/v4/friends/custom")
 @Api(tags = {"깐부 커스텀 숙제 API"})
+//TODO 추후 삭제
 public class FriendsCustomTodoControllerV4 {
 
     private final MemberService memberService;

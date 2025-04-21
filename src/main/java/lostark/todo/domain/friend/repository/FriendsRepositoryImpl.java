@@ -4,7 +4,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.friend.entity.Friends;
-import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.friend.entity.QFriends;
 import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.member.entity.Member;
@@ -27,18 +26,6 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
     private final EntityManager em;
 
     @Override
-    public Character findFriendCharacter(String friendUsername, long characterId) {
-        return factory.select(character)
-                .from(friends)
-                .leftJoin(member).on(friends.member.eq(member))
-                .leftJoin(character).on(character.member.eq(member))
-                .where(
-                        eqFriendUsername(friendUsername),
-                        eqCharacterId(characterId)
-                ).fetchOne();
-    }
-
-    @Override
     public Optional<Friends> findByFriendUsername(String friendUsername, String username) {
         QMember friendMember = new QMember("friendMember");
         return Optional.ofNullable(
@@ -59,19 +46,6 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
         return factory.delete(friends)
                 .where(friends.member.eq(member).or(friends.fromMember.eq(member.getId())))
                 .execute();
-    }
-
-    @Override
-    public List<Friends> getFriendList(long memberId) {
-        return factory.select(friends)
-                .from(friends)
-                .leftJoin(friends.member, member).fetchJoin()
-                .leftJoin(member.characters, character).fetchJoin()
-                .leftJoin(character.dayTodo.chaos, dayContent).fetchJoin()
-                .leftJoin(character.dayTodo.guardian, dayContent).fetchJoin()
-                .where(friends.member.id.eq(memberId).or(friends.fromMember.eq(memberId)))
-                .orderBy(friends.ordering.asc())
-                .fetch();
     }
 
     @Override
@@ -163,13 +137,5 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
 
     private BooleanExpression FriendCondition(long toMemberId, long fromMemberId) {
         return friends.member.id.eq(toMemberId).and(friends.fromMember.eq(fromMemberId));
-    }
-
-    private BooleanExpression eqFriendUsername(String friendUsername) {
-        return friends.member.username.eq(friendUsername);
-    }
-
-    private BooleanExpression eqCharacterId(long characterId) {
-        return character.id.eq(characterId);
     }
 }

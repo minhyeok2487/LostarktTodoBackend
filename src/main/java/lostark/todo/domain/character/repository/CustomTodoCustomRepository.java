@@ -13,7 +13,7 @@ public interface CustomTodoCustomRepository {
 
     List<CustomTodo> search(String username);
 
-    List<CustomTodoResponse> searchResonse(String username);
+    List<CustomTodoResponse> searchResponse(String username);
 
     long update(CustomTodoFrequencyEnum frequency);
 

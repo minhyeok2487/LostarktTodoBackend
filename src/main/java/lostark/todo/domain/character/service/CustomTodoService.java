@@ -25,7 +25,6 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.FRIEND_PERMISS
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class CustomTodoService {
 
     private final CustomTodoRepository customTodoRepository;
@@ -52,8 +51,8 @@ public class CustomTodoService {
     }
 
     @Transactional(readOnly = true)
-    public List<CustomTodoResponse> searchResonse(String username) {
-        return customTodoRepository.searchResonse(username);
+    public List<CustomTodoResponse> searchResponse(String username) {
+        return customTodoRepository.searchResponse(username);
     }
 
     @Transactional

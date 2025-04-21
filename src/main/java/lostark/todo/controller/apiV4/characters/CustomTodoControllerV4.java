@@ -25,6 +25,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/v4/custom")
 @Api(tags = {"커스텀 숙제 API"})
+//TODO 추후 삭제
 public class CustomTodoControllerV4 {
 
     private final CharacterService characterService;

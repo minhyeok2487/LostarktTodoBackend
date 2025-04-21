@@ -8,7 +8,6 @@ import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
