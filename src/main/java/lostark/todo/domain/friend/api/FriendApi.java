@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
+import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
 import lostark.todo.domain.friend.entity.FriendSettings;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;
@@ -88,5 +89,22 @@ public class FriendApi {
                                               @RequestBody UpdateFriendSettingRequest request) {
         FriendSettings friendSettings = friendsService.updateSetting(request);
         return new ResponseEntity<>(friendSettings, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 삭제")
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal String username, @PathVariable long friendId) {
+        Member member = memberService.get(username);
+        friendsService.deleteById(member, friendId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "깐부 순서 변경")
+    @PutMapping("/sort")
+    public ResponseEntity<?> updateSort(@AuthenticationPrincipal String username,
+                                        @RequestBody UpdateSortRequest updateSortRequest) {
+        Member member = memberService.get(username);
+        friendsService.updateSort(member, updateSortRequest.getFriendIdList());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

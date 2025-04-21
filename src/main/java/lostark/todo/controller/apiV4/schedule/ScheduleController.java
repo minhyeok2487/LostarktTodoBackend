@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/v4/schedule")
 @Api(tags = {"일정 API"})
+//TODO 추후 삭제
 public class ScheduleController {
 
     private final ScheduleService scheduleService;

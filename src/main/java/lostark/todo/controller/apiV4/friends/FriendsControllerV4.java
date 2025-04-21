@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/v4/friends")
 @Api(tags = {"깐부 API"})
+//TODO 추후 삭제
 public class FriendsControllerV4 {
 
     private final FriendsService friendsService;
