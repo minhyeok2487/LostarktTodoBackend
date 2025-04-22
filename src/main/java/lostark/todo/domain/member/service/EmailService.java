@@ -2,7 +2,7 @@ package lostark.todo.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.mailDto.MailCheckDto;
+import lostark.todo.domain.member.dto.MailCheckRequest;
 import lostark.todo.domain.member.entity.AuthMail;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.AuthMailRepository;
@@ -67,10 +67,10 @@ public class EmailService {
         return new GlobalResponseDto(true, "인증번호 전송이 정상처리 되었습니다.");
     }
 
-    public GlobalResponseDto checkMail(MailCheckDto mailCheckDto) {
-        AuthMail authMail = emailRepository.findByMailAndNumber(mailCheckDto.getMail(), mailCheckDto.getNumber())
+    public GlobalResponseDto checkMail(MailCheckRequest mailCheckRequest) {
+        AuthMail authMail = emailRepository.findByMailAndNumber(mailCheckRequest.getMail(), mailCheckRequest.getNumber())
                 .orElseThrow(() -> new ConditionNotMetException("유효하지 않은 인증번호 입니다."));
-        if (authMail.getNumber() == mailCheckDto.getNumber()
+        if (authMail.getNumber() == mailCheckRequest.getNumber()
                 && Duration.between(authMail.getCreatedDate(), LocalDateTime.now()).toMinutes() <= 3) {
             authMail.setAuth(true);
             return new GlobalResponseDto(true, "이메일 인증번호 성공");

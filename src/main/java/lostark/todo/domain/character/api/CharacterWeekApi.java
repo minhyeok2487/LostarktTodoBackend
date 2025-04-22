@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.contentDto.WeekContentDto;
+import lostark.todo.domain.character.dto.WeekContentResponse;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
@@ -79,14 +79,14 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(new CharacterResponse().toDto(character), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 주간 레이드 추가폼", response = WeekContentDto.class)
+    @ApiOperation(value = "캐릭터 주간 레이드 추가폼", response = WeekContentResponse.class)
     @GetMapping("/raid/form")
     public ResponseEntity<?> getTodoForm(@AuthenticationPrincipal String username,
                                          @RequestParam(required = false) String friendUsername,
                                          @RequestParam Long characterId) {
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 characterId, FriendPermissionType.UPDATE_RAID);
-        List<WeekContentDto> result = contentService.getTodoForm(updateCharacter);
+        List<WeekContentResponse> result = contentService.getTodoForm(updateCharacter);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

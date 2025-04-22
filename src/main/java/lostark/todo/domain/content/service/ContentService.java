@@ -1,7 +1,7 @@
 package lostark.todo.domain.content.service;
 
 import lombok.RequiredArgsConstructor;
-import lostark.todo.controller.dto.contentDto.WeekContentDto;
+import lostark.todo.domain.character.dto.WeekContentResponse;
 import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.content.entity.Content;
@@ -33,7 +33,7 @@ public class ContentService {
         return contentRepository.getScheduleRaidCategory();
     }
 
-    public List<WeekContentDto> getTodoForm(Character updateCharacter) {
+    public List<WeekContentResponse> getTodoForm(Character updateCharacter) {
         List<WeekContent> allWeekContent = contentRepository.findAllWeekContent(updateCharacter.getItemLevel());
         if (allWeekContent.isEmpty()) {
             throw new ConditionNotMetException("아이템레벨: " + updateCharacter.getItemLevel() + "보다 작은 레이드가 없습니다.");
@@ -41,19 +41,19 @@ public class ContentService {
 
         return allWeekContent.stream()
                 .map(weekContent -> {
-                    WeekContentDto weekContentDto = new WeekContentDto().toDto(weekContent);
+                    WeekContentResponse weekContentResponse = new WeekContentResponse().toDto(weekContent);
                     updateCharacter.getTodoV2List().stream()
                             .filter(todo -> todo.getWeekContent().equals(weekContent))
                             .findFirst()
                             .ifPresent(todo -> {
-                                weekContentDto.setChecked(true);
-                                weekContentDto.setGoldCheck(todo.isGoldCheck());
+                                weekContentResponse.setChecked(true);
+                                weekContentResponse.setGoldCheck(todo.isGoldCheck());
                             });
                     updateCharacter.getRaidBusGoldList().stream()
                             .filter(raidBusGold -> raidBusGold.getWeekCategory().equals(weekContent.getWeekCategory()))
                             .findFirst()
-                            .ifPresent(weekContentDto::updateBusGold);
-                    return weekContentDto;
+                            .ifPresent(weekContentResponse::updateBusGold);
+                    return weekContentResponse;
                 })
                 .toList();
     }

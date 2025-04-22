@@ -2,7 +2,7 @@ package lostark.todo.domain.cube.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.contentDto.CubeContentDto;
+import lostark.todo.domain.cube.dto.CubeStatisticsResponse;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.content.entity.CubeContent;
@@ -57,7 +57,7 @@ public class CubesService {
     }
 
     @Transactional(readOnly = true)
-    public List<CubeContentDto> getStatistics() {
+    public List<CubeStatisticsResponse> getStatistics() {
         Map<String, Market> jewelryMap = marketRepository.findByNameIn(List.of("3티어 1레벨 보석", "4티어 1레벨 보석"))
                 .stream().collect(Collectors.toMap(Market::getName, market -> market));
         List<CubeContent> cubeContentList = contentRepository.findAllByCubeContent();
@@ -70,7 +70,7 @@ public class CubesService {
                         throw new ConditionNotMetException("해당하는 보석이 없습니다: " + tierName);
                     }
 
-                    return new CubeContentDto().toDto(content, market);
+                    return new CubeStatisticsResponse().toDto(content, market);
                 }).toList();
     }
 

@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.contentDto;
+package lostark.todo.domain.character.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import lostark.todo.domain.content.enums.WeekContentCategory;
 @NoArgsConstructor
 @Data
 @Builder
-public class WeekContentDto {
+public class WeekContentResponse {
     private long id;
 
     private String weekCategory;
@@ -39,8 +39,8 @@ public class WeekContentDto {
 
     private boolean busGoldFixed; // 버스 골드 고정 여부
 
-    public WeekContentDto toDto(WeekContent weekContent) {
-        return WeekContentDto.builder()
+    public WeekContentResponse toDto(WeekContent weekContent) {
+        return WeekContentResponse.builder()
                 .id(weekContent.getId())
                 .weekCategory(weekContent.getWeekCategory())
                 .weekContentCategory(weekContent.getWeekContentCategory())

@@ -2,7 +2,7 @@ package lostark.todo.domain.friend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
+import lostark.todo.domain.friend.dto.UpdateFriendSettingRequest;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;

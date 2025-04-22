@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.contentDto.CubeContentDto;
+import lostark.todo.domain.cube.dto.CubeStatisticsResponse;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.character.dto.SpendWeekCubeRequest;
 import lostark.todo.domain.cube.dto.CubeResponse;
@@ -32,7 +32,7 @@ public class CubeApi {
     private final CharacterService characterService;
     private final CharacterMemberQueryService characterMemberQueryService;
 
-    @ApiOperation(value = "큐브 통계 데이터 출력", response = CubeContentDto.class)
+    @ApiOperation(value = "큐브 통계 데이터 출력", response = CubeStatisticsResponse.class)
     @GetMapping("/statistics")
     public ResponseEntity<?> getStatistics() {
         return new ResponseEntity<>(cubesService.getStatistics(), HttpStatus.OK);

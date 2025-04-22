@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.mailDto;
+package lostark.todo.domain.member.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MailRequestDto {
+public class SendMailRequest {
 
     @ApiModelProperty(notes = "메일")
     @Email(message = "올바른 이메일 형식을 입력해주세요.")

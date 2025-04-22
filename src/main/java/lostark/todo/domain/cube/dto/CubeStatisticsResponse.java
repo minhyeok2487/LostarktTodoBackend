@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.contentDto;
+package lostark.todo.domain.cube.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lostark.todo.domain.market.entity.Market;
 @NoArgsConstructor
 @Data
 @Builder
-public class CubeContentDto {
+public class CubeStatisticsResponse {
 
     private String name;
 
@@ -35,8 +35,8 @@ public class CubeContentDto {
 
     private double glaciersBreath; //빙하의 숨결
 
-    public CubeContentDto toDto(CubeContent cubeContent, Market market) {
-        return CubeContentDto.builder()
+    public CubeStatisticsResponse toDto(CubeContent cubeContent, Market market) {
+        return CubeStatisticsResponse.builder()
                 .name(cubeContent.getName())
                 .jewelry(cubeContent.getJewelry())
                 .leapStone(cubeContent.getLeapStone())

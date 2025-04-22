@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.mailDto;
+package lostark.todo.domain.member.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MailCheckDto {
+public class MailCheckRequest {
 
     @ApiModelProperty(notes = "유저 이메일")
     private String mail;

@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.friendsDto.UpdateFriendSettingRequest;
+import lostark.todo.domain.friend.dto.UpdateFriendSettingRequest;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.controller.dtoV2.firend.UpdateSortRequest;
 import lostark.todo.domain.friend.entity.FriendSettings;
