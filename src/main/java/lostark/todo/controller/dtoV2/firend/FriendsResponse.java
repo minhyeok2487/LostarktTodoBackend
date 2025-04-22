@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.domain.friend.entity.FriendSettings;
 
 import java.util.List;

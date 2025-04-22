@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.character;
+package lostark.todo.domain.character.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

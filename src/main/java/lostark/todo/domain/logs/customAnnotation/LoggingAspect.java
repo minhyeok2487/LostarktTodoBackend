@@ -3,7 +3,7 @@ package lostark.todo.domain.logs.customAnnotation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.*;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;

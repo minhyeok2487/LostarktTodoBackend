@@ -2,7 +2,7 @@ package lostark.todo.domain.content.service;
 
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.character.dto.WeekContentResponse;
-import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
+import lostark.todo.domain.schedule.dto.RaidCategoryResponse;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.content.entity.Content;
 import lostark.todo.domain.content.entity.DayContent;

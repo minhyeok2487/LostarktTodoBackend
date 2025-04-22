@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.WeekContentResponse;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.RaidBusGoldService;

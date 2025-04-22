@@ -3,7 +3,7 @@ package lostark.todo.domain.character.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.character.dto.CharacterUpdateContext;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.member.entity.Member;

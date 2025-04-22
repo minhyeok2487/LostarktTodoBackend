@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.UpdateCharacterSettingRequest;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.domain.character.dto.UpdateMemoRequest;
 import lostark.todo.domain.character.dto.AddCharacterRequest;
 import lostark.todo.domain.character.dto.BaseCharacterRequest;

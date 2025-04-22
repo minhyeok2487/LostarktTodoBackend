@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
+import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.character.entity.Character;

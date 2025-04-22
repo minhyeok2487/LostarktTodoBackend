@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.admin.dto.DashboardResponse;
-import lostark.todo.controller.dtoV2.character.*;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.content.service.ContentService;

@@ -1,7 +1,6 @@
 package lostark.todo.domain.character.dto;
 
 import lombok.Data;
-import lostark.todo.controller.dtoV2.character.CharacterJsonDto;
 import lostark.todo.domain.character.entity.DayTodo;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.content.enums.Category;

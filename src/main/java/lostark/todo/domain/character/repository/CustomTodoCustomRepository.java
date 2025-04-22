@@ -1,6 +1,6 @@
 package lostark.todo.domain.character.repository;
 
-import lostark.todo.controller.dtoV2.character.CustomTodoResponse;
+import lostark.todo.domain.character.dto.CustomTodoResponse;
 import lostark.todo.domain.character.entity.CustomTodo;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.member.entity.Member;

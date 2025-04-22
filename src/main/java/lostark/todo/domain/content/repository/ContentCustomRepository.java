@@ -1,6 +1,6 @@
 package lostark.todo.domain.content.repository;
 
-import lostark.todo.controller.dtoV2.content.RaidCategoryResponse;
+import lostark.todo.domain.schedule.dto.RaidCategoryResponse;
 import lostark.todo.domain.content.entity.WeekContent;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.content.enums.Category;

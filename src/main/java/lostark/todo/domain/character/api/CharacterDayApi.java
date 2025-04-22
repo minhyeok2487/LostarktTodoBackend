@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.domain.character.dto.UpdateDayCheckAllCharactersRequest;
 import lostark.todo.domain.character.dto.UpdateDayCheckAllRequest;
 import lostark.todo.domain.character.dto.UpdateDayCheckRequest;

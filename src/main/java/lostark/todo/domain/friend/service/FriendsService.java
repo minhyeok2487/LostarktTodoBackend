@@ -6,7 +6,7 @@ import lostark.todo.domain.friend.dto.UpdateFriendSettingRequest;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;
-import lostark.todo.controller.dtoV2.character.CharacterResponse;
+import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.controller.dtoV2.firend.FriendsResponse;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.friend.entity.FriendSettings;

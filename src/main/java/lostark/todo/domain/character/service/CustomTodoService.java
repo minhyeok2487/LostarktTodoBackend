@@ -2,10 +2,10 @@ package lostark.todo.domain.character.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.character.CheckCustomTodoRequest;
-import lostark.todo.controller.dtoV2.character.CreateCustomTodoRequest;
-import lostark.todo.controller.dtoV2.character.CustomTodoResponse;
-import lostark.todo.controller.dtoV2.character.UpdateCustomTodoRequest;
+import lostark.todo.domain.character.dto.CheckCustomTodoRequest;
+import lostark.todo.domain.character.dto.CreateCustomTodoRequest;
+import lostark.todo.domain.character.dto.CustomTodoResponse;
+import lostark.todo.domain.character.dto.UpdateCustomTodoRequest;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.entity.CustomTodo;

@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.character;
+package lostark.todo.domain.character.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
