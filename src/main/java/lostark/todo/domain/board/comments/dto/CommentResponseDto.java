@@ -1,4 +1,4 @@
-package lostark.todo.controller.dto.commentsDto;
+package lostark.todo.domain.board.comments.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

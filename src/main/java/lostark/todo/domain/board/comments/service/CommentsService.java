@@ -2,8 +2,8 @@ package lostark.todo.domain.board.comments.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.commentsDto.CommentListDto;
-import lostark.todo.controller.dto.commentsDto.CommentResponseDto;
+import lostark.todo.domain.board.comments.dto.CommentListDto;
+import lostark.todo.domain.board.comments.dto.CommentResponseDto;
 import lostark.todo.domain.board.comments.entity.Comments;
 import lostark.todo.domain.board.comments.repository.CommentsRepository;
 import org.springframework.data.domain.*;

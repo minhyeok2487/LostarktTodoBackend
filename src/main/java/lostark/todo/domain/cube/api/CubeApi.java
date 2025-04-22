@@ -4,8 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.characterDto.CharacterDefaultDto;
 import lostark.todo.controller.dto.contentDto.CubeContentDto;
+import lostark.todo.domain.character.dto.BaseCharacterRequest;
 import lostark.todo.domain.character.dto.SpendWeekCubeRequest;
 import lostark.todo.domain.cube.dto.CubeResponse;
 import lostark.todo.domain.cube.dto.CubeUpdateRequest;
@@ -46,8 +46,9 @@ public class CubeApi {
 
     @ApiOperation(value = "큐브 컨텐츠 추가", response = CubeResponse.class)
     @PostMapping()
-    public ResponseEntity<?> create(@AuthenticationPrincipal String username, @RequestBody CharacterDefaultDto dto) {
-        Character character = characterService.get(dto.getCharacterId(), username);
+    public ResponseEntity<?> create(@AuthenticationPrincipal String username,
+                                    @RequestBody BaseCharacterRequest request) {
+        Character character = characterService.get(request.getCharacterId(), username);
         Cubes cubes = cubesService.create(character.getId());
         CubeResponse cubeResponse = new CubeResponse(character, cubes);
         return new ResponseEntity<>(cubeResponse, HttpStatus.OK);
