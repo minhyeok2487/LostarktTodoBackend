@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.firend;
+package lostark.todo.domain.friend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

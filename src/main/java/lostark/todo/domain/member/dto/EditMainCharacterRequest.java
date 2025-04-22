@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.member;
+package lostark.todo.domain.member.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

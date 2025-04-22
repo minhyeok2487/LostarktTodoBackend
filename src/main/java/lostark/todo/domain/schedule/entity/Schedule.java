@@ -1,8 +1,8 @@
 package lostark.todo.domain.schedule.entity;
 
 import lombok.*;
-import lostark.todo.controller.dtoV2.schedule.CreateScheduleRequest;
-import lostark.todo.controller.dtoV2.schedule.EditScheduleRequest;
+import lostark.todo.domain.schedule.dto.CreateScheduleRequest;
+import lostark.todo.domain.schedule.dto.EditScheduleRequest;
 import lostark.todo.domain.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.schedule.enums.ScheduleRaidCategory;
 import lostark.todo.global.entity.BaseTimeEntity;

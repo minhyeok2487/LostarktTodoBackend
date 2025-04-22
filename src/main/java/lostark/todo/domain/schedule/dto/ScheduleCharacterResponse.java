@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.schedule;
+package lostark.todo.domain.schedule.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.annotations.ApiModelProperty;

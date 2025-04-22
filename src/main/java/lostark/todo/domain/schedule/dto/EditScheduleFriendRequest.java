@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.schedule;
+package lostark.todo.domain.schedule.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

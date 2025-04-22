@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.member.dto.LoginMemberRequest;
 import lostark.todo.domain.member.dto.AuthResponse;
 import lostark.todo.domain.member.dto.SignUpRequest;
-import lostark.todo.domain.member.dto.MemberResponse;
+import lostark.todo.domain.member.dto.LoginResponse;
 import lostark.todo.domain.member.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +33,7 @@ public class AuthApi {
     }
 
     @ApiOperation(value = "일반 로그인",
-            notes="JWT", response = MemberResponse.class)
+            notes="JWT", response = LoginResponse.class)
     @PostMapping("/login")
     public ResponseEntity<?> loginMember(@RequestBody @Valid LoginMemberRequest request) {
         return new ResponseEntity<>(authService.login(request), HttpStatus.OK);

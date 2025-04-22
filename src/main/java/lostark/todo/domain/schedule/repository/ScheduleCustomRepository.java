@@ -1,7 +1,9 @@
 package lostark.todo.domain.schedule.repository;
 
-import lostark.todo.controller.dtoV2.schedule.*;
+import lostark.todo.domain.schedule.dto.GetScheduleResponse;
+import lostark.todo.domain.schedule.dto.ScheduleCharacterResponse;
 import lostark.todo.domain.schedule.dto.SearchScheduleRequest;
+import lostark.todo.domain.schedule.dto.WeekScheduleResponse;
 import lostark.todo.domain.schedule.entity.Schedule;
 
 import java.util.List;

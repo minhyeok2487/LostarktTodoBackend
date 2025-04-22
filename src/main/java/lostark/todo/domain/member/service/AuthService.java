@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.member.dto.LoginMemberRequest;
 import lostark.todo.domain.member.dto.AuthResponse;
 import lostark.todo.domain.member.dto.SignUpRequest;
-import lostark.todo.domain.member.dto.MemberResponse;
+import lostark.todo.domain.member.dto.LoginResponse;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.repository.AuthMailRepository;
 import lostark.todo.domain.member.repository.MemberRepository;
@@ -69,10 +69,10 @@ public class AuthService {
 
     // 일반 로그인
     @Transactional
-    public MemberResponse login(LoginMemberRequest request) {
+    public LoginResponse login(LoginMemberRequest request) {
         Member member = validateLogin(request);
 
-        return MemberResponse.builder()
+        return LoginResponse.builder()
                 .username(member.getUsername())
                 .token(tokenProvider.createToken(member))
                 .build();

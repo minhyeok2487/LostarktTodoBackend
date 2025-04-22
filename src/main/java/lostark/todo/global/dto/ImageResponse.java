@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.image;
+package lostark.todo.global.dto;
 
 import lombok.Data;
 

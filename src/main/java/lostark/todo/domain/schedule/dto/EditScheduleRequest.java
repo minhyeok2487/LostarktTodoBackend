@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.schedule;
+package lostark.todo.domain.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;

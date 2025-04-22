@@ -2,9 +2,8 @@ package lostark.todo.domain.schedule.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.Character;
-import lostark.todo.domain.schedule.dto.SearchScheduleRequest;
+import lostark.todo.domain.schedule.dto.*;
 import lostark.todo.domain.schedule.entity.Schedule;
 import lostark.todo.domain.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.schedule.repository.ScheduleRepository;

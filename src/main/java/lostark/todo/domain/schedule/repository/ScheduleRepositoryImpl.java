@@ -7,10 +7,9 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.schedule.*;
 import lostark.todo.domain.character.entity.QCharacter;
 import lostark.todo.domain.character.entity.QTodoV2;
-import lostark.todo.domain.schedule.dto.SearchScheduleRequest;
+import lostark.todo.domain.schedule.dto.*;
 import lostark.todo.domain.schedule.entity.QSchedule;
 import lostark.todo.domain.schedule.entity.Schedule;
 

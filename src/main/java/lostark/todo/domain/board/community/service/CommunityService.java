@@ -2,7 +2,7 @@ package lostark.todo.domain.board.community.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.image.ImageResponse;
+import lostark.todo.global.dto.ImageResponse;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.board.community.entity.CommunityLike;
 import lostark.todo.domain.board.community.repository.CommunityImagesRepository;

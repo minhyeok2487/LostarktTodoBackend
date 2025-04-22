@@ -2,7 +2,6 @@ package lostark.todo.global.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lostark.todo.controller.dtoV2.image.ImageResponse;
 
 @Data
 public class ImageResponseV2 {
