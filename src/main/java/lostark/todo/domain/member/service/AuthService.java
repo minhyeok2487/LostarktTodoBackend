@@ -2,9 +2,9 @@ package lostark.todo.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.memberDto.LoginMemberRequest;
-import lostark.todo.controller.dtoV2.auth.AuthResponse;
-import lostark.todo.controller.dtoV2.auth.SignUpRequest;
+import lostark.todo.domain.member.dto.LoginMemberRequest;
+import lostark.todo.domain.member.dto.AuthResponse;
+import lostark.todo.domain.member.dto.SignUpRequest;
 import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.repository.AuthMailRepository;

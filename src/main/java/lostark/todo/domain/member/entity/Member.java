@@ -2,7 +2,7 @@ package lostark.todo.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
+import lostark.todo.domain.member.dto.SaveCharacterRequest;
 import lostark.todo.controller.dtoV2.character.CharacterResponse;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.member.enums.Role;

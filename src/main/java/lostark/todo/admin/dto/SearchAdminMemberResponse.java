@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.admin;
+package lostark.todo.admin.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;

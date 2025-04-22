@@ -4,16 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dto.memberDto.SaveCharacterRequest;
-import lostark.todo.controller.dtoV2.member.EditMainCharacterRequest;
-import lostark.todo.controller.dtoV2.member.EditProviderRequest;
+import lostark.todo.domain.member.dto.SaveCharacterRequest;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.lostark.client.LostarkApiClient;
 import lostark.todo.domain.character.service.CustomTodoService;
-import lostark.todo.global.customAnnotation.NotTestMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,23 +32,6 @@ public class MemberControllerV4 {
     private final FriendsService friendsService;
     private final LostarkApiClient lostarkApiClient;
     private final CustomTodoService customTodoService;
-
-    @ApiOperation(value = "대표 캐릭터 변경 API")
-    @PatchMapping("/main-character")
-    public ResponseEntity<?> editMainCharacter(@AuthenticationPrincipal String username,
-                                               @RequestBody EditMainCharacterRequest request) {
-        memberService.editMainCharacter(username, request.getMainCharacter());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "소셜 로그인 -> 일반 로그인 변경")
-    @PatchMapping("/provider")
-    @NotTestMember
-    public ResponseEntity<?> editProvider(@AuthenticationPrincipal String username,
-                                          @RequestBody EditProviderRequest request) {
-        memberService.editProvider(username, request.getPassword());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     @ApiOperation(value = "등록 캐릭터 전체 삭제")
     @DeleteMapping("/characters")

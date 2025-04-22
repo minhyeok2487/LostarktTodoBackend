@@ -21,14 +21,6 @@ public class CommentsService {
 
     private final CommentsRepository commentsRepository;
 
-    public Page<Comments> findAllByParentIdIs0(int page) {
-        return commentsRepository.findAllByParentIdIs0(PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
-    }
-
-    public List<Comments> findAllByParentId(long id) {
-        return commentsRepository.findAllByParentId(id);
-    }
-
     @Transactional(readOnly = true)
     public CommentListDto searchComments(int page) {
         Page<Comments> allComments = commentsRepository.findAllByParentIdIs0(PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdDate")));
