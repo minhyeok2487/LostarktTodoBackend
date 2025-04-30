@@ -6,6 +6,8 @@ import lostark.todo.domain.schedule.dto.EditScheduleRequest;
 import lostark.todo.domain.schedule.enums.ScheduleCategory;
 import lostark.todo.domain.schedule.enums.ScheduleRaidCategory;
 import lostark.todo.global.entity.BaseTimeEntity;
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -57,6 +59,9 @@ public class Schedule extends BaseTimeEntity {
 
     private LocalDate date; // 주간 반복이 아닐때 날짜
 
+    @ColumnDefault("true")
+    private boolean autoCheck;
+
     public static Schedule toEntity(CreateScheduleRequest request, Long characterId, Long leaderScheduleId, boolean isLeader) {
         return Schedule.builder()
                 .characterId(characterId)
@@ -71,6 +76,7 @@ public class Schedule extends BaseTimeEntity {
                 .leader(isLeader)
                 .leaderScheduleId(leaderScheduleId)
                 .date(request.getDate())
+                .autoCheck(request.isAutoCheck())
                 .build();
     }
 
@@ -88,6 +94,7 @@ public class Schedule extends BaseTimeEntity {
                 .leader(false)
                 .leaderScheduleId(main.id)
                 .date(main.date)
+                .autoCheck(main.isAutoCheck())
                 .build();
     }
 
@@ -104,5 +111,6 @@ public class Schedule extends BaseTimeEntity {
         if (request.getDate() != null) {
             this.date = request.getDate();
         }
+        this.autoCheck = request.isAutoCheck();
     }
 }

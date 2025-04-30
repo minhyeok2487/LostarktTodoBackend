@@ -40,7 +40,10 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                         schedule.leader, schedule.leaderScheduleId,
                         character.characterName,
                         new CaseBuilder().when(schedule.leader.eq(true)).then(character.characterName)
-                                .otherwise(lc.characterName).as("leaderCharacterName"), schedule.repeatWeek, schedule.date))
+                                .otherwise(lc.characterName).as("leaderCharacterName"),
+                        schedule.repeatWeek,
+                        schedule.date,
+                        schedule.autoCheck))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
                 .leftJoin(member).on(character.member.eq(member))
@@ -74,7 +77,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                         new QScheduleCharacterResponse(
                                 character.id, character.characterName, character.characterClassName,
                                 character.itemLevel, character.characterImage
-                        ), schedule.date
+                        ), schedule.date, schedule.autoCheck
                 ))
                 .from(schedule)
                 .leftJoin(character).on(schedule.characterId.eq(character.id)).fetchJoin()
@@ -142,7 +145,8 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                                                         todo.weekContent.name,
                                                         todo.weekContent.weekContentCategory.stringValue()
                                                 )
-                                        )
+                                        ),
+                                        schedule.autoCheck.isTrue()
                                 )
                                 .exists()
                 )
@@ -169,7 +173,8 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                                                         todo.weekContent.name,
                                                         todo.weekContent.weekContentCategory.stringValue()
                                                 )
-                                        )
+                                        ),
+                                        schedule.autoCheck.isTrue()
                                 )
                                 .exists()
                 )

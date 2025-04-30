@@ -24,4 +24,6 @@ public class EditScheduleRequest {
 
     @ApiModelProperty(example = "메모")
     private String memo;
+
+    private boolean autoCheck;
 }

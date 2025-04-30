@@ -56,10 +56,12 @@ public class WeekScheduleResponse {
     @ApiModelProperty(example = "깐부 캐릭터 닉네임 리스트")
     private List<String> friendCharacterNames;
 
+    private boolean autoCheck;
+
     @QueryProjection
     public WeekScheduleResponse(long scheduleId, ScheduleCategory scheduleCategory, ScheduleRaidCategory scheduleRaidCategory,
                                 String raidName, DayOfWeek dayOfWeek, LocalTime time, String memo, Boolean isLeader, long leaderScheduleId,
-                                String characterName, String leaderCharacterName, boolean repeatWeek, LocalDate date) {
+                                String characterName, String leaderCharacterName, boolean repeatWeek, LocalDate date, boolean autoCheck) {
         this.scheduleId = scheduleId;
         this.scheduleCategory = scheduleCategory;
         this.scheduleRaidCategory = scheduleRaidCategory;
@@ -74,5 +76,6 @@ public class WeekScheduleResponse {
         this.repeatWeek = repeatWeek;
         this.date = date;
         this.friendCharacterNames = new ArrayList<>();
+        this.autoCheck = autoCheck;
     }
 }

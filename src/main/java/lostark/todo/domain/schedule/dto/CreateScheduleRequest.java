@@ -56,4 +56,6 @@ public class CreateScheduleRequest {
 
     @ApiModelProperty(example = "깐부 캐릭터 id 리스트")
     private List<Long> friendCharacterIdList;
+
+    private boolean autoCheck;
 }
