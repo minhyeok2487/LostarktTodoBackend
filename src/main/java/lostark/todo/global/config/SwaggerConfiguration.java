@@ -37,8 +37,6 @@ import java.util.*;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
-    private String version;
-    private String description;
 
     /**
      * Swagger 문서 정보
@@ -65,8 +63,8 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket members() {
-        return createDocket("회원", "회원 API", "lostark.todo.domain.member");
+    public Docket board() {
+        return createDocket("게시판", "게시판 API (공지사항, 모집, 방명록)", "lostark.todo.domain.board");
     }
 
     @Bean
@@ -75,8 +73,13 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket board() {
-        return createDocket("게시판", "게시판 API (공지사항, 모집, 방명록)", "lostark.todo.domain.board");
+    public Docket content() {
+        return createDocket("콘텐츠", "로스트아크 콘텐츠 API", "lostark.todo.domain.content");
+    }
+
+    @Bean
+    public Docket cube() {
+        return createDocket("큐브", "큐브 API", "lostark.todo.domain.cube");
     }
 
     @Bean
@@ -85,43 +88,23 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket util() {
-        return createDocket("유틸", "유틸 API (콘텐츠, 큐브, 거래소 등)", "lostark.todo.domain.util");
-    }
-
-
-    @Bean
-    public Docket v3() {
-        version = "v3";
-        description = "로스트아크 일정 관리 REST API";
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .apiInfo(apiInfo(description, version))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV3"))
-                .build()
-                .securityContexts(List.of(securityContext()))
-                .securitySchemes(List.of(apiKey()));
+    public Docket logs() {
+        return createDocket("로그(타임라인)", "타임라인(로그) API", "lostark.todo.domain.logs");
     }
 
     @Bean
-    public Docket v4() {
-        version = "v4";
-        description = "로스트아크 일정 관리 REST API";
+    public Docket member() {
+        return createDocket("회원", "회원 API", "lostark.todo.domain.member");
+    }
 
-        return new Docket(DocumentationType.SWAGGER_2)
-                .ignoredParameterTypes(AuthenticationPrincipal.class)
-                .useDefaultResponseMessages(false)
-                .groupName(version)
-                .apiInfo(apiInfo(description, version))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("lostark.todo.controller.apiV4"))
-                .build()
-                .securityContexts(List.of(securityContext()))
-                .securitySchemes(List.of(apiKey()));
+    @Bean
+    public Docket notification() {
+        return createDocket("알림", "알림 API", "lostark.todo.domain.notification");
+    }
+
+    @Bean
+    public Docket schedule() {
+        return createDocket("일정", "일정 API", "lostark.todo.domain.schedule");
     }
 
 
