@@ -1,4 +1,4 @@
-package lostark.todo.controller.dtoV2.notification;
+package lostark.todo.domain.notification.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

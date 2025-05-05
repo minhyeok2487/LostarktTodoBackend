@@ -2,7 +2,7 @@ package lostark.todo.domain.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.controller.dtoV2.notification.NotificationStatusResponse;
+import lostark.todo.domain.notification.dto.NotificationStatusResponse;
 import lostark.todo.domain.board.community.entity.Community;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.notification.entity.Notification;

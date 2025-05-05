@@ -1,4 +1,4 @@
-package lostark.todo.controller.apiV4.notification;
+package lostark.todo.domain.notification.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,22 +10,23 @@ import lostark.todo.domain.board.community.entity.Community;
 import lostark.todo.domain.board.community.service.CommunityService;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.enums.Role;
-import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.domain.member.service.MemberService;
+import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.domain.notification.service.NotificationService;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/v4/notification")
+@RequestMapping("/api/v1/notification")
 @Api(tags = {"알림 API"})
-public class NotificationControllerV4 {
+public class NotificationApi {
 
     private final NotificationService notificationService;
     private final MemberService memberService;
