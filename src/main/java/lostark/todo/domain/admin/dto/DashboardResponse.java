@@ -1,4 +1,4 @@
-package lostark.todo.admin.dto;
+package lostark.todo.domain.admin.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.annotations.ApiModelProperty;

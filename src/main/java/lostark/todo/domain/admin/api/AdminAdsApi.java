@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.admin.dto.UpdateAdsDateRequest;
+import lostark.todo.domain.admin.dto.UpdateAdsDateRequest;
 import lostark.todo.domain.admin.dto.AdminAdsSearchParams;
 import lostark.todo.domain.admin.service.AdsService;
 import lostark.todo.domain.member.service.MemberService;

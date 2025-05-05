@@ -1,4 +1,4 @@
-package lostark.todo.admin.dto;
+package lostark.todo.domain.admin.dto;
 
 import lombok.Data;
 

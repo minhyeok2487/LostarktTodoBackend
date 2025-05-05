@@ -6,7 +6,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.admin.dto.*;
+import lostark.todo.domain.admin.dto.*;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.entity.QMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;

@@ -1,6 +1,6 @@
 package lostark.todo.domain.character.repository;
 
-import lostark.todo.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.member.entity.Member;

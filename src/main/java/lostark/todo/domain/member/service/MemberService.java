@@ -2,11 +2,11 @@ package lostark.todo.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.member.dto.SaveCharacterRequest;
-import lostark.todo.admin.dto.SearchAdminMemberRequest;
-import lostark.todo.admin.dto.SearchAdminMemberResponse;
-import lostark.todo.admin.dto.UpdateAdsDateRequest;
+import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
+import lostark.todo.domain.admin.dto.SearchAdminMemberResponse;
+import lostark.todo.domain.admin.dto.UpdateAdsDateRequest;
 import lostark.todo.domain.member.dto.ResetPasswordRequest;
 import lostark.todo.domain.member.dto.SaveAdsRequest;
 import lostark.todo.domain.member.entity.Ads;

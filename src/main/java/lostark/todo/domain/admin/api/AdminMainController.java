@@ -1,8 +1,8 @@
-package lostark.todo.admin.api;
+package lostark.todo.domain.admin.api;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.member.service.MemberService;
