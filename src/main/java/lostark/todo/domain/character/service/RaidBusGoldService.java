@@ -25,7 +25,7 @@ public class RaidBusGoldService {
                 updateCharacter, request.getWeekCategory());
 
         if (raidBusGold.isPresent()) {
-            raidBusGold.get().updateWeekRaidBusGold(request.getBusGold());
+            raidBusGold.get().updateWeekRaidBusGold(request);
         } else {
             RaidBusGold newRaidBusGold = RaidBusGold.builder()
                     .character(updateCharacter)
