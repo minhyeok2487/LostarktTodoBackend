@@ -10,13 +10,10 @@ import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.RaidBusGoldService;
 import lostark.todo.domain.content.entity.WeekContent;
-import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.content.service.ContentService;
 import lostark.todo.domain.character.service.CharacterService;
-import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.CharacterMemberQueryService;
-import lostark.todo.domain.friend.service.FriendsService;
 import lostark.todo.domain.character.service.TodoServiceV2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +31,6 @@ import java.util.List;
 public class CharacterWeekApi {
 
     private final CharacterService characterService;
-    private final FriendsService friendsService;
     private final ContentService contentService;
     private final TodoServiceV2 todoServiceV2;
     private final CharacterMemberQueryService characterMemberQueryService;
@@ -47,21 +43,8 @@ public class CharacterWeekApi {
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody @Valid UpdateWeekRaidRequest request) {
 
-        Character character;
-
-        // 친구인지 본인인지에 따라 캐릭터 정보 가져오기
-        if (friendUsername == null) {
-            character = characterService.get(request.getCharacterId(), username);
-        } else {
-            Friends friend = friendsService.findByFriendUsername(friendUsername, username);
-            if (!friend.getFriendSettings().isSetting()) {
-                throw new ConditionNotMetException("권한이 없습니다.");
-            }
-            character = friend.getMember().getCharacters().stream()
-                    .filter(c -> c.getId() == request.getCharacterId())
-                    .findFirst()
-                    .orElseThrow(() -> new ConditionNotMetException("등록되지 않은 캐릭터 입니다."));
-        }
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.UPDATE_SETTING);
 
         // 주간 콘텐츠 목록 가져오기
         List<WeekContent> weekContentList = contentService.findAllByIdWeekContent(request.getWeekContentIdList())
@@ -71,12 +54,12 @@ public class CharacterWeekApi {
 
         // 주간 레이드 업데이트
         if (weekContentList.size() == 1) {
-            todoServiceV2.updateWeekRaid(character, weekContentList.get(0));
+            todoServiceV2.updateWeekRaid(updateCharacter, weekContentList.get(0));
         } else {
-            todoServiceV2.updateWeekRaidAll(character, weekContentList);
+            todoServiceV2.updateWeekRaidAll(updateCharacter, weekContentList);
         }
 
-        return new ResponseEntity<>(new CharacterResponse().toDto(character), HttpStatus.OK);
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 추가폼", response = WeekContentResponse.class)
