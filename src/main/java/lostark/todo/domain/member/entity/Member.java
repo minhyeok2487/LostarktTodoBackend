@@ -15,6 +15,7 @@ import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -78,6 +79,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "following", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Follow> following;
+
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    private List<LifeEnergy> lifeEnergyList = new ArrayList<>();
 
     // 유저 전환(구글 로그인 -> 일반 로그인)
     public void changeAuthToNone(String encodePassword) {

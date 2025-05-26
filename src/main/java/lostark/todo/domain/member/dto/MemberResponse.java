@@ -8,6 +8,7 @@ import lostark.todo.domain.member.entity.Member;
 import javax.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static lostark.todo.global.Constant.TEST_USERNAME;
@@ -42,6 +43,8 @@ public class MemberResponse {
     @ApiModelProperty(example = "광고 날짜")
     private LocalDateTime adsDate;
 
+    private List<LifeEnergyResponse> lifeEnergyResponses;
+
     public static MemberResponse toDto(Member member) {
         return MemberResponse.builder()
                 .memberId(member.getId())
@@ -50,6 +53,7 @@ public class MemberResponse {
                 .role(member.getRole())
                 .ads(isAds(member))
                 .adsDate(member.getAdsDate())
+                .lifeEnergyResponses(LifeEnergyResponse.toDto(member.getLifeEnergyList()))
                 .build();
     }
 

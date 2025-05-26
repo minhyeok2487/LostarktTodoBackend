@@ -8,6 +8,7 @@ import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
+import lostark.todo.domain.member.repository.LifeEnergyRepository;
 import lostark.todo.domain.schedule.dto.AuctionRequestDto;
 import lostark.todo.domain.schedule.repository.ScheduleRepository;
 import lostark.todo.global.keyvalue.KeyValueRepository;
@@ -41,6 +42,7 @@ public class SchedulingService {
     private final KeyValueRepository keyValueRepository;
     private final RaidBusGoldRepository raidBusGoldRepository;
     private final ScheduleRepository scheduleRepository;
+    private final LifeEnergyRepository lifeEnergyRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -188,5 +190,14 @@ public class SchedulingService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void checkScheduleRaids() {
         scheduleRepository.checkScheduleRaids();
+    }
+
+    // 매일 0분, 30분마다 추가
+    @Scheduled(cron = "0 0,30 * * * *", zone = "Asia/Seoul")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addEnergyToAllLifeEnergies() {
+        int count = lifeEnergyRepository.addEnergyToAllLifeEnergies();
+        log.info("생활의 기운 업데이트: " + count + "개");
+
     }
 }
