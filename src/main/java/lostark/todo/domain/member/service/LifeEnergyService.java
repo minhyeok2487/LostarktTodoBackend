@@ -20,7 +20,7 @@ public class LifeEnergyService {
 
     @Transactional
     public void save(Member member, LifeEnergySaveRequest request) {
-        LifeEnergy lifeEnergy = new LifeEnergy().toEntity(member, request);
+        LifeEnergy lifeEnergy = LifeEnergy.toEntity(member, request);
         repository.save(lifeEnergy);
     }
 

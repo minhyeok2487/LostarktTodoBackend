@@ -46,12 +46,13 @@ public class LifeEnergy extends BaseTimeEntity {
         this.beatrice = request.isBeatrice();
     }
 
-    public LifeEnergy toEntity(Member member, LifeEnergySaveRequest request) {
-        this.member = member;
-        this.energy = request.getEnergy();
-        this.maxEnergy = request.getMaxEnergy();
-        this.characterName = request.getCharacterName();
-        this.beatrice = request.isBeatrice();
-        return this;
+    public static LifeEnergy toEntity(Member member, LifeEnergySaveRequest request) {
+        LifeEnergy lifeEnergy = new LifeEnergy();
+        lifeEnergy.member = member;
+        lifeEnergy.energy = request.getEnergy();
+        lifeEnergy.maxEnergy = request.getMaxEnergy();
+        lifeEnergy.characterName = request.getCharacterName();
+        lifeEnergy.beatrice = request.isBeatrice();
+        return lifeEnergy;
     }
 }

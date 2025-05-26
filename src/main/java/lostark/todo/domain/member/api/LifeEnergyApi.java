@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 
 @RestController
 @Slf4j
@@ -27,7 +29,7 @@ public class LifeEnergyApi {
     @ApiOperation(value = "생활의 기운 추가")
     @PostMapping("")
     public ResponseEntity<?> save(@AuthenticationPrincipal String username,
-                                    @RequestBody LifeEnergySaveRequest request) {
+                                    @RequestBody @Valid LifeEnergySaveRequest request) {
         Member member = memberService.get(username);
         service.save(member, request);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -36,7 +38,7 @@ public class LifeEnergyApi {
     @ApiOperation(value = "생활의 기운 수정")
     @PutMapping("")
     public ResponseEntity<?> update(@AuthenticationPrincipal String username,
-                                    @RequestBody LifeEnergyUpdateRequest request) {
+                                    @RequestBody @Valid LifeEnergyUpdateRequest request) {
         service.update(username, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
