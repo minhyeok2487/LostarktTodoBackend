@@ -79,6 +79,10 @@ public class Member extends BaseTimeEntity {
     @JsonManagedReference
     private List<Follow> following;
 
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    private List<LifeEnergy> lifeEnergyList;
+
     // 유저 전환(구글 로그인 -> 일반 로그인)
     public void changeAuthToNone(String encodePassword) {
         this.authProvider = "none";
