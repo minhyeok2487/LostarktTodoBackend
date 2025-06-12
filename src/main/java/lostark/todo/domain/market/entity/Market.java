@@ -42,6 +42,7 @@ public class Market extends BaseTimeEntity {
         this.yDayAvgPrice = news.getYDayAvgPrice();
         this.currentMinPrice = news.getCurrentMinPrice();
         this.recentPrice = news.getRecentPrice();
+        this.bundleCount = news.getBundleCount();
     }
 
     public void updatePrice(JSONObject jsonObject) {
