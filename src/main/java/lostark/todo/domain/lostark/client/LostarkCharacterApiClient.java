@@ -1,6 +1,5 @@
 package lostark.todo.domain.lostark.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,35 +108,6 @@ public class LostarkCharacterApiClient {
         }
     }
 
-    public List<CharacterJsonDto> getSiblings(String characterName, String apiKey) {
-        String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-        String url = "https://developer-lostark.game.onstove.com/characters/" + encodedCharacterName + "/siblings";
-
-        try (InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<CharacterJsonDto> characterList = objectMapper.readValue(
-                    reader,
-                    new TypeReference<List<CharacterJsonDto>>() {
-                    }
-            );
-
-            return characterList.stream()
-                    .filter(this::isItemLevelAboveThreshold)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException("Error fetching character list", e);
-        }
-    }
-
-    private boolean isItemLevelAboveThreshold(CharacterJsonDto dto) {
-        try {
-            double itemLevel = dto.getItemMaxLevel();
-            return itemLevel >= 1415.00;
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException(e.getMessage());
-        }
-    }
-
     // 1415이상만 필터링 메소드
     private JSONArray filterLevel(JSONArray jsonArray) {
         JSONArray filteredArray = new JSONArray();
@@ -189,6 +159,7 @@ public class LostarkCharacterApiClient {
 
     public CharacterJsonDto getCharacterWithException(String characterName, String apiKey) {
         CharacterJsonDto characterJsonDto = getCharacter(characterName, apiKey);
+        log.info(characterJsonDto.toString());
         validateCharacter(characterJsonDto);
         return characterJsonDto;
     }
@@ -198,7 +169,7 @@ public class LostarkCharacterApiClient {
             throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
         }
 
-        if (characterJsonDto.getItemMaxLevel() < 1415.00) {
+        if (characterJsonDto.getItemAvgLevel() < 1415.00) {
             throw new ConditionNotMetException("로아투두는 아이템 레벨 1415 이상 캐릭터만 저장할 수 있습니다.");
         }
     }

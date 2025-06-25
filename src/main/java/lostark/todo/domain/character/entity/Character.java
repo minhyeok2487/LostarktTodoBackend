@@ -104,7 +104,7 @@ public class Character extends BaseTimeEntity {
                 .characterLevel(newCharacter.getCharacterLevel())
                 .characterClassName(newCharacter.getCharacterClassName())
                 .characterImage(newCharacter.getCharacterImage())
-                .itemLevel(newCharacter.getItemMaxLevel())
+                .itemLevel(newCharacter.getItemAvgLevel())
                 .sortNumber(99999)
                 .memo(null)
                 .member(member)
@@ -128,7 +128,7 @@ public class Character extends BaseTimeEntity {
         this.characterClassName = updateContext.getNewCharacter().getCharacterClassName();
         this.characterImage = updateContext.getNewCharacter().getCharacterImage();
         this.serverName = updateContext.getNewCharacter().getServerName();
-        this.itemLevel = updateContext.getNewCharacter().getItemMaxLevel();
+        this.itemLevel = updateContext.getNewCharacter().getItemAvgLevel();
         this.dayTodo.setChaosName(updateContext.getDayTodo().getChaosName());
         this.dayTodo.setChaos(updateContext.getDayTodo().getChaos());
         this.dayTodo.setGuardianName(updateContext.getDayTodo().getGuardianName());

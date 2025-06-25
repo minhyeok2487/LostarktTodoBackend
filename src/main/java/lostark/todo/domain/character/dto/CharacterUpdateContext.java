@@ -19,7 +19,7 @@ public class CharacterUpdateContext {
     public CharacterUpdateContext(CharacterJsonDto newCharacter, Map<Category, List<DayContent>> dayContent
             , Map<String, Market> contentResource) {
         this.newCharacter = newCharacter;
-        this.dayTodo = new DayTodo().createDayContent(dayContent, newCharacter.getItemMaxLevel());
+        this.dayTodo = new DayTodo().createDayContent(dayContent, newCharacter.getItemAvgLevel());
         this.contentResource = contentResource;
     }
 }
