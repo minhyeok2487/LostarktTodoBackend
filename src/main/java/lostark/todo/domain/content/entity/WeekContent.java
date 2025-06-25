@@ -31,9 +31,7 @@ public class WeekContent extends Content{
 
     private int gold; //골드
 
-//    @OneToMany(mappedBy = "weekContent", cascade = {CascadeType.ALL}, orphanRemoval=true)
-//    @JsonManagedReference
-//    private List<TodoV2> todoList;
+    private int characterGold; // 캐릭터 귀속 골드
 
     private int coolTime; //주기
 
@@ -50,6 +48,7 @@ public class WeekContent extends Content{
                 ", destructionStone=" + destructionStone +
                 ", guardianStone=" + guardianStone +
                 ", gold=" + gold +
+                ", characterGold=" + characterGold +
                 ", coolTime=" + coolTime +
                 '}';
     }
