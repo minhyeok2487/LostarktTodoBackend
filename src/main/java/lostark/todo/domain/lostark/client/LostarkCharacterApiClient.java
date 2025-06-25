@@ -62,7 +62,7 @@ public class LostarkCharacterApiClient {
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
                         .characterClassName(jsonObject.get("CharacterClassName").toString())
                         .serverName(jsonObject.get("ServerName").toString())
-                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemAvgLevel").toString().replace(",", "")))
                         .dayTodo(new DayTodo())
                         .weekTodo(new WeekTodo())
                         .build();
