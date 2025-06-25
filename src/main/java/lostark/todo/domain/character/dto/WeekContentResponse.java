@@ -39,7 +39,7 @@ public class WeekContentResponse {
 
     private boolean busGoldFixed; // 버스 골드 고정 여부
 
-    private int characterGold;
+    private int characterGold; // 캐릭터 귀속 골드
 
     public WeekContentResponse toDto(WeekContent weekContent) {
         return WeekContentResponse.builder()

@@ -3,6 +3,7 @@ package lostark.todo.domain.content.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lostark.todo.domain.content.enums.WeekContentCategory;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -31,6 +32,7 @@ public class WeekContent extends Content{
 
     private int gold; //골드
 
+    @ColumnDefault("0")
     private int characterGold; // 캐릭터 귀속 골드
 
     private int coolTime; //주기

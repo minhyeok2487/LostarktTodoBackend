@@ -32,6 +32,7 @@ public class TodoV2 extends BaseTimeEntity {
 
     private int gold; //골드
 
+    @ColumnDefault("0")
     private int characterGold; // 캐릭터 귀속 골드
 
     private String message;
