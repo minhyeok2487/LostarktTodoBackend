@@ -41,6 +41,9 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "캐릭터 아이템 레벨")
     private double itemLevel;
 
+    @ApiModelProperty(notes = "캐릭터 전투력")
+    private double combatPower;
+
     @ApiModelProperty(notes = "서버 이름")
     private String serverName;
 
@@ -143,6 +146,7 @@ public class CharacterResponse {
                 .characterClassName(character.getCharacterClassName())
                 .serverName(character.getServerName())
                 .itemLevel(character.getItemLevel())
+                .combatPower(character.getCombatPower())
                 .sortNumber(character.getSortNumber())
                 .chaosCheck(character.getDayTodo().getChaosCheck())
                 .chaosGauge(character.getDayTodo().getChaosGauge())

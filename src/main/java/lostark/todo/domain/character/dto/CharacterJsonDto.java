@@ -30,7 +30,12 @@ public class CharacterJsonDto {
     @JsonProperty("ItemAvgLevel")
     @JsonDeserialize(using = DoubleDeserializer.class)
     @ApiModelProperty(notes = "캐릭터 아이템 레벨")
-    private double ItemAvgLevel;
+    private double itemAvgLevel;
+
+    @JsonProperty("CombatPower")
+    @JsonDeserialize(using = DoubleDeserializer.class)
+    @ApiModelProperty(notes = "캐릭터 아이템 레벨")
+    private double combatPower;
 
     @JsonProperty("CharacterLevel")
     private int characterLevel;
