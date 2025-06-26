@@ -38,7 +38,7 @@ public class CharacterService {
     // 외부 API를 이용하므로 트랜잭션 분리
     public CharacterUpdateContext loadCharacterUpdateResources(String apiKey, String newCharacterName) {
         // 1. 캐릭터 검색
-        CharacterJsonDto newCharacter = lostarkCharacterApiClient.getCharacterWithException(
+        CharacterJsonDto newCharacter = lostarkCharacterApiClient.getCharacter(
                 newCharacterName, apiKey);
 
         // 2. 필요 데이터 호출(거래소, 통계)

@@ -39,6 +39,8 @@ public class WeekContentResponse {
 
     private boolean busGoldFixed; // 버스 골드 고정 여부
 
+    private int characterGold; // 캐릭터 귀속 골드
+
     public WeekContentResponse toDto(WeekContent weekContent) {
         return WeekContentResponse.builder()
                 .id(weekContent.getId())
@@ -53,6 +55,7 @@ public class WeekContentResponse {
                 .name(weekContent.getName())
                 .coolTime(weekContent.getCoolTime())
                 .goldCheck(false)
+                .characterGold(weekContent.getCharacterGold())
                 .build();
     }
 

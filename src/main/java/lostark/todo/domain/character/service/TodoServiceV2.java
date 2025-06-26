@@ -60,6 +60,7 @@ public class TodoServiceV2 {
                 .character(character)
                 .isChecked(false)
                 .gold(weekContent.getGold())
+                .characterGold(weekContent.getCharacterGold())
                 .coolTime(checkTwoCycle(weekContent))
                 .sortNumber(999)
                 .build();
@@ -170,6 +171,7 @@ public class TodoServiceV2 {
                             .character(character)
                             .isChecked(false)
                             .gold(content.getGold())
+                            .characterGold(content.getCharacterGold())
                             .coolTime(checkTwoCycle(content))
                             .sortNumber(999)
                             .build())

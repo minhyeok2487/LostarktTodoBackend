@@ -45,6 +45,9 @@ public class Character extends BaseTimeEntity {
     @Column(nullable = false)
     private double itemLevel; //아이템레벨
 
+    @Column(nullable = false)
+    private double combatPower; //전투력
+
     private int sortNumber; //정렬용
 
     @Column(length = 100)
@@ -105,6 +108,7 @@ public class Character extends BaseTimeEntity {
                 .characterClassName(newCharacter.getCharacterClassName())
                 .characterImage(newCharacter.getCharacterImage())
                 .itemLevel(newCharacter.getItemAvgLevel())
+                .combatPower(newCharacter.getCombatPower())
                 .sortNumber(99999)
                 .memo(null)
                 .member(member)
@@ -129,6 +133,7 @@ public class Character extends BaseTimeEntity {
         this.characterImage = updateContext.getNewCharacter().getCharacterImage();
         this.serverName = updateContext.getNewCharacter().getServerName();
         this.itemLevel = updateContext.getNewCharacter().getItemAvgLevel();
+        this.combatPower = updateContext.getNewCharacter().getCombatPower();
         this.dayTodo.setChaosName(updateContext.getDayTodo().getChaosName());
         this.dayTodo.setChaos(updateContext.getDayTodo().getChaos());
         this.dayTodo.setGuardianName(updateContext.getDayTodo().getGuardianName());

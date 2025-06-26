@@ -43,6 +43,8 @@ public class TodoResponseDto {
 
     private List<Integer> moreRewardGoldList;
 
+    private int characterGold; //캐릭터 귀속 골드
+
     public TodoResponseDto toDto(TodoV2 todo, boolean goldCharacter) {
         return TodoResponseDto.builder()
                 .id(todo.getId())
@@ -60,6 +62,7 @@ public class TodoResponseDto {
                 .characterClassName(todo.getCharacter().getCharacterClassName())
                 .moreRewardCheckList(new ArrayList<>(Collections.singleton(todo.isMoreRewardCheck())))
                 .moreRewardGoldList(new ArrayList<>(Collections.singleton(todo.getWeekContent().getMoreRewardGold())))
+                .characterGold(calcCharacterGold(todo, goldCharacter))
                 .build();
     }
 
@@ -67,7 +70,18 @@ public class TodoResponseDto {
         int baseGold = todo.getGold();
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
 
-        if (todo.isMoreRewardCheck()) {
+        if (todo.isMoreRewardCheck() && todo.getCharacterGold() == 0) {
+            return goldCharacter ? baseGold - moreRewardGold : 0;
+        }
+
+        return goldCharacter ? baseGold : 0;
+    }
+
+    private int calcCharacterGold(TodoV2 todo, boolean goldCharacter) {
+        int baseGold = todo.getCharacterGold();
+        int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
+
+        if (todo.isMoreRewardCheck() && todo.getCharacterGold() != 0) {
             return goldCharacter ? baseGold - moreRewardGold : 0;
         }
 
@@ -86,13 +100,23 @@ public class TodoResponseDto {
         this.moreRewardGoldList.add(todo.getWeekContent().getMoreRewardGold());
 
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
-        int goldToAdd = goldCharacter ? todo.getGold() : 0;
+        if (todo.getCharacterGold() == 0) {
+            int goldToAdd = goldCharacter ? todo.getGold() : 0;
 
-        if (todo.isMoreRewardCheck() && goldCharacter) {
-            goldToAdd -= moreRewardGold;
+            if (todo.isMoreRewardCheck() && goldCharacter) {
+                goldToAdd -= moreRewardGold;
+            }
+            setRealGold(getRealGold() + goldToAdd);
+            setCharacterGold(getCharacterGold());
+        } else {
+            int goldToAdd = goldCharacter ? todo.getCharacterGold() : 0;
+
+            if (todo.isMoreRewardCheck() && goldCharacter) {
+                goldToAdd -= moreRewardGold;
+            }
+            setRealGold(getRealGold() + todo.getGold());
+            setCharacterGold(getCharacterGold() + goldToAdd);
         }
-
-        setRealGold(getRealGold() + goldToAdd);
         updateCurrentGateIfChecked(todo);
     }
 

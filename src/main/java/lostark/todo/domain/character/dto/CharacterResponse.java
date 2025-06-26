@@ -41,6 +41,9 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "캐릭터 아이템 레벨")
     private double itemLevel;
 
+    @ApiModelProperty(notes = "캐릭터 전투력")
+    private double combatPower;
+
     @ApiModelProperty(notes = "서버 이름")
     private String serverName;
 
@@ -104,6 +107,9 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "주간 레이드 골드")
     private int weekRaidGold;
 
+    @ApiModelProperty(notes = "주간 캐릭터 레이드 골드")
+    private int weekCharacterRaidGold;
+
     @ApiModelProperty(notes = "주간 숙제 리스트")
     private List<TodoResponseDto> todoList;
 
@@ -140,6 +146,7 @@ public class CharacterResponse {
                 .characterClassName(character.getCharacterClassName())
                 .serverName(character.getServerName())
                 .itemLevel(character.getItemLevel())
+                .combatPower(character.getCombatPower())
                 .sortNumber(character.getSortNumber())
                 .chaosCheck(character.getDayTodo().getChaosCheck())
                 .chaosGauge(character.getDayTodo().getChaosGauge())
@@ -270,13 +277,29 @@ public class CharacterResponse {
 
     private void handleGoldCharacter(TodoResponseDto todoResponseDto, TodoV2 todo, CharacterResponse characterResponse) {
         if (todoResponseDto.isGoldCheck()) {
-            int raidGold = todo.isMoreRewardCheck()
-                    ? todo.getGold() - todo.getWeekContent().getMoreRewardGold()
-                    : todo.getGold();
-            characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + raidGold);
+            if (todo.getCharacterGold() == 0){
+                int raidGold = todo.isMoreRewardCheck()
+                        ? todo.getGold() - todo.getWeekContent().getMoreRewardGold()
+                        : todo.getGold();
+                characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + raidGold);
+                characterResponse.setWeekCharacterRaidGold(characterResponse.getWeekCharacterRaidGold());
+            } else {
+                int raidGold = todo.isMoreRewardCheck()
+                        ? todo.getCharacterGold() - todo.getWeekContent().getMoreRewardGold()
+                        : todo.getCharacterGold();
+                characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + todo.getGold());
+                characterResponse.setWeekCharacterRaidGold(characterResponse.getWeekCharacterRaidGold() + raidGold);
+            }
+
         } else {
             if (todo.isMoreRewardCheck()) {
-                characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() - todo.getWeekContent().getMoreRewardGold());
+                if (todo.getCharacterGold() == 0) {
+                    characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() - todo.getWeekContent().getMoreRewardGold());
+                    characterResponse.setWeekCharacterRaidGold(characterResponse.getWeekCharacterRaidGold());
+                } else {
+                    characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold());
+                    characterResponse.setWeekCharacterRaidGold(characterResponse.getWeekCharacterRaidGold() - todo.getWeekContent().getMoreRewardGold());
+                }
             }
         }
     }
@@ -300,6 +323,7 @@ public class CharacterResponse {
                 todo.setRealGold(todo.getRealGold() + gold.getBusGold());
                 if (todo.isCheck()) {
                     characterResponse.setWeekRaidGold(characterResponse.getWeekRaidGold() + gold.getBusGold());
+                    characterResponse.setWeekCharacterRaidGold(characterResponse.getWeekCharacterRaidGold());
                 }
             }
         });

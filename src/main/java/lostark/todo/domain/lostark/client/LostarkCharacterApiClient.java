@@ -62,13 +62,13 @@ public class LostarkCharacterApiClient {
                         .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
                         .characterClassName(jsonObject.get("CharacterClassName").toString())
                         .serverName(jsonObject.get("ServerName").toString())
-                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemAvgLevel").toString().replace(",", "")))
                         .dayTodo(new DayTodo())
                         .weekTodo(new WeekTodo())
                         .build();
                 character.setSettings(new Settings());
                 character.setTodoV2List(new ArrayList<>());
-                character.setCharacterImage(getCharacterImageUrl(character.getCharacterName(), apiKey));
+                getCharacterImageAndCombatPower(character, apiKey);
                 character.getDayTodo().createDayContent(
                         dayContent.get(Category.카오스던전), dayContent.get(Category.가디언토벌), character.getItemLevel());
                 characterList.add(character);
@@ -113,7 +113,7 @@ public class LostarkCharacterApiClient {
         JSONArray filteredArray = new JSONArray();
         for (Object obj : jsonArray) {
             JSONObject jsonObject = (JSONObject) obj;
-            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", ""));
+            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemAvgLevel").toString().replace(",", ""));
             if (itemMaxLevel >= 1415D) {
                 filteredArray.add(jsonObject);
             }
@@ -141,36 +141,51 @@ public class LostarkCharacterApiClient {
         }
     }
 
-    public CharacterJsonDto getCharacter(String characterName, String apiKey) {
+    public void getCharacterImageAndCombatPower(Character character, String apiKey) {
         try {
+            String characterName = character.getCharacterName();
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
-
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(inputStreamReader, CharacterJsonDto.class);
-        } catch (ConditionNotMetException e) {
-            throw new ConditionNotMetException(e.getMessage());
+            JSONParser parser = new JSONParser();
+            JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
+            if (profile != null && profile.get("CharacterImage") != null) {
+                character.setCharacterImage(profile.get("CharacterImage").toString());
+            }
+            if (profile != null && profile.get("CombatPower") != null) {
+                String combatPowerStr = profile.get("CombatPower").toString().replace(",", "");
+                character.setCombatPower(Double.parseDouble(combatPowerStr));
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public CharacterJsonDto getCharacterWithException(String characterName, String apiKey) {
-        CharacterJsonDto characterJsonDto = getCharacter(characterName, apiKey);
-        log.info(characterJsonDto.toString());
-        validateCharacter(characterJsonDto);
-        return characterJsonDto;
+    public CharacterJsonDto getCharacter(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/profiles";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            ObjectMapper objectMapper = new ObjectMapper();
+            CharacterJsonDto character = objectMapper.readValue(reader, CharacterJsonDto.class);
+
+            if (character == null) {
+                throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다. (인게임에서 한번 접속해주세요.)");
+            }
+
+            if (character.getItemAvgLevel() < 1415.00) {
+                throw new ConditionNotMetException("로아투두는 아이템 레벨 1415 이상 캐릭터만 저장할 수 있습니다.");
+            }
+
+            return character;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new RuntimeException("API 응답 파싱 중 오류가 발생했습니다: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("알 수 없는 오류가 발생했습니다: " + e.getMessage(), e);
+        }
     }
 
-    private static void validateCharacter(CharacterJsonDto characterJsonDto) {
-        if (characterJsonDto == null) {
-            throw new ConditionNotMetException("로스트아크 서버에서 캐릭터를 찾을 수 없습니다.");
-        }
-
-        if (characterJsonDto.getItemAvgLevel() < 1415.00) {
-            throw new ConditionNotMetException("로아투두는 아이템 레벨 1415 이상 캐릭터만 저장할 수 있습니다.");
-        }
-    }
 }
