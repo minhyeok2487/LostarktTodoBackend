@@ -10,6 +10,7 @@ import lostark.todo.domain.content.service.ContentService;
 import lostark.todo.domain.character.entity.*;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.entity.DayContent;
+import lostark.todo.domain.logs.service.LogService;
 import lostark.todo.domain.market.entity.Market;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.TodoV2;
@@ -34,6 +35,7 @@ public class CharacterService {
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ContentService contentService;
     private final MarketService marketService;
+    private final LogService logService;
 
     // 외부 API를 이용하므로 트랜잭션 분리
     public CharacterUpdateContext loadCharacterUpdateResources(String apiKey, String newCharacterName) {
@@ -225,6 +227,8 @@ public class CharacterService {
             case guardian -> dayTodo.updateCheckGuardian();
             default -> throw new IllegalArgumentException("Invalid day todo category: " + request.getCategory());
         }
+
+        logService.processDayLog(request.getCategory(), character);
     }
 
     @Transactional
