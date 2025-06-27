@@ -4,6 +4,7 @@ import lombok.*;
 import lostark.todo.global.entity.BaseTimeEntity;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -40,4 +41,7 @@ public class Logs extends BaseTimeEntity {
     private String message;
 
     private double profit;
+
+    @ColumnDefault("false")
+    private boolean deleted;
 }

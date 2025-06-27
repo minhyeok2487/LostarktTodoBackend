@@ -31,7 +31,6 @@ public class CharacterDayApi {
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 체크 업데이트", response = CharacterResponse.class)
     @PostMapping("/check")
-//    @Loggable()
     public ResponseEntity<?> updateDayCheck(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
                                             @RequestBody UpdateDayCheckRequest request) {
