@@ -213,7 +213,7 @@ public class CharacterService {
     }
 
     @Transactional
-    public void updateDayCheck(Character character, UpdateDayCheckRequest request) {
+    public CharacterResponse updateDayCheck(Character character, UpdateDayCheckRequest request) {
         DayTodo dayTodo = character.getDayTodo();
 
         switch (request.getCategory()) {
@@ -228,8 +228,9 @@ public class CharacterService {
             case guardian -> dayTodo.updateCheckGuardian();
             default -> throw new IllegalArgumentException("Invalid day todo category: " + request.getCategory());
         }
-
-        logService.processDayLog(request.getCategory(), character);
+        CharacterResponse response = new CharacterResponse().toDto(character);
+        logService.processDayLog(request.getCategory(), response);
+        return response;
     }
 
     @Transactional
@@ -255,7 +256,7 @@ public class CharacterService {
      * 출력된 상태인 컨텐츠 중 전체 체크가 아닌 상태면 전체 true
      */
     @Transactional
-    public void updateDayCheckAll(Character updateCharacter) {
+    public CharacterResponse updateDayCheckAll(Character updateCharacter) {
         DayTodo dayTodo = updateCharacter.getDayTodo();
         Settings settings = updateCharacter.getSettings();
 
@@ -268,9 +269,13 @@ public class CharacterService {
         // 전체 체크 상태를 반영
         calculateUpdateDayCheckAll(updaters, checkAllCompleted);
 
+        CharacterResponse response = new CharacterResponse().toDto(updateCharacter);
+
         // 로그 남기기
-        logService.processDayLog(DayTodoCategoryEnum.chaos, updateCharacter);
-        logService.processDayLog(DayTodoCategoryEnum.guardian, updateCharacter);
+        logService.processDayLog(DayTodoCategoryEnum.chaos, response);
+        logService.processDayLog(DayTodoCategoryEnum.guardian, response);
+
+        return response;
     }
 
     /**

@@ -36,8 +36,7 @@ public class CharacterDayApi {
                                             @RequestBody UpdateDayCheckRequest request) {
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_DAY_TODO);
-        characterService.updateDayCheck(updateCharacter, request);
-        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(characterService.updateDayCheck(updateCharacter, request), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 일일컨텐츠 휴식게이지 업데이트",
@@ -65,8 +64,7 @@ public class CharacterDayApi {
                                             @RequestBody UpdateDayCheckAllRequest request) {
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_DAY_TODO);
-        characterService.updateDayCheckAll(updateCharacter);
-        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(characterService.updateDayCheckAll(updateCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "전체 캐릭터 일일컨텐츠 전체 체크(출력된 것만)", response = CharacterResponse.class)

@@ -85,7 +85,7 @@ public class CharacterWeekApi {
     }
 
 
-    @ApiOperation(value = "캐릭터 주간 레이드 check 수정", response = CharacterResponse.class)
+    @ApiOperation(value = "캐릭터 주간 레이드 check", response = CharacterResponse.class)
     @PostMapping("/raid/check")
 //    @Loggable()
     public ResponseEntity<?> updateWeekRaidCheck(@AuthenticationPrincipal String username,
@@ -93,8 +93,7 @@ public class CharacterWeekApi {
                                                  @RequestBody UpdateWeekRaidCheckRequest request) {
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
-        todoServiceV2.updateWeekRaidCheck(updateCharacter, request);
-        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+        return new ResponseEntity<>(todoServiceV2.updateWeekRaidCheck(updateCharacter, request), HttpStatus.OK);
     }
 
     @ApiOperation(value = "캐릭터 주간 레이드 message 수정 (1관문에 저장됨)",

@@ -2,12 +2,10 @@ package lostark.todo.domain.character.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
-import lostark.todo.domain.character.dto.UpdateWeekRaidMessageRequest;
-import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
-import lostark.todo.domain.character.dto.UpdateWeekRaidSortRequest;
+import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.content.entity.WeekContent;
+import lostark.todo.domain.logs.service.LogService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.keyvalue.KeyValueRepository;
 import lostark.todo.domain.character.entity.TodoV2;
@@ -26,6 +24,7 @@ public class TodoServiceV2 {
 
     private final TodoV2Repository todoV2Repository;
     private final KeyValueRepository keyValueRepository;
+    private final LogService logService;
 
     // 캐릭터 주간 레이드 Message 수정
     @Transactional
@@ -183,7 +182,7 @@ public class TodoServiceV2 {
     }
 
     @Transactional
-    public void updateWeekRaidCheck(Character character, UpdateWeekRaidCheckRequest request) {
+    public CharacterResponse updateWeekRaidCheck(Character character, UpdateWeekRaidCheckRequest request) {
         List<TodoV2> todoV2List = todoV2Repository.findAllCharacterAndWeekCategory(character, request.getWeekCategory());
         if (todoV2List.isEmpty()) {
             throw new ConditionNotMetException("등록된 숙제가 아닙니다.");
@@ -196,35 +195,40 @@ public class TodoServiceV2 {
             // 하나라도 체크가 안되어있으면 전체 체크
             todoV2List.forEach(todoV2 -> todoV2.setChecked(!allChecked));
             todoV2List.forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
-            return;
-        }
-
-        // 단건 체크 API
-        if (allChecked) {
-            // 전체 체크 되어 있으면 체크 해제
-            todoV2List.forEach(todoV2 -> todoV2.setChecked(false));
-            todoV2List.forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
         } else {
-            // 마지막 체크된 항목 찾기
-            List<TodoV2> findList = todoV2List.stream()
-                    .filter(TodoV2::isChecked)
-                    .toList();
-
-            if (!findList.isEmpty()) {
-                int currentGate = findList.get(findList.size() - 1).getWeekContent().getGate();
-                // 다음 관문 체크
-                todoV2List.stream()
-                        .filter(todoV2 -> todoV2.getWeekContent().getGate() == currentGate + 1)
-                        .findFirst()
-                        .ifPresent(next -> next.setChecked(true));
+            // 단건 체크 API
+            if (allChecked) {
+                // 전체 체크 되어 있으면 체크 해제
+                todoV2List.forEach(todoV2 -> todoV2.setChecked(false));
+                todoV2List.forEach(todoV2 -> todoV2.setMoreRewardCheck(false));
             } else {
-                // 체크된 항목이 없으면 gate == 1인 항목 체크
-                todoV2List.stream()
-                        .filter(todoV2 -> todoV2.getWeekContent().getGate() == 1)
-                        .findFirst()
-                        .ifPresent(firstGate -> firstGate.setChecked(true));
+                // 마지막 체크된 항목 찾기
+                List<TodoV2> findList = todoV2List.stream()
+                        .filter(TodoV2::isChecked)
+                        .toList();
+
+                if (!findList.isEmpty()) {
+                    int currentGate = findList.get(findList.size() - 1).getWeekContent().getGate();
+                    // 다음 관문 체크
+                    todoV2List.stream()
+                            .filter(todoV2 -> todoV2.getWeekContent().getGate() == currentGate + 1)
+                            .findFirst()
+                            .ifPresent(next -> next.setChecked(true));
+                } else {
+                    // 체크된 항목이 없으면 gate == 1인 항목 체크
+                    todoV2List.stream()
+                            .filter(todoV2 -> todoV2.getWeekContent().getGate() == 1)
+                            .findFirst()
+                            .ifPresent(firstGate -> firstGate.setChecked(true));
+                }
             }
         }
+
+        CharacterResponse response = new CharacterResponse().toDto(character);
+
+        logService.processWeekLog(request, response);
+
+        return response;
     }
 
 
