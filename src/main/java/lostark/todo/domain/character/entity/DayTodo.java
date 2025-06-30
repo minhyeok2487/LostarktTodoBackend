@@ -151,7 +151,7 @@ public class DayTodo {
         double gold = calculateChaosGold();
         if (chaosCheck != 2) {
             chaosCheck = 2;
-            if (chaosGauge >= 40) {
+            if (chaosGauge >= 40 && beforeChaosGauge == chaosGauge) { // 체크된 상태로 전체 체크시 휴식게이지 차감 방지
                 chaosGauge -= 40;
             }
             addWeekTotalGold(gold);
@@ -184,7 +184,7 @@ public class DayTodo {
     public void updateCheckGuardian() {
         if (guardianCheck < 1) {
             guardianCheck += 1;
-            if (guardianGauge >= 20) {
+            if (guardianGauge >= 20 && beforeGuardianGauge == guardianGauge) { // 체크된 상태로 전체 체크시 휴식게이지 차감 방지
                 guardianGauge -= 20;
             }
             addWeekTotalGold(this.guardianGold);

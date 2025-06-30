@@ -23,13 +23,14 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate) {
+    public Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name) {
         return Optional.ofNullable(
                 factory.selectFrom(logs)
                         .where(
                                 eqCharacter(characterId),
                                 eqLogContent(logContent),
-                                eqLocalDate(localDate)
+                                eqLocalDate(localDate),
+                                eqName(name)
                         )
                         .fetchOne()
         );
@@ -52,7 +53,8 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                         eqMember(member),
                         ltLogsId(params.getLogsId()),
                         eqCharacter(params.getCharacterId()),
-                        eqLogContent(params.getLogContent())
+                        eqLogContent(params.getLogContent()),
+                        isDeleted(false)
                 )
                 .orderBy(logs.id.desc())
                 .limit(pageRequest.getPageSize() + 1)
@@ -83,7 +85,8 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                 .where(
                         eqMember(memberId),
                         betweenDate(request.getStartDate(), request.getEndDate()),
-                        eqCharacter(request.getCharacterId())
+                        eqCharacter(request.getCharacterId()),
+                        isDeleted(false)
                 )
                 .groupBy(logs.localDate)
                 .fetch();
@@ -122,11 +125,22 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
         return logs.logContent.eq(logContent);
     }
 
+    private BooleanExpression eqName(String name) {
+        if (name == null) {
+            return null;
+        }
+        return logs.name.eq(name);
+    }
+
     private BooleanExpression ltLogsId(Long logsId) {
         if (logsId != null) {
             return logs.id.lt(logsId);
         }
         return null;
+    }
+
+    private BooleanExpression isDeleted(boolean deleted) {
+        return logs.deleted.eq(deleted);
     }
 
 

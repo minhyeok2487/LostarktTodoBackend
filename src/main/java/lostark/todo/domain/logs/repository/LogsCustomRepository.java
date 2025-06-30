@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface LogsCustomRepository {
 
-    Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate);
+    Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name);
 
     CursorResponse<LogsSearchResponse> search(long member, LogsSearchParams params, PageRequest pageRequest);
 
