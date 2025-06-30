@@ -51,12 +51,9 @@ public class LogService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveLog(Logs logs) {
         try {
-            Optional<Logs> existingLog = null;
-            if (logs.getLogContent().equals(LogContent.CHAOS) || logs.getLogContent().equals(LogContent.GUARDIAN)) {
-                existingLog = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null);
-            } else {
-                existingLog = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
-            }
+            Optional<Logs> existingLog = (logs.getLogContent().equals(LogContent.CHAOS) || logs.getLogContent().equals(LogContent.GUARDIAN))
+                    ? repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null)
+                    : repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
             if (existingLog.isPresent()) {
                 Logs logToUpdate = existingLog.get();
                 logToUpdate.setDeleted(logs.isDeleted());
