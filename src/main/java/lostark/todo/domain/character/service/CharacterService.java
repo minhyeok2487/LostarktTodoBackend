@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.character.dto.*;
+import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.content.service.ContentService;
 import lostark.todo.domain.character.entity.*;
@@ -266,6 +267,10 @@ public class CharacterService {
 
         // 전체 체크 상태를 반영
         calculateUpdateDayCheckAll(updaters, checkAllCompleted);
+
+        // 로그 남기기
+        logService.processDayLog(DayTodoCategoryEnum.chaos, updateCharacter);
+        logService.processDayLog(DayTodoCategoryEnum.guardian, updateCharacter);
     }
 
     /**

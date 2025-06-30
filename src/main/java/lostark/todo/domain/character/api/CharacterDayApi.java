@@ -58,7 +58,7 @@ public class CharacterDayApi {
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 일일컨텐츠 전체 체크 업데이트", response = CharacterResponse.class)
+    @ApiOperation(value = "단일 캐릭터 일일컨텐츠 전체 체크 업데이트", response = CharacterResponse.class)
     @PostMapping("/check/all")
     public ResponseEntity<?> updateDayCheck(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername,
