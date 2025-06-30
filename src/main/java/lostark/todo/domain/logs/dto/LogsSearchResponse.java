@@ -30,8 +30,14 @@ public class LogsSearchResponse {
 
     private int profit;
 
+    private String characterClassName;
+
+    private String characterName;
+
     @QueryProjection
-    public LogsSearchResponse(Long logsId, LocalDateTime createdDate, LocalDate localDate, LogType logType, LogContent logContent, String name, String message, double profit) {
+    public LogsSearchResponse(Long logsId, LocalDateTime createdDate, LocalDate localDate, LogType logType,
+                              LogContent logContent, String name, String message, double profit,
+                              String characterClassName, String characterName) {
         this.logsId = logsId;
         this.createdDate = createdDate;
         this.localDate = localDate;
@@ -40,5 +46,7 @@ public class LogsSearchResponse {
         this.name = name;
         this.message = message;
         this.profit = (int) profit;
+        this.characterClassName = characterClassName;
+        this.characterName = characterName;
     }
 }
