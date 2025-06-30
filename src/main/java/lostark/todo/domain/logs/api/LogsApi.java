@@ -26,17 +26,17 @@ public class LogsApi {
 
     private final LogService service;
 
-//    @ApiOperation(value = "최근 Logs 불러오기", notes = "최근 100개 단위")
-//    @GetMapping()
-//    public ResponseEntity<?> search(@AuthenticationPrincipal String username,
-//                                    @Valid LogsSearchParams params) {
-//        return new ResponseEntity<>(service.search(username, params), HttpStatus.OK);
-//    }
-//
-//    @ApiOperation(value = "날짜별 숙제 수익", notes = "기본 2주", response = LogProfitResponse.class)
-//    @GetMapping("/profit")
-//    public ResponseEntity<?> getLogsProfit(@AuthenticationPrincipal String username,
-//                                           @Valid GetLogsProfitRequest request) {
-//        return new ResponseEntity<>(service.getProfit(username, request), HttpStatus.OK);
-//    }
+    @ApiOperation(value = "최근 Logs 불러오기", notes = "최근 100개 단위")
+    @GetMapping()
+    public ResponseEntity<?> search(@AuthenticationPrincipal String username,
+                                    @Valid LogsSearchParams params) {
+        return new ResponseEntity<>(service.search(username, params), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "날짜별 숙제 수익", notes = "기본 2주", response = LogProfitResponse.class)
+    @GetMapping("/profit")
+    public ResponseEntity<?> getLogsProfit(@AuthenticationPrincipal String username,
+                                           @Valid GetLogsProfitRequest request) {
+        return new ResponseEntity<>(service.getProfit(username, request), HttpStatus.OK);
+    }
 }

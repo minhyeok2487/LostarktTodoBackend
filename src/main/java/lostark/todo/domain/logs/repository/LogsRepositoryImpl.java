@@ -53,7 +53,8 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                         eqMember(member),
                         ltLogsId(params.getLogsId()),
                         eqCharacter(params.getCharacterId()),
-                        eqLogContent(params.getLogContent())
+                        eqLogContent(params.getLogContent()),
+                        isDeleted(false)
                 )
                 .orderBy(logs.id.desc())
                 .limit(pageRequest.getPageSize() + 1)
@@ -84,7 +85,8 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                 .where(
                         eqMember(memberId),
                         betweenDate(request.getStartDate(), request.getEndDate()),
-                        eqCharacter(request.getCharacterId())
+                        eqCharacter(request.getCharacterId()),
+                        isDeleted(false)
                 )
                 .groupBy(logs.localDate)
                 .fetch();
@@ -135,6 +137,10 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
             return logs.id.lt(logsId);
         }
         return null;
+    }
+
+    private BooleanExpression isDeleted(boolean deleted) {
+        return logs.deleted.eq(deleted);
     }
 
 

@@ -12,8 +12,12 @@ import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.domain.logs.repository.LogsRepository;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.repository.MemberRepository;
+import lostark.todo.global.dto.CursorResponse;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +32,21 @@ import java.util.Optional;
 @Slf4j
 public class LogService {
     private final LogsRepository repository;
+    private final MemberRepository memberRepository;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Transactional(readOnly = true)
+    public CursorResponse<LogsSearchResponse> search(String username, LogsSearchParams params) {
+        PageRequest pageRequest = PageRequest.of(0, 100);
+        Member member = memberRepository.get(username);
+        return repository.search(member.getId(), params, pageRequest);
+    }
+
+    @Transactional
+    public List<LogProfitResponse> getProfit(String username, GetLogsProfitRequest request) {
+        Member member = memberRepository.get(username);
+        return repository.getProfit(member.getId(), request);
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveLog(Logs logs) {
