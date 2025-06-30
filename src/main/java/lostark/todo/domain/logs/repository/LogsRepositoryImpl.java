@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import static lostark.todo.domain.character.entity.QCharacter.character;
 import static lostark.todo.domain.logs.entity.QLogs.logs;
 
 @RequiredArgsConstructor
@@ -46,9 +47,12 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                         logs.logContent,
                         logs.name,
                         logs.message,
-                        logs.profit
+                        logs.profit,
+                        character.characterClassName,
+                        character.characterName
                 ))
                 .from(logs)
+                .leftJoin(character).on(character.id.eq(logs.characterId)).fetchJoin()
                 .where(
                         eqMember(member),
                         ltLogsId(params.getLogsId()),
