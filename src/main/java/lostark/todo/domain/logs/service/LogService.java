@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterResponse;
 import lostark.todo.domain.character.dto.TodoResponseDto;
 import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
+import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,7 +33,12 @@ public class LogService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveLog(Logs logs) {
         try {
-            Optional<Logs> existingLog = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate());
+            Optional<Logs> existingLog = null;
+            if (logs.getLogContent().equals(LogContent.CHAOS) || logs.getLogContent().equals(LogContent.GUARDIAN)) {
+                existingLog = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null);
+            } else {
+                existingLog = repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+            }
             if (existingLog.isPresent()) {
                 Logs logToUpdate = existingLog.get();
                 logToUpdate.setDeleted(logs.isDeleted());
@@ -47,7 +54,7 @@ public class LogService {
         }
     }
 
-    // 주간 숙제 수익 저장
+    // 주간 레이드 수익 저장
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processWeekLog(UpdateWeekRaidCheckRequest request, CharacterResponse response) {
         response.getTodoList().stream()
@@ -57,13 +64,83 @@ public class LogService {
                     String message = formatRaidLogMessage(todo, response, gold);
                     saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID, todo.getWeekCategory(), todo.isCheck(), message, gold);
 
-//                    // 취소하면 더보기도 초기화
-//                    if (!todo.isCheck()) {
-//                        logService.deleteMoreRewardLogs(response.getMemberId(), response.getCharacterId(), request.getWeekCategory());
-//                    }
+                    // 취소하면 더보기도 초기화
+                    if (!todo.isCheck()) {
+                        saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD,
+                                request.getWeekCategory(), false, "더보기 취소", 0);
+                    }
 
                 });
     }
+
+    // 주간 레이드 더보기 로그 저장
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processWeekMoreRewardLog(UpdateWeekRaidMoreRewardCheckRequest request, CharacterResponse response) {
+        String weekCategory = request.getWeekCategory();
+
+        TodoResponseDto todo = findTodoByWeekCategory(response.getTodoList(), weekCategory);
+        if (todo == null) {
+            return;
+        }
+
+        RewardInfo rewardInfo = calculateRewardInfo(todo, response.isGoldCharacter());
+        String message = createLogMessage(response, weekCategory, rewardInfo);
+
+        saveCharacterResponseLog(response, LogType.WEEKLY, LogContent.RAID_MORE_REWARD,
+                weekCategory, rewardInfo.finalGold() < 0, message, rewardInfo.finalGold());
+    }
+
+
+    // 주어진 TodoList에서 weekCategory에 해당하는 Todo를 찾기
+    private TodoResponseDto findTodoByWeekCategory(List<TodoResponseDto> todoList, String weekCategory) {
+        return todoList.stream()
+                .filter(todo -> weekCategory.equals(todo.getWeekCategory()))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+    // 더보기 보상 정보를 계산
+    private RewardInfo calculateRewardInfo(TodoResponseDto todo, boolean isGoldCharacter) {
+        List<Boolean> moreRewardCheckList = todo.getMoreRewardCheckList();
+        List<Integer> moreRewardGoldList = todo.getMoreRewardGoldList();
+
+        StringBuilder gates = new StringBuilder();
+        int totalGold = 0;
+
+        for (int i = 0; i < moreRewardCheckList.size(); i++) {
+            if (moreRewardCheckList.get(i)) {
+                if (!gates.isEmpty()) {
+                    gates.append(", ");
+                }
+                gates.append(i + 1);
+                totalGold += moreRewardGoldList.get(i);
+            }
+        }
+
+        // 관문 정보가 있으면 "관문" 텍스트 추가
+        String gatesText = !gates.isEmpty() ? (gates + " 관문") : "";
+
+        int finalGold = isGoldCharacter ? -totalGold : 0;
+        return new RewardInfo(gatesText, finalGold);
+    }
+
+
+    // 더보기 로그 메시지를 생성
+    private String createLogMessage(CharacterResponse response, String weekCategory, RewardInfo rewardInfo) {
+        return String.format("%s 서버의 %s(%s) 캐릭터가 %s %s 더보기를 체크하여 %d골드를 소모했습니다.",
+                response.getServerName(),
+                response.getCharacterName(),
+                response.getItemLevel(),
+                weekCategory,
+                rewardInfo.gates(),
+                rewardInfo.finalGold());
+    }
+
+
+    // 보상 정보를 담는 내부 클래스
+    private record RewardInfo(String gates, int finalGold) {}
+
 
     private String formatRaidLogMessage(TodoResponseDto todo, CharacterResponse response, int gold) {
         StringBuilder message = new StringBuilder(response.getServerName() + " 서버의 " +

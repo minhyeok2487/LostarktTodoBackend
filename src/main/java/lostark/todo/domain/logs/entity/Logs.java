@@ -16,6 +16,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "logs", indexes = {
+        @Index(name = "idx_logs_query", columnList = "characterId, logContent, localDate, name")
+})
 public class Logs extends BaseTimeEntity {
 
     // 로그 테이블

@@ -23,13 +23,14 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate) {
+    public Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name) {
         return Optional.ofNullable(
                 factory.selectFrom(logs)
                         .where(
                                 eqCharacter(characterId),
                                 eqLogContent(logContent),
-                                eqLocalDate(localDate)
+                                eqLocalDate(localDate),
+                                eqName(name)
                         )
                         .fetchOne()
         );
@@ -120,6 +121,13 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
             return null;
         }
         return logs.logContent.eq(logContent);
+    }
+
+    private BooleanExpression eqName(String name) {
+        if (name == null) {
+            return null;
+        }
+        return logs.name.eq(name);
     }
 
     private BooleanExpression ltLogsId(Long logsId) {

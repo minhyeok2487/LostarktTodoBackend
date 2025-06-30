@@ -248,12 +248,15 @@ public class TodoServiceV2 {
     }
 
     @Transactional
-    public void updateRaidMoreRewardCheck(Character updateCharacter, UpdateWeekRaidMoreRewardCheckRequest request) {
+    public CharacterResponse updateRaidMoreRewardCheck(Character updateCharacter, UpdateWeekRaidMoreRewardCheckRequest request) {
         updateCharacter.getTodoV2List().stream()
                 .filter(todoV2 -> todoV2.getWeekContent().getWeekCategory().equals(request.getWeekCategory())
                         && todoV2.getWeekContent().getGate() == request.getGate())
                 .findFirst()
                 .ifPresent(TodoV2::updateRaidMoreRewardCheck);
+        CharacterResponse response = new CharacterResponse().toDto(updateCharacter);
+        logService.processWeekMoreRewardLog(request, response);
+        return response;
     }
 
 
