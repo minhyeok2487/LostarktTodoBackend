@@ -17,7 +17,8 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "logs", indexes = {
-        @Index(name = "idx_logs_query", columnList = "characterId, logContent, localDate, name")
+        @Index(name = "idx_logs_get", columnList = "characterId, logContent, localDate, name"), // Get Index
+        @Index(name = "idx_logs_search_filter", columnList = "memberId, deleted, characterId, logContent, lastModifiedDate DESC") // Search Index Filter
 })
 public class Logs extends BaseTimeEntity {
 
