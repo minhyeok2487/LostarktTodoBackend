@@ -51,17 +51,26 @@ public class LogService {
     public void saveLog(Logs logs) {
         try {
             List<Logs> existingLogs = findExistingLogs(logs);
-            existingLogs.stream()
-                    .findAny()
-                    .ifPresentOrElse(
-                            found -> existingLogs.forEach(log -> log.updateFrom(logs)),
-                            () -> repository.save(logs)
-                    );
+
+            if (existingLogs.isEmpty()) {
+                repository.save(logs);
+            } else {
+                // 마지막 로그
+                Logs lastLog = existingLogs.get(existingLogs.size() - 1);
+                lastLog.updateFrom(logs);
+
+                // 나머지 로그들
+                List<Logs> otherLogs = existingLogs.subList(0, existingLogs.size() - 1);
+                for (Logs log : otherLogs) {
+                    log.setDeleted(true);
+                }
+            }
         } catch (DataAccessException e) {
             log.error("로그 처리 실패: characterId={}, logContent={}", logs.getCharacterId(), logs.getLogContent(), e);
             throw e;
         }
     }
+
 
     private List<Logs> findExistingLogs(Logs logs) {
         return (logs.getLogContent().equals(LogContent.CHAOS) || logs.getLogContent().equals(LogContent.GUARDIAN))
