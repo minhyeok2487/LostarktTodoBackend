@@ -41,7 +41,7 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
     public CursorResponse<LogsSearchResponse> search(long member, LogsSearchParams params, PageRequest pageRequest) {
         List<LogsSearchResponse> fetch = factory.select(new QLogsSearchResponse(
                         logs.id,
-                        logs.createdDate,
+                        logs.lastModifiedDate,
                         logs.localDate,
                         logs.logType,
                         logs.logContent,
@@ -60,7 +60,7 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                         eqLogContent(params.getLogContent()),
                         isDeleted(false)
                 )
-                .orderBy(logs.id.desc())
+                .orderBy(logs.lastModifiedDate.desc())
                 .limit(pageRequest.getPageSize() + 1)
                 .fetch();
         boolean hasNext = false;
