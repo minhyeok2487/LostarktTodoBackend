@@ -11,17 +11,12 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface LogsCustomRepository {
 
-    Optional<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name);
+    List<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name);
 
     CursorResponse<LogsSearchResponse> search(long member, LogsSearchParams params, PageRequest pageRequest);
 
     List<LogProfitResponse> getProfit(long memberId, GetLogsProfitRequest request);
-
-    void deleteLogsByLogs(Logs logs);
-
-    void deleteMoreRewardLogs(long memberId, long characterId, String weekCategory);
 }

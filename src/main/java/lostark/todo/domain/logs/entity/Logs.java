@@ -48,4 +48,11 @@ public class Logs extends BaseTimeEntity {
 
     @ColumnDefault("false")
     private boolean deleted;
+
+    public void updateFrom(Logs newLog) {
+        this.deleted = newLog.isDeleted();
+        this.message = newLog.getMessage();
+        this.profit = newLog.getProfit();
+        this.localDate = newLog.getLocalDate();
+    }
 }
