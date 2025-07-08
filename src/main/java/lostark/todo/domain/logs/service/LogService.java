@@ -2,10 +2,7 @@ package lostark.todo.domain.logs.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.character.dto.CharacterResponse;
-import lostark.todo.domain.character.dto.TodoResponseDto;
-import lostark.todo.domain.character.dto.UpdateWeekRaidCheckRequest;
-import lostark.todo.domain.character.dto.UpdateWeekRaidMoreRewardCheckRequest;
+import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
@@ -236,5 +233,28 @@ public class LogService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime resetTime = now.toLocalDate().atStartOfDay().plusHours(6);
         return now.isBefore(resetTime) ? now.toLocalDate().minusDays(1) : now.toLocalDate();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processDayCheckAllCharactersLog(String username, UpdateDayCheckAllCharactersResponse response) {
+        LocalDate logDate = getLocalDate();
+        Member member = memberRepository.get(username);
+
+        String message = String.format("%s 서버의 모든 캐릭터 일일 숙제 %s",
+                response.getServerName(),
+                response.isDone() ? "전체 해제" : "전체 완료");
+
+        Logs logs = Logs.builder()
+                .localDate(logDate)
+                .memberId(member.getId())
+                .logType(LogType.DAILY)
+                .logContent(LogContent.DAY_CHECK_ALL_CHARACTERS)
+                .name(response.getServerName())
+                .message(message)
+                .profit(response.getProfit())
+                .deleted(response.isDone())
+                .build();
+
+        eventPublisher.publishEvent(new LogCreatedEvent(logs));
     }
 }

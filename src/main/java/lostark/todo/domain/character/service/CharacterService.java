@@ -339,6 +339,7 @@ public class CharacterService {
     @Transactional
     public UpdateDayCheckAllCharactersResponse updateDayCheckAllCharacters(String username, String serverName) {
         List<Character> characterList = characterRepository.getCharacterList(username);
+        double profit = 0;
 
         // 출력 캐릭터 필터링 (isShowCharacter && 서버 필터)
         List<Character> displayedCharacters = characterList.stream()
@@ -360,15 +361,24 @@ public class CharacterService {
                 .flatMap(List::stream)
                 .allMatch(ContentUpdater::isChecked);
 
-        // 체크 상태를 업데이트
+        // 체크 상태를 업데이트 및 수익 계산
         for (Map.Entry<Character, List<ContentUpdater>> entry : updaterMap.entrySet()) {
             for (ContentUpdater updater : entry.getValue()) {
                 updater.updateCheck(allCompleted ? updater.getCompletedValue() : 0); // 전체 체크면 해제, 아니면 완료
                 updater.runUpdateMethod(); // 변경 반영
             }
+            Character character = entry.getKey();
+            if (character.getDayTodo().getGuardianCheck() == 1) {
+                profit += character.getDayTodo().getGuardianGold();
+            }
+            if (character.getDayTodo().getChaosCheck() == 2) {
+                profit += character.getDayTodo().getChaosGold();
+            }
         }
 
-        return new UpdateDayCheckAllCharactersResponse(serverName, allCompleted);
+        UpdateDayCheckAllCharactersResponse response = new UpdateDayCheckAllCharactersResponse(serverName, allCompleted, profit);
+        logService.processDayCheckAllCharactersLog(username, response);
+        return response;
     }
 
 

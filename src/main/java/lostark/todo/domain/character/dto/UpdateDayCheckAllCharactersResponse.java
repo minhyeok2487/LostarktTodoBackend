@@ -10,4 +10,6 @@ public class UpdateDayCheckAllCharactersResponse {
     private String serverName;
 
     private boolean done;
+
+    private double profit;
 }
