@@ -342,13 +342,10 @@ public class CharacterService {
         double profit = 0;
 
         // 출력 캐릭터 필터링 (isShowCharacter && 서버 필터)
-        List<Character> displayedCharacters = characterList.stream()
+        // 캐릭터별 표시되는 컨텐츠 리스트를 미리 계산 (중복 방지)
+        Map<Character, List<ContentUpdater>> updaterMap = characterList.stream()
                 .filter(c -> c.getSettings().isShowCharacter())
                 .filter(c -> serverName.equals("전체") || c.getServerName().equals(serverName))
-                .toList();
-
-        // 캐릭터별 표시되는 컨텐츠 리스트를 미리 계산 (중복 방지)
-        Map<Character, List<ContentUpdater>> updaterMap = displayedCharacters.stream()
                 .collect(Collectors.toMap(
                         c -> c,
                         c -> ContentUpdater.toDto(c.getDayTodo(), c.getSettings()).stream()
@@ -365,8 +362,9 @@ public class CharacterService {
         for (Map.Entry<Character, List<ContentUpdater>> entry : updaterMap.entrySet()) {
             for (ContentUpdater updater : entry.getValue()) {
                 updater.updateCheck(allCompleted ? updater.getCompletedValue() : 0); // 전체 체크면 해제, 아니면 완료
-                updater.runUpdateMethod(); // 변경 반영
             }
+
+            // 수익 계산
             Character character = entry.getKey();
             if (character.getDayTodo().getGuardianCheck() == 1) {
                 profit += character.getDayTodo().getGuardianGold();
