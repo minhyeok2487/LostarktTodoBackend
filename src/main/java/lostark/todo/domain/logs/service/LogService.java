@@ -70,7 +70,9 @@ public class LogService {
 
 
     private List<Logs> findExistingLogs(Logs logs) {
-        return (logs.getLogContent().equals(LogContent.CHAOS) || logs.getLogContent().equals(LogContent.GUARDIAN))
+        return (logs.getLogContent().equals(LogContent.CHAOS)
+                || logs.getLogContent().equals(LogContent.GUARDIAN)
+                || logs.getLogContent().equals(LogContent.DAY_CHECK_ALL_CHARACTERS))
                 ? repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null)
                 : repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
     }
