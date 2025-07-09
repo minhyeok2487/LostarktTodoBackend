@@ -62,6 +62,16 @@ public class LogService {
                     log.setDeleted(true);
                 }
             }
+
+            // 전체 체크 시 일일 숙제가 이미 있는 로그가 있다면 deleted true로 변경
+            if (logs.getLogContent().equals(LogContent.DAY_CHECK_ALL_CHARACTERS)) {
+                for (Logs existLogs : repository.getAll(logs.getMemberId(), logs.getLogType(), logs.getLocalDate())) {
+                    if (!existLogs.getLogContent().equals(LogContent.DAY_CHECK_ALL_CHARACTERS)) {
+                        existLogs.setDeleted(true);
+                    }
+                }
+            }
+
         } catch (DataAccessException e) {
             log.error("로그 처리 실패: characterId={}, logContent={}", logs.getCharacterId(), logs.getLogContent(), e);
             throw e;
