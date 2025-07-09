@@ -73,8 +73,8 @@ public class LogService {
         return (logs.getLogContent().equals(LogContent.CHAOS)
                 || logs.getLogContent().equals(LogContent.GUARDIAN)
                 || logs.getLogContent().equals(LogContent.DAY_CHECK_ALL_CHARACTERS))
-                ? repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null)
-                : repository.get(logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+                ? repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null)
+                : repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
     }
 
 

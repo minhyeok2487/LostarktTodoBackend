@@ -25,9 +25,10 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public List<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name) {
+    public List<Logs> get(long memberId, long characterId, LogContent logContent, LocalDate localDate, String name) {
         return factory.selectFrom(logs)
                         .where(
+                                eqMember(memberId),
                                 eqCharacter(characterId),
                                 eqLogContent(logContent),
                                 betweenThisWeek(logContent, localDate),

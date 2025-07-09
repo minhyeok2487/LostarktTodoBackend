@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface LogsCustomRepository {
 
-    List<Logs> get(long characterId, LogContent logContent, LocalDate localDate, String name);
+    List<Logs> get(long memberId, long characterId, LogContent logContent, LocalDate localDate, String name);
 
     CursorResponse<LogsSearchResponse> search(long member, LogsSearchParams params, PageRequest pageRequest);
 
