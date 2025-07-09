@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.enums.LogContent;
+import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.global.dto.CursorResponse;
 import org.springframework.data.domain.PageRequest;
 
@@ -35,6 +36,17 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
                                 eqName(name)
                         )
                         .fetch();
+    }
+
+    @Override
+    public List<Logs> getAll(long memberId, LogType logType, LocalDate localDate) {
+        return factory.selectFrom(logs)
+                .where(
+                        eqMember(memberId),
+                        eqLogType(logType),
+                        eqLocalDate(localDate)
+                )
+                .fetch();
     }
 
     @Override
@@ -165,6 +177,13 @@ public class LogsRepositoryImpl implements LogsCustomRepository {
             return null;
         }
         return logs.logContent.eq(logContent);
+    }
+
+    private BooleanExpression eqLogType(LogType logType) {
+        if (logType == null) {
+            return null;
+        }
+        return logs.logType.eq(logType);
     }
 
     private BooleanExpression eqName(String name) {
