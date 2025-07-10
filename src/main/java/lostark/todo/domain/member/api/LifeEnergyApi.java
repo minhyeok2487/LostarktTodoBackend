@@ -43,4 +43,12 @@ public class LifeEnergyApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation(value = "생활의 기운 캐릭터 삭제")
+    @DeleteMapping("/{characterName}")
+    public ResponseEntity<?> deleteCharacterLifeEnergy(@AuthenticationPrincipal String username,
+                                                       @PathVariable String characterName) {
+        service.delete(username, characterName);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
