@@ -47,7 +47,7 @@ public class LifeEnergyApi {
     @DeleteMapping("/{characterName}")
     public ResponseEntity<?> deleteCharacterLifeEnergy(@AuthenticationPrincipal String username,
                                                        @PathVariable String characterName) {
-        service.deleteCharacterLifeEnergy(username, characterName);
+        service.delete(username, characterName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

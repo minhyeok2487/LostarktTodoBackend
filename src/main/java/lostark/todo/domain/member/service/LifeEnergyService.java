@@ -37,7 +37,7 @@ public class LifeEnergyService {
     }
 
     @Transactional
-    public void deleteCharacterLifeEnergy(String username, String characterName) {
+    public void delete(String username, String characterName) {
         LifeEnergy lifeEnergy = repository.findByMemberUsernameAndCharacterName(username, characterName)
                 .orElseThrow(() -> new ConditionNotMetException("해당 캐릭터의 생활의 기운 정보가 존재하지 않습니다."));
         repository.delete(lifeEnergy);
