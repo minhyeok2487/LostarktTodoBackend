@@ -55,4 +55,15 @@ public class Logs extends BaseTimeEntity {
         this.profit = newLog.getProfit();
         this.localDate = newLog.getLocalDate();
     }
+
+    public static String createEtcMessage(lostark.todo.domain.character.entity.Character character, String actionMessage, double profit) {
+        String verb = (profit < 0) ? "소모했습니다." : "획득했습니다.";
+        return String.format("%s 서버의 %s(%s) 캐릭터가 %s %.0f골드를 %s",
+                character.getServerName(),
+                character.getCharacterName(),
+                character.getItemLevel(),
+                actionMessage,
+                Math.abs(profit),
+                verb);
+    }
 }

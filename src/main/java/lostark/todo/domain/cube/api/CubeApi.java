@@ -14,6 +14,7 @@ import lostark.todo.domain.cube.entity.Cubes;
 import lostark.todo.domain.cube.service.CubesService;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.logs.service.LogService;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
 import lostark.todo.global.friendPermisson.CharacterMemberQueryService;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ public class CubeApi {
     private final CubesService cubesService;
     private final CharacterService characterService;
     private final CharacterMemberQueryService characterMemberQueryService;
+    private final LogService logService;
 
     @ApiOperation(value = "큐브 통계 데이터 출력", response = CubeStatisticsResponse.class)
     @GetMapping("/statistics")
@@ -73,13 +75,14 @@ public class CubeApi {
 
     @ApiOperation(value = "캐릭터 큐브 티켓 소모(로그 저장)", response = SpendCubeResponse.class)
     @PostMapping("/spend")
-//    @Loggable(category = "cube")
     public ResponseEntity<?> spendWeekCubeTicket(@AuthenticationPrincipal String username,
                                                  @RequestParam(required = false) String friendUsername,
                                                  @RequestBody SpendWeekCubeRequest request) {
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         double profit = cubesService.spendWeekCubeTicket(updateCharacter, request.getCubeContentName());
-        return new ResponseEntity<>(new SpendCubeResponse(updateCharacter, request.getCubeContentName().getName(), profit), HttpStatus.OK);
+        SpendCubeResponse response = new SpendCubeResponse(updateCharacter, request.getCubeContentName().getName(), profit);
+        logService.processCubeLog(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

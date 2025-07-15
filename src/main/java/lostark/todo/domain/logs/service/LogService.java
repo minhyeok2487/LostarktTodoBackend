@@ -3,7 +3,10 @@ package lostark.todo.domain.logs.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.*;
+import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
+import lostark.todo.domain.character.service.CharacterService;
+import lostark.todo.domain.cube.dto.SpendCubeResponse;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.enums.LogContent;
@@ -12,6 +15,7 @@ import lostark.todo.domain.logs.repository.LogsRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.dto.CursorResponse;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +36,7 @@ public class LogService {
     private final LogsRepository repository;
     private final MemberRepository memberRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final CharacterService characterService;
 
     @Transactional(readOnly = true)
     public CursorResponse<LogsSearchResponse> search(String username, LogsSearchParams params) {
@@ -80,9 +87,14 @@ public class LogService {
 
 
     private List<Logs> findExistingLogs(Logs logs) {
-        return logs.getLogType().equals(LogType.DAILY)
-                ? repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null)
-                : repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+        if (logs.getLogType().equals(LogType.DAILY)) {
+            return repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null);
+        } else if (logs.getLogType().equals(LogType.WEEKLY)) {
+            repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+        } else if (logs.getLogType().equals(LogType.ETC)) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 
 
@@ -169,9 +181,67 @@ public class LogService {
                 rewardInfo.finalGold());
     }
 
+    // 큐브 소모 로그 저장
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processCubeLog(SpendCubeResponse response) {
+        LocalDate logDate = getLocalDate();
+
+        String message = response.getServerName() + " 서버의 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 " + response.getName() + "큐브를 클리어하여 " +
+                response.getProfit() + "골드를 획득했습니다.";
+
+        Logs logs = Logs.builder()
+                .localDate(logDate)
+                .memberId(response.getMemberId())
+                .characterId(response.getCharacterId())
+                .logType(LogType.ETC)
+                .logContent(LogContent.CUBE)
+                .name("큐브")
+                .message(message)
+                .profit(response.getProfit())
+                .build();
+        eventPublisher.publishEvent(new LogCreatedEvent(logs));
+    }
+
+    @Transactional
+    public void delete(String username, Long logId) {
+        Member member = memberRepository.get(username);
+        Optional<Logs> log = repository.findById(logId);
+        if (log.isEmpty()) {
+            throw new ConditionNotMetException("없는 로그(타임라인) 입니다.");
+        } else {
+            if (log.get().getMemberId() == member.getId()) {
+                log.get().setDeleted(true);
+            } else {
+                throw new ConditionNotMetException("권한이 없습니다.");
+            }
+        }
+    }
+
+    @Transactional
+    public void saveEtcLog(String username, SaveEtcLogRequest request) {
+        Character character = characterService.get(request.getCharacterId(), username);
+
+        String message = Logs.createEtcMessage(character, request.getMessage(), request.getProfit());
+
+        Logs logs = Logs.builder()
+                .localDate(request.getLocalDate())
+                .memberId(character.getMember().getId())
+                .characterId(character.getId())
+                .logType(LogType.ETC)
+                .logContent(LogContent.ETC)
+                .name("기타")
+                .message(message)
+                .profit(request.getProfit())
+                .build();
+
+        saveLog(logs);
+    }
+
 
     // 보상 정보를 담는 내부 클래스
-    private record RewardInfo(String gates, int finalGold) {}
+    private record RewardInfo(String gates, int finalGold) {
+    }
 
 
     private String formatRaidLogMessage(TodoResponseDto todo, CharacterResponse response, int gold) {
