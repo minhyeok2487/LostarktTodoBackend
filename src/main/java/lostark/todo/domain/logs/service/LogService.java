@@ -13,6 +13,7 @@ import lostark.todo.domain.logs.repository.LogsRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.dto.CursorResponse;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -196,6 +198,20 @@ public class LogService {
                 .profit(response.getProfit())
                 .build();
         eventPublisher.publishEvent(new LogCreatedEvent(logs));
+    }
+
+    @Transactional
+    public void delete(Member member, Long logId) {
+        Optional<Logs> log = repository.findById(logId);
+        if(log.isEmpty()) {
+            throw new ConditionNotMetException("없는 로그(타임라인) 입니다.");
+        } else {
+            if (log.get().getMemberId() == member.getId()) {
+                log.get().setDeleted(true);
+            } else {
+                throw new ConditionNotMetException("권한이 없습니다.");
+            }
+        }
     }
 
 

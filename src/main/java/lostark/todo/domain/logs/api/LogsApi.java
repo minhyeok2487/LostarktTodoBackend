@@ -8,12 +8,12 @@ import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
 import lostark.todo.domain.logs.dto.LogProfitResponse;
 import lostark.todo.domain.logs.dto.LogsSearchParams;
 import lostark.todo.domain.logs.service.LogService;
+import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -25,6 +25,7 @@ import javax.validation.Valid;
 public class LogsApi {
 
     private final LogService service;
+    private final MemberService memberService;
 
     @ApiOperation(value = "최근 Logs 불러오기", notes = "최근 100개 단위")
     @GetMapping()
@@ -38,5 +39,13 @@ public class LogsApi {
     public ResponseEntity<?> getLogsProfit(@AuthenticationPrincipal String username,
                                            @Valid GetLogsProfitRequest request) {
         return new ResponseEntity<>(service.getProfit(username, request), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{logId}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal String username,
+                                    @PathVariable Long logId) {
+        Member member = memberService.get(username);
+        service.delete(member, logId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
