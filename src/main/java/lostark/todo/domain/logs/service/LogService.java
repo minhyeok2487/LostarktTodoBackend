@@ -3,7 +3,9 @@ package lostark.todo.domain.logs.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.*;
+import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
+import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.cube.dto.SpendCubeResponse;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
@@ -34,6 +36,7 @@ public class LogService {
     private final LogsRepository repository;
     private final MemberRepository memberRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final CharacterService characterService;
 
     @Transactional(readOnly = true)
     public CursorResponse<LogsSearchResponse> search(String username, LogsSearchParams params) {
@@ -201,9 +204,10 @@ public class LogService {
     }
 
     @Transactional
-    public void delete(Member member, Long logId) {
+    public void delete(String username, Long logId) {
+        Member member = memberRepository.get(username);
         Optional<Logs> log = repository.findById(logId);
-        if(log.isEmpty()) {
+        if (log.isEmpty()) {
             throw new ConditionNotMetException("없는 로그(타임라인) 입니다.");
         } else {
             if (log.get().getMemberId() == member.getId()) {
@@ -214,9 +218,30 @@ public class LogService {
         }
     }
 
+    @Transactional
+    public void saveEtcLog(String username, SaveEtcLogRequest request) {
+        Character character = characterService.get(request.getCharacterId(), username);
+
+        String message = Logs.createEtcMessage(character, request.getMessage(), request.getProfit());
+
+        Logs logs = Logs.builder()
+                .localDate(request.getLocalDate())
+                .memberId(character.getMember().getId())
+                .characterId(character.getId())
+                .logType(LogType.ETC)
+                .logContent(LogContent.ETC)
+                .name("기타")
+                .message(message)
+                .profit(request.getProfit())
+                .build();
+
+        saveLog(logs);
+    }
+
 
     // 보상 정보를 담는 내부 클래스
-    private record RewardInfo(String gates, int finalGold) {}
+    private record RewardInfo(String gates, int finalGold) {
+    }
 
 
     private String formatRaidLogMessage(TodoResponseDto todo, CharacterResponse response, int gold) {

@@ -4,12 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.logs.dto.SaveEtcLogRequest;
 import lostark.todo.domain.logs.dto.GetLogsProfitRequest;
 import lostark.todo.domain.logs.dto.LogProfitResponse;
 import lostark.todo.domain.logs.dto.LogsSearchParams;
 import lostark.todo.domain.logs.service.LogService;
-import lostark.todo.domain.member.entity.Member;
-import lostark.todo.domain.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +24,6 @@ import javax.validation.Valid;
 public class LogsApi {
 
     private final LogService service;
-    private final MemberService memberService;
 
     @ApiOperation(value = "최근 Logs 불러오기", notes = "최근 100개 단위")
     @GetMapping()
@@ -44,8 +42,15 @@ public class LogsApi {
     @DeleteMapping("/{logId}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal String username,
                                     @PathVariable Long logId) {
-        Member member = memberService.get(username);
-        service.delete(member, logId);
+        service.delete(username, logId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "기타 수익 추가")
+    @PostMapping()
+    public ResponseEntity<?> saveEtcLog(@AuthenticationPrincipal String username,
+                                     @Valid @RequestBody SaveEtcLogRequest request) {
+        service.saveEtcLog(username, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
