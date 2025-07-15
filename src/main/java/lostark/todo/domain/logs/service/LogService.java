@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
+import lostark.todo.domain.cube.dto.SpendCubeResponse;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.enums.LogContent;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -80,9 +82,14 @@ public class LogService {
 
 
     private List<Logs> findExistingLogs(Logs logs) {
-        return logs.getLogType().equals(LogType.DAILY)
-                ? repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null)
-                : repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+        if (logs.getLogType().equals(LogType.DAILY)) {
+            return repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null);
+        } else if (logs.getLogType().equals(LogType.WEEKLY)) {
+            repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+        } else if (logs.getLogType().equals(LogType.ETC)) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 
 
@@ -167,6 +174,28 @@ public class LogService {
                 weekCategory,
                 rewardInfo.gates(),
                 rewardInfo.finalGold());
+    }
+
+    // 큐브 소모 로그 저장
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processCubeLog(SpendCubeResponse response) {
+        LocalDate logDate = getLocalDate();
+
+        String message = response.getServerName() + " 서버의 " +
+                response.getCharacterName() + "(" + response.getItemLevel() + ")" + " 캐릭터가 " + response.getName() + "큐브를 클리어하여 " +
+                response.getProfit() + "골드를 획득했습니다.";
+
+        Logs logs = Logs.builder()
+                .localDate(logDate)
+                .memberId(response.getMemberId())
+                .characterId(response.getCharacterId())
+                .logType(LogType.ETC)
+                .logContent(LogContent.CUBE)
+                .name("큐브")
+                .message(message)
+                .profit(response.getProfit())
+                .build();
+        eventPublisher.publishEvent(new LogCreatedEvent(logs));
     }
 
 
