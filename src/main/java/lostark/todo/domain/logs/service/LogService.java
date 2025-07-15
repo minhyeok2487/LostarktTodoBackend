@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
+import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.cube.dto.SpendCubeResponse;
 import lostark.todo.domain.logs.dto.*;
@@ -36,7 +37,7 @@ public class LogService {
     private final LogsRepository repository;
     private final MemberRepository memberRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final CharacterService characterService;
+    private final CharacterRepository characterRepository;
 
     @Transactional(readOnly = true)
     public CursorResponse<LogsSearchResponse> search(String username, LogsSearchParams params) {
@@ -220,7 +221,8 @@ public class LogService {
 
     @Transactional
     public void saveEtcLog(String username, SaveEtcLogRequest request) {
-        Character character = characterService.get(request.getCharacterId(), username);
+        Character character = characterRepository.getByIdAndUsername(request.getCharacterId(), username).orElseThrow(
+                () -> new ConditionNotMetException("캐릭터가 존재하지 않습니다. ID: " + request.getCharacterId() + ", 사용자 이름: " + username));
 
         String message = Logs.createEtcMessage(character, request.getMessage(), request.getProfit());
 
