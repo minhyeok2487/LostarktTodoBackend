@@ -58,6 +58,6 @@ public class LifeEnergy extends BaseTimeEntity {
     }
 
     public void spend(LifeEnergySpendRequest request) {
-        this.energy = request.getEnergy();
+        this.energy = this.energy - request.getEnergy();
     }
 }
