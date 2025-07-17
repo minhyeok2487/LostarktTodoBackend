@@ -4,7 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.logs.service.LogService;
 import lostark.todo.domain.member.dto.*;
+import lostark.todo.domain.member.entity.LifeEnergy;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.LifeEnergyService;
 import lostark.todo.domain.member.service.MemberService;
@@ -25,6 +27,7 @@ public class LifeEnergyApi {
 
     private final LifeEnergyService service;
     private final MemberService memberService;
+    private final LogService logService;
 
     @ApiOperation(value = "생활의 기운 추가")
     @PostMapping("")
@@ -48,6 +51,15 @@ public class LifeEnergyApi {
     public ResponseEntity<?> deleteCharacterLifeEnergy(@AuthenticationPrincipal String username,
                                                        @PathVariable String characterName) {
         service.delete(username, characterName);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "생활의 기운 소모")
+    @PostMapping("/spend")
+    public ResponseEntity<?> spend(@AuthenticationPrincipal String username,
+                                    @RequestBody @Valid LifeEnergySpendRequest request) {
+        LifeEnergy lifeEnergy = service.spend(username, request);
+        logService.processLifeEnergyLog(lifeEnergy, request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
