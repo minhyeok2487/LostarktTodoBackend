@@ -3,6 +3,7 @@ package lostark.todo.domain.member.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lostark.todo.domain.member.dto.LifeEnergySaveRequest;
+import lostark.todo.domain.member.dto.LifeEnergySpendRequest;
 import lostark.todo.domain.member.dto.LifeEnergyUpdateRequest;
 import lostark.todo.global.entity.BaseTimeEntity;
 
@@ -54,5 +55,9 @@ public class LifeEnergy extends BaseTimeEntity {
         lifeEnergy.characterName = request.getCharacterName();
         lifeEnergy.beatrice = request.isBeatrice();
         return lifeEnergy;
+    }
+
+    public void spend(LifeEnergySpendRequest request) {
+        this.energy = request.getEnergy();
     }
 }

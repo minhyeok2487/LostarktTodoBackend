@@ -6,13 +6,14 @@ import lostark.todo.domain.character.dto.*;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.character.repository.CharacterRepository;
-import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.cube.dto.SpendCubeResponse;
 import lostark.todo.domain.logs.dto.*;
 import lostark.todo.domain.logs.entity.Logs;
 import lostark.todo.domain.logs.enums.LogContent;
 import lostark.todo.domain.logs.enums.LogType;
 import lostark.todo.domain.logs.repository.LogsRepository;
+import lostark.todo.domain.member.dto.LifeEnergySpendRequest;
+import lostark.todo.domain.member.entity.LifeEnergy;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.dto.CursorResponse;
@@ -238,6 +239,48 @@ public class LogService {
                 .build();
 
         saveLog(logs);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processLifeEnergyLog(LifeEnergy lifeEnergy, LifeEnergySpendRequest request) {
+        Character character = findCharacterByName(lifeEnergy, request.getCharacterName());
+        String logMessage = createLogMessage(character, request);
+
+        Logs logs = createLifeEnergyLog(character, logMessage, request.getGold());
+        eventPublisher.publishEvent(new LogCreatedEvent(logs));
+    }
+
+    private Character findCharacterByName(LifeEnergy lifeEnergy, String characterName) {
+        return lifeEnergy.getMember().getCharacters()
+                .stream()
+                .filter(character -> character.getCharacterName().equals(characterName))
+                .findFirst()
+                .orElseThrow(() -> new ConditionNotMetException(
+                        "등록되지 않은 캐릭터 이름입니다. 만약 캐릭터 이름이 변경되었다면 생활의 기운 캐릭터를 다시 등록해주세요."
+                ));
+    }
+
+    private String createLogMessage(Character character, LifeEnergySpendRequest request) {
+        return String.format("%s 서버의 %s(%s) 캐릭터가 생활의 기운 %s를 소모하여 %s골드를 획득했습니다.",
+                character.getServerName(),
+                character.getCharacterName(),
+                character.getItemLevel(),
+                request.getEnergy(),
+                request.getGold()
+        );
+    }
+
+    private Logs createLifeEnergyLog(Character character, String message, int profit) {
+        return Logs.builder()
+                .localDate(getLocalDate())
+                .memberId(character.getMember().getId())
+                .characterId(character.getId())
+                .logType(LogType.ETC)
+                .logContent(LogContent.ETC)
+                .name("생활의 기운")
+                .message(message)
+                .profit(profit)
+                .build();
     }
 
 
