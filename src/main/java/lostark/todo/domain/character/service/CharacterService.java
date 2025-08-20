@@ -338,45 +338,92 @@ public class CharacterService {
     // 전체 캐릭터 일일컨텐츠 전체 체크(출력된 것만)
     @Transactional
     public UpdateDayCheckAllCharactersResponse updateDayCheckAllCharacters(String username, String serverName) {
+        // 사용자의 모든 캐릭터 목록을 가져옴
         List<Character> characterList = characterRepository.getCharacterList(username);
-        double profit = 0;
 
-        // 출력 캐릭터 필터링 (isShowCharacter && 서버 필터)
-        // 캐릭터별 표시되는 컨텐츠 리스트를 미리 계산 (중복 방지)
-        Map<Character, List<ContentUpdater>> updaterMap = characterList.stream()
-                .filter(c -> c.getSettings().isShowCharacter())
-                .filter(c -> serverName.equals("전체") || c.getServerName().equals(serverName))
-                .collect(Collectors.toMap(
-                        c -> c,
-                        c -> ContentUpdater.toDto(c.getDayTodo(), c.getSettings()).stream()
-                                .filter(ContentUpdater::isDisplayed)
-                                .toList()
-                ));
+        // 표시 설정된 캐릭터만 필터링하고, 컨텐츠 업데이터를 생성
+        Map<Character, List<ContentUpdater>> updaterMap = filterCharactersAndCreateUpdaters(characterList, serverName);
 
-        // 전체 체크 상태인지 판별 (모든 컨텐츠가 체크 완료)
-        boolean allCompleted = updaterMap.values().stream()
-                .flatMap(List::stream)
-                .allMatch(ContentUpdater::isChecked);
+        // 모든 컨텐츠가 완료되었는지 확인
+        boolean allCompleted = areAllContentsCompleted(updaterMap);
 
-        // 체크 상태를 업데이트 및 수익 계산
-        for (Map.Entry<Character, List<ContentUpdater>> entry : updaterMap.entrySet()) {
-            for (ContentUpdater updater : entry.getValue()) {
-                updater.updateCheck(allCompleted ? 0 : updater.getCompletedValue()); // 전체 체크면 해제, 아니면 완료
-            }
+        // 컨텐츠 상태를 업데이트
+        updateContents(updaterMap, allCompleted);
 
-            // 수익 계산
-            Character character = entry.getKey();
-            if (character.getDayTodo().getGuardianCheck() == 1) {
-                profit += character.getDayTodo().getGuardianGold();
-            }
-            if (character.getDayTodo().getChaosCheck() == 2) {
-                profit += character.getDayTodo().getChaosGold();
-            }
-        }
+        // 수익 계산
+        double profit = calculateProfit(updaterMap.keySet());
 
+        // 응답 생성 및 로그 기록
         UpdateDayCheckAllCharactersResponse response = new UpdateDayCheckAllCharactersResponse(serverName, allCompleted, profit);
         logService.processDayCheckAllCharactersLog(username, response);
         return response;
+    }
+
+    /**
+     * 표시 설정된 캐릭터를 필터링하고 컨텐츠 업데이터를 생성.
+     * @param characters 사용자의 모든 캐릭터 목록
+     * @param serverName 필터링할 서버 이름 ("전체"일 경우 모든 서버)
+     * @return 필터링된 캐릭터와 해당 캐릭터의 컨텐츠 업데이터 맵
+     */
+    private Map<Character, List<ContentUpdater>> filterCharactersAndCreateUpdaters(List<Character> characters, String serverName) {
+        return characters.stream()
+                .filter(c -> c.getSettings().isShowCharacter()) // 출력 설정된 캐릭터만
+                .filter(c -> serverName.equals("전체") || c.getServerName().equals(serverName)) // 서버 이름으로 필터링
+                .collect(Collectors.toMap(
+                        c -> c,
+                        c -> ContentUpdater.toDto(c.getDayTodo(), c.getSettings()).stream()
+                                .filter(ContentUpdater::isDisplayed) // 표시되는 컨텐츠만
+                                .toList()
+                ));
+    }
+
+    /**
+     * 모든 컨텐츠가 완료되었는지 확인합니다.
+     * @param updaterMap 캐릭터와 컨텐츠 업데이터 맵
+     * @return 모든 컨텐츠가 완료되었으면 true
+     */
+    private boolean areAllContentsCompleted(Map<Character, List<ContentUpdater>> updaterMap) {
+        return updaterMap.values().stream()
+                .flatMap(List::stream)
+                .allMatch(ContentUpdater::isChecked);
+    }
+
+    /**
+     * 컨텐츠 상태를 업데이트.
+     * - 모든 컨텐츠가 완료된 경우: 완료된 컨텐츠를 모두 해제.
+     * - 그렇지 않은 경우: 완료되지 않은 컨텐츠를 모두 완료 처리.
+     * @param updaterMap 캐릭터와 컨텐츠 업데이터 맵
+     * @param allCompleted 모든 컨텐츠가 완료되었는지 여부
+     */
+    private void updateContents(Map<Character, List<ContentUpdater>> updaterMap, boolean allCompleted) {
+        // 업데이트할 컨텐츠를 결정하는 조건
+        java.util.function.Predicate<ContentUpdater> updateCondition = allCompleted ? ContentUpdater::isChecked : updater -> !updater.isChecked();
+
+        updaterMap.values().stream()
+                .flatMap(List::stream)
+                .filter(updateCondition)
+                .forEach(ContentUpdater::runUpdateMethod);
+    }
+
+    /**
+     * 캐릭터들의 일일 컨텐츠 수익 계산.
+     * @param characters 수익을 계산할 캐릭터 집합
+     * @return 계산된 총 수익
+     */
+    private double calculateProfit(Set<Character> characters) {
+        return characters.stream()
+                .mapToDouble(character -> {
+                    double characterProfit = 0;
+                    DayTodo dayTodo = character.getDayTodo();
+                    if (dayTodo.getGuardianCheck() == 1) {
+                        characterProfit += dayTodo.getGuardianGold();
+                    }
+                    if (dayTodo.getChaosCheck() == 2) {
+                        characterProfit += dayTodo.getChaosGold();
+                    }
+                    return characterProfit;
+                })
+                .sum();
     }
 
 
