@@ -12,7 +12,8 @@ public enum CubeContentName {
     BAN_5("5금제", "ban5"),
     UNLOCK_1("1해금", "unlock1"),
     UNLOCK_2("2해금", "unlock2"),
-    UNLOCK_3("3해금", "unlock3");
+    UNLOCK_3("3해금", "unlock3"),
+    UNLOCK_4("4해금", "unlock4");
 
     private final String name;
 
