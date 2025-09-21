@@ -125,6 +125,9 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "캐릭터 메모")
     private String memo;
 
+    @ApiModelProperty(notes = "낙원(천상) 횟수")
+    private int elysianCount;
+
     public CharacterResponse toDto(Character character) {
         CharacterResponse characterResponse = buildCharacterResponse(character);
         List<TodoResponseDto> todoResponseDtoList = buildTodoResponseDtoList(character);
@@ -170,6 +173,7 @@ public class CharacterResponse {
                 .beforeEponaGauge(character.getDayTodo().getBeforeEponaGauge())
                 .beforeChaosGauge(character.getDayTodo().getBeforeChaosGauge())
                 .beforeGuardianGauge(character.getDayTodo().getBeforeGuardianGauge())
+                .elysianCount(character.getWeekTodo().getElysianCount())
                 .build();
     }
 

@@ -187,4 +187,14 @@ public class CharacterWeekApi {
                 request.getCharacterId(), FriendPermissionType.CHECK_RAID);
         return new ResponseEntity<>(todoServiceV2.updateRaidMoreRewardCheck(updateCharacter, request), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "낙원(천상) 업데이트", response = CharacterResponse.class)
+    @PostMapping("/elysian")
+    public ResponseEntity<?> updateElysian(@AuthenticationPrincipal String username,
+                                           @RequestParam(required = false) String friendUsername,
+                                           @RequestBody UpdateElysianRequest request) {
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        return new ResponseEntity<>(todoServiceV2.updateElysian(updateCharacter, request), HttpStatus.OK);
+    }
 }
