@@ -10,7 +10,7 @@ public interface CharacterRepository extends JpaRepository<Character, Long>, Cha
     @Modifying
     @Query(value = "UPDATE Character c SET " +
             "c.challengeAbyss = false, c.challengeGuardian = false, " +
-            "c.weekTodo.weekEpona = 0, c.weekTodo.silmaelChange = false")
+            "c.weekTodo.weekEpona = 0, c.weekTodo.silmaelChange = false, c.weekTodo.elysianCount = 0")
     int updateWeekContent();
 
     @Modifying

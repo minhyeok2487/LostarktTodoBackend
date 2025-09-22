@@ -61,6 +61,9 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showMoreButton;
 
+   @ColumnDefault("true")
+   private boolean showElysian;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -77,6 +80,7 @@ public class Settings {
       this.goldCheckPolicyEnum = GoldCheckPolicyEnum.TOP_THREE_POLICY;
       this.linkCubeCal = false;
       this.showMoreButton = true;
+      this.showElysian = true;
    }
 
    public void update(String name, Object value) {

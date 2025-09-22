@@ -45,6 +45,7 @@ public class Member extends BaseTimeEntity {
 
     private String authProvider;
 
+    @Column(length = 2048)
     private String accessKey;
 
     private String password;

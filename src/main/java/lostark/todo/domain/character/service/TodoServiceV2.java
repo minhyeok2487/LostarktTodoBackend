@@ -263,6 +263,12 @@ public class TodoServiceV2 {
         return response;
     }
 
-
-
+    @Transactional
+    public CharacterResponse updateElysian(Character updateCharacter, UpdateElysianRequest request) {
+        switch (request.getAction()) {
+            case INCREMENT -> updateCharacter.getWeekTodo().incrementElysianCount();
+            case DECREMENT -> updateCharacter.getWeekTodo().decrementElysianCount();
+        }
+        return new CharacterResponse().toDto(updateCharacter);
+    }
 }
