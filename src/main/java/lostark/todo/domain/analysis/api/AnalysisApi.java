@@ -23,6 +23,12 @@ public class AnalysisApi {
     private final AnalysisService analysisService;
     private final CharacterService characterService;
 
+    @ApiOperation(value = "최근 전투 분석 불러오기", notes = "최근 100개 단위")
+    @GetMapping()
+    public ResponseEntity<?> searchAnalysis(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(analysisService.searchAnalysis(username), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "전투 분석 기록하기 API")
     @PostMapping()
     public ResponseEntity<?> updateAnalysis(@AuthenticationPrincipal String username,

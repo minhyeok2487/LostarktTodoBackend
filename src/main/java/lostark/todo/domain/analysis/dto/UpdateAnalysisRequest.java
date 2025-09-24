@@ -6,6 +6,7 @@ import lostark.todo.domain.character.dto.BaseCharacterRequest;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
@@ -17,6 +18,9 @@ public class UpdateAnalysisRequest extends BaseCharacterRequest {
 
     @NotEmpty
     private String contentName;
+
+    @NotNull
+    private LocalDate contentDate;
 
     @NotNull
     private Integer battleTime;
