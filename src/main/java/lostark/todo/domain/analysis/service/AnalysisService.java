@@ -44,6 +44,7 @@ public class AnalysisService {
                 .itemLevel(character.getItemLevel())
                 .combatPower(character.getCombatPower())
                 .contentName(request.getContentName())
+                .contentDate(request.getContentDate())
                 .battleTime(request.getBattleTime())
                 .damage(request.getDamage())
                 .dps(request.getDps())
