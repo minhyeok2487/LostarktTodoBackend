@@ -271,4 +271,10 @@ public class TodoServiceV2 {
         }
         return new CharacterResponse().toDto(updateCharacter);
     }
+
+    @Transactional
+    public CharacterResponse updateElysianAll(Character updateCharacter) {
+        updateCharacter.getWeekTodo().resetElysianCount();
+        return new CharacterResponse().toDto(updateCharacter);
+    }
 }
