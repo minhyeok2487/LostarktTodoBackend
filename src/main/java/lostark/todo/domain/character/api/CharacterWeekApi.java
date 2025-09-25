@@ -197,4 +197,14 @@ public class CharacterWeekApi {
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
         return new ResponseEntity<>(todoServiceV2.updateElysian(updateCharacter, request), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "낙원(천상) 전체", response = CharacterResponse.class)
+    @PostMapping("/elysian/all")
+    public ResponseEntity<?> updateElysianAll(@AuthenticationPrincipal String username,
+                                              @RequestParam(required = false) String friendUsername,
+                                              @RequestBody BaseCharacterRequest request) {
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        return new ResponseEntity<>(todoServiceV2.updateElysianAll(updateCharacter), HttpStatus.OK);
+    }
 }

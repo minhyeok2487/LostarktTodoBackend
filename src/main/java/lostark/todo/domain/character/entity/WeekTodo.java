@@ -54,4 +54,12 @@ public class WeekTodo {
             throw new ConditionNotMetException(MIN_ELYSIAN_ERROR_MESSAGE);
         }
     }
+
+    public void resetElysianCount() {
+        if ( elysianCount >= MAX_ELYSIAN_COUNT) {
+            this.elysianCount = MIN_ELYSIAN_COUNT;
+        } else {
+            this.elysianCount = MAX_ELYSIAN_COUNT;
+        }
+    }
 }
