@@ -28,6 +28,9 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
   private static final String LOCAL_REDIRECT_URL = "http://localhost:3000";
 
   @Autowired
+  private final TokenProvider tokenProvider; // Changed to autowired field instead of creating a new instance
+  
+  @Autowired
   KeyValueRepository keyValueRepository;
 
   @Override
@@ -36,12 +39,11 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     String username = userPrincipal.getName();
 
     String key = keyValueRepository.findByKeyName("JWT-KEY");
-    TokenProvider tokenProvider = new TokenProvider();
-    String token = tokenProvider.createToken(authentication,key);
+    // Use the autowired TokenProvider instead of creating a new instance
+    String token = tokenProvider.createToken(authentication, key);
 
     Optional<Cookie> oCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(REDIRECT_URI_PARAM)).findFirst();
     Optional<String> redirectUri = oCookie.map(Cookie::getValue);
     response.sendRedirect(redirectUri.orElse(LOCAL_REDIRECT_URL)+"/sociallogin?token="+token+"&username="+username);
   }
-
 }
