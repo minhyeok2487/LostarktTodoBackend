@@ -46,16 +46,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final MemberService memberService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException{
+        // Authorization 헤더에서 Bearer 토큰 추출
         String token = parseBearerToken(request);
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
         try {
-            if (token != null && !token.equalsIgnoreCase("null")) {
-                processToken(request, response, securityContext, token);
-            } else {
-                processNoToken(request, response, securityContext);
+            // 토큰이 존재하면 검증 및 인증 컨텍스트 설정, 없으면 비인증 처리
+            boolean proceed = (token != null && !token.equalsIgnoreCase("null"))
+                    ? processToken(request, response, securityContext, token)
+                    : processNoToken(request, response, securityContext);
+
+            if (!proceed) {
+                return; // 필터 체인 중단
             }
+
             SecurityContextHolder.setContext(securityContext);
             filterChain.doFilter(request, response);
         } catch (ServletException e) {
@@ -66,26 +71,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void processToken(HttpServletRequest request, HttpServletResponse response, SecurityContext securityContext, String token) throws IOException {
+    private boolean processToken(HttpServletRequest request, HttpServletResponse response, SecurityContext securityContext, String token) throws IOException {
         try {
+            // 토큰 검증 후 인증 정보 구성
             String username = tokenProvider.validToken(token);
+            if (!checkAdminRole(request, response, username)) {
+                return false;
+            }
             authenticateUser(request, securityContext, username);
-            checkAdminRole(request, username);
+            return true;
         } catch (Exception e) {
             log.debug("Invalid token: {}", e.getMessage());
             if (!isPermitAllPath(request)) {
                 sendErrorResponse(response, INVALID_TOKEN_MESSAGE);
+                return false;
             } else {
                 setNullAuthentication(securityContext, request);
+                return true;
             }
         }
     }
 
-    private void processNoToken(HttpServletRequest request, HttpServletResponse response, SecurityContext securityContext) throws IOException {
+    private boolean processNoToken(HttpServletRequest request, HttpServletResponse response, SecurityContext securityContext) throws IOException {
         if (!isPermitAllPath(request)) {
+            // 인증이 필요한 경로인데 토큰이 없을 경우 즉시 에러 응답
             sendErrorResponse(response, AUTH_REQUIRED_MESSAGE);
+            return false;
         } else {
             setNullAuthentication(securityContext, request);
+            return true;
         }
     }
 
@@ -96,13 +110,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         securityContext.setAuthentication(authentication);
     }
 
-    private void checkAdminRole(HttpServletRequest request, String username) throws IOException {
+    private boolean checkAdminRole(HttpServletRequest request, HttpServletResponse response, String username) throws IOException {
         if (request.getRequestURI().startsWith("/admin")) {
+            // /admin 경로 접근 시 관리자 권한 검증
             Member member = memberService.get(username);
             if (member.getRole() != Role.ADMIN) {
-                sendErrorResponse(null, ADMIN_REQUIRED_MESSAGE);
+                sendErrorResponse(response, ADMIN_REQUIRED_MESSAGE);
+                return false;
             }
         }
+        return true;
     }
 
     private void setNullAuthentication(SecurityContext securityContext, HttpServletRequest request) {
@@ -116,6 +133,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
+        // permitAll 경로 또는 GET 전용 허용 경로 여부 확인
         return checkPatternMatch(path, PERMIT_ALL_LINK) || ("GET".equals(method) && checkPatternMatch(path, PERMIT_GET_LINK));
     }
 
