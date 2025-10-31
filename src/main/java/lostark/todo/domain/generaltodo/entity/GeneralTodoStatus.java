@@ -1,10 +1,9 @@
 package lostark.todo.domain.generaltodo.entity;
 
 import lombok.*;
-import lostark.todo.domain.generaltodo.enums.GeneralTodoViewMode;
+import lostark.todo.domain.generaltodo.enums.GeneralTodoStatusType;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.global.entity.BaseTimeEntity;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,17 +15,17 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "general_todo_category")
-public class GeneralTodoCategory extends BaseTimeEntity {
+@Table(name = "general_todo_status")
+public class GeneralTodoStatus extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "general_todo_category_id")
+    @Column(name = "general_todo_status_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "folder_id")
-    private GeneralTodoFolder folder;
+    @JoinColumn(name = "category_id")
+    private GeneralTodoCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
@@ -35,39 +34,26 @@ public class GeneralTodoCategory extends BaseTimeEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 7)
-    private String color;
-
     @Column(nullable = false)
     private int sortOrder;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    @ColumnDefault("'LIST'")
-    @Builder.Default
-    private GeneralTodoViewMode viewMode = GeneralTodoViewMode.LIST;
+    private GeneralTodoStatusType type;
 
     @Builder.Default
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "status")
     private List<GeneralTodoItem> items = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GeneralTodoStatus> statuses = new ArrayList<>();
+    public boolean isDoneType() {
+        return type.isDone();
+    }
 
     public void updateName(String name) {
         this.name = name;
     }
 
-    public void updateColor(String color) {
-        this.color = color;
-    }
-
     public void updateSortOrder(int sortOrder) {
         this.sortOrder = sortOrder;
-    }
-
-    public void updateViewMode(GeneralTodoViewMode viewMode) {
-        this.viewMode = viewMode;
     }
 }

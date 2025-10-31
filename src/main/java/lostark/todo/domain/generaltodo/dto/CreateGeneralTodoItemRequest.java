@@ -31,4 +31,7 @@ public class CreateGeneralTodoItemRequest {
 
     @ApiModelProperty(example = "false")
     private Boolean completed;
+
+    @ApiModelProperty(example = "10", notes = "선택 사항")
+    private Long statusId;
 }
