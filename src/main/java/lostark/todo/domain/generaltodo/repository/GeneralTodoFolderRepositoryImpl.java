@@ -1,11 +1,9 @@
 package lostark.todo.domain.generaltodo.repository;
 
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.generaltodo.dto.GeneralTodoFolderResponse;
-import lostark.todo.domain.generaltodo.dto.QGeneralTodoFolderResponse;
 import lostark.todo.domain.generaltodo.entity.GeneralTodoFolder;
+import lostark.todo.domain.generaltodo.entity.QGeneralTodoCategory;
 import lostark.todo.domain.generaltodo.entity.QGeneralTodoFolder;
 
 import java.util.List;
@@ -17,21 +15,15 @@ public class GeneralTodoFolderRepositoryImpl implements GeneralTodoFolderReposit
 
     private final JPAQueryFactory factory;
     private final QGeneralTodoFolder folder = QGeneralTodoFolder.generalTodoFolder;
+    private final QGeneralTodoCategory category = QGeneralTodoCategory.generalTodoCategory;
 
     @Override
-    public Optional<GeneralTodoFolder> findByIdAndMemberId(Long folderId, Long memberId) {
-        return Optional.ofNullable(factory.selectFrom(folder)
-                .where(folder.id.eq(folderId), folder.member.id.eq(memberId))
-                .fetchOne());
-    }
-
-    @Override
-    public int getNextSortOrder(Long memberId) {
-        Integer maxOrder = factory.select(folder.sortOrder.max())
+    public List<Long> findIdsByMemberId(Long memberId) {
+        return factory.select(folder.id)
                 .from(folder)
                 .where(folder.member.id.eq(memberId))
-                .fetchOne();
-        return maxOrder == null ? 0 : maxOrder + 1;
+                .orderBy(folder.sortOrder.asc(), folder.id.asc())
+                .fetch();
     }
 
     @Override
@@ -52,24 +44,18 @@ public class GeneralTodoFolderRepositoryImpl implements GeneralTodoFolderReposit
     }
 
     @Override
-    public List<Long> findIdsByMemberId(Long memberId) {
-        return factory.select(folder.id)
-                .from(folder)
-                .where(folder.member.id.eq(memberId))
-                .fetch();
+    public Optional<GeneralTodoFolder> findByIdAndMemberId(Long folderId, Long memberId) {
+        return Optional.ofNullable(factory.selectFrom(folder)
+                .where(folder.id.eq(folderId), folder.member.id.eq(memberId))
+                .fetchOne());
     }
 
     @Override
-    public List<GeneralTodoFolderResponse> fetchResponses(Long memberId, String username) {
-        return factory.select(new QGeneralTodoFolderResponse(
-                        folder.id,
-                        folder.name,
-                        Expressions.constant(username),
-                        folder.sortOrder
-                ))
-                .from(folder)
+    public List<GeneralTodoFolder> findAllWithCategoriesByMemberId(Long memberId) {
+        return factory.selectFrom(folder).distinct()
+                .leftJoin(folder.categories, category).fetchJoin()
                 .where(folder.member.id.eq(memberId))
-                .orderBy(folder.sortOrder.asc(), folder.id.asc())
+                .orderBy(folder.sortOrder.asc(), category.sortOrder.asc())
                 .fetch();
     }
 }

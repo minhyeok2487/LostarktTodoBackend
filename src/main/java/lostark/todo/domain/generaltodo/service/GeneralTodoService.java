@@ -50,11 +50,24 @@ public class GeneralTodoService {
         Long memberId = member.getId();
         String memberUsername = member.getUsername();
 
+        List<GeneralTodoFolder> foldersWithCategories = folderRepository.findAllWithCategoriesByMemberId(memberId);
+
+        List<GeneralTodoFolderResponse> folderResponses = foldersWithCategories.stream()
+                .map(folder -> GeneralTodoFolderResponse.fromEntity(folder, memberUsername))
+                .collect(Collectors.toList());
+
+        List<GeneralTodoCategoryResponse> categoryResponses = foldersWithCategories.stream()
+                .flatMap(folder -> folder.getCategories().stream())
+                .map(category -> GeneralTodoCategoryResponse.fromEntity(category, memberUsername))
+                .collect(Collectors.toList());
+
         GeneralTodoOverviewResponse response = new GeneralTodoOverviewResponse();
-        response.setFolders(folderRepository.fetchResponses(memberId, memberUsername));
-        response.setCategories(categoryRepository.fetchResponses(memberId, memberUsername));
+        response.setFolders(folderResponses);
+        response.setCategories(categoryResponses);
+
         response.setTodos(itemRepository.fetchResponses(memberId, memberUsername));
         response.setStatuses(statusRepository.fetchResponses(memberId, memberUsername));
+
         return response;
     }
 
@@ -219,7 +232,7 @@ public class GeneralTodoService {
         List<GeneralTodoStatus> remainingStatuses = category.getStatuses().stream()
                 .filter(s -> !s.getId().equals(status.getId()))
                 .sorted(statusOrdering())
-                .collect(Collectors.toList());
+                .toList();
 
         GeneralTodoStatus replacement = remainingStatuses.stream()
                 .filter(s -> !s.isDoneType())
