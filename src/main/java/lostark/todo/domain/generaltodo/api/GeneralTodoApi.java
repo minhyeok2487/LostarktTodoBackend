@@ -95,6 +95,39 @@ public class GeneralTodoApi {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @ApiOperation("상태 생성")
+    @PostMapping("/categories/{categoryId}/statuses")
+    public ResponseEntity<GeneralTodoStatusResponse> createStatus(@AuthenticationPrincipal String username,
+                                                                  @PathVariable Long categoryId,
+                                                                  @Valid @RequestBody CreateGeneralTodoStatusRequest request) {
+        return new ResponseEntity<>(generalTodoService.createStatus(username, categoryId, request), HttpStatus.CREATED);
+    }
+
+    @ApiOperation("상태 이름 변경")
+    @PatchMapping("/statuses/{statusId}")
+    public ResponseEntity<GeneralTodoStatusResponse> updateStatus(@AuthenticationPrincipal String username,
+                                                                  @PathVariable Long statusId,
+                                                                  @Valid @RequestBody UpdateGeneralTodoStatusRequest request) {
+        return new ResponseEntity<>(generalTodoService.updateStatus(username, statusId, request), HttpStatus.OK);
+    }
+
+    @ApiOperation("상태 삭제")
+    @DeleteMapping("/statuses/{statusId}")
+    public ResponseEntity<Void> deleteStatus(@AuthenticationPrincipal String username,
+                                             @PathVariable Long statusId) {
+        generalTodoService.deleteStatus(username, statusId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @ApiOperation("상태 순서 변경")
+    @PatchMapping("/categories/{categoryId}/statuses/reorder")
+    public ResponseEntity<Void> reorderStatuses(@AuthenticationPrincipal String username,
+                                                @PathVariable Long categoryId,
+                                                @Valid @RequestBody ReorderGeneralTodoStatusesRequest request) {
+        generalTodoService.reorderStatuses(username, categoryId, request);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @ApiOperation("할 일 생성")
     @PostMapping("/items")
     public ResponseEntity<GeneralTodoItemResponse> createItem(@AuthenticationPrincipal String username,

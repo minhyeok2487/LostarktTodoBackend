@@ -26,4 +26,7 @@ public class UpdateGeneralTodoItemRequest {
 
     @ApiModelProperty(example = "true")
     private Boolean completed;
+
+    @ApiModelProperty(example = "12")
+    private Long statusId;
 }
