@@ -37,16 +37,11 @@ public class ServerTodoService {
     @Transactional(readOnly = true)
     public ServerTodoOverviewResponse getServerTodos(String username) {
         Member member = memberRepository.get(username);
-        List<ServerTodo> todos = serverTodoRepository.findAllVisible();
-        List<String> serverNames = extractServerNames(member);
-        List<ServerTodoState> states = serverNames.isEmpty()
-                ? List.of()
-                : serverTodoStateRepository.findByMemberAndServerNames(member.getId(), serverNames);
-        return ServerTodoOverviewResponse.of(todos, states);
+        return buildOverview(member);
     }
 
     @Transactional
-    public void toggleEnabled(String username, Long todoId, ServerTodoToggleEnabledRequest request) {
+    public ServerTodoOverviewResponse toggleEnabled(String username, Long todoId, ServerTodoToggleEnabledRequest request) {
         Member member = memberRepository.get(username);
         ServerTodo todo = serverTodoRepository.findById(todoId)
                 .orElseThrow(() -> new ConditionNotMetException(SERVER_TODO_NOT_FOUND));
@@ -62,10 +57,11 @@ public class ServerTodoService {
         }
         state.updateEnabled(request.getEnabled());
         serverTodoStateRepository.save(state);
+        return buildOverview(member);
     }
 
     @Transactional
-    public void updateChecked(String username, Long todoId, ServerTodoCheckRequest request) {
+    public ServerTodoOverviewResponse updateChecked(String username, Long todoId, ServerTodoCheckRequest request) {
         Member member = memberRepository.get(username);
 
         List<String> serverNames = extractServerNames(member);
@@ -79,6 +75,7 @@ public class ServerTodoService {
         }
 
         state.updateChecked(request.getChecked());
+        return buildOverview(member);
     }
 
     private List<String> extractServerNames(Member member) {
@@ -87,5 +84,14 @@ public class ServerTodoService {
                 .map(Character::getServerName)
                 .collect(Collectors.toSet());
         return new ArrayList<>(serverNames);
+    }
+
+    private ServerTodoOverviewResponse buildOverview(Member member) {
+        List<ServerTodo> todos = serverTodoRepository.findAllVisible();
+        List<String> serverNames = extractServerNames(member);
+        List<ServerTodoState> states = serverNames.isEmpty()
+                ? List.of()
+                : serverTodoStateRepository.findByMemberAndServerNames(member.getId(), serverNames);
+        return ServerTodoOverviewResponse.of(todos, states);
     }
 }
