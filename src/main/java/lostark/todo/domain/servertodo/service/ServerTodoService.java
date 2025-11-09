@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
+import lostark.todo.domain.servertodo.dto.ServerTodoCheckRequest;
 import lostark.todo.domain.servertodo.dto.ServerTodoOverviewResponse;
 import lostark.todo.domain.servertodo.dto.ServerTodoToggleEnabledRequest;
 import lostark.todo.domain.servertodo.entity.ServerTodo;
@@ -31,6 +32,7 @@ public class ServerTodoService {
 
     private static final String SERVER_TODO_NOT_FOUND = "등록된 서버 숙제가 아닙니다.";
     private static final String SERVER_NOT_BELONG_TO_MEMBER = "해당 서버에는 캐릭터가 없습니다.";
+    private static final String SERVER_TODO_STATE_NOT_FOUND = "서버 숙제가 활성화되어 있지 않습니다.";
 
     @Transactional(readOnly = true)
     public ServerTodoOverviewResponse getServerTodos(String username) {
@@ -60,6 +62,23 @@ public class ServerTodoService {
         }
         state.updateEnabled(request.getEnabled());
         serverTodoStateRepository.save(state);
+    }
+
+    @Transactional
+    public void updateChecked(String username, Long todoId, ServerTodoCheckRequest request) {
+        Member member = memberRepository.get(username);
+
+        List<String> serverNames = extractServerNames(member);
+        if (!serverNames.contains(request.getServerName())) {
+            throw new ConditionNotMetException(SERVER_NOT_BELONG_TO_MEMBER);
+        }
+
+        ServerTodoState state = serverTodoStateRepository.findByMemberAndTodo(member.getId(), todoId, request.getServerName());
+        if (state == null) {
+            throw new ConditionNotMetException(SERVER_TODO_STATE_NOT_FOUND);
+        }
+
+        state.updateChecked(request.getChecked());
     }
 
     private List<String> extractServerNames(Member member) {

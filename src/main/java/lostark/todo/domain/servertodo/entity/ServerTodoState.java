@@ -65,4 +65,8 @@ public class ServerTodoState extends BaseTimeEntity {
     public void updateEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public void updateChecked(boolean checked) {
+        this.checked = checked;
+    }
 }
