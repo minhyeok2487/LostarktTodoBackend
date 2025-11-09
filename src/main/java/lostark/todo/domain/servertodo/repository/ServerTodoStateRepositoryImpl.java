@@ -24,11 +24,29 @@ public class ServerTodoStateRepositoryImpl implements ServerTodoStateRepositoryC
                 .fetch();
     }
 
+    @Override
+    public ServerTodoState findByMemberAndTodo(Long memberId, Long todoId, String serverName) {
+        return queryFactory.selectFrom(serverTodoState)
+                .where(
+                        memberIdEq(memberId),
+                        serverTodoState.serverTodo.id.eq(todoId),
+                        serverNameEq(serverName)
+                )
+                .fetchOne();
+    }
+
     private BooleanExpression memberIdEq(Long memberId) {
         if (memberId == null) {
             return null;
         }
         return serverTodoState.member.id.eq(memberId);
+    }
+
+    private BooleanExpression serverNameEq(String serverName) {
+        if (serverName == null) {
+            return null;
+        }
+        return serverTodoState.serverName.eq(serverName);
     }
 
     private BooleanExpression serverNameIn(List<String> serverNames) {

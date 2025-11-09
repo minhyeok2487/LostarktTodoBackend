@@ -51,4 +51,18 @@ public class ServerTodoState extends BaseTimeEntity {
     @Column(nullable = false)
     @ColumnDefault("false")
     private boolean checked;
+
+    public static ServerTodoState create(ServerTodo serverTodo, Member member, String serverName, boolean defaultEnabled) {
+        ServerTodoState state = new ServerTodoState();
+        state.serverTodo = serverTodo;
+        state.member = member;
+        state.serverName = serverName;
+        state.enabled = defaultEnabled;
+        state.checked = false;
+        return state;
+    }
+
+    public void updateEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

@@ -6,10 +6,12 @@ import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.servertodo.dto.ServerTodoOverviewResponse;
+import lostark.todo.domain.servertodo.dto.ServerTodoToggleEnabledRequest;
 import lostark.todo.domain.servertodo.entity.ServerTodo;
 import lostark.todo.domain.servertodo.entity.ServerTodoState;
 import lostark.todo.domain.servertodo.repository.ServerTodoRepository;
 import lostark.todo.domain.servertodo.repository.ServerTodoStateRepository;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +23,16 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ServerTodoService {
 
     private final ServerTodoRepository serverTodoRepository;
     private final ServerTodoStateRepository serverTodoStateRepository;
     private final MemberRepository memberRepository;
 
+    private static final String SERVER_TODO_NOT_FOUND = "등록된 서버 숙제가 아닙니다.";
+    private static final String SERVER_NOT_BELONG_TO_MEMBER = "해당 서버에는 캐릭터가 없습니다.";
+
+    @Transactional(readOnly = true)
     public ServerTodoOverviewResponse getServerTodos(String username) {
         Member member = memberRepository.get(username);
         List<ServerTodo> todos = serverTodoRepository.findAllVisible();
@@ -36,6 +41,25 @@ public class ServerTodoService {
                 ? List.of()
                 : serverTodoStateRepository.findByMemberAndServerNames(member.getId(), serverNames);
         return ServerTodoOverviewResponse.of(todos, states);
+    }
+
+    @Transactional
+    public void toggleEnabled(String username, Long todoId, ServerTodoToggleEnabledRequest request) {
+        Member member = memberRepository.get(username);
+        ServerTodo todo = serverTodoRepository.findById(todoId)
+                .orElseThrow(() -> new ConditionNotMetException(SERVER_TODO_NOT_FOUND));
+
+        List<String> serverNames = extractServerNames(member);
+        if (!serverNames.contains(request.getServerName())) {
+            throw new ConditionNotMetException(SERVER_NOT_BELONG_TO_MEMBER);
+        }
+
+        ServerTodoState state = serverTodoStateRepository.findByMemberAndTodo(member.getId(), todoId, request.getServerName());
+        if (state == null) {
+            state = ServerTodoState.create(todo, member, request.getServerName(), todo.isDefaultEnabled());
+        }
+        state.updateEnabled(request.getEnabled());
+        serverTodoStateRepository.save(state);
     }
 
     private List<String> extractServerNames(Member member) {
