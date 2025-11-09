@@ -20,4 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServerTodoApi {
 
     private final ServerTodoService serverTodoService;
+
+    @ApiOperation("서버 공통 숙제 조회")
+    @GetMapping
+    public ResponseEntity<?> getServerTodos(@AuthenticationPrincipal String username) {
+        return new ResponseEntity<>(serverTodoService.getServerTodos(username), HttpStatus.OK);
+    }
 }

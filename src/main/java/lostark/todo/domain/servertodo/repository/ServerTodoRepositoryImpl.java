@@ -12,4 +12,10 @@ import static lostark.todo.domain.servertodo.entity.QServerTodo.serverTodo;
 public class ServerTodoRepositoryImpl implements ServerTodoRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<ServerTodo> findAllVisible() {
+        return queryFactory.selectFrom(serverTodo)
+                .fetch();
+    }
 }
