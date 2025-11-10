@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lostark.todo.domain.servertodo.enums.VisibleWeekday;
 import lostark.todo.global.entity.BaseTimeEntity;
 
@@ -24,7 +23,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -37,7 +35,7 @@ public class ServerTodo extends BaseTimeEntity {
     @Column(name = "server_todo_id")
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String contentName;
 
     @Builder.Default

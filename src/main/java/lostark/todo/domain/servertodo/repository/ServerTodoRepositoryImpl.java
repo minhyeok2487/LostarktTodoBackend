@@ -16,6 +16,8 @@ public class ServerTodoRepositoryImpl implements ServerTodoRepositoryCustom {
     @Override
     public List<ServerTodo> findAllVisible() {
         return queryFactory.selectFrom(serverTodo)
+                .leftJoin(serverTodo.visibleWeekdays).fetchJoin()
+                .distinct()
                 .fetch();
     }
 }

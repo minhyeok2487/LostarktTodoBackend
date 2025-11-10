@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.global.entity.BaseTimeEntity;
 import org.hibernate.annotations.ColumnDefault;
@@ -20,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

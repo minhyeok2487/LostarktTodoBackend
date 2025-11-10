@@ -17,6 +17,7 @@ public class ServerTodoStateRepositoryImpl implements ServerTodoStateRepositoryC
     @Override
     public List<ServerTodoState> findByMemberAndServerNames(Long memberId, List<String> serverNames) {
         return queryFactory.selectFrom(serverTodoState)
+                .join(serverTodoState.serverTodo).fetchJoin()
                 .where(
                         memberIdEq(memberId),
                         serverNameIn(serverNames)
