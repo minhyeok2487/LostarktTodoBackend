@@ -31,7 +31,7 @@ public class ServerTodoApi {
     public ResponseEntity<?> getServerTodos(@AuthenticationPrincipal String username,
                                             @RequestParam(required = false) String friendUsername) {
         String targetUsername = characterMemberQueryService.getUpdateMember(username, friendUsername,
-                FriendPermissionType.SHOW).getUsername();
+                FriendPermissionType.SHOW_WEEK_TODO).getUsername();
         return new ResponseEntity<>(serverTodoService.getServerTodos(targetUsername), HttpStatus.OK);
     }
 
