@@ -37,7 +37,8 @@ public class ServerTodoService {
     @Transactional(readOnly = true)
     public ServerTodoOverviewResponse getServerTodos(String username) {
         Member member = memberRepository.get(username);
-        return buildOverview(member);
+        List<String> serverNames = extractServerNames(member);
+        return buildOverview(member, serverNames);
     }
 
     @Transactional
@@ -55,9 +56,11 @@ public class ServerTodoService {
         if (state == null) {
             state = ServerTodoState.create(todo, member, request.getServerName(), todo.isDefaultEnabled());
         }
+
         state.updateEnabled(request.getEnabled());
         serverTodoStateRepository.save(state);
-        return buildOverview(member);
+
+        return buildOverview(member, serverNames);
     }
 
     @Transactional
@@ -75,7 +78,8 @@ public class ServerTodoService {
         }
 
         state.updateChecked(request.getChecked());
-        return buildOverview(member);
+
+        return buildOverview(member, serverNames);
     }
 
     private List<String> extractServerNames(Member member) {
@@ -86,9 +90,8 @@ public class ServerTodoService {
         return new ArrayList<>(serverNames);
     }
 
-    private ServerTodoOverviewResponse buildOverview(Member member) {
+    private ServerTodoOverviewResponse buildOverview(Member member, List<String> serverNames) {
         List<ServerTodo> todos = serverTodoRepository.findAllVisible();
-        List<String> serverNames = extractServerNames(member);
         List<ServerTodoState> states = serverNames.isEmpty()
                 ? List.of()
                 : serverTodoStateRepository.findByMemberAndServerNames(member.getId(), serverNames);
