@@ -5,6 +5,7 @@ import lostark.todo.domain.friend.entity.Friends;
 public enum FriendPermissionType {
 
     SHOW(new ShowPermissionStrategy()),
+    SHOW_WEEK_TODO(new ShowWeekTodoPermissionStrategy()),
     UPDATE_RAID(new UpdateRaidPermissionStrategy()),
     CHECK_RAID(new CheckRaidPermissionStrategy()),
     CHECK_WEEK_TODO(new CheckWeekTodoPermissionStrategy()),
