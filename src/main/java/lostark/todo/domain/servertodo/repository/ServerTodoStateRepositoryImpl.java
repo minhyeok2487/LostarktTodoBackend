@@ -35,6 +35,13 @@ public class ServerTodoStateRepositoryImpl implements ServerTodoStateRepositoryC
                 .fetchOne();
     }
 
+    @Override
+    public long resetAllChecked() {
+        return queryFactory.update(serverTodoState)
+                .set(serverTodoState.checked, false)
+                .execute();
+    }
+
     private BooleanExpression memberIdEq(Long memberId) {
         if (memberId == null) {
             return null;

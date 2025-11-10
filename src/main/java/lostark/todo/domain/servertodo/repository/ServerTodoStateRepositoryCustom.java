@@ -9,4 +9,6 @@ public interface ServerTodoStateRepositoryCustom {
     List<ServerTodoState> findByMemberAndServerNames(Long memberId, List<String> serverNames);
 
     ServerTodoState findByMemberAndTodo(Long memberId, Long todoId, String serverName);
+
+    long resetAllChecked();
 }

@@ -9,6 +9,7 @@ import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
 import lostark.todo.domain.member.repository.LifeEnergyRepository;
+import lostark.todo.domain.servertodo.repository.ServerTodoStateRepository;
 import lostark.todo.domain.schedule.dto.AuctionRequestDto;
 import lostark.todo.domain.schedule.repository.ScheduleRepository;
 import lostark.todo.global.keyvalue.KeyValueRepository;
@@ -43,6 +44,7 @@ public class SchedulingService {
     private final RaidBusGoldRepository raidBusGoldRepository;
     private final ScheduleRepository scheduleRepository;
     private final LifeEnergyRepository lifeEnergyRepository;
+    private final ServerTodoStateRepository serverTodoStateRepository;
 
     @Value("${Lostark-API-Key}")
     String apiKey;
@@ -89,6 +91,8 @@ public class SchedulingService {
         updateDayTodoGold();
 
         log.info("커스텀 일일 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.DAILY));
+
+        log.info("서버 공통 숙제 체크 초기화 = {}", serverTodoStateRepository.resetAllChecked());
     }
 
     private void updateDayTodoGold() {
