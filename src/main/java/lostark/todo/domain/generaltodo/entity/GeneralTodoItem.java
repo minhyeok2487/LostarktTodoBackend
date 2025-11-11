@@ -30,6 +30,10 @@ public class GeneralTodoItem extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private GeneralTodoCategory category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
+    private GeneralTodoStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -65,5 +69,9 @@ public class GeneralTodoItem extends BaseTimeEntity {
     public void moveTo(GeneralTodoFolder folder, GeneralTodoCategory category) {
         this.folder = folder;
         this.category = category;
+    }
+
+    public void updateStatus(GeneralTodoStatus status) {
+        this.status = status;
     }
 }

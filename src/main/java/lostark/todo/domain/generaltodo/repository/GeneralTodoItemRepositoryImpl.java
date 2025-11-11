@@ -36,7 +36,8 @@ public class GeneralTodoItemRepositoryImpl implements GeneralTodoItemRepositoryC
                         item.dueDate,
                         item.completed,
                         item.createdDate,
-                        item.lastModifiedDate
+                        item.lastModifiedDate,
+                        item.status.id
                 ))
                 .from(item)
                 .where(item.member.id.eq(memberId))
