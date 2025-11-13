@@ -52,10 +52,19 @@ public class GeneralTodoCategoryRepositoryImpl implements GeneralTodoCategoryRep
 
     @Override
     public void updateSortOrders(Long folderId, Long memberId, List<Long> orderedCategoryIds) {
+        final int offset = 1000;
+
+        factory.update(category)
+                .set(category.sortOrder, category.sortOrder.add(offset))
+                .where(category.folder.id.eq(folderId), category.member.id.eq(memberId))
+                .execute();
+
         IntStream.range(0, orderedCategoryIds.size())
                 .forEach(index -> factory.update(category)
                         .set(category.sortOrder, index)
-                        .where(category.folder.id.eq(folderId), category.member.id.eq(memberId), category.id.eq(orderedCategoryIds.get(index)))
+                        .where(category.folder.id.eq(folderId),
+                                category.member.id.eq(memberId),
+                                category.id.eq(orderedCategoryIds.get(index)))
                         .execute());
     }
 

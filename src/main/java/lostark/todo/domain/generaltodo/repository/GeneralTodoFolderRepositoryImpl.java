@@ -44,6 +44,13 @@ public class GeneralTodoFolderRepositoryImpl implements GeneralTodoFolderReposit
 
     @Override
     public void updateSortOrders(Long memberId, List<Long> orderedFolderIds) {
+        final int offset = 1000;
+
+        factory.update(folder)
+                .set(folder.sortOrder, folder.sortOrder.add(offset))
+                .where(folder.member.id.eq(memberId))
+                .execute();
+
         IntStream.range(0, orderedFolderIds.size())
                 .forEach(index -> factory.update(folder)
                         .set(folder.sortOrder, index)

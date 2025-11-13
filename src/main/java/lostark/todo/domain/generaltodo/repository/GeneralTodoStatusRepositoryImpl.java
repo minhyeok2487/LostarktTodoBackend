@@ -52,10 +52,19 @@ public class GeneralTodoStatusRepositoryImpl implements GeneralTodoStatusReposit
 
     @Override
     public void updateSortOrders(Long categoryId, Long memberId, List<Long> orderedStatusIds) {
+        final int offset = 1000;
+
+        factory.update(status)
+                .set(status.sortOrder, status.sortOrder.add(offset))
+                .where(status.category.id.eq(categoryId), status.member.id.eq(memberId))
+                .execute();
+
         IntStream.range(0, orderedStatusIds.size())
                 .forEach(index -> factory.update(status)
                         .set(status.sortOrder, index)
-                        .where(status.category.id.eq(categoryId), status.member.id.eq(memberId), status.id.eq(orderedStatusIds.get(index)))
+                        .where(status.category.id.eq(categoryId),
+                                status.member.id.eq(memberId),
+                                status.id.eq(orderedStatusIds.get(index)))
                         .execute());
     }
 
