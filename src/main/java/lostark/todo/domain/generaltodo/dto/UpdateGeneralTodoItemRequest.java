@@ -24,6 +24,6 @@ public class UpdateGeneralTodoItemRequest {
     @ApiModelProperty(example = "2025-01-02T12:00")
     private String dueDate;
 
-    @ApiModelProperty(example = "true")
-    private Boolean completed;
+    @ApiModelProperty(example = "6")
+    private Long statusId;
 }

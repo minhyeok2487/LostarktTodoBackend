@@ -20,13 +20,14 @@ public class GeneralTodoItemResponse {
     private Long categoryId;
     private String username;
     private String dueDate;
-    private boolean completed;
+    private Long statusId;
+    private String statusName;
     private String createdAt;
     private String updatedAt;
 
     @QueryProjection
     public GeneralTodoItemResponse(Long id, String title, String description, Long folderId, Long categoryId,
-                                   String username, LocalDateTime dueDate, boolean completed,
+                                   String username, LocalDateTime dueDate, Long statusId, String statusName,
                                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
@@ -35,7 +36,8 @@ public class GeneralTodoItemResponse {
         this.categoryId = categoryId;
         this.username = username;
         this.dueDate = toText(dueDate);
-        this.completed = completed;
+        this.statusId = statusId;
+        this.statusName = statusName;
         this.createdAt = toText(createdAt);
         this.updatedAt = toText(updatedAt);
     }
@@ -49,7 +51,8 @@ public class GeneralTodoItemResponse {
                 item.getCategory().getId(),
                 username,
                 item.getDueDate(),
-                item.isCompleted(),
+                item.getStatus().getId(),
+                item.getStatus().getName(),
                 item.getCreatedDate(),
                 item.getLastModifiedDate()
         );

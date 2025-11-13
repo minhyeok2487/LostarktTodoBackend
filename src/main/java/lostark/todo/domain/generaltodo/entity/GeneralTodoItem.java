@@ -3,7 +3,6 @@ package lostark.todo.domain.generaltodo.entity;
 import lombok.*;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.global.entity.BaseTimeEntity;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -34,6 +33,10 @@ public class GeneralTodoItem extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "status_id")
+    private GeneralTodoStatus status;
+
     @Column(nullable = false, length = 200)
     private String title;
 
@@ -41,10 +44,6 @@ public class GeneralTodoItem extends BaseTimeEntity {
     private String description;
 
     private LocalDateTime dueDate;
-
-    @Column(nullable = false)
-    @ColumnDefault("false")
-    private boolean completed;
 
     public void updateTitle(String title) {
         this.title = title;
@@ -58,12 +57,12 @@ public class GeneralTodoItem extends BaseTimeEntity {
         this.dueDate = dueDate;
     }
 
-    public void updateCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
     public void moveTo(GeneralTodoFolder folder, GeneralTodoCategory category) {
         this.folder = folder;
         this.category = category;
+    }
+
+    public void updateStatus(GeneralTodoStatus status) {
+        this.status = status;
     }
 }

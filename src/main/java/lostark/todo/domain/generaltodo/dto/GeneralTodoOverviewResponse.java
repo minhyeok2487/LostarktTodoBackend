@@ -15,4 +15,5 @@ public class GeneralTodoOverviewResponse {
     private List<GeneralTodoFolderResponse> folders = Collections.emptyList();
     private List<GeneralTodoCategoryResponse> categories = Collections.emptyList();
     private List<GeneralTodoItemResponse> todos = Collections.emptyList();
+    private List<GeneralTodoStatusResponse> statuses = Collections.emptyList();
 }

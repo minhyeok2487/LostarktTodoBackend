@@ -34,7 +34,8 @@ public class GeneralTodoItemRepositoryImpl implements GeneralTodoItemRepositoryC
                         item.category.id,
                         Expressions.constant(username),
                         item.dueDate,
-                        item.completed,
+                        item.status.id,
+                        item.status.name,
                         item.createdDate,
                         item.lastModifiedDate
                 ))

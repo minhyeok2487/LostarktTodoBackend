@@ -6,9 +6,9 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UpdateGeneralTodoItemCompletionRequest {
+public class UpdateGeneralTodoItemStatusRequest {
 
-    @ApiModelProperty(example = "true", required = true)
+    @ApiModelProperty(example = "7", required = true)
     @NotNull
-    private Boolean completed;
+    private Long statusId;
 }

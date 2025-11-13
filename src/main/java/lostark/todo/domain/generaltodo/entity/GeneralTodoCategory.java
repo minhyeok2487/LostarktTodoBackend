@@ -51,6 +51,10 @@ public class GeneralTodoCategory extends BaseTimeEntity {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GeneralTodoItem> items = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GeneralTodoStatus> statuses = new ArrayList<>();
+
     public void updateName(String name) {
         this.name = name;
     }

@@ -6,10 +6,12 @@ import lostark.todo.domain.generaltodo.dto.*;
 import lostark.todo.domain.generaltodo.entity.GeneralTodoCategory;
 import lostark.todo.domain.generaltodo.entity.GeneralTodoFolder;
 import lostark.todo.domain.generaltodo.entity.GeneralTodoItem;
+import lostark.todo.domain.generaltodo.entity.GeneralTodoStatus;
 import lostark.todo.domain.generaltodo.enums.GeneralTodoViewMode;
 import lostark.todo.domain.generaltodo.repository.GeneralTodoCategoryRepository;
 import lostark.todo.domain.generaltodo.repository.GeneralTodoFolderRepository;
 import lostark.todo.domain.generaltodo.repository.GeneralTodoItemRepository;
+import lostark.todo.domain.generaltodo.repository.GeneralTodoStatusRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
@@ -21,6 +23,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +39,7 @@ public class GeneralTodoService {
     private final GeneralTodoFolderRepository folderRepository;
     private final GeneralTodoCategoryRepository categoryRepository;
     private final GeneralTodoItemRepository itemRepository;
+    private final GeneralTodoStatusRepository statusRepository;
 
     @Transactional(readOnly = true)
     public GeneralTodoOverviewResponse getOverview(String username) {
@@ -47,6 +51,7 @@ public class GeneralTodoService {
         response.setFolders(folderRepository.fetchResponses(memberId, memberUsername));
         response.setCategories(categoryRepository.fetchResponses(memberId, memberUsername));
         response.setTodos(itemRepository.fetchResponses(memberId, memberUsername));
+        response.setStatuses(statusRepository.fetchResponses(memberId, memberUsername));
         return response;
     }
 
@@ -131,12 +136,14 @@ public class GeneralTodoService {
                 .viewMode(Optional.ofNullable(request.getViewMode()).orElse(GeneralTodoViewMode.LIST))
                 .build();
         categoryRepository.save(category);
+        ensureCategoryHasStatuses(category);
         return GeneralTodoCategoryResponse.fromEntity(category, member.getUsername());
     }
 
     public GeneralTodoCategoryResponse updateCategory(String username, Long categoryId, UpdateGeneralTodoCategoryRequest request) {
         Member member = memberRepository.get(username);
         GeneralTodoCategory category = getCategory(categoryId, member.getId());
+        ensureCategoryHasStatuses(category);
 
         if (StringUtils.hasText(request.getName())) {
             category.updateName(request.getName());
@@ -165,12 +172,79 @@ public class GeneralTodoService {
         categoryRepository.delete(category);
     }
 
+    public GeneralTodoStatusResponse createStatus(String username, Long categoryId, CreateGeneralTodoStatusRequest request) {
+        Member member = memberRepository.get(username);
+        Long memberId = member.getId();
+        GeneralTodoCategory category = getCategory(categoryId, memberId);
+        ensureCategoryHasStatuses(category);
+
+        List<Long> existingStatusIds = statusRepository.findIdsByCategory(categoryId, memberId);
+        int nextSortOrder = existingStatusIds.size();
+
+        int sortOrder = Optional.ofNullable(request.getSortOrder())
+                .map(order -> {
+                    if (order < 0) {
+                        throw new ConditionNotMetException("정렬 순서는 0 이상이어야 합니다.");
+                    }
+                    if (order >= nextSortOrder) {
+                        return nextSortOrder;
+                    }
+                    statusRepository.shiftSortOrders(categoryId, memberId, order);
+                    return order;
+                })
+                .orElse(nextSortOrder);
+
+        GeneralTodoStatus status = GeneralTodoStatus.builder()
+                .category(category)
+                .member(member)
+                .name(request.getName())
+                .sortOrder(sortOrder)
+                .build();
+        statusRepository.save(status);
+        return GeneralTodoStatusResponse.fromEntity(status, member.getUsername());
+    }
+
+    public GeneralTodoStatusResponse renameStatus(String username, Long categoryId, Long statusId, UpdateGeneralTodoStatusRequest request) {
+        Member member = memberRepository.get(username);
+        GeneralTodoStatus status = getStatus(statusId, member.getId());
+        validateStatusBelongsToCategory(status, categoryId);
+        status.rename(request.getName());
+        return GeneralTodoStatusResponse.fromEntity(status, member.getUsername());
+    }
+
+    public void reorderStatuses(String username, Long categoryId, ReorderGeneralTodoStatusesRequest request) {
+        Member member = memberRepository.get(username);
+        Long memberId = member.getId();
+        getCategory(categoryId, memberId);
+        List<Long> existingStatusIds = statusRepository.findIdsByCategory(categoryId, memberId);
+        GlobalMethod.compareLists(existingStatusIds, request.getStatusIds(), "정렬 대상 상태 목록이 일치하지 않습니다.");
+        statusRepository.updateSortOrders(categoryId, memberId, request.getStatusIds());
+    }
+
+    public void deleteStatus(String username, Long categoryId, Long statusId) {
+        Member member = memberRepository.get(username);
+        Long memberId = member.getId();
+        GeneralTodoStatus status = getStatus(statusId, memberId);
+        validateStatusBelongsToCategory(status, categoryId);
+
+        List<Long> existingStatusIds = statusRepository.findIdsByCategory(categoryId, memberId);
+        if (existingStatusIds.size() <= 1) {
+            throw new ConditionNotMetException("카테고리에는 최소 한 개 이상의 상태가 필요합니다.");
+        }
+        if (itemRepository.existsByStatusId(statusId)) {
+            throw new ConditionNotMetException("상태에 연결된 할 일이 있어 삭제할 수 없습니다.");
+        }
+        statusRepository.delete(status);
+    }
+
     public GeneralTodoItemResponse createItem(String username, CreateGeneralTodoItemRequest request) {
         Member member = memberRepository.get(username);
         Long memberId = member.getId();
         GeneralTodoFolder folder = getFolder(request.getFolderId(), memberId);
         GeneralTodoCategory category = getCategory(request.getCategoryId(), memberId);
         validateCategoryBelongsToFolder(category, folder);
+        ensureCategoryHasStatuses(category);
+        GeneralTodoStatus status = resolveStatus(category, memberId, request.getStatusId());
 
         GeneralTodoItem item = GeneralTodoItem.builder()
                 .folder(folder)
@@ -179,7 +253,7 @@ public class GeneralTodoService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .dueDate(parseDateTime(request.getDueDate()))
-                .completed(Boolean.TRUE.equals(request.getCompleted()))
+                .status(status)
                 .build();
         itemRepository.save(item);
         return GeneralTodoItemResponse.fromEntity(item, member.getUsername());
@@ -196,33 +270,43 @@ public class GeneralTodoService {
         if (request.getDescription() != null) {
             item.updateDescription(request.getDescription());
         }
+
+        boolean categoryChanged = false;
         if (request.getCategoryId() != null) {
             GeneralTodoCategory category = getCategory(request.getCategoryId(), memberId);
             GeneralTodoFolder targetFolder = Optional.ofNullable(request.getFolderId())
                     .map(id -> {
-                        if (!category.getFolder().getId().equals(id)) {
-                            throw new ConditionNotMetException("카테고리가 해당 폴더에 속해 있지 않습니다.");
-                        }
-                        return getFolder(id, memberId);
+                        GeneralTodoFolder folder = getFolder(id, memberId);
+                        validateCategoryBelongsToFolder(category, folder);
+                        return folder;
                     })
                     .orElse(category.getFolder());
             item.moveTo(targetFolder, category);
+            ensureCategoryHasStatuses(category);
+            categoryChanged = true;
         } else if (request.getFolderId() != null) {
             throw new ConditionNotMetException("카테고리 없이 폴더를 변경할 수 없습니다.");
+        } else {
+            ensureCategoryHasStatuses(item.getCategory());
         }
+
         if (request.getDueDate() != null) {
             item.updateDueDate(parseDateTime(request.getDueDate()));
         }
-        if (request.getCompleted() != null) {
-            item.updateCompleted(request.getCompleted());
+        if (request.getStatusId() != null) {
+            GeneralTodoStatus status = resolveStatus(item.getCategory(), memberId, request.getStatusId());
+            item.updateStatus(status);
+        } else if (categoryChanged) {
+            item.updateStatus(getDefaultStatus(item.getCategory()));
         }
         return GeneralTodoItemResponse.fromEntity(item, member.getUsername());
     }
 
-    public void updateItemCompletion(String username, Long itemId, UpdateGeneralTodoItemCompletionRequest request) {
+    public void updateItemStatus(String username, Long itemId, UpdateGeneralTodoItemStatusRequest request) {
         Member member = memberRepository.get(username);
         GeneralTodoItem item = getItem(itemId, member.getId());
-        item.updateCompleted(request.getCompleted());
+        GeneralTodoStatus status = resolveStatus(item.getCategory(), member.getId(), request.getStatusId());
+        item.updateStatus(status);
     }
 
     public void deleteItem(String username, Long itemId) {
@@ -249,6 +333,58 @@ public class GeneralTodoService {
     private void validateCategoryBelongsToFolder(GeneralTodoCategory category, GeneralTodoFolder folder) {
         if (!category.getFolder().getId().equals(folder.getId())) {
             throw new ConditionNotMetException("카테고리가 해당 폴더에 속해 있지 않습니다.");
+        }
+    }
+
+    private GeneralTodoStatus getStatus(Long statusId, Long memberId) {
+        return statusRepository.findByIdAndMemberId(statusId, memberId)
+                .orElseThrow(() -> new ConditionNotMetException("상태를 찾을 수 없습니다."));
+    }
+
+    private GeneralTodoStatus resolveStatus(GeneralTodoCategory category, Long memberId, Long statusId) {
+        if (statusId == null) {
+            return getDefaultStatus(category);
+        }
+        GeneralTodoStatus status = getStatus(statusId, memberId);
+        validateStatusBelongsToCategory(status, category);
+        return status;
+    }
+
+    private GeneralTodoStatus getDefaultStatus(GeneralTodoCategory category) {
+        ensureCategoryHasStatuses(category);
+        return statusRepository.findFirstByCategory(category.getId(), category.getMember().getId())
+                .orElseThrow(() -> new ConditionNotMetException("상태를 찾을 수 없습니다."));
+    }
+
+    private void ensureCategoryHasStatuses(GeneralTodoCategory category) {
+        Long categoryId = category.getId();
+        Long memberId = category.getMember().getId();
+        if (!statusRepository.findIdsByCategory(categoryId, memberId).isEmpty()) {
+            return;
+        }
+        List<GeneralTodoStatus> defaults = new ArrayList<>();
+        defaults.add(buildDefaultStatus(category, "시작전", 0));
+        defaults.add(buildDefaultStatus(category, "완료", 1));
+        statusRepository.saveAll(defaults);
+        category.getStatuses().addAll(defaults);
+    }
+
+    private GeneralTodoStatus buildDefaultStatus(GeneralTodoCategory category, String name, int sortOrder) {
+        return GeneralTodoStatus.builder()
+                .category(category)
+                .member(category.getMember())
+                .name(name)
+                .sortOrder(sortOrder)
+                .build();
+    }
+
+    private void validateStatusBelongsToCategory(GeneralTodoStatus status, GeneralTodoCategory category) {
+        validateStatusBelongsToCategory(status, category.getId());
+    }
+
+    private void validateStatusBelongsToCategory(GeneralTodoStatus status, Long categoryId) {
+        if (!status.getCategory().getId().equals(categoryId)) {
+            throw new ConditionNotMetException("상태가 해당 카테고리에 속해 있지 않습니다.");
         }
     }
 

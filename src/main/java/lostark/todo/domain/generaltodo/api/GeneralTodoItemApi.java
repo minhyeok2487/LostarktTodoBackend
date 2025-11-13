@@ -5,8 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.generaltodo.dto.CreateGeneralTodoItemRequest;
 import lostark.todo.domain.generaltodo.dto.GeneralTodoItemResponse;
-import lostark.todo.domain.generaltodo.dto.UpdateGeneralTodoItemCompletionRequest;
 import lostark.todo.domain.generaltodo.dto.UpdateGeneralTodoItemRequest;
+import lostark.todo.domain.generaltodo.dto.UpdateGeneralTodoItemStatusRequest;
 import lostark.todo.domain.generaltodo.service.GeneralTodoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,12 +47,12 @@ public class GeneralTodoItemApi {
         return new ResponseEntity<>(generalTodoService.updateItem(username, itemId, request), HttpStatus.OK);
     }
 
-    @ApiOperation("할 일 완료 상태 변경")
-    @PatchMapping("/items/{itemId}/toggle-completion")
-    public ResponseEntity<Void> toggleCompletion(@AuthenticationPrincipal String username,
-                                                 @PathVariable Long itemId,
-                                                 @Valid @RequestBody UpdateGeneralTodoItemCompletionRequest request) {
-        generalTodoService.updateItemCompletion(username, itemId, request);
+    @ApiOperation("할 일 상태 변경")
+    @PatchMapping("/items/{itemId}/status")
+    public ResponseEntity<Void> updateStatus(@AuthenticationPrincipal String username,
+                                             @PathVariable Long itemId,
+                                             @Valid @RequestBody UpdateGeneralTodoItemStatusRequest request) {
+        generalTodoService.updateItemStatus(username, itemId, request);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
