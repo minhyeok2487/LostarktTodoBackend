@@ -1,5 +1,6 @@
 package lostark.todo.domain.generaltodo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -26,8 +27,15 @@ public class CreateGeneralTodoItemRequest {
     @NotNull
     private Long categoryId;
 
+    @ApiModelProperty(example = "2025-01-01T09:00", notes = "타임라인 뷰에서만 사용됩니다.")
+    private String startDate;
+
     @ApiModelProperty(example = "2025-01-01T09:00", notes = "선택 사항")
     private String dueDate;
+
+    @ApiModelProperty(example = "true", notes = "리스트/칸반 뷰에서 하루종일 일정을 설정합니다.")
+    @JsonProperty("isAllDay")
+    private Boolean isAllDay;
 
     @ApiModelProperty(example = "5", notes = "선택 사항 - 지정하지 않으면 기본 상태로 지정됩니다.")
     private Long statusId;

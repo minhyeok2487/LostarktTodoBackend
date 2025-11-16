@@ -23,6 +23,6 @@ public class CreateGeneralTodoCategoryRequest {
     @ApiModelProperty(example = "0", notes = "선택 사항 - 지정하지 않으면 마지막으로 정렬됩니다.")
     private Integer sortOrder;
 
-    @ApiModelProperty(example = "LIST", allowableValues = "LIST,KANBAN", notes = "선택 사항 - 기본값 LIST")
+    @ApiModelProperty(example = "LIST", allowableValues = "LIST,KANBAN,TIMELINE", notes = "선택 사항 - 기본값 LIST")
     private GeneralTodoViewMode viewMode;
 }
