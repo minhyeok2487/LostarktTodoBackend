@@ -34,4 +34,8 @@ public class UpdateGeneralTodoItemRequest {
 
     @ApiModelProperty(example = "6")
     private Long statusId;
+
+    public boolean scheduleFieldsProvided() {
+        return startDate != null || dueDate != null || isAllDay != null;
+    }
 }

@@ -300,17 +300,19 @@ public class GeneralTodoService {
             ensureCategoryHasStatuses(item.getCategory());
         }
 
-        boolean scheduleFieldsProvided = request.getStartDate() != null
-                || request.getDueDate() != null
-                || request.getIsAllDay() != null;
+        boolean scheduleFieldsProvided = request.scheduleFieldsProvided();
         GeneralTodoCategory activeCategory = item.getCategory();
         boolean requireScheduleUpdate = scheduleFieldsProvided
                 || categoryChanged
                 || activeCategory.getViewMode() == GeneralTodoViewMode.TIMELINE;
         if (requireScheduleUpdate) {
-            LocalDateTime startDate = request.getStartDate() != null ? parseDateTime(request.getStartDate()) : item.getStartDate();
-            LocalDateTime dueDate = request.getDueDate() != null ? parseDateTime(request.getDueDate()) : item.getDueDate();
-            Boolean isAllDay = request.getIsAllDay() != null ? request.getIsAllDay() : item.isAllDay();
+            LocalDateTime startDate = Optional.ofNullable(request.getStartDate())
+                    .map(this::parseDateTime)
+                    .orElse(item.getStartDate());
+            LocalDateTime dueDate = Optional.ofNullable(request.getDueDate())
+                    .map(this::parseDateTime)
+                    .orElse(item.getDueDate());
+            boolean isAllDay = Optional.ofNullable(request.getIsAllDay()).orElse(item.isAllDay());
             ScheduleValues schedule = resolveSchedule(activeCategory.getViewMode(), startDate, dueDate, isAllDay);
             item.setStartDate(schedule.getStartDate());
             item.setDueDate(schedule.getDueDate());

@@ -31,7 +31,7 @@ public class GeneralTodoItemResponse {
 
     @QueryProjection
     public GeneralTodoItemResponse(Long id, String title, String description, Long folderId, Long categoryId,
-                                   String username, LocalDateTime startDate, LocalDateTime dueDate, boolean isAllDay,
+                                   String username, LocalDateTime startDate, LocalDateTime dueDate, boolean allDay,
                                    Long statusId, String statusName, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
@@ -41,7 +41,7 @@ public class GeneralTodoItemResponse {
         this.username = username;
         this.startDate = toText(startDate);
         this.dueDate = toText(dueDate);
-        this.allDay = isAllDay;
+        this.allDay = allDay;
         this.statusId = statusId;
         this.statusName = statusName;
         this.createdAt = toText(createdAt);
