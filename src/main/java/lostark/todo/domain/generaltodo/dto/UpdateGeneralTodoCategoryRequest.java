@@ -19,7 +19,7 @@ public class UpdateGeneralTodoCategoryRequest {
     @Pattern(regexp = "^(#([A-Fa-f0-9]{6}))?$", message = "색상은 #RRGGBB 형식이어야 합니다.")
     private String color;
 
-    @ApiModelProperty(example = "KANBAN", allowableValues = "LIST,KANBAN")
+    @ApiModelProperty(example = "TIMELINE", allowableValues = "LIST,KANBAN,TIMELINE")
     private GeneralTodoViewMode viewMode;
 
     public boolean isColorProvided() {

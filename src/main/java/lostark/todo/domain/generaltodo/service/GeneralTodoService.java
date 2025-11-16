@@ -1,5 +1,6 @@
 package lostark.todo.domain.generaltodo.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.generaltodo.dto.*;
@@ -246,13 +247,22 @@ public class GeneralTodoService {
         ensureCategoryHasStatuses(category);
         GeneralTodoStatus status = resolveStatus(category, memberId, request.getStatusId());
 
+        ScheduleValues schedule = resolveSchedule(
+                category.getViewMode(),
+                parseDateTime(request.getStartDate()),
+                parseDateTime(request.getDueDate()),
+                request.getIsAllDay()
+        );
+
         GeneralTodoItem item = GeneralTodoItem.builder()
                 .folder(folder)
                 .category(category)
                 .member(member)
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .dueDate(parseDateTime(request.getDueDate()))
+                .startDate(schedule.getStartDate())
+                .dueDate(schedule.getDueDate())
+                .allDay(schedule.isAllDay())
                 .status(status)
                 .build();
         itemRepository.save(item);
@@ -290,8 +300,21 @@ public class GeneralTodoService {
             ensureCategoryHasStatuses(item.getCategory());
         }
 
-        if (request.getDueDate() != null) {
-            item.updateDueDate(parseDateTime(request.getDueDate()));
+        boolean scheduleFieldsProvided = request.getStartDate() != null
+                || request.getDueDate() != null
+                || request.getIsAllDay() != null;
+        GeneralTodoCategory activeCategory = item.getCategory();
+        boolean requireScheduleUpdate = scheduleFieldsProvided
+                || categoryChanged
+                || activeCategory.getViewMode() == GeneralTodoViewMode.TIMELINE;
+        if (requireScheduleUpdate) {
+            LocalDateTime startDate = request.getStartDate() != null ? parseDateTime(request.getStartDate()) : item.getStartDate();
+            LocalDateTime dueDate = request.getDueDate() != null ? parseDateTime(request.getDueDate()) : item.getDueDate();
+            Boolean isAllDay = request.getIsAllDay() != null ? request.getIsAllDay() : item.isAllDay();
+            ScheduleValues schedule = resolveSchedule(activeCategory.getViewMode(), startDate, dueDate, isAllDay);
+            item.setStartDate(schedule.getStartDate());
+            item.setDueDate(schedule.getDueDate());
+            item.setAllDay(schedule.isAllDay());
         }
         if (request.getStatusId() != null) {
             GeneralTodoStatus status = resolveStatus(item.getCategory(), memberId, request.getStatusId());
@@ -400,6 +423,48 @@ public class GeneralTodoService {
             return LocalDateTime.parse(value, DATE_TIME_FORMATTER);
         } catch (DateTimeParseException ex) {
             throw new ConditionNotMetException("날짜 형식이 올바르지 않습니다. 예: YYYY-MM-DDTHH:MM");
+        }
+    }
+
+    private ScheduleValues resolveSchedule(GeneralTodoViewMode viewMode,
+                                           LocalDateTime startDate,
+                                           LocalDateTime dueDate,
+                                           Boolean isAllDay) {
+        boolean allDay = Boolean.TRUE.equals(isAllDay);
+        if (viewMode == GeneralTodoViewMode.TIMELINE) {
+            if (startDate == null) {
+                throw new ConditionNotMetException("타임라인 뷰에서는 시작일을 입력해야 합니다.");
+            }
+            if (dueDate == null) {
+                throw new ConditionNotMetException("타임라인 뷰에서는 마감일을 입력해야 합니다.");
+            }
+            if (allDay) {
+                throw new ConditionNotMetException("타임라인 뷰에서는 하루종일 설정을 사용할 수 없습니다.");
+            }
+            if (startDate.isAfter(dueDate)) {
+                throw new ConditionNotMetException("시작일은 마감일보다 늦을 수 없습니다.");
+            }
+            return new ScheduleValues(startDate, dueDate, false);
+        }
+
+        if (dueDate == null) {
+            throw new ConditionNotMetException("마감일을 입력해 주세요.");
+        }
+
+        LocalDateTime normalizedDueDate = allDay ? dueDate.toLocalDate().atStartOfDay() : dueDate;
+        return new ScheduleValues(null, normalizedDueDate, allDay);
+    }
+
+    @Getter
+    private static final class ScheduleValues {
+        private final LocalDateTime startDate;
+        private final LocalDateTime dueDate;
+        private final boolean allDay;
+
+        private ScheduleValues(LocalDateTime startDate, LocalDateTime dueDate, boolean allDay) {
+            this.startDate = startDate;
+            this.dueDate = dueDate;
+            this.allDay = allDay;
         }
     }
 }

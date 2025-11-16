@@ -43,7 +43,14 @@ public class GeneralTodoItem extends BaseTimeEntity {
     @Column(length = 2000)
     private String description;
 
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "due_date")
     private LocalDateTime dueDate;
+
+    @Column(name = "is_all_day", nullable = false)
+    private boolean allDay;
 
     public void updateTitle(String title) {
         this.title = title;
@@ -51,10 +58,6 @@ public class GeneralTodoItem extends BaseTimeEntity {
 
     public void updateDescription(String description) {
         this.description = description;
-    }
-
-    public void updateDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
     }
 
     public void moveTo(GeneralTodoFolder folder, GeneralTodoCategory category) {
