@@ -449,10 +449,6 @@ public class GeneralTodoService {
             return new ScheduleValues(startDate, dueDate, false);
         }
 
-        if (dueDate == null) {
-            throw new ConditionNotMetException("마감일을 입력해 주세요.");
-        }
-
         LocalDateTime normalizedDueDate = allDay ? dueDate.toLocalDate().atStartOfDay() : dueDate;
         return new ScheduleValues(null, normalizedDueDate, allDay);
     }
