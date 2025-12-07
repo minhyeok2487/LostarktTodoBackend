@@ -449,7 +449,8 @@ public class GeneralTodoService {
             return new ScheduleValues(startDate, dueDate, false);
         }
 
-        LocalDateTime normalizedDueDate = allDay ? dueDate.toLocalDate().atStartOfDay() : dueDate;
+        LocalDateTime normalizedDueDate = (allDay && dueDate != null) ? dueDate.toLocalDate().atStartOfDay() : dueDate;
+
         return new ScheduleValues(null, normalizedDueDate, allDay);
     }
 

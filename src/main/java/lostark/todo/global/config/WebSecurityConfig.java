@@ -3,6 +3,7 @@ package lostark.todo.global.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.global.config.filter.JwtAuthenticationFilter;
+import lostark.todo.global.config.filter.MyGameApiKeyFilter;
 import lostark.todo.global.security.CustomOAuth2UserService;
 import lostark.todo.global.security.OAuthSuccessHandler;
 import lostark.todo.global.security.RedirectUrlCookieFilter;
@@ -27,6 +28,7 @@ import org.springframework.web.filter.CorsFilter;
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final MyGameApiKeyFilter myGameApiKeyFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuthSuccessHandler oAuthSuccessHandler;
     private final RedirectUrlCookieFilter redirectUrlFilter;
@@ -50,7 +52,8 @@ public class WebSecurityConfig {
             "/v2/boards/**","/v3/boards/**", "/v2/comments", "/v3/home/test", "/auth/authorize",
             "/login/oauth2/**",
             "/api/v1/auth/signup", "/api/v1/member/character", "/api/v1/auth/login", "/api/v1/mail/**",
-            "/manage/health", "/manage/info", "/manage/prometheus"
+            "/manage/health", "/manage/info", "/manage/prometheus",
+            "/api/v1/games/**", "/api/v1/events/**"  // MyGame API - API Key 필터가 별도로 처리
     };
 
     public static final String[] PERMIT_GET_LINK = {
@@ -95,6 +98,9 @@ public class WebSecurityConfig {
          * jwtAuthenticationFilter 실행
          */
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
+
+        // MyGame API Key 필터 (JWT 필터 이전에 실행)
+        http.addFilterBefore(myGameApiKeyFilter, JwtAuthenticationFilter.class);
 
         //리다이렉트되기 전에 필터 실행
         http.addFilterBefore(redirectUrlFilter, OAuth2AuthorizationRequestRedirectFilter.class);
