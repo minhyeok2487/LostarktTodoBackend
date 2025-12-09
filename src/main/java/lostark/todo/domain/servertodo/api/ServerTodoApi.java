@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.servertodo.dto.ServerTodoCheckRequest;
+import lostark.todo.domain.servertodo.dto.ServerTodoCreateRequest;
 import lostark.todo.domain.servertodo.dto.ServerTodoToggleEnabledRequest;
 import lostark.todo.domain.servertodo.service.ServerTodoService;
 import lostark.todo.global.friendPermisson.FriendPermissionType;
@@ -25,6 +26,12 @@ public class ServerTodoApi {
 
     private final ServerTodoService serverTodoService;
     private final CharacterMemberQueryService characterMemberQueryService;
+
+    @ApiOperation("서버 공통 숙제 생성")
+    @PostMapping
+    public ResponseEntity<?> createServerTodo(@Valid @RequestBody ServerTodoCreateRequest request) {
+        return new ResponseEntity<>(serverTodoService.createServerTodo(request), HttpStatus.CREATED);
+    }
 
     @ApiOperation("서버 공통 숙제 조회")
     @GetMapping
