@@ -6,6 +6,7 @@ import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.servertodo.dto.ServerTodoCheckRequest;
+import lostark.todo.domain.servertodo.dto.ServerTodoCreateRequest;
 import lostark.todo.domain.servertodo.dto.ServerTodoOverviewResponse;
 import lostark.todo.domain.servertodo.dto.ServerTodoToggleEnabledRequest;
 import lostark.todo.domain.servertodo.entity.ServerTodo;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +35,19 @@ public class ServerTodoService {
     private static final String SERVER_TODO_NOT_FOUND = "등록된 서버 숙제가 아닙니다.";
     private static final String SERVER_NOT_BELONG_TO_MEMBER = "해당 서버에는 캐릭터가 없습니다.";
     private static final String SERVER_TODO_STATE_NOT_FOUND = "서버 숙제가 활성화되어 있지 않습니다.";
+
+    @Transactional
+    public ServerTodo createServerTodo(ServerTodoCreateRequest request) {
+        ServerTodo serverTodo = ServerTodo.builder()
+                .contentName(request.getContentName())
+                .defaultEnabled(request.getDefaultEnabled())
+                .visibleWeekdays(request.getVisibleWeekdays() != null
+                    ? request.getVisibleWeekdays()
+                    : EnumSet.noneOf(lostark.todo.domain.servertodo.enums.VisibleWeekday.class))
+                .build();
+
+        return serverTodoRepository.save(serverTodo);
+    }
 
     @Transactional(readOnly = true)
     public ServerTodoOverviewResponse getServerTodos(String username) {
