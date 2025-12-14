@@ -35,16 +35,16 @@ public class ContentTestData {
                 createDayContent(111L, Category.카오스던전, "쿠르잔전선 2", 1660, 194048, 24008, 12.0, 175.0, 600.0, 0),
                 createDayContent(141L, Category.카오스던전, "쿠르잔전선 3", 1680, 194048, 24008, 13.0, 200.0, 700.0, 0),
 
-                // 가디언토벌
-                createDayContent(11L, Category.가디언토벌, "데스칼루다", 1415, 0, 0, 10.7, 103.4, 310.6, 0),
-                createDayContent(12L, Category.가디언토벌, "쿤겔라니움", 1460, 0, 0, 15.2, 131.9, 396.9, 0),
-                createDayContent(13L, Category.가디언토벌, "칼엘리고스", 1490, 0, 0, 10.1, 74.3, 222.6, 0),
-                createDayContent(14L, Category.가디언토벌, "하누마탄", 1540, 0, 0, 14.0, 101.4, 309.5, 0),
-                createDayContent(15L, Category.가디언토벌, "소나벨", 1580, 0, 0, 8.0, 66.3, 199.7, 0),
-                createDayContent(16L, Category.가디언토벌, "가르가디스", 1610, 0, 0, 12.0, 103.7, 311.1, 0),
-                createDayContent(92L, Category.가디언토벌, "베스칼", 1630, 0, 0, 24.0, 168.3, 506.5, 0),
-                createDayContent(109L, Category.가디언토벌, "아게오로스", 1640, 0, 0, 12.0, 94.6, 293.0, 0),
-                createDayContent(142L, Category.가디언토벌, "스콜라키아", 1680, 0, 0, 19.0, 195.0, 434.0, 0)
+                // 가디언토벌 - 12/10 업데이트: 파괴석, 수호석, 돌파석 드랍 제거
+                createDayContent(11L, Category.가디언토벌, "데스칼루다", 1415, 0, 0, 0, 0, 0, 0),
+                createDayContent(12L, Category.가디언토벌, "쿤겔라니움", 1460, 0, 0, 0, 0, 0, 0),
+                createDayContent(13L, Category.가디언토벌, "칼엘리고스", 1490, 0, 0, 0, 0, 0, 0),
+                createDayContent(14L, Category.가디언토벌, "하누마탄", 1540, 0, 0, 0, 0, 0, 0),
+                createDayContent(15L, Category.가디언토벌, "소나벨", 1580, 0, 0, 0, 0, 0, 0),
+                createDayContent(16L, Category.가디언토벌, "가르가디스", 1610, 0, 0, 0, 0, 0, 0),
+                createDayContent(92L, Category.가디언토벌, "베스칼", 1630, 0, 0, 0, 0, 0, 0),
+                createDayContent(109L, Category.가디언토벌, "아게오로스", 1640, 0, 0, 0, 0, 0, 0),
+                createDayContent(142L, Category.가디언토벌, "스콜라키아", 1680, 0, 0, 0, 0, 0, 0)
         );
     }
 

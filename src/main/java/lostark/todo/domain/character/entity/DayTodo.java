@@ -214,27 +214,19 @@ public class DayTodo {
     }
 
     public void calculateDayTodo(Character character, Map<String, Market> contentResource) {
-        Market destruction = getMarketItem(character.getItemLevel(), contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
-        Market guardian = getMarketItem(character.getItemLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
-        Market leapStone = getMarketItem(character.getItemLevel(), contentResource, "위대한 명예의 돌파석", "경이로운 명예의 돌파석", "찬란한 명예의 돌파석", "운명의 돌파석");
-
-        // 카오스 던전 계산
+        // 12/10 업데이트: 카오스 던전 보상 캐릭터 귀속, 가디언 토벌은 보석만 드랍
         this.calculateChaos();
 
-        // 가디언 토벌 계산
-        this.calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone);
+        // 가디언 토벌 보석 계산을 위한 Market 조회
+        Market jewelry = getJewelry(character.getItemLevel(), contentResource);
+        this.calculateGuardian(character.getDayTodo().getGuardian(), jewelry);
     }
 
-    private Market getMarketItem(double itemLevel, Map<String, Market> contentResource,
-                                 String level1Item, String level2Item, String level3Item, String level4Item) {
-        if (itemLevel >= 1415 && itemLevel < 1490) {
-            return contentResource.get(level1Item);
-        } else if (itemLevel >= 1490 && itemLevel < 1580) {
-            return contentResource.get(level2Item);
-        } else if (itemLevel >= 1580 && itemLevel < 1640) {
-            return contentResource.get(level3Item);
+    private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
+        if (itemLevel >= 1415 && itemLevel < 1640) {
+            return contentResource.get("3티어 1레벨 보석");
         } else {
-            return contentResource.get(level4Item);
+            return contentResource.get("4티어 1레벨 보석");
         }
     }
 
@@ -243,16 +235,13 @@ public class DayTodo {
         this.setChaosGold(0);
     }
 
-    private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone) {
-        double price = 0;
-        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += leapStone.getRecentPrice() * dayContent.getLeapStone() / leapStone.getBundleCount();
+    private void calculateGuardian(DayContent dayContent, Market jewelry) {
+        // 12/10 업데이트: 가디언 토벌에서 보석만 드랍 (파괴석/수호석/돌파석은 캐릭터 귀속)
+        double price = jewelry.getRecentPrice() * dayContent.getJewelry();
 
         int guardianGauge = this.getGuardianGauge();
-
         if (guardianGauge >= 20) {
-            price = price*2;
+            price = price * 2;
         }
 
         price = Math.round(price * 100.0) / 100.0;
