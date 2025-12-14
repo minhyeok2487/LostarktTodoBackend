@@ -154,7 +154,10 @@ public class LostarkCharacterApiClient {
             }
             if (profile != null && profile.get("CombatPower") != null) {
                 String combatPowerStr = profile.get("CombatPower").toString().replace(",", "");
-                character.setCombatPower(Double.parseDouble(combatPowerStr));
+                double newCombatPower = Double.parseDouble(combatPowerStr);
+                if (newCombatPower > character.getCombatPower()) {
+                    character.setCombatPower(newCombatPower);
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

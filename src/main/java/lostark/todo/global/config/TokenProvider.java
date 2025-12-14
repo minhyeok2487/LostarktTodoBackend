@@ -43,6 +43,16 @@ public class TokenProvider {
                 .compact();
     }
 
+    public String createToken(String username) {
+        Key secretKey = getSigningKey(secret);
+        return Jwts.builder()
+                .signWith(secretKey, SignatureAlgorithm.HS512) // 최신 방식
+                .setSubject(username)
+                .setIssuer("LostarkTodo")
+                .setIssuedAt(new Date())
+                .compact();
+    }
+
     /**
      * 구글 로그인 연동 Token 생성
      */
