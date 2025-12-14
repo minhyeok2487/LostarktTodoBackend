@@ -121,14 +121,8 @@ public class SchedulingService {
     }
 
     private double calculateChaosPrice(DayContent dayContent, Map<String, Market> contentResource) {
-        Market jewelry = getJewelry(dayContent.getLevel(), contentResource);
-        Market destruction = getMarketItem(dayContent.getLevel(), contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
-        Market guardian = getMarketItem(dayContent.getLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
-
-        double price = destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += jewelry.getRecentPrice() * dayContent.getJewelry();
-        return Math.round(price * 100.0) / 100.0;
+        // 12/10 업데이트: 카오스 던전 보상이 캐릭터 귀속으로 변경되어 골드 계산 제거
+        return 0;
     }
 
     private double calculateGuardianPrice(DayContent dayContent, Map<String, Market> contentResource) {
@@ -153,14 +147,6 @@ public class SchedulingService {
             return contentResource.get(level3Item);
         } else {
             return contentResource.get(level4Item);
-        }
-    }
-
-    private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
-        if (itemLevel >= 1415 && itemLevel < 1640) {
-            return contentResource.get("3티어 1레벨 보석");
-        } else {
-            return contentResource.get("4티어 1레벨 보석");
         }
     }
 

@@ -214,24 +214,15 @@ public class DayTodo {
     }
 
     public void calculateDayTodo(Character character, Map<String, Market> contentResource) {
-        Market jewelry = getJewelry(character.getItemLevel(), contentResource);
         Market destruction = getMarketItem(character.getItemLevel(), contentResource, "파괴석 결정", "파괴강석", "정제된 파괴강석", "운명의 파괴석");
         Market guardian = getMarketItem(character.getItemLevel(), contentResource, "수호석 결정", "수호강석", "정제된 수호강석", "운명의 수호석");
         Market leapStone = getMarketItem(character.getItemLevel(), contentResource, "위대한 명예의 돌파석", "경이로운 명예의 돌파석", "찬란한 명예의 돌파석", "운명의 돌파석");
 
         // 카오스 던전 계산
-        this.calculateChaos(character.getDayTodo().getChaos(), destruction, guardian, jewelry);
+        this.calculateChaos();
 
         // 가디언 토벌 계산
         this.calculateGuardian(character.getDayTodo().getGuardian(), destruction, guardian, leapStone);
-    }
-
-    private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
-        if (itemLevel >= 1415 && itemLevel < 1640) {
-            return contentResource.get("3티어 1레벨 보석");
-        } else {
-            return contentResource.get("4티어 1레벨 보석");
-        }
     }
 
     private Market getMarketItem(double itemLevel, Map<String, Market> contentResource,
@@ -247,20 +238,9 @@ public class DayTodo {
         }
     }
 
-    private void calculateChaos(DayContent dayContent, Market destruction, Market guardian, Market jewelry) {
-        double price = 0;
-        price += destruction.getRecentPrice() * dayContent.getDestructionStone() / destruction.getBundleCount();
-        price += guardian.getRecentPrice() * dayContent.getGuardianStone() / guardian.getBundleCount();
-        price += jewelry.getRecentPrice() * dayContent.getJewelry();
-
-        int chaosGauge = this.getChaosGauge();
-
-        if (chaosGauge >= 40) {
-            price *= 2;
-        }
-
-        price = Math.round(price * 100.0) / 100.0;
-        this.setChaosGold(price);
+    private void calculateChaos() {
+        // 12/10 업데이트: 카오스 던전 보상이 캐릭터 귀속으로 변경되어 골드 계산 제거
+        this.setChaosGold(0);
     }
 
     private void calculateGuardian(DayContent dayContent, Market destruction, Market guardian, Market leapStone) {
