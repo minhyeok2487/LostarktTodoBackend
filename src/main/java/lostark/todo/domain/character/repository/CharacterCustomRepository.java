@@ -25,7 +25,7 @@ public interface CharacterCustomRepository  {
 
     long updateDayContentCheck();
 
-    void updateDayContentPriceChaos(DayContent dayContent, Double price);
+//    void updateDayContentPriceChaos(DayContent dayContent, Double price);
 
     void updateDayContentPriceGuardian(DayContent dayContent, Double price);
 

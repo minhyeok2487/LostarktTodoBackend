@@ -167,16 +167,16 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                 .execute();
     }
 
-    @Override
-    public void updateDayContentPriceChaos(DayContent dayContent, Double price) {
-        factory.update(character)
-                .set(character.dayTodo.chaosGold,
-                        new CaseBuilder()
-                                .when(character.dayTodo.chaosGauge.goe(40)).then(price * 2.0)
-                                .otherwise(price))
-                .where(character.dayTodo.chaos.eq(dayContent))
-                .execute();
-    }
+//    @Override
+//    public void updateDayContentPriceChaos(DayContent dayContent, Double price) {
+//        factory.update(character)
+//                .set(character.dayTodo.chaosGold,
+//                        new CaseBuilder()
+//                                .when(character.dayTodo.chaosGauge.goe(40)).then(price * 2.0)
+//                                .otherwise(price))
+//                .where(character.dayTodo.chaos.eq(dayContent))
+//                .execute();
+//    }
 
     @Override
     public void updateDayContentPriceGuardian(DayContent dayContent, Double price) {

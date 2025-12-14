@@ -98,35 +98,16 @@ public class SchedulingService {
     private void updateDayTodoGold() {
         Map<String, Market> contentResource = marketService.findLevelUpResource();
 
-        List<DayContent> allByDayContent = contentRepository.findAllByDayContent();
-        Map<DayContent, Double> chaosPrices = new HashMap<>();
-        Map<DayContent, Double> guardianPrices = new HashMap<>();
-
-        allByDayContent.forEach(dayContent -> {
-            double price;
-            switch (dayContent.getCategory()) {
-                case 카오스던전:
-                    price = calculateChaosPrice(dayContent, contentResource);
-                    chaosPrices.put(dayContent, price);
-                    break;
-                case 가디언토벌:
-                    price = calculateGuardianPrice(dayContent, contentResource);
-                    guardianPrices.put(dayContent, price);
-                    break;
-            }
-        });
-
-        chaosPrices.forEach(characterRepository::updateDayContentPriceChaos);
-        guardianPrices.forEach(characterRepository::updateDayContentPriceGuardian);
-    }
-
-    private double calculateChaosPrice(DayContent dayContent, Map<String, Market> contentResource) {
-        // 12/10 업데이트: 카오스 던전 보상이 캐릭터 귀속으로 변경되어 골드 계산 제거
-        return 0;
+        contentRepository.findAllByDayContent().stream()
+                .filter(dayContent -> dayContent.getCategory() == lostark.todo.domain.content.enums.Category.가디언토벌)
+                .forEach(dayContent -> {
+                    double price = calculateGuardianPrice(dayContent, contentResource);
+                    characterRepository.updateDayContentPriceGuardian(dayContent, price);
+                });
     }
 
     private double calculateGuardianPrice(DayContent dayContent, Map<String, Market> contentResource) {
-        // 12/10 업데이트: 가디언 토벌에서 보석만 드랍 (파괴석/수호석/돌파석은 캐릭터 귀속)
+        // 12/10 업데이트: 가디언 토벌에서 보석만 드랍
         Market jewelry = getJewelry(dayContent.getLevel(), contentResource);
         double price = jewelry.getRecentPrice() * dayContent.getJewelry();
         return Math.round(price * 100.0) / 100.0;
