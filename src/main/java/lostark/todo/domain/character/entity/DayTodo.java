@@ -209,17 +209,15 @@ public class DayTodo {
         this.beforeChaosGauge = chaosGauge;
         this.guardianGauge = request.getGuardianGauge();
         this.beforeGuardianGauge = guardianGauge;
-        this.eponaGauge = request.getEponaGauge();
-        this.beforeEponaGauge = eponaGauge;
     }
 
     public void calculateDayTodo(Character character, Map<String, Market> contentResource) {
-        // 12/10 업데이트: 카오스 던전 보상 캐릭터 귀속, 가디언 토벌은 보석만 드랍
         this.calculateChaos();
 
-        // 가디언 토벌 보석 계산을 위한 Market 조회
         Market jewelry = getJewelry(character.getItemLevel(), contentResource);
-        this.calculateGuardian(character.getDayTodo().getGuardian(), jewelry);
+        DayContent guardian = character.getDayTodo().getGuardian();
+
+        this.calculateGuardian(guardian, jewelry);
     }
 
     private Market getJewelry(double itemLevel, Map<String, Market> contentResource) {
@@ -245,6 +243,7 @@ public class DayTodo {
         }
 
         price = Math.round(price * 100.0) / 100.0;
+        System.out.println("price = " + price);
         this.setGuardianGold(price);
     }
 }
