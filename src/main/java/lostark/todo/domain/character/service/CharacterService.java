@@ -57,7 +57,7 @@ public class CharacterService {
     }
 
     private void validateGauge(Integer gauge, int max) {
-        if (gauge < 0 || gauge > max || gauge % 10 != 0) {
+        if (gauge == null || gauge < 0 || gauge > max || gauge % 10 != 0) {
             throw new ConditionNotMetException(String.format("휴식게이지는 0~%d 사이이며, 10단위여야 합니다.", max));
         }
     }
@@ -242,7 +242,6 @@ public class CharacterService {
     public void validateUpdateDayGauge(UpdateDayGaugeRequest request) {
         validateGauge(request.getChaosGauge(), 200); //카오스 게이지 검증
         validateGauge(request.getGuardianGauge(), 100); //가디언 게이지 검증
-        validateGauge(request.getEponaGauge(), 100); //에포나 게이지 검증
     }
 
     @Transactional(readOnly = true)
