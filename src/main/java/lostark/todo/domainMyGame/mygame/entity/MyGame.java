@@ -15,8 +15,9 @@ import javax.persistence.*;
 public class MyGame extends BaseTimeEntity {
 
     @Id
-    @Column(name = "my_game_id", length = 100)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "my_game_id")
+    private Long id;
 
     @Column(nullable = false, length = 200)
     private String name;

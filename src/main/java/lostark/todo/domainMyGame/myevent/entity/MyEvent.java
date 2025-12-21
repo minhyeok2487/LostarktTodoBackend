@@ -2,6 +2,7 @@ package lostark.todo.domainMyGame.myevent.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.mygame.entity.MyGame;
 import lostark.todo.global.entity.BaseTimeEntity;
 
@@ -18,8 +19,9 @@ import java.time.LocalDateTime;
 public class MyEvent extends BaseTimeEntity {
 
     @Id
-    @Column(name = "my_event_id", length = 100)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "my_event_id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "my_game_id")
@@ -32,8 +34,9 @@ public class MyEvent extends BaseTimeEntity {
     @Column(length = 2000)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private String type;
+    private MyEventType type;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
@@ -43,7 +46,4 @@ public class MyEvent extends BaseTimeEntity {
 
     @Column(length = 500)
     private String image;
-
-    @Column(length = 200)
-    private String location;
 }

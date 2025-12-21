@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 
 public interface GameCustomRepository {
 
-    MyGame get(String id);
+    MyGame get(Long id);
 
     PageImpl<MyGame> searchGames(String search, PageRequest pageRequest);
 }

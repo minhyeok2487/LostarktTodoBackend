@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainMyGame.myevent.dto.MyEventResponse;
 import lostark.todo.domainMyGame.myevent.entity.MyEvent;
+import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.myevent.repository.EventRepository;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public class MyEventService {
 
     private final EventRepository eventRepository;
 
-    public MyEvent get(String id) {
+    public MyEvent get(Long id) {
         MyEvent event = eventRepository.get(id);
         if (event == null) {
             throw new ConditionNotMetException("존재하지 않는 이벤트입니다.");
@@ -30,15 +31,15 @@ public class MyEventService {
         return event;
     }
 
-    public MyEventResponse getEventById(String id) {
+    public MyEventResponse getEventById(Long id) {
         MyEvent event = get(id);
         return MyEventResponse.from(event);
     }
 
-    public Page<MyEventResponse> searchEvents(List<String> gameIds,
+    public Page<MyEventResponse> searchEvents(List<Long> gameIds,
                                               LocalDateTime startDate,
                                               LocalDateTime endDate,
-                                              String type,
+                                              MyEventType type,
                                               int page,
                                               int limit) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit);

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class MyGameResponse {
 
-    private String id;
+    private Long id;
     private String name;
     private String image;
     private String color;

@@ -22,7 +22,7 @@ public class MyGameService {
 
     private final GameRepository gameRepository;
 
-    public MyGame get(String id) {
+    public MyGame get(Long id) {
         MyGame game = gameRepository.get(id);
         if (game == null) {
             throw new ConditionNotMetException("존재하지 않는 게임입니다.");
@@ -30,7 +30,7 @@ public class MyGameService {
         return game;
     }
 
-    public MyGameResponse getGameById(String id) {
+    public MyGameResponse getGameById(Long id) {
         MyGame game = get(id);
         return MyGameResponse.from(game);
     }
