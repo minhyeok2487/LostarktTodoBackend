@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainMyGame.common.dto.ApiResponse;
 import lostark.todo.domainMyGame.common.dto.PaginationResponse;
+import lostark.todo.domainMyGame.myevent.dto.MyEventRequest;
 import lostark.todo.domainMyGame.myevent.dto.MyEventResponse;
 import lostark.todo.domainMyGame.myevent.service.MyEventService;
 import lostark.todo.domainMyGame.myevent.enums.MyEventType;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,6 +61,19 @@ public class MyEventApi {
         return new ResponseEntity<>(
                 ApiResponse.success(event),
                 HttpStatus.OK
+        );
+    }
+
+    @ApiOperation(value = "이벤트 추가", response = ApiResponse.class)
+    @PostMapping
+    public ResponseEntity<?> createEvent(
+            @ApiParam(value = "이벤트 정보", required = true) @Valid @RequestBody MyEventRequest request) {
+
+        MyEventResponse event = myEventService.createEvent(request);
+
+        return new ResponseEntity<>(
+                ApiResponse.success(event),
+                HttpStatus.CREATED
         );
     }
 }

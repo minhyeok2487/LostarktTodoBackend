@@ -46,4 +46,10 @@ public class MyGameService {
                 .map(MyGameResponse::from)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public MyGameResponse createGame(MyGame game) {
+        MyGame savedGame = gameRepository.save(game);
+        return MyGameResponse.from(savedGame);
+    }
 }

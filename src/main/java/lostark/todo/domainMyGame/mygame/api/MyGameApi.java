@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainMyGame.common.dto.ApiResponse;
 import lostark.todo.domainMyGame.common.dto.PaginationResponse;
+import lostark.todo.domainMyGame.mygame.dto.MyGameRequest;
 import lostark.todo.domainMyGame.mygame.dto.MyGameResponse;
 import lostark.todo.domainMyGame.mygame.service.MyGameService;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -62,6 +64,19 @@ public class MyGameApi {
         return new ResponseEntity<>(
                 ApiResponse.success(games),
                 HttpStatus.OK
+        );
+    }
+
+    @ApiOperation(value = "게임 추가", response = ApiResponse.class)
+    @PostMapping
+    public ResponseEntity<?> createGame(
+            @ApiParam(value = "게임 정보", required = true) @Valid @RequestBody MyGameRequest request) {
+
+        MyGameResponse game = myGameService.createGame(request.toEntity());
+
+        return new ResponseEntity<>(
+                ApiResponse.success(game),
+                HttpStatus.CREATED
         );
     }
 }

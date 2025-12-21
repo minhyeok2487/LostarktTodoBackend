@@ -2,10 +2,13 @@ package lostark.todo.domainMyGame.myevent.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domainMyGame.myevent.dto.MyEventRequest;
 import lostark.todo.domainMyGame.myevent.dto.MyEventResponse;
 import lostark.todo.domainMyGame.myevent.entity.MyEvent;
 import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.myevent.repository.EventRepository;
+import lostark.todo.domainMyGame.mygame.entity.MyGame;
+import lostark.todo.domainMyGame.mygame.service.MyGameService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +25,7 @@ import java.util.List;
 public class MyEventService {
 
     private final EventRepository eventRepository;
+    private final MyGameService myGameService;
 
     public MyEvent get(Long id) {
         MyEvent event = eventRepository.get(id);
@@ -45,5 +49,13 @@ public class MyEventService {
         PageRequest pageRequest = PageRequest.of(page - 1, limit);
         Page<MyEvent> eventsPage = eventRepository.searchEvents(gameIds, startDate, endDate, type, pageRequest);
         return eventsPage.map(MyEventResponse::from);
+    }
+
+    @Transactional
+    public MyEventResponse createEvent(MyEventRequest request) {
+        MyGame game = myGameService.get(request.getGameId());
+        MyEvent event = request.toEntity(game);
+        MyEvent savedEvent = eventRepository.save(event);
+        return MyEventResponse.from(savedEvent);
     }
 }
