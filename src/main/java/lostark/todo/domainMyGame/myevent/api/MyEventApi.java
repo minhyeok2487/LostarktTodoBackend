@@ -9,6 +9,7 @@ import lostark.todo.domainMyGame.common.dto.ApiResponse;
 import lostark.todo.domainMyGame.common.dto.PaginationResponse;
 import lostark.todo.domainMyGame.myevent.dto.MyEventResponse;
 import lostark.todo.domainMyGame.myevent.service.MyEventService;
+import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -30,10 +31,10 @@ public class MyEventApi {
     @ApiOperation(value = "이벤트 목록 조회", response = ApiResponse.class)
     @GetMapping
     public ResponseEntity<?> getEvents(
-            @ApiParam(value = "게임 ID 목록 (쉼표로 구분)") @RequestParam(required = false) List<String> gameIds,
+            @ApiParam(value = "게임 ID 목록 (쉼표로 구분)") @RequestParam(required = false) List<Long> gameIds,
             @ApiParam(value = "시작 날짜 (ISO 8601 형식)") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @ApiParam(value = "종료 날짜 (ISO 8601 형식)") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @ApiParam(value = "이벤트 타입") @RequestParam(required = false) String type,
+            @ApiParam(value = "이벤트 타입") @RequestParam(required = false) MyEventType type,
             @ApiParam(value = "페이지 번호 (기본값: 1)") @RequestParam(defaultValue = "1") int page,
             @ApiParam(value = "페이지당 항목 수 (기본값: 100)") @RequestParam(defaultValue = "100") int limit) {
 
@@ -51,7 +52,7 @@ public class MyEventApi {
     @ApiOperation(value = "이벤트 상세 조회", response = ApiResponse.class)
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(
-            @ApiParam(value = "이벤트 ID", required = true) @PathVariable String id) {
+            @ApiParam(value = "이벤트 ID", required = true) @PathVariable Long id) {
 
         MyEventResponse event = myEventService.getEventById(id);
 

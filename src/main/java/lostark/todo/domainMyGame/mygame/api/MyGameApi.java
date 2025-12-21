@@ -44,7 +44,7 @@ public class MyGameApi {
     @ApiOperation(value = "게임 상세 조회", response = ApiResponse.class)
     @GetMapping("/{id}")
     public ResponseEntity<?> getGameById(
-            @ApiParam(value = "게임 ID", required = true) @PathVariable String id) {
+            @ApiParam(value = "게임 ID", required = true) @PathVariable Long id) {
 
         MyGameResponse game = myGameService.getGameById(id);
 

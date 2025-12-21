@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lostark.todo.domainMyGame.myevent.entity.MyEvent;
+import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 
 import java.time.LocalDateTime;
 
@@ -14,15 +15,14 @@ import java.time.LocalDateTime;
 @Builder
 public class MyEventResponse {
 
-    private String id;
-    private String gameId;
+    private Long id;
+    private Long gameId;
     private String title;
     private String description;
-    private String type;
+    private MyEventType type;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String image;
-    private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -36,7 +36,6 @@ public class MyEventResponse {
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
                 .image(event.getImage())
-                .location(event.getLocation())
                 .createdAt(event.getCreatedDate())
                 .updatedAt(event.getLastModifiedDate())
                 .build();

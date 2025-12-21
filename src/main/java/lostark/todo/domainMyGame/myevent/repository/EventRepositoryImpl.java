@@ -4,10 +4,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domainMyGame.myevent.entity.MyEvent;
+import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +22,7 @@ public class EventRepositoryImpl implements EventCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public MyEvent get(String id) {
+    public MyEvent get(Long id) {
         return Optional.ofNullable(
                 factory.selectFrom(myEvent)
                         .leftJoin(myEvent.game, myGame).fetchJoin()
@@ -32,8 +32,8 @@ public class EventRepositoryImpl implements EventCustomRepository {
     }
 
     @Override
-    public PageImpl<MyEvent> searchEvents(List<String> gameIds, LocalDateTime startDate,
-                                         LocalDateTime endDate, String type, PageRequest pageRequest) {
+    public PageImpl<MyEvent> searchEvents(List<Long> gameIds, LocalDateTime startDate,
+                                          LocalDateTime endDate, MyEventType type, PageRequest pageRequest) {
         List<MyEvent> events = factory.selectFrom(myEvent)
                 .leftJoin(myEvent.game, myGame).fetchJoin()
                 .where(
@@ -59,7 +59,7 @@ public class EventRepositoryImpl implements EventCustomRepository {
         return new PageImpl<>(events, pageRequest, total);
     }
 
-    private BooleanExpression inGameIds(List<String> gameIds) {
+    private BooleanExpression inGameIds(List<Long> gameIds) {
         if (gameIds != null && !gameIds.isEmpty()) {
             return myEvent.game.id.in(gameIds);
         }
@@ -80,8 +80,8 @@ public class EventRepositoryImpl implements EventCustomRepository {
         return null;
     }
 
-    private BooleanExpression eqType(String type) {
-        if (StringUtils.hasText(type)) {
+    private BooleanExpression eqType(MyEventType type) {
+        if (type != null) {
             return myEvent.type.eq(type);
         }
         return null;

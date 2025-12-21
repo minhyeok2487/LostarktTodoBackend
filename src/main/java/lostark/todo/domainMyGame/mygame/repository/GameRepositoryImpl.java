@@ -20,7 +20,7 @@ public class GameRepositoryImpl implements GameCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public MyGame get(String id) {
+    public MyGame get(Long id) {
         return Optional.ofNullable(
                 factory.selectFrom(myGame)
                         .where(myGame.id.eq(id))
