@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -59,22 +60,20 @@ public class MyEventService {
         MyEvent event = request.toEntity(game);
 
         List<String> imageUrls = request.getImages();
-        for (int i = 0; i < imageUrls.size(); i++) {
-            MyEventImage image = MyEventImage.builder()
-                    .url(imageUrls.get(i))
-                    .ordering(i)
-                    .build();
-            event.addImage(image);
-        }
+        IntStream.range(0, imageUrls.size())
+                .mapToObj(i -> MyEventImage.builder()
+                        .url(imageUrls.get(i))
+                        .ordering(i)
+                        .build())
+                .forEach(event::addImage);
 
         List<String> videoUrls = request.getVideos();
-        for (int i = 0; i < videoUrls.size(); i++) {
-            MyEventVideo video = MyEventVideo.builder()
-                    .url(videoUrls.get(i))
-                    .ordering(i)
-                    .build();
-            event.addVideo(video);
-        }
+        IntStream.range(0, videoUrls.size())
+                .mapToObj(i -> MyEventVideo.builder()
+                        .url(videoUrls.get(i))
+                        .ordering(i)
+                        .build())
+                .forEach(event::addVideo);
 
         MyEvent savedEvent = eventRepository.save(event);
         return MyEventResponse.from(savedEvent);

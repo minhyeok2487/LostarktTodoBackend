@@ -38,9 +38,11 @@ public class MyEventRequest {
     @NotNull(message = "종료 날짜는 필수입니다.")
     private LocalDateTime endDate;
 
-    private List<String> images;
+    @Size(max = 10, message = "이미지는 최대 10개까지 등록할 수 있습니다.")
+    private List<@Size(max = 500, message = "이미지 URL은 500자를 초과할 수 없습니다.") String> images;
 
-    private List<String> videos;
+    @Size(max = 10, message = "비디오는 최대 10개까지 등록할 수 있습니다.")
+    private List<@Size(max = 500, message = "비디오 URL은 500자를 초과할 수 없습니다.") String> videos;
 
     public MyEvent toEntity(MyGame game) {
         return MyEvent.builder()
