@@ -40,6 +40,8 @@ public class MyEventRequest {
 
     private List<String> images;
 
+    private List<String> videos;
+
     public MyEvent toEntity(MyGame game) {
         return MyEvent.builder()
                 .game(game)
@@ -53,5 +55,9 @@ public class MyEventRequest {
 
     public List<String> getImages() {
         return images != null ? images : List.of();
+    }
+
+    public List<String> getVideos() {
+        return videos != null ? videos : List.of();
     }
 }

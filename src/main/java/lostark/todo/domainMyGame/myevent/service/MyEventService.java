@@ -6,6 +6,7 @@ import lostark.todo.domainMyGame.myevent.dto.MyEventRequest;
 import lostark.todo.domainMyGame.myevent.dto.MyEventResponse;
 import lostark.todo.domainMyGame.myevent.entity.MyEvent;
 import lostark.todo.domainMyGame.myevent.entity.MyEventImage;
+import lostark.todo.domainMyGame.myevent.entity.MyEventVideo;
 import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.myevent.repository.EventRepository;
 import lostark.todo.domainMyGame.mygame.entity.MyGame;
@@ -64,6 +65,15 @@ public class MyEventService {
                     .ordering(i)
                     .build();
             event.addImage(image);
+        }
+
+        List<String> videoUrls = request.getVideos();
+        for (int i = 0; i < videoUrls.size(); i++) {
+            MyEventVideo video = MyEventVideo.builder()
+                    .url(videoUrls.get(i))
+                    .ordering(i)
+                    .build();
+            event.addVideo(video);
         }
 
         MyEvent savedEvent = eventRepository.save(event);

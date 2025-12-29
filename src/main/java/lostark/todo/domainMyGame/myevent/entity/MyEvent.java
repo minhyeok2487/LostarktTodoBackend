@@ -60,4 +60,18 @@ public class MyEvent extends BaseTimeEntity {
     public void clearImages() {
         images.clear();
     }
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    private List<MyEventVideo> videos = new ArrayList<>();
+
+    public void addVideo(MyEventVideo video) {
+        videos.add(video);
+        video.setEvent(this);
+    }
+
+    public void clearVideos() {
+        videos.clear();
+    }
 }
