@@ -53,7 +53,7 @@ public class WebSecurityConfig {
             "/login/oauth2/**",
             "/api/v1/auth/signup", "/api/v1/member/character", "/api/v1/auth/login", "/api/v1/mail/**",
             "/manage/health", "/manage/info", "/manage/prometheus",
-            "/api/v1/games/**", "/api/v1/events/**"  // MyGame API - API Key 필터가 별도로 처리
+            "/api/v1/games/**", "/api/v1/events/**", "/api/v1/suggestions/**"  // MyGame API - API Key 필터가 별도로 처리
     };
 
     public static final String[] PERMIT_GET_LINK = {
