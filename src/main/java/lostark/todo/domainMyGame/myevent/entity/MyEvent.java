@@ -7,6 +7,8 @@ import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.mygame.entity.MyGame;
 import lostark.todo.global.entity.BaseTimeEntity;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ public class MyEvent extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @BatchSize(size = 100)
     @Builder.Default
     private List<MyEventImage> images = new ArrayList<>();
 
@@ -63,6 +66,7 @@ public class MyEvent extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @BatchSize(size = 100)
     @Builder.Default
     private List<MyEventVideo> videos = new ArrayList<>();
 
