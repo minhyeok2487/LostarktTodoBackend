@@ -1,6 +1,7 @@
 package lostark.todo.domainMyGame.myevent.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.mygame.entity.MyGame;
@@ -8,6 +9,8 @@ import lostark.todo.global.entity.BaseTimeEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,6 +47,17 @@ public class MyEvent extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    @Column(length = 500)
-    private String image;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    private List<MyEventImage> images = new ArrayList<>();
+
+    public void addImage(MyEventImage image) {
+        images.add(image);
+        image.setEvent(this);
+    }
+
+    public void clearImages() {
+        images.clear();
+    }
 }

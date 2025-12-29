@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -37,8 +38,7 @@ public class MyEventRequest {
     @NotNull(message = "종료 날짜는 필수입니다.")
     private LocalDateTime endDate;
 
-    @Size(max = 500, message = "이미지 URL은 500자를 초과할 수 없습니다.")
-    private String image;
+    private List<String> images;
 
     public MyEvent toEntity(MyGame game) {
         return MyEvent.builder()
@@ -48,7 +48,10 @@ public class MyEventRequest {
                 .type(type)
                 .startDate(startDate)
                 .endDate(endDate)
-                .image(image)
                 .build();
+    }
+
+    public List<String> getImages() {
+        return images != null ? images : List.of();
     }
 }

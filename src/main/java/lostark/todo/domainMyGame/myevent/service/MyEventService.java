@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainMyGame.myevent.dto.MyEventRequest;
 import lostark.todo.domainMyGame.myevent.dto.MyEventResponse;
 import lostark.todo.domainMyGame.myevent.entity.MyEvent;
+import lostark.todo.domainMyGame.myevent.entity.MyEventImage;
 import lostark.todo.domainMyGame.myevent.enums.MyEventType;
 import lostark.todo.domainMyGame.myevent.repository.EventRepository;
 import lostark.todo.domainMyGame.mygame.entity.MyGame;
@@ -55,6 +56,16 @@ public class MyEventService {
     public MyEventResponse createEvent(MyEventRequest request) {
         MyGame game = myGameService.get(request.getGameId());
         MyEvent event = request.toEntity(game);
+
+        List<String> imageUrls = request.getImages();
+        for (int i = 0; i < imageUrls.size(); i++) {
+            MyEventImage image = MyEventImage.builder()
+                    .url(imageUrls.get(i))
+                    .ordering(i)
+                    .build();
+            event.addImage(image);
+        }
+
         MyEvent savedEvent = eventRepository.save(event);
         return MyEventResponse.from(savedEvent);
     }
