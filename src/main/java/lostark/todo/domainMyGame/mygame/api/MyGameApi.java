@@ -11,9 +11,12 @@ import lostark.todo.domainMyGame.mygame.dto.MyGameRequest;
 import lostark.todo.domainMyGame.mygame.dto.MyGameResponse;
 import lostark.todo.domainMyGame.mygame.service.MyGameService;
 import org.springframework.data.domain.Page;
+import lostark.todo.global.dto.ImageResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -76,6 +79,19 @@ public class MyGameApi {
 
         return new ResponseEntity<>(
                 ApiResponse.success(game),
+                HttpStatus.CREATED
+        );
+    }
+
+    @ApiOperation(value = "게임 이미지 업로드", response = ApiResponse.class)
+    @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImage(
+            @ApiParam(value = "이미지 파일", required = true) @RequestParam("image") MultipartFile image) {
+
+        ImageResponse response = myGameService.uploadImage(image);
+
+        return new ResponseEntity<>(
+                ApiResponse.success(response),
                 HttpStatus.CREATED
         );
     }

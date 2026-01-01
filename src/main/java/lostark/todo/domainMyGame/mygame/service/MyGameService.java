@@ -5,11 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domainMyGame.mygame.dto.MyGameResponse;
 import lostark.todo.domainMyGame.mygame.entity.MyGame;
 import lostark.todo.domainMyGame.mygame.repository.GameRepository;
+import lostark.todo.global.dto.ImageResponse;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+import lostark.todo.global.service.ImagesService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public class MyGameService {
 
     private final GameRepository gameRepository;
+    private final ImagesService imagesService;
 
     public MyGame get(Long id) {
         MyGame game = gameRepository.get(id);
@@ -51,5 +55,10 @@ public class MyGameService {
     public MyGameResponse createGame(MyGame game) {
         MyGame savedGame = gameRepository.save(game);
         return MyGameResponse.from(savedGame);
+    }
+
+    public ImageResponse uploadImage(MultipartFile image) {
+        String folderName = "game-images/";
+        return imagesService.upload(image, folderName);
     }
 }
