@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class MyGameService {
 
+    private static final String GAME_IMAGES_FOLDER = "game-images/";
+
     private final GameRepository gameRepository;
     private final ImagesService imagesService;
 
@@ -58,7 +60,6 @@ public class MyGameService {
     }
 
     public ImageResponse uploadImage(MultipartFile image) {
-        String folderName = "game-images/";
-        return imagesService.upload(image, folderName);
+        return imagesService.upload(image, GAME_IMAGES_FOLDER);
     }
 }

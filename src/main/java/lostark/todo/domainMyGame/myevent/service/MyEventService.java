@@ -24,7 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -32,6 +33,8 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MyEventService {
+
+    private static final String EVENT_IMAGES_FOLDER = "event-images/";
 
     private final EventRepository eventRepository;
     private final EventImageRepository eventImageRepository;
@@ -69,15 +72,23 @@ public class MyEventService {
 
         MyEvent savedEvent = eventRepository.save(event);
 
-        // 이미지 ID 리스트로 조회 후 연결
+        // 이미지 ID 리스트로 조회 후 연결 (순서 보장)
         List<Long> imageIds = request.getImageIds();
         if (!imageIds.isEmpty()) {
-            AtomicInteger counter = new AtomicInteger(0);
-            eventImageRepository.findAllByIdIn(imageIds)
-                    .forEach(image -> {
-                        image.updateEvent(savedEvent, counter.getAndIncrement());
-                        savedEvent.getImages().add(image);
-                    });
+            List<MyEventImage> images = eventImageRepository.findAllByIdIn(imageIds);
+            Map<Long, MyEventImage> imageMap = images.stream()
+                    .collect(Collectors.toMap(MyEventImage::getId, image -> image));
+
+            for (int i = 0; i < imageIds.size(); i++) {
+                MyEventImage image = imageMap.get(imageIds.get(i));
+                if (image != null) {
+                    if (image.getEvent() != null) {
+                        throw new ConditionNotMetException("이미 사용중인 이미지입니다. ID: " + image.getId());
+                    }
+                    image.updateEvent(savedEvent, i);
+                    savedEvent.getImages().add(image);
+                }
+            }
         }
 
         // 비디오는 기존 방식 유지 (URL로 저장)
@@ -94,8 +105,7 @@ public class MyEventService {
 
     @Transactional
     public ImageResponseV2 uploadImage(MultipartFile image) {
-        String folderName = "event-images/";
-        ImageResponse imageResponse = imagesService.upload(image, folderName);
+        ImageResponse imageResponse = imagesService.upload(image, EVENT_IMAGES_FOLDER);
         MyEventImage savedImage = eventImageRepository.save(
                 MyEventImage.builder()
                         .url(imageResponse.getImageUrl())
