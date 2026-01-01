@@ -80,14 +80,16 @@ public class MyEventService {
                     .collect(Collectors.toMap(MyEventImage::getId, image -> image));
 
             for (int i = 0; i < imageIds.size(); i++) {
-                MyEventImage image = imageMap.get(imageIds.get(i));
-                if (image != null) {
-                    if (image.getEvent() != null) {
-                        throw new ConditionNotMetException("이미 사용중인 이미지입니다. ID: " + image.getId());
-                    }
-                    image.updateEvent(savedEvent, i);
-                    savedEvent.getImages().add(image);
+                Long imageId = imageIds.get(i);
+                MyEventImage image = imageMap.get(imageId);
+                if (image == null) {
+                    throw new ConditionNotMetException("존재하지 않는 이미지입니다. ID: " + imageId);
                 }
+                if (image.getEvent() != null) {
+                    throw new ConditionNotMetException("이미 사용중인 이미지입니다. ID: " + imageId);
+                }
+                image.updateEvent(savedEvent, i);
+                savedEvent.getImages().add(image);
             }
         }
 
