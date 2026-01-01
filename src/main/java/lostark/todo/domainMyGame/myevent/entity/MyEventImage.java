@@ -28,6 +28,14 @@ public class MyEventImage extends BaseTimeEntity {
     @Column(nullable = false, length = 500)
     private String url;
 
+    @Column(length = 500)
+    private String fileName;
+
     @Column(nullable = false)
     private Integer ordering;
+
+    public void updateEvent(MyEvent event, int ordering) {
+        this.event = event;
+        this.ordering = ordering;
+    }
 }
