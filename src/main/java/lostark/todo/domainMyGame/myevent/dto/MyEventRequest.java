@@ -39,7 +39,7 @@ public class MyEventRequest {
     private LocalDateTime endDate;
 
     @Size(max = 10, message = "이미지는 최대 10개까지 등록할 수 있습니다.")
-    private List<@Size(max = 500, message = "이미지 URL은 500자를 초과할 수 없습니다.") String> images;
+    private List<Long> imageIds;
 
     @Size(max = 10, message = "비디오는 최대 10개까지 등록할 수 있습니다.")
     private List<@Size(max = 500, message = "비디오 URL은 500자를 초과할 수 없습니다.") String> videos;
@@ -55,8 +55,8 @@ public class MyEventRequest {
                 .build();
     }
 
-    public List<String> getImages() {
-        return images != null ? images : List.of();
+    public List<Long> getImageIds() {
+        return imageIds != null ? imageIds : List.of();
     }
 
     public List<String> getVideos() {
