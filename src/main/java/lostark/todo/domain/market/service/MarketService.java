@@ -26,30 +26,30 @@ public class MarketService {
 
     /**
      * 거래소 데이터 업데이트 메소드
+     * - Map을 활용하여 O(n) 시간복잡도로 처리
+     * - partitioningBy로 업데이트/신규 대상 분류
+     * - saveAll로 신규 데이터 일괄 저장
      */
     @Transactional
     public void updateMarketItemList(List<Market> newMarketList, int categoryCode) {
         exception(newMarketList);
-        List<Market> oldList = marketRepository.findAllByCategoryCode(categoryCode);
 
-        int updatedCount = 0;
-        int addedCount = 0;
+        // 기존 데이터를 Map으로 변환하여 O(1) 조회 가능하게 함
+        Map<Long, Market> existingMap = marketRepository.findAllByCategoryCode(categoryCode)
+                .stream()
+                .collect(Collectors.toMap(Market::getLostarkMarketId, Function.identity()));
 
-        for (Market market : newMarketList) {
-            Optional<Market> find = oldList.stream()
-                    .filter(item -> item.getLostarkMarketId() == market.getLostarkMarketId())
-                    .findFirst();
+        // 기존 존재 여부에 따라 분류 (true: 업데이트 대상, false: 신규 저장 대상)
+        Map<Boolean, List<Market>> partitioned = newMarketList.stream()
+                .collect(Collectors.partitioningBy(m -> existingMap.containsKey(m.getLostarkMarketId())));
 
-            if (find.isPresent()) {
-                find.get().changeData(market);
-                updatedCount++;
-            } else {
-                marketRepository.save(market);
-                addedCount++;
-            }
-        }
-        log.info("✅ 업데이트된 거래소 데이터 개수: {}", updatedCount);
-        log.info("✅ 추가된 거래소 데이터 개수: {}", addedCount);
+        // 기존 데이터 업데이트
+        partitioned.get(true).forEach(m -> existingMap.get(m.getLostarkMarketId()).changeData(m));
+
+        // 신규 데이터 일괄 저장
+        marketRepository.saveAll(partitioned.get(false));
+
+        log.info("✅ 업데이트: {}, 추가: {}", partitioned.get(true).size(), partitioned.get(false).size());
     }
 
     @Transactional
