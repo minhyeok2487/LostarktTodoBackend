@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -117,27 +119,33 @@ public class ScheduleService {
         }
     }
 
-    @Transactional
+    /**
+     * 일정 조회 (N+1 문제 개선 버전)
+     * - 기존: PARTY 일정마다 친구 조회 쿼리 발생 (N+1)
+     * - 개선: IN 쿼리로 한 번에 조회 후 메모리에서 매핑
+     */
+    @Transactional(readOnly = true)
     public List<WeekScheduleResponse> search(String username, SearchScheduleRequest request) {
-        return scheduleRepository.search(username, request).stream()
-                .peek(response -> {
-                    if (response.getScheduleCategory().equals(ScheduleCategory.PARTY)) {
-                        if (response.getIsLeader()) {
-                            response.setFriendCharacterNames(
-                                    scheduleRepository.getLeaderScheduleId(response.getScheduleId())
-                                            .stream()
-                                            .map(ScheduleCharacterResponse::getCharacterName)
-                                            .toList());
-                        } else {
-                            response.setFriendCharacterNames(
-                                    scheduleRepository.getLeaderScheduleId(response.getLeaderScheduleId())
-                                            .stream()
-                                            .map(ScheduleCharacterResponse::getCharacterName)
-                                            .toList());
-                        }
+        List<WeekScheduleResponse> responses = scheduleRepository.search(username, request);
 
-                    }
-                })
+        // PARTY 일정들의 leaderScheduleId 수집 (리더면 자신의 scheduleId, 아니면 leaderScheduleId)
+        List<Long> leaderScheduleIds = responses.stream()
+                .filter(r -> r.getScheduleCategory().equals(ScheduleCategory.PARTY))
+                .map(r -> r.getIsLeader() ? r.getScheduleId() : r.getLeaderScheduleId())
+                .distinct()
                 .toList();
+
+        // 한 번의 쿼리로 모든 친구 캐릭터 이름 조회
+        Map<Long, List<String>> friendNamesMap = scheduleRepository.getFriendNamesByLeaderScheduleIds(leaderScheduleIds);
+
+        // 메모리에서 매핑
+        responses.stream()
+                .filter(r -> r.getScheduleCategory().equals(ScheduleCategory.PARTY))
+                .forEach(r -> {
+                    long key = r.getIsLeader() ? r.getScheduleId() : r.getLeaderScheduleId();
+                    r.setFriendCharacterNames(friendNamesMap.getOrDefault(key, Collections.emptyList()));
+                });
+
+        return responses;
     }
 }
