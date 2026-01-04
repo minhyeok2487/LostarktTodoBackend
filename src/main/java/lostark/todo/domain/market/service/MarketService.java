@@ -39,17 +39,19 @@ public class MarketService {
                 .stream()
                 .collect(Collectors.toMap(Market::getLostarkMarketId, Function.identity()));
 
-        // 기존 존재 여부에 따라 분류 (true: 업데이트 대상, false: 신규 저장 대상)
+        // 기존 존재 여부에 따라 분류
         Map<Boolean, List<Market>> partitioned = newMarketList.stream()
                 .collect(Collectors.partitioningBy(m -> existingMap.containsKey(m.getLostarkMarketId())));
+        List<Market> toUpdate = partitioned.get(true);
+        List<Market> toInsert = partitioned.get(false);
 
         // 기존 데이터 업데이트
-        partitioned.get(true).forEach(m -> existingMap.get(m.getLostarkMarketId()).changeData(m));
+        toUpdate.forEach(m -> existingMap.get(m.getLostarkMarketId()).changeData(m));
 
         // 신규 데이터 일괄 저장
-        marketRepository.saveAll(partitioned.get(false));
+        marketRepository.saveAll(toInsert);
 
-        log.info("✅ 업데이트: {}, 추가: {}", partitioned.get(true).size(), partitioned.get(false).size());
+        log.info("✅ 업데이트: {}, 추가: {}", toUpdate.size(), toInsert.size());
     }
 
     @Transactional
