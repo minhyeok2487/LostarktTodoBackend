@@ -48,6 +48,8 @@ public class PerformanceExtension implements BeforeTestExecutionCallback, AfterT
                         .isLessThanOrEqualTo(annotation.maxQueries());
             }
         });
+
+        QueryCounter.clear();
     }
 
     private ExtensionContext.Store getStore(ExtensionContext context) {
