@@ -13,8 +13,13 @@ import lostark.todo.domain.schedule.dto.*;
 import lostark.todo.domain.schedule.entity.QSchedule;
 import lostark.todo.domain.schedule.entity.Schedule;
 
+import com.querydsl.core.Tuple;
+
 import java.time.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static lostark.todo.domain.member.entity.QMember.member;
@@ -193,6 +198,31 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .where(
                         eqLeaderScheduleId(leaderScheduleId)
                 ).fetch();
+    }
+
+    @Override
+    public Map<Long, List<String>> getFriendNamesByLeaderScheduleIds(List<Long> leaderScheduleIds) {
+        if (leaderScheduleIds == null || leaderScheduleIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        // leaderScheduleId와 characterName을 함께 조회
+        List<Tuple> results = factory
+                .select(schedule.leaderScheduleId, character.characterName)
+                .from(schedule)
+                .leftJoin(character).on(schedule.characterId.eq(character.id))
+                .where(schedule.leaderScheduleId.in(leaderScheduleIds))
+                .fetch();
+
+        // Map<leaderScheduleId, List<characterName>>으로 그룹화
+        Map<Long, List<String>> resultMap = new HashMap<>();
+        for (Tuple tuple : results) {
+            Long leaderScheduleId = tuple.get(schedule.leaderScheduleId);
+            String characterName = tuple.get(character.characterName);
+            resultMap.computeIfAbsent(leaderScheduleId, k -> new ArrayList<>()).add(characterName);
+        }
+
+        return resultMap;
     }
 
     private BooleanExpression eqId(long scheduleId) {
