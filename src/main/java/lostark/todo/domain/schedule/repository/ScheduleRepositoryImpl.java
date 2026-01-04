@@ -17,6 +17,7 @@ import com.querydsl.core.Tuple;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,7 +204,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     @Override
     public Map<Long, List<String>> getFriendNamesByLeaderScheduleIds(List<Long> leaderScheduleIds) {
         if (leaderScheduleIds == null || leaderScheduleIds.isEmpty()) {
-            return new HashMap<>();
+            return Collections.emptyMap();
         }
 
         // leaderScheduleId와 characterName을 함께 조회
