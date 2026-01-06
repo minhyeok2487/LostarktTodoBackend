@@ -41,7 +41,7 @@
 ### board/comments/api
 
 #### CommentsApi (`/api/v1/comments`)
-- [ ] `GET /api/v1/comments` - searchComments
+- [x] `GET /api/v1/comments` - searchComments *(쿼리 12개 발생, N+1 문제 의심)*
 
 ---
 
