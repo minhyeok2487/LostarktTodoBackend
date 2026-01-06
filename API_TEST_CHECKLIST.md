@@ -48,14 +48,14 @@
 ### board/community/api
 
 #### CommunityApi (`/api/v1/community`)
-- [ ] `GET /api/v1/community/category` - getCommunityCategory
-- [ ] `GET /api/v1/community` - search
-- [ ] `GET /api/v1/community/{communityId}` - get
-- [ ] `POST /api/v1/community` - save
-- [ ] `POST /api/v1/community/image` - uploadImage
-- [ ] `PATCH /api/v1/community` - update
-- [ ] `DELETE /api/v1/community/{communityId}` - delete
-- [ ] `POST /api/v1/community/like/{communityId}` - updateLike
+- [x] `GET /api/v1/community/category` - getCommunityCategory *(단순 enum 반환, 문제 없음)*
+- [x] `GET /api/v1/community` - search *(쿼리 23개 발생, N+1 최적화 필요)*
+- [x] `GET /api/v1/community/{communityId}` - get *(정상 동작)*
+- [ ] `POST /api/v1/community` - save *(Discord webhook 연동으로 테스트 스킵)*
+- [ ] `POST /api/v1/community/image` - uploadImage *(S3 연동으로 테스트 스킵)*
+- [ ] `PATCH /api/v1/community` - update *(Discord webhook 연동으로 테스트 스킵)*
+- [ ] `DELETE /api/v1/community/{communityId}` - delete *(Discord webhook 연동으로 테스트 스킵)*
+- [ ] `POST /api/v1/community/like/{communityId}` - updateLike *(Discord webhook 연동으로 테스트 스킵)*
 
 #### FollowApi (`/api/v1/follow`)
 - [ ] `GET /api/v1/follow` - search
