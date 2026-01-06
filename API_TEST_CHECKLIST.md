@@ -59,7 +59,7 @@
 
 #### FollowApi (`/api/v1/follow`)
 - [x] `GET /api/v1/follow` - search *(정상 동작)*
-- [ ] `POST /api/v1/follow` - update
+- [x] `POST /api/v1/follow` - update *(정상 동작)*
 
 ---
 
