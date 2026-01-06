@@ -7,7 +7,7 @@
 ## domain
 
 ### IndexApi (`/`)
-- [ ] `GET /` - index
+- [x] `GET /` - index *(단순 health check, 문제 없음)*
 
 ---
 
