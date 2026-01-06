@@ -185,8 +185,8 @@
 ### notification/api
 
 #### NotificationApi (`/api/v1/notification`)
-- [ ] `GET /api/v1/notification` - search
-- [ ] `GET /api/v1/notification/status` - getRecent
+- [x] `GET /api/v1/notification` - search *(정상 동작)*
+- [x] `GET /api/v1/notification/status` - getRecent *(정상 동작)*
 - [ ] `POST /api/v1/notification/{notificationId}` - updateRead
 - [ ] `POST /api/v1/notification/all` - updateReadAll
 
