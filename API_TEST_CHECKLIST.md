@@ -78,7 +78,7 @@
 - [ ] `POST /api/v1/character/day/check` - updateDayCheck
 - [ ] `POST /api/v1/character/day/gauge` - updateDayGauge
 - [x] `POST /api/v1/character/day/check/all` - updateDayCheckAll *(정상 동작)*
-- [ ] `POST /api/v1/character/day/check/all-characters` - updateDayCheckAllCharacters
+- [x] `POST /api/v1/character/day/check/all-characters` - updateDayCheckAllCharacters *(정상 동작)*
 
 #### CharacterWeekApi (`/api/v1/character/week`)
 - [ ] `POST /api/v1/character/week/raid` - updateWeekRaid

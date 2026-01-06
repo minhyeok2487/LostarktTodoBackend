@@ -70,4 +70,19 @@ class CharacterDayApiTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("전체 캐릭터 일일컨텐츠 전체 체크")
+    @MeasurePerformance(maxQueries = 30)
+    void updateDayCheckAllCharacters() throws Exception {
+        // TODO: 다수 쿼리 발생 가능성
+        Map<String, Object> request = new HashMap<>();
+        request.put("serverName", testCharacter.getServerName());
+
+        mockMvc.perform(post("/api/v1/character/day/check/all-characters")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
 }
