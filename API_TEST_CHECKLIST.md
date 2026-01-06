@@ -217,22 +217,22 @@
 - [x] `DELETE /api/v1/general-todos/folders/{folderId}` - deleteFolder *(정상 동작)*
 
 #### GeneralTodoCategoryApi (`/api/v1/general-todos`)
-- [ ] `POST /api/v1/general-todos/categories/folders/{folderId}` - createCategory
-- [ ] `PATCH /api/v1/general-todos/categories/{categoryId}` - updateCategory
-- [ ] `PATCH /api/v1/general-todos/categories/folders/{folderId}/reorder` - reorderCategories
-- [ ] `DELETE /api/v1/general-todos/categories/{categoryId}` - deleteCategory
+- [x] `POST /api/v1/general-todos/categories/folders/{folderId}` - createCategory *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/categories/{categoryId}` - updateCategory *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/categories/folders/{folderId}/reorder` - reorderCategories *(정상 동작)*
+- [x] `DELETE /api/v1/general-todos/categories/{categoryId}` - deleteCategory *(정상 동작)*
 
 #### GeneralTodoItemApi (`/api/v1/general-todos`)
-- [ ] `POST /api/v1/general-todos/items` - createItem
-- [ ] `PATCH /api/v1/general-todos/items/{itemId}` - updateItem
-- [ ] `PATCH /api/v1/general-todos/items/{itemId}/status` - updateStatus
-- [ ] `DELETE /api/v1/general-todos/items/{itemId}` - deleteItem
+- [x] `POST /api/v1/general-todos/items` - createItem *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/items/{itemId}` - updateItem *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/items/{itemId}/status` - updateStatus *(정상 동작)*
+- [x] `DELETE /api/v1/general-todos/items/{itemId}` - deleteItem *(정상 동작)*
 
 #### GeneralTodoStatusApi (`/api/v1/general-todos`)
-- [ ] `POST /api/v1/general-todos/categories/{categoryId}/statuses` - createStatus
-- [ ] `PATCH /api/v1/general-todos/categories/{categoryId}/statuses/{statusId}` - renameStatus
-- [ ] `PATCH /api/v1/general-todos/categories/{categoryId}/statuses/reorder` - reorderStatuses
-- [ ] `DELETE /api/v1/general-todos/categories/{categoryId}/statuses/{statusId}` - deleteStatus
+- [x] `POST /api/v1/general-todos/categories/{categoryId}/statuses` - createStatus *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/categories/{categoryId}/statuses/{statusId}` - renameStatus *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/categories/{categoryId}/statuses/reorder` - reorderStatuses *(정상 동작)*
+- [x] `DELETE /api/v1/general-todos/categories/{categoryId}/statuses/{statusId}` - deleteStatus *(정상 동작)*
 
 ---
 
