@@ -208,7 +208,7 @@
 ### generaltodo/api
 
 #### GeneralTodoOverviewApi (`/api/v1/general-todos`)
-- [ ] `GET /api/v1/general-todos` - getOverview
+- [x] `GET /api/v1/general-todos` - getOverview *(정상 동작)*
 
 #### GeneralTodoFolderApi (`/api/v1/general-todos`)
 - [ ] `POST /api/v1/general-todos/folders` - createFolder
