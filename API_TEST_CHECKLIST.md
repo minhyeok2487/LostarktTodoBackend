@@ -58,7 +58,7 @@
 - [ ] `POST /api/v1/community/like/{communityId}` - updateLike *(Discord webhook 연동으로 테스트 스킵)*
 
 #### FollowApi (`/api/v1/follow`)
-- [ ] `GET /api/v1/follow` - search
+- [x] `GET /api/v1/follow` - search *(정상 동작)*
 - [ ] `POST /api/v1/follow` - update
 
 ---
