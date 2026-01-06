@@ -122,7 +122,7 @@
 #### CubeApi (`/api/v1/cube`)
 - [x] `GET /api/v1/cube/statistics` - getStatistics *(정상 동작)*
 - [x] `GET /api/v1/cube` - get *(정상 동작)*
-- [ ] `POST /api/v1/cube` - create
+- [x] `POST /api/v1/cube` - create *(정상 동작)*
 - [ ] `PUT /api/v1/cube` - update
 - [ ] `DELETE /api/v1/cube/{characterId}` - delete
 - [ ] `POST /api/v1/cube/spend` - spendWeekCubeTicket
