@@ -113,7 +113,7 @@
 ### content/api
 
 #### WeekContentApi (`/api/v1/content/week`)
-- [ ] `GET /api/v1/content/week/raid/category` - getScheduleRaidCategory
+- [x] `GET /api/v1/content/week/raid/category` - getScheduleRaidCategory *(정상 동작)*
 
 ---
 
