@@ -165,7 +165,7 @@
 - [ ] `POST /api/v1/mail/auth` - authMail
 
 #### MemberApi (`/api/v1/member`)
-- [ ] `GET /api/v1/member` - get
+- [x] `GET /api/v1/member` - get *(정상 동작)*
 - [ ] `POST /api/v1/member/character` - saveCharacter
 - [ ] `POST /api/v1/member/password` - updatePassword
 - [ ] `PATCH /api/v1/member/main-character` - editMainCharacter
