@@ -120,8 +120,8 @@
 ### cube/api
 
 #### CubeApi (`/api/v1/cube`)
-- [ ] `GET /api/v1/cube/statistics` - getStatistics
-- [ ] `GET /api/v1/cube` - get
+- [x] `GET /api/v1/cube/statistics` - getStatistics *(정상 동작)*
+- [x] `GET /api/v1/cube` - get *(정상 동작)*
 - [ ] `POST /api/v1/cube` - create
 - [ ] `PUT /api/v1/cube` - update
 - [ ] `DELETE /api/v1/cube/{characterId}` - delete
