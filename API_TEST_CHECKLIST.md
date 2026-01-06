@@ -146,9 +146,9 @@
 
 #### LogsApi (`/api/v1/logs`)
 - [x] `GET /api/v1/logs` - search *(정상 동작)*
-- [ ] `GET /api/v1/logs/profit` - getLogsProfit
+- [ ] `GET /api/v1/logs/profit` - getLogsProfit *(403 에러 발생)*
 - [ ] `DELETE /api/v1/logs/{logId}` - delete
-- [ ] `POST /api/v1/logs` - saveEtcLog
+- [x] `POST /api/v1/logs` - saveEtcLog *(정상 동작)*
 
 ---
 
