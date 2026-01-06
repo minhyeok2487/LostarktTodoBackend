@@ -196,7 +196,7 @@
 
 #### ScheduleApi (`/api/v1/schedule`)
 - [x] `GET /api/v1/schedule` - search *(완료)*
-- [ ] `GET /api/v1/schedule/raid/category` - getScheduleRaidCategory
+- [x] `GET /api/v1/schedule/raid/category` - getScheduleRaidCategory *(정상 동작)*
 - [ ] `POST /api/v1/schedule` - create
 - [ ] `GET /api/v1/schedule/{scheduleId}` - get
 - [ ] `PATCH /api/v1/schedule/{scheduleId}` - edit

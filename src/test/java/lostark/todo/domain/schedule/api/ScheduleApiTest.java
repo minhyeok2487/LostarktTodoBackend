@@ -41,4 +41,15 @@ class ScheduleApiTest {
                         .param("month", "1"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("레이드 카테고리 조회")
+    @MeasurePerformance(maxQueries = 5)
+    void getScheduleRaidCategory() throws Exception {
+        String token = tokenProvider.createToken(TEST_USERNAME);
+
+        mockMvc.perform(get("/api/v1/schedule/raid/category")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
 }
