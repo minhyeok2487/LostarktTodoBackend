@@ -82,7 +82,7 @@
 
 #### CharacterWeekApi (`/api/v1/character/week`)
 - [ ] `POST /api/v1/character/week/raid` - updateWeekRaid
-- [ ] `GET /api/v1/character/week/raid/form` - getTodoForm
+- [x] `GET /api/v1/character/week/raid/form` - getTodoForm *(정상 동작)*
 - [ ] `POST /api/v1/character/week/raid/bus` - updateWeekRaidBusGold
 - [ ] `POST /api/v1/character/week/raid/check` - updateWeekRaidCheck
 - [ ] `POST /api/v1/character/week/raid/message` - updateWeekRaidMessage
