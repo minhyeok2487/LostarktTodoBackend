@@ -16,7 +16,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -33,6 +40,9 @@ class CharacterWeekApiTest {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private static final String TEST_USERNAME = "repeat2487@gmail.com";
 
@@ -56,6 +66,20 @@ class CharacterWeekApiTest {
         mockMvc.perform(get("/api/v1/character/week/raid/form")
                         .header("Authorization", "Bearer " + token)
                         .param("characterId", String.valueOf(testCharacter.getId())))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 에포나 체크")
+    @MeasurePerformance(maxQueries = 10)
+    void updateWeekEpona() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+
+        mockMvc.perform(post("/api/v1/character/week/epona")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
 }
