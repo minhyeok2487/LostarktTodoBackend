@@ -97,9 +97,9 @@
 - [ ] `POST /api/v1/character/week/elysian/all` - updateElysianAll
 
 #### CharacterListApi (`/api/v1/character-list`)
-- [ ] `GET /api/v1/character-list` - get
+- [x] `GET /api/v1/character-list` - get *(다수 쿼리 발생 - N+1 최적화 필요)*
 - [ ] `PATCH /api/v1/character-list/sorting` - updateSort
-- [ ] `GET /api/v1/character-list/deleted` - getDeletedCharacter
+- [x] `GET /api/v1/character-list/deleted` - getDeletedCharacter *(정상 동작)*
 
 #### CustomTodoApi (`/api/v1/custom`)
 - [ ] `GET /api/v1/custom` - search
