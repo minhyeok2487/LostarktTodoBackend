@@ -212,9 +212,9 @@
 
 #### GeneralTodoFolderApi (`/api/v1/general-todos`)
 - [x] `POST /api/v1/general-todos/folders` - createFolder *(정상 동작)*
-- [ ] `PATCH /api/v1/general-todos/folders/{folderId}` - renameFolder
-- [ ] `PATCH /api/v1/general-todos/folders/reorder` - reorderFolders
-- [ ] `DELETE /api/v1/general-todos/folders/{folderId}` - deleteFolder
+- [x] `PATCH /api/v1/general-todos/folders/{folderId}` - renameFolder *(정상 동작)*
+- [x] `PATCH /api/v1/general-todos/folders/reorder` - reorderFolders *(정상 동작)*
+- [x] `DELETE /api/v1/general-todos/folders/{folderId}` - deleteFolder *(정상 동작)*
 
 #### GeneralTodoCategoryApi (`/api/v1/general-todos`)
 - [ ] `POST /api/v1/general-todos/categories/folders/{folderId}` - createCategory
