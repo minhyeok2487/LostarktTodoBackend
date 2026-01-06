@@ -85,4 +85,36 @@ class CharacterDayApiTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("일일 컨텐츠 체크")
+    @MeasurePerformance(maxQueries = 10)
+    void updateDayCheck() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("allCheck", false);
+        request.put("category", "epona");
+
+        mockMvc.perform(post("/api/v1/character/day/check")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("일일 컨텐츠 휴식게이지 업데이트")
+    @MeasurePerformance(maxQueries = 10)
+    void updateDayGauge() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("chaosGauge", 20);
+        request.put("guardianGauge", 20);
+
+        mockMvc.perform(post("/api/v1/character/day/gauge")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
 }
