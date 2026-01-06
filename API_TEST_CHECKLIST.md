@@ -66,13 +66,13 @@
 ### character/api
 
 #### CharacterApi (`/api/v1/character`)
-- [ ] `PATCH /api/v1/character/settings` - updateSettings
-- [ ] `PATCH /api/v1/character/gold-character` - updateGoldCharacter
-- [ ] `POST /api/v1/character/memo` - updateMemo
-- [ ] `PATCH /api/v1/character/deleted` - updateCharacterStatus
-- [ ] `PUT /api/v1/character` - updateCharacter
-- [ ] `PATCH /api/v1/character/name` - updateCharacterName
-- [ ] `POST /api/v1/character` - addCharacter
+- [x] `PATCH /api/v1/character/settings` - updateSettings *(정상 동작)*
+- [x] `PATCH /api/v1/character/gold-character` - updateGoldCharacter *(정상 동작)*
+- [x] `POST /api/v1/character/memo` - updateMemo *(정상 동작)*
+- [x] `PATCH /api/v1/character/deleted` - updateCharacterStatus *(정상 동작)*
+- [ ] `PUT /api/v1/character` - updateCharacter *(외부 API 연동 필요)*
+- [ ] `PATCH /api/v1/character/name` - updateCharacterName *(외부 API 연동 필요)*
+- [ ] `POST /api/v1/character` - addCharacter *(외부 API 연동 필요)*
 
 #### CharacterDayApi (`/api/v1/character/day`)
 - [x] `POST /api/v1/character/day/check` - updateDayCheck *(정상 동작)*
