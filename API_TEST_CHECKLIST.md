@@ -147,7 +147,7 @@
 #### LogsApi (`/api/v1/logs`)
 - [x] `GET /api/v1/logs` - search *(정상 동작)*
 - [ ] `GET /api/v1/logs/profit` - getLogsProfit *(403 에러 발생)*
-- [ ] `DELETE /api/v1/logs/{logId}` - delete
+- [x] `DELETE /api/v1/logs/{logId}` - delete *(정상 동작)*
 - [x] `POST /api/v1/logs` - saveEtcLog *(정상 동작)*
 
 ---
@@ -187,7 +187,7 @@
 #### NotificationApi (`/api/v1/notification`)
 - [x] `GET /api/v1/notification` - search *(정상 동작)*
 - [x] `GET /api/v1/notification/status` - getRecent *(정상 동작)*
-- [ ] `POST /api/v1/notification/{notificationId}` - updateRead
+- [x] `POST /api/v1/notification/{notificationId}` - updateRead *(정상 동작)*
 - [x] `POST /api/v1/notification/all` - updateReadAll *(정상 동작)*
 
 ---
