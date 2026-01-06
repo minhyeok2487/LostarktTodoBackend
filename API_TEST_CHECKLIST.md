@@ -166,13 +166,13 @@
 
 #### MemberApi (`/api/v1/member`)
 - [x] `GET /api/v1/member` - get *(정상 동작)*
-- [ ] `POST /api/v1/member/character` - saveCharacter
-- [ ] `POST /api/v1/member/password` - updatePassword
-- [ ] `PATCH /api/v1/member/main-character` - editMainCharacter
-- [ ] `PATCH /api/v1/member/provider` - editProvider
-- [ ] `POST /api/v1/member/ads` - saveAds
-- [ ] `DELETE /api/v1/member/characters` - deleteCharacters
-- [ ] `PATCH /api/v1/member/api-key` - updateApiKey
+- [ ] `POST /api/v1/member/character` - saveCharacter *(외부 API 연동 필요)*
+- [ ] `POST /api/v1/member/password` - updatePassword *(이메일 인증 필요)*
+- [x] `PATCH /api/v1/member/main-character` - editMainCharacter *(정상 동작)*
+- [ ] `PATCH /api/v1/member/provider` - editProvider *(@NotTestMember 제한)*
+- [ ] `POST /api/v1/member/ads` - saveAds *(@NotTestMember 제한)*
+- [ ] `DELETE /api/v1/member/characters` - deleteCharacters *(테스트 계정 제한)*
+- [ ] `PATCH /api/v1/member/api-key` - updateApiKey *(외부 API 연동 필요)*
 
 #### LifeEnergyApi (`/api/v1/life-energy`)
 - [ ] `POST /api/v1/life-energy` - save
