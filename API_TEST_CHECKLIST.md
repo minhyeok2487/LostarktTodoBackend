@@ -103,7 +103,7 @@
 
 #### CustomTodoApi (`/api/v1/custom`)
 - [x] `GET /api/v1/custom` - search *(정상 동작)*
-- [ ] `POST /api/v1/custom` - create
+- [x] `POST /api/v1/custom` - create *(정상 동작)*
 - [ ] `PATCH /api/v1/custom/{customTodoId}` - update
 - [ ] `POST /api/v1/custom/check` - check
 - [ ] `DELETE /api/v1/custom/{customTodoId}` - remove
