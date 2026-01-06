@@ -133,7 +133,7 @@
 
 #### FriendApi (`/api/v1/friend`)
 - [x] `GET /api/v1/friend` - get *(심각한 N+1 문제 - 60개 이상 쿼리 발생)*
-- [ ] `GET /api/v1/friend/character/{characterName}` - findCharacter
+- [x] `GET /api/v1/friend/character/{characterName}` - findCharacter *(정상 동작)*
 - [ ] `POST /api/v1/friend` - friendsRequest
 - [ ] `POST /api/v1/friend/request` - updateFriendsRequest
 - [ ] `PATCH /api/v1/friend/settings` - updateFriendSetting
