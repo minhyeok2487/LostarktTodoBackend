@@ -81,18 +81,18 @@
 - [x] `POST /api/v1/character/day/check/all-characters` - updateDayCheckAllCharacters *(정상 동작)*
 
 #### CharacterWeekApi (`/api/v1/character/week`)
-- [ ] `POST /api/v1/character/week/raid` - updateWeekRaid
+- [x] `POST /api/v1/character/week/raid` - updateWeekRaid *(정상 동작)*
 - [x] `GET /api/v1/character/week/raid/form` - getTodoForm *(정상 동작)*
 - [ ] `POST /api/v1/character/week/raid/bus` - updateWeekRaidBusGold
-- [ ] `POST /api/v1/character/week/raid/check` - updateWeekRaidCheck
-- [ ] `POST /api/v1/character/week/raid/message` - updateWeekRaidMessage
+- [x] `POST /api/v1/character/week/raid/check` - updateWeekRaidCheck *(정상 동작)*
+- [x] `POST /api/v1/character/week/raid/message` - updateWeekRaidMessage *(정상 동작)*
 - [ ] `POST /api/v1/character/week/raid/sort` - updateWeekRaidSort
 - [x] `POST /api/v1/character/week/epona` - updateWeekEpona *(정상 동작)*
 - [x] `POST /api/v1/character/week/silmael` - updateWeekSilmael *(정상 동작)*
 - [x] `POST /api/v1/character/week/cube` - updateWeekCubeTicket *(정상 동작)*
-- [ ] `PATCH /api/v1/character/week/raid/gold-check` - updateRaidGoldCheck
+- [x] `PATCH /api/v1/character/week/raid/gold-check` - updateRaidGoldCheck *(정상 동작)*
 - [x] `PATCH /api/v1/character/week/gold-check-version` - updateGoldCheckVersion *(정상 동작)*
-- [ ] `POST /api/v1/character/week/raid/more-reward` - updateRaidMoreRewardCheck
+- [x] `POST /api/v1/character/week/raid/more-reward` - updateRaidMoreRewardCheck *(정상 동작)*
 - [x] `POST /api/v1/character/week/elysian` - updateElysian *(정상 동작)*
 - [x] `POST /api/v1/character/week/elysian/all` - updateElysianAll *(정상 동작)*
 

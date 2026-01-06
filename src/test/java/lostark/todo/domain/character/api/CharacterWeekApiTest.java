@@ -3,6 +3,10 @@ package lostark.todo.domain.character.api;
 import lostark.todo.config.DataSourceProxyConfig;
 import lostark.todo.config.MeasurePerformance;
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.character.entity.TodoV2;
+import lostark.todo.domain.character.repository.TodoV2Repository;
+import lostark.todo.domain.content.entity.WeekContent;
+import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.global.config.TokenProvider;
@@ -20,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,6 +49,12 @@ class CharacterWeekApiTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private TodoV2Repository todoV2Repository;
+
+    @Autowired
+    private ContentRepository contentRepository;
 
     private static final String TEST_USERNAME = "repeat2487@gmail.com";
 
@@ -153,5 +164,134 @@ class CharacterWeekApiTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 레이드 추가/제거")
+    @MeasurePerformance(maxQueries = 20)
+    void updateWeekRaid() throws Exception {
+        List<WeekContent> weekContents = contentRepository.findAllWeekContent(testCharacter.getItemLevel());
+        if (weekContents.isEmpty()) {
+            return; // 캐릭터 레벨에 맞는 레이드가 없으면 스킵
+        }
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("weekContentIdList", List.of(weekContents.get(0).getId()));
+
+        mockMvc.perform(post("/api/v1/character/week/raid")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 레이드 체크")
+    @MeasurePerformance(maxQueries = 20)
+    void updateWeekRaidCheck() throws Exception {
+        TodoV2 todoV2 = getOrCreateTodoV2();
+        if (todoV2 == null) {
+            return; // TodoV2 데이터가 없으면 스킵
+        }
+
+        String weekCategory = todoV2.getWeekContent().getWeekCategory();
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("weekCategory", weekCategory);
+        request.put("allCheck", false);
+
+        mockMvc.perform(post("/api/v1/character/week/raid/check")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 레이드 메모 수정")
+    @MeasurePerformance(maxQueries = 15)
+    void updateWeekRaidMessage() throws Exception {
+        TodoV2 todoV2 = getOrCreateTodoV2();
+        if (todoV2 == null) {
+            return; // TodoV2 데이터가 없으면 스킵
+        }
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("todoId", todoV2.getId());
+        request.put("message", "테스트 메모");
+
+        mockMvc.perform(post("/api/v1/character/week/raid/message")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 레이드 골드 체크")
+    @MeasurePerformance(maxQueries = 15)
+    void updateRaidGoldCheck() throws Exception {
+        TodoV2 todoV2 = getOrCreateTodoV2();
+        if (todoV2 == null) {
+            return; // TodoV2 데이터가 없으면 스킵
+        }
+
+        String weekCategory = todoV2.getWeekContent().getWeekCategory();
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("weekCategory", weekCategory);
+        request.put("updateValue", true);
+
+        mockMvc.perform(patch("/api/v1/character/week/raid/gold-check")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 레이드 더보기 체크")
+    @MeasurePerformance(maxQueries = 15)
+    void updateRaidMoreRewardCheck() throws Exception {
+        TodoV2 todoV2 = getOrCreateTodoV2();
+        if (todoV2 == null) {
+            return; // TodoV2 데이터가 없으면 스킵
+        }
+
+        String weekCategory = todoV2.getWeekContent().getWeekCategory();
+        int gate = todoV2.getWeekContent().getGate();
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("weekCategory", weekCategory);
+        request.put("gate", gate);
+
+        mockMvc.perform(post("/api/v1/character/week/raid/more-reward")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    private TodoV2 getOrCreateTodoV2() {
+        List<TodoV2> existingTodos = testCharacter.getTodoV2List();
+        if (existingTodos != null && !existingTodos.isEmpty()) {
+            return existingTodos.get(0);
+        }
+
+        List<WeekContent> weekContents = contentRepository.findAllWeekContent(testCharacter.getItemLevel());
+        if (weekContents.isEmpty()) {
+            return null;
+        }
+
+        TodoV2 todoV2 = TodoV2.builder()
+                .character(testCharacter)
+                .weekContent(weekContents.get(0))
+                .isChecked(false)
+                .gold(weekContents.get(0).getGold())
+                .coolTime(2)
+                .build();
+        return todoV2Repository.save(todoV2);
     }
 }
