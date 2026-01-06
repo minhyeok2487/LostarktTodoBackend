@@ -34,7 +34,7 @@
 
 #### AnalysisApi (`/api/v1/analysis`)
 - [x] `GET /api/v1/analysis` - searchAnalysis
-- [ ] `POST /api/v1/analysis` - updateAnalysis
+- [x] `POST /api/v1/analysis` - updateAnalysis *(단순 저장 로직, 문제 없음)*
 
 ---
 
