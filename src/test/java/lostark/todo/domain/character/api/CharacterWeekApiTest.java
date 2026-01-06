@@ -187,6 +187,54 @@ class CharacterWeekApiTest {
     }
 
     @Test
+    @DisplayName("주간 레이드 버스 골드 수정")
+    @MeasurePerformance(maxQueries = 15)
+    void updateWeekRaidBusGold() throws Exception {
+        TodoV2 todoV2 = getOrCreateTodoV2();
+        if (todoV2 == null) {
+            return; // TodoV2 데이터가 없으면 스킵
+        }
+
+        String weekCategory = todoV2.getWeekContent().getWeekCategory();
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("weekCategory", weekCategory);
+        request.put("busGold", 1000);
+        request.put("fixed", false);
+
+        mockMvc.perform(post("/api/v1/character/week/raid/bus")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("주간 레이드 순서 변경")
+    @MeasurePerformance(maxQueries = 15)
+    void updateWeekRaidSort() throws Exception {
+        TodoV2 todoV2 = getOrCreateTodoV2();
+        if (todoV2 == null) {
+            return; // TodoV2 데이터가 없으면 스킵
+        }
+
+        String weekCategory = todoV2.getWeekContent().getWeekCategory();
+        Map<String, Object> sortRequest = new HashMap<>();
+        sortRequest.put("weekCategory", weekCategory);
+        sortRequest.put("sortNumber", 1);
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("sortRequestList", List.of(sortRequest));
+
+        mockMvc.perform(post("/api/v1/character/week/raid/sort")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("주간 레이드 체크")
     @MeasurePerformance(maxQueries = 20)
     void updateWeekRaidCheck() throws Exception {

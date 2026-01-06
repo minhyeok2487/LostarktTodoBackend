@@ -83,10 +83,10 @@
 #### CharacterWeekApi (`/api/v1/character/week`)
 - [x] `POST /api/v1/character/week/raid` - updateWeekRaid *(정상 동작)*
 - [x] `GET /api/v1/character/week/raid/form` - getTodoForm *(정상 동작)*
-- [ ] `POST /api/v1/character/week/raid/bus` - updateWeekRaidBusGold
+- [x] `POST /api/v1/character/week/raid/bus` - updateWeekRaidBusGold *(정상 동작)*
 - [x] `POST /api/v1/character/week/raid/check` - updateWeekRaidCheck *(정상 동작)*
 - [x] `POST /api/v1/character/week/raid/message` - updateWeekRaidMessage *(정상 동작)*
-- [ ] `POST /api/v1/character/week/raid/sort` - updateWeekRaidSort
+- [x] `POST /api/v1/character/week/raid/sort` - updateWeekRaidSort *(정상 동작)*
 - [x] `POST /api/v1/character/week/epona` - updateWeekEpona *(정상 동작)*
 - [x] `POST /api/v1/character/week/silmael` - updateWeekSilmael *(정상 동작)*
 - [x] `POST /api/v1/character/week/cube` - updateWeekCubeTicket *(정상 동작)*
