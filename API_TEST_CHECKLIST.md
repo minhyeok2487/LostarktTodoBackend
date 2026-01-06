@@ -241,8 +241,8 @@
 #### ServerTodoApi (`/api/v1/server-todos`)
 - [x] `POST /api/v1/server-todos` - createServerTodo *(정상 동작)*
 - [x] `GET /api/v1/server-todos` - getServerTodos *(정상 동작)*
-- [ ] `PATCH /api/v1/server-todos/{todoId}/toggle-enabled` - toggleEnabled
-- [ ] `POST /api/v1/server-todos/{todoId}/check` - check
+- [x] `PATCH /api/v1/server-todos/{todoId}/toggle-enabled` - toggleEnabled *(정상 동작)*
+- [x] `POST /api/v1/server-todos/{todoId}/check` - check *(정상 동작)*
 
 ---
 
