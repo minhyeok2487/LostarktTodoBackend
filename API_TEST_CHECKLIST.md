@@ -211,7 +211,7 @@
 - [x] `GET /api/v1/general-todos` - getOverview *(정상 동작)*
 
 #### GeneralTodoFolderApi (`/api/v1/general-todos`)
-- [ ] `POST /api/v1/general-todos/folders` - createFolder
+- [x] `POST /api/v1/general-todos/folders` - createFolder *(정상 동작)*
 - [ ] `PATCH /api/v1/general-todos/folders/{folderId}` - renameFolder
 - [ ] `PATCH /api/v1/general-todos/folders/reorder` - reorderFolders
 - [ ] `DELETE /api/v1/general-todos/folders/{folderId}` - deleteFolder
