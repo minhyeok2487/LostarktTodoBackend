@@ -123,9 +123,9 @@
 - [x] `GET /api/v1/cube/statistics` - getStatistics *(정상 동작)*
 - [x] `GET /api/v1/cube` - get *(정상 동작)*
 - [x] `POST /api/v1/cube` - create *(정상 동작)*
-- [ ] `PUT /api/v1/cube` - update
-- [ ] `DELETE /api/v1/cube/{characterId}` - delete
-- [ ] `POST /api/v1/cube/spend` - spendWeekCubeTicket
+- [x] `PUT /api/v1/cube` - update *(정상 동작)*
+- [x] `DELETE /api/v1/cube/{characterId}` - delete *(정상 동작)*
+- [x] `POST /api/v1/cube/spend` - spendWeekCubeTicket *(정상 동작)*
 
 ---
 
