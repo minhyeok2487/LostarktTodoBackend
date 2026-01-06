@@ -155,9 +155,9 @@
 ### member/api
 
 #### AuthApi (`/api/v1/auth`)
-- [ ] `POST /api/v1/auth/signup` - signUp
+- [ ] `POST /api/v1/auth/signup` - signUp *(이메일 인증 필요)*
 - [ ] `POST /api/v1/auth/login` - loginMember
-- [ ] `GET /api/v1/auth/logout` - logout
+- [x] `GET /api/v1/auth/logout` - logout *(정상 동작)*
 
 #### EmailApi (`/api/v1/mail`)
 - [ ] `POST /api/v1/mail` - sendSignUpMail
