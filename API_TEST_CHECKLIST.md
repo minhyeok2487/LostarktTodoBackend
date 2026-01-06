@@ -188,7 +188,7 @@
 - [x] `GET /api/v1/notification` - search *(정상 동작)*
 - [x] `GET /api/v1/notification/status` - getRecent *(정상 동작)*
 - [ ] `POST /api/v1/notification/{notificationId}` - updateRead
-- [ ] `POST /api/v1/notification/all` - updateReadAll
+- [x] `POST /api/v1/notification/all` - updateReadAll *(정상 동작)*
 
 ---
 

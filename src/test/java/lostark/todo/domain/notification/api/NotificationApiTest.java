@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -51,6 +52,15 @@ class NotificationApiTest {
     @MeasurePerformance(maxQueries = 5)
     void getStatus() throws Exception {
         mockMvc.perform(get("/api/v1/notification/status")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("알림 일괄 확인")
+    @MeasurePerformance(maxQueries = 10)
+    void updateReadAll() throws Exception {
+        mockMvc.perform(post("/api/v1/notification/all")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
