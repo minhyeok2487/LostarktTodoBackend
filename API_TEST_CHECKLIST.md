@@ -280,18 +280,25 @@
 
 | 도메인 | 완료 | 전체 | 진행률 |
 |--------|------|------|--------|
-| admin | 0 | 7 | 0% |
-| analysis | 1 | 2 | 50% |
-| board | 0 | 10 | 0% |
-| character | 0 | 30 | 0% |
-| content | 0 | 1 | 0% |
-| cube | 0 | 6 | 0% |
-| friend | 0 | 7 | 0% |
-| logs | 0 | 4 | 0% |
-| member | 0 | 15 | 0% |
-| notification | 0 | 4 | 0% |
-| schedule | 1 | 7 | 14% |
-| generaltodo | 0 | 17 | 0% |
-| servertodo | 0 | 4 | 0% |
+| index | 1 | 1 | 100% |
+| admin | 0 | 7 | 0% *(스킵)* |
+| analysis | 2 | 2 | 100% |
+| board (comments) | 1 | 1 | 100% |
+| board (community) | 4 | 8 | 50% |
+| board (follow) | 2 | 2 | 100% |
+| character | 30 | 30 | 100% |
+| content | 1 | 1 | 100% |
+| cube | 6 | 6 | 100% |
+| friend | 2 | 7 | 29% |
+| logs | 3 | 4 | 75% |
+| member (auth) | 1 | 3 | 33% |
+| member (email) | 0 | 3 | 0% *(외부 연동)* |
+| member (api) | 2 | 8 | 25% |
+| member (life-energy) | 0 | 4 | 0% |
+| notification | 4 | 4 | 100% |
+| schedule | 6 | 7 | 86% |
+| generaltodo | 17 | 17 | 100% |
+| servertodo | 4 | 4 | 100% |
 | domainMyGame | 0 | 10 | 0% |
-| **총계** | **2** | **124** | **1.6%** |
+| suggestion | 0 | 1 | 0% |
+| **총계** | **85** | **132** | **64%** |
