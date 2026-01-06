@@ -198,9 +198,9 @@
 - [x] `GET /api/v1/schedule` - search *(완료)*
 - [x] `GET /api/v1/schedule/raid/category` - getScheduleRaidCategory *(정상 동작)*
 - [x] `POST /api/v1/schedule` - create *(정상 동작)*
-- [ ] `GET /api/v1/schedule/{scheduleId}` - get
-- [ ] `PATCH /api/v1/schedule/{scheduleId}` - edit
-- [ ] `DELETE /api/v1/schedule/{scheduleId}` - remove
+- [x] `GET /api/v1/schedule/{scheduleId}` - get *(정상 동작)*
+- [x] `PATCH /api/v1/schedule/{scheduleId}` - edit *(정상 동작)*
+- [x] `DELETE /api/v1/schedule/{scheduleId}` - remove *(정상 동작)*
 - [ ] `POST /api/v1/schedule/{scheduleId}/friend` - editFriend
 
 ---
