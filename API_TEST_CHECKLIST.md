@@ -102,7 +102,7 @@
 - [x] `GET /api/v1/character-list/deleted` - getDeletedCharacter *(정상 동작)*
 
 #### CustomTodoApi (`/api/v1/custom`)
-- [ ] `GET /api/v1/custom` - search
+- [x] `GET /api/v1/custom` - search *(정상 동작)*
 - [ ] `POST /api/v1/custom` - create
 - [ ] `PATCH /api/v1/custom/{customTodoId}` - update
 - [ ] `POST /api/v1/custom/check` - check
