@@ -88,7 +88,7 @@
 - [ ] `POST /api/v1/character/week/raid/message` - updateWeekRaidMessage
 - [ ] `POST /api/v1/character/week/raid/sort` - updateWeekRaidSort
 - [x] `POST /api/v1/character/week/epona` - updateWeekEpona *(정상 동작)*
-- [ ] `POST /api/v1/character/week/silmael` - updateWeekSilmael
+- [x] `POST /api/v1/character/week/silmael` - updateWeekSilmael *(정상 동작)*
 - [ ] `POST /api/v1/character/week/cube` - updateWeekCubeTicket
 - [ ] `PATCH /api/v1/character/week/raid/gold-check` - updateRaidGoldCheck
 - [ ] `PATCH /api/v1/character/week/gold-check-version` - updateGoldCheckVersion

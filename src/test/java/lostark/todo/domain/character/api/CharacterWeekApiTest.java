@@ -82,4 +82,18 @@ class CharacterWeekApiTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("주간 실마엘 체크")
+    @MeasurePerformance(maxQueries = 10)
+    void updateWeekSilmael() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+
+        mockMvc.perform(post("/api/v1/character/week/silmael")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
 }
