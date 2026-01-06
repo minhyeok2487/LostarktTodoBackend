@@ -91,10 +91,10 @@
 - [x] `POST /api/v1/character/week/silmael` - updateWeekSilmael *(정상 동작)*
 - [x] `POST /api/v1/character/week/cube` - updateWeekCubeTicket *(정상 동작)*
 - [ ] `PATCH /api/v1/character/week/raid/gold-check` - updateRaidGoldCheck
-- [ ] `PATCH /api/v1/character/week/gold-check-version` - updateGoldCheckVersion
+- [x] `PATCH /api/v1/character/week/gold-check-version` - updateGoldCheckVersion *(정상 동작)*
 - [ ] `POST /api/v1/character/week/raid/more-reward` - updateRaidMoreRewardCheck
-- [ ] `POST /api/v1/character/week/elysian` - updateElysian
-- [ ] `POST /api/v1/character/week/elysian/all` - updateElysianAll
+- [x] `POST /api/v1/character/week/elysian` - updateElysian *(정상 동작)*
+- [x] `POST /api/v1/character/week/elysian/all` - updateElysianAll *(정상 동작)*
 
 #### CharacterListApi (`/api/v1/character-list`)
 - [x] `GET /api/v1/character-list` - get *(다수 쿼리 발생 - N+1 최적화 필요)*
