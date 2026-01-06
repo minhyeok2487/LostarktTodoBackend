@@ -98,7 +98,7 @@
 
 #### CharacterListApi (`/api/v1/character-list`)
 - [x] `GET /api/v1/character-list` - get *(다수 쿼리 발생 - N+1 최적화 필요)*
-- [ ] `PATCH /api/v1/character-list/sorting` - updateSort
+- [x] `PATCH /api/v1/character-list/sorting` - updateSort *(정상 동작)*
 - [x] `GET /api/v1/character-list/deleted` - getDeletedCharacter *(정상 동작)*
 
 #### CustomTodoApi (`/api/v1/custom`)
