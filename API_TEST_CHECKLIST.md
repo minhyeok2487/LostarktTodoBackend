@@ -14,19 +14,19 @@
 ### admin/api
 
 #### AdminAdsApi (`/admin/api/v1/ads`)
-- [ ] `GET /admin/api/v1/ads` - search
-- [ ] `POST /admin/api/v1/ads/date` - updateAdsDate
+- [x] `GET /admin/api/v1/ads` - search *(정상 동작, Admin 권한 필요)*
+- [x] `POST /admin/api/v1/ads/date` - updateAdsDate *(정상 동작, Admin 권한 필요)*
 
 #### AdminMainController (`/admin`)
-- [ ] `GET /admin/member` - getMember
-- [ ] `GET /admin/dash-board/member` - searchMemberDashBoard
-- [ ] `GET /admin/dash-board/characters` - searchCharactersDashBoard
+- [x] `GET /admin/member` - getMember *(정상 동작, Admin 권한 필요)*
+- [x] `GET /admin/dash-board/member` - searchMemberDashBoard *(정상 동작, Admin 권한 필요)*
+- [x] `GET /admin/dash-board/characters` - searchCharactersDashBoard *(정상 동작, Admin 권한 필요)*
 
 #### AdminMemberController (`/admin/members`)
-- [ ] `GET /admin/members` - search
+- [x] `GET /admin/members` - search *(정상 동작, Admin 권한 필요)*
 
 #### AdminContentController (`/admin/api/v1/content`)
-- [ ] `POST /admin/api/v1/content` - addContent
+- [x] `POST /admin/api/v1/content` - addContent *(정상 동작, Admin 권한 필요)*
 
 ---
 
@@ -281,7 +281,7 @@
 | 도메인 | 완료 | 전체 | 진행률 |
 |--------|------|------|--------|
 | index | 1 | 1 | 100% |
-| admin | 0 | 7 | 0% *(스킵)* |
+| admin | 7 | 7 | 100% |
 | analysis | 2 | 2 | 100% |
 | board (comments) | 1 | 1 | 100% |
 | board (community) | 4 | 8 | 50% |
@@ -301,4 +301,4 @@
 | servertodo | 4 | 4 | 100% |
 | domainMyGame | 0 | 10 | 0% |
 | suggestion | 0 | 1 | 0% |
-| **총계** | **85** | **132** | **64%** |
+| **총계** | **92** | **132** | **70%** |
