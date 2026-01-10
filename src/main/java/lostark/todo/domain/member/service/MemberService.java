@@ -184,25 +184,9 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    // 대시보드 통계 요약
+    // 대시보드 통계 요약 (단일 쿼리로 최적화)
     @Transactional(readOnly = true)
     public DashboardSummaryResponse getDashboardSummary() {
-        long totalMembers = memberRepository.count();
-        long totalCharacters = characterRepository.count();
-        long activeMembers = memberRepository.countActiveMembers();
-
-        List<DashboardResponse> memberStats = searchMemberDashBoard(1);
-        List<DashboardResponse> characterStats = characterRepository.searchCharactersDashBoard(1);
-
-        long todayNewMembers = memberStats.isEmpty() ? 0 : memberStats.get(0).getCount();
-        long todayNewCharacters = characterStats.isEmpty() ? 0 : characterStats.get(0).getCount();
-
-        return DashboardSummaryResponse.builder()
-                .totalMembers(totalMembers)
-                .totalCharacters(totalCharacters)
-                .todayNewMembers(todayNewMembers)
-                .todayNewCharacters(todayNewCharacters)
-                .activeMembers(activeMembers)
-                .build();
+        return memberRepository.getDashboardSummaryOptimized();
     }
 }

@@ -14,6 +14,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -27,6 +30,7 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.MEMER_NOT_FOUN
 public class MemberRepositoryImpl implements MemberCustomRepository {
 
     private final JPAQueryFactory factory;
+    private final EntityManager entityManager;
 
     @Override
     public Member get(String username) {
@@ -124,5 +128,30 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                 .where(character.isDeleted.eq(false))
                 .fetchOne();
         return count != null ? count : 0;
+    }
+
+    @Override
+    public DashboardSummaryResponse getDashboardSummaryOptimized() {
+        String sql = """
+            SELECT
+                (SELECT COUNT(*) FROM member) as total_members,
+                (SELECT COUNT(*) FROM characters) as total_characters,
+                (SELECT COUNT(DISTINCT m.member_id) FROM member m
+                    INNER JOIN characters c ON m.member_id = c.member_id
+                    WHERE c.is_deleted = false) as active_members,
+                (SELECT COUNT(*) FROM member WHERE DATE(created_date) = CURDATE()) as today_new_members,
+                (SELECT COUNT(*) FROM characters WHERE DATE(created_date) = CURDATE()) as today_new_characters
+            """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        Object[] result = (Object[]) query.getSingleResult();
+
+        return DashboardSummaryResponse.builder()
+                .totalMembers(((Number) result[0]).longValue())
+                .totalCharacters(((Number) result[1]).longValue())
+                .activeMembers(((Number) result[2]).longValue())
+                .todayNewMembers(((Number) result[3]).longValue())
+                .todayNewCharacters(((Number) result[4]).longValue())
+                .build();
     }
 }
