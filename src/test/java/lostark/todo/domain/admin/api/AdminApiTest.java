@@ -263,4 +263,66 @@ class AdminApiTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
+
+    // =============== Content Admin API Tests ===============
+
+    @Test
+    @DisplayName("어드민 컨텐츠 목록 조회")
+    @MeasurePerformance(maxQueries = 10)
+    void getContentList() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/contents")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 컨텐츠 목록 조회 - 타입별")
+    @MeasurePerformance(maxQueries = 10)
+    void getContentListByType() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/contents")
+                        .header("Authorization", "Bearer " + token)
+                        .param("contentType", "week"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 컨텐츠 상세 조회")
+    @MeasurePerformance(maxQueries = 10)
+    void getContentDetail() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/contents/1")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 컨텐츠 수정")
+    @MeasurePerformance(maxQueries = 15)
+    void updateContent() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        // contentId 1은 DayContent (카오스던전)
+        Map<String, Object> request = new HashMap<>();
+        request.put("contentType", "day");
+        request.put("name", "수정된 카오스던전");
+        request.put("level", 1700.0);
+        request.put("category", "카오스던전");
+        request.put("shilling", 100000.0);
+        request.put("honorShard", 1000.0);
+        request.put("leapStone", 10.0);
+        request.put("destructionStone", 500.0);
+        request.put("guardianStone", 1000.0);
+        request.put("jewelry", 0.0);
+
+        mockMvc.perform(put("/admin/api/v1/contents/1")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
 }

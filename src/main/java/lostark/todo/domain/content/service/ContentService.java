@@ -123,4 +123,73 @@ public class ContentService {
         }
         return contentRepository.save(content);
     }
+
+    // =============== Admin Methods ===============
+
+    @Transactional(readOnly = true)
+    public List<Content> getContentListForAdmin(String contentType) {
+        if (contentType == null || contentType.isEmpty()) {
+            return contentRepository.findAll();
+        }
+        return switch (contentType) {
+            case "day" -> new ArrayList<>(contentRepository.findAllByDayContent());
+            case "week" -> new ArrayList<>(contentRepository.findAllWeekContent(0));
+            case "cube" -> new ArrayList<>(contentRepository.findAllByCubeContent());
+            default -> throw new ConditionNotMetException("Invalid content type: " + contentType);
+        };
+    }
+
+    @Transactional(readOnly = true)
+    public Content getByIdForAdmin(Long contentId) {
+        return contentRepository.findById(contentId)
+                .orElseThrow(() -> new ConditionNotMetException("컨텐츠가 존재하지 않습니다. ID: " + contentId));
+    }
+
+    @CacheEvict(cacheNames = "content", allEntries = true)
+    public Content updateContent(Long contentId, AddContentRequest request) {
+        Content content = getByIdForAdmin(contentId);
+
+        content.setName(request.getName());
+        content.setLevel(request.getLevel());
+        content.setCategory(request.getCategory());
+
+        if (content instanceof DayContent dayContent) {
+            dayContent.setShilling(request.getShilling());
+            dayContent.setHonorShard(request.getHonorShard());
+            dayContent.setLeapStone(request.getLeapStone());
+            dayContent.setDestructionStone(request.getDestructionStone());
+            dayContent.setGuardianStone(request.getGuardianStone());
+            dayContent.setJewelry(request.getJewelry());
+        } else if (content instanceof WeekContent weekContent) {
+            weekContent.setWeekCategory(request.getWeekCategory());
+            weekContent.setWeekContentCategory(request.getWeekContentCategory());
+            weekContent.setGate(request.getGate());
+            weekContent.setGold(request.getGold());
+            weekContent.setCharacterGold(request.getCharacterGold());
+            weekContent.setCoolTime(request.getCoolTime());
+            weekContent.setMoreRewardGold(request.getMoreRewardGold());
+            weekContent.setHonorShard(request.getHonorShard());
+            weekContent.setLeapStone(request.getLeapStone());
+            weekContent.setDestructionStone(request.getDestructionStone());
+            weekContent.setGuardianStone(request.getGuardianStone());
+        } else if (content instanceof CubeContent cubeContent) {
+            cubeContent.setJewelry(request.getJewelry());
+            cubeContent.setLeapStone(request.getLeapStone());
+            cubeContent.setSolarGrace(request.getSolarGrace());
+            cubeContent.setSolarBlessing(request.getSolarBlessing());
+            cubeContent.setSolarProtection(request.getSolarProtection());
+            cubeContent.setCardExp(request.getCardExp());
+            cubeContent.setLavasBreath(request.getLavasBreath());
+            cubeContent.setGlaciersBreath(request.getGlaciersBreath());
+            cubeContent.setShilling(request.getShilling());
+        }
+
+        return content;
+    }
+
+    @CacheEvict(cacheNames = "content", allEntries = true)
+    public void deleteContent(Long contentId) {
+        Content content = getByIdForAdmin(contentId);
+        contentRepository.delete(content);
+    }
 }
