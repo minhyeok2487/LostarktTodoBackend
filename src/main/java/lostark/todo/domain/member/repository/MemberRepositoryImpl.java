@@ -13,6 +13,8 @@ import lostark.todo.domain.admin.dto.QDashboardResponse;
 import lostark.todo.domain.admin.dto.QSearchAdminMemberResponse;
 import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberResponse;
+import lostark.todo.domain.admin.enums.MemberSortBy;
+import org.springframework.data.domain.Sort;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.entity.QMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
@@ -104,14 +106,14 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
         return new PageImpl<>(fetch, pageRequest, total);
     }
 
-    private OrderSpecifier<?> getOrderSpecifier(String sortBy, String sortDirection) {
-        boolean isAsc = "ASC".equalsIgnoreCase(sortDirection);
+    private OrderSpecifier<?> getOrderSpecifier(MemberSortBy sortBy, Sort.Direction sortDirection) {
+        boolean isAsc = sortDirection == Sort.Direction.ASC;
 
         return switch (sortBy) {
-            case "memberId" -> isAsc ? member.id.asc() : member.id.desc();
-            case "username" -> isAsc ? member.username.asc() : member.username.desc();
-            case "authProvider" -> isAsc ? member.authProvider.asc() : member.authProvider.desc();
-            case "mainCharacter" -> isAsc ? member.mainCharacter.asc() : member.mainCharacter.desc();
+            case MEMBER_ID -> isAsc ? member.id.asc() : member.id.desc();
+            case USERNAME -> isAsc ? member.username.asc() : member.username.desc();
+            case AUTH_PROVIDER -> isAsc ? member.authProvider.asc() : member.authProvider.desc();
+            case MAIN_CHARACTER -> isAsc ? member.mainCharacter.asc() : member.mainCharacter.desc();
             default -> isAsc ? member.createdDate.asc() : member.createdDate.desc();
         };
     }

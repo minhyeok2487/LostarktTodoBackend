@@ -1,6 +1,8 @@
 package lostark.todo.domain.admin.dto;
 
 import lombok.Data;
+import lostark.todo.domain.admin.enums.CharacterSortBy;
+import org.springframework.data.domain.Sort;
 
 @Data
 public class AdminCharacterSearchRequest {
@@ -13,6 +15,6 @@ public class AdminCharacterSearchRequest {
     private Double maxItemLevel;
     private Boolean isDeleted;
 
-    private String sortBy = "characterId";  // 정렬 컬럼: characterId, memberId, serverName, characterName, characterClassName, itemLevel, createdDate
-    private String sortDirection = "DESC";  // ASC or DESC
+    private CharacterSortBy sortBy = CharacterSortBy.CHARACTER_ID;
+    private Sort.Direction sortDirection = Sort.Direction.DESC;
 }

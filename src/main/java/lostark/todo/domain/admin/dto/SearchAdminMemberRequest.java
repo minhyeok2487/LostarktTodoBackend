@@ -1,6 +1,8 @@
 package lostark.todo.domain.admin.dto;
 
 import lombok.Data;
+import lostark.todo.domain.admin.enums.MemberSortBy;
+import org.springframework.data.domain.Sort;
 
 @Data
 public class SearchAdminMemberRequest {
@@ -11,7 +13,7 @@ public class SearchAdminMemberRequest {
 
     private String mainCharacter;
 
-    private String sortBy = "createdDate";  // 정렬 컬럼: memberId, username, createdDate, authProvider, mainCharacter
+    private MemberSortBy sortBy = MemberSortBy.CREATED_DATE;
 
-    private String sortDirection = "DESC";  // ASC or DESC
+    private Sort.Direction sortDirection = Sort.Direction.DESC;
 }

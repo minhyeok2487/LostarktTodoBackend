@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class AdminCharacterResponse {
 
     private long characterId;
-    private long memberId;
+    private Long memberId;  // null이면 회원 정보 없음
     private String memberUsername;
     private String serverName;
     private String characterName;
@@ -27,7 +27,7 @@ public class AdminCharacterResponse {
     public static AdminCharacterResponse from(Character character) {
         return AdminCharacterResponse.builder()
                 .characterId(character.getId())
-                .memberId(character.getMember() != null ? character.getMember().getId() : 0)
+                .memberId(character.getMember() != null ? character.getMember().getId() : null)
                 .memberUsername(character.getMember() != null ? character.getMember().getUsername() : null)
                 .serverName(character.getServerName())
                 .characterName(character.getCharacterName())

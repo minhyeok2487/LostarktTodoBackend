@@ -7,6 +7,8 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lostark.todo.domain.admin.enums.CharacterSortBy;
+import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.admin.dto.AdminCharacterResponse;
 import lostark.todo.domain.admin.dto.AdminCharacterSearchRequest;
@@ -277,18 +279,18 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
         return isDeleted != null ? character.isDeleted.eq(isDeleted) : null;
     }
 
-    private OrderSpecifier<?> getCharacterOrderSpecifier(String sortBy, String sortDirection) {
-        boolean isAsc = "ASC".equalsIgnoreCase(sortDirection);
+    private OrderSpecifier<?> getCharacterOrderSpecifier(CharacterSortBy sortBy, Sort.Direction sortDirection) {
+        boolean isAsc = sortDirection == Sort.Direction.ASC;
 
         return switch (sortBy) {
-            case "memberId" -> isAsc
+            case MEMBER_ID -> isAsc
                     ? character.member.id.asc().nullsLast()
                     : character.member.id.desc().nullsLast();
-            case "serverName" -> isAsc ? character.serverName.asc() : character.serverName.desc();
-            case "characterName" -> isAsc ? character.characterName.asc() : character.characterName.desc();
-            case "characterClassName" -> isAsc ? character.characterClassName.asc() : character.characterClassName.desc();
-            case "itemLevel" -> isAsc ? character.itemLevel.asc() : character.itemLevel.desc();
-            case "createdDate" -> isAsc ? character.createdDate.asc() : character.createdDate.desc();
+            case SERVER_NAME -> isAsc ? character.serverName.asc() : character.serverName.desc();
+            case CHARACTER_NAME -> isAsc ? character.characterName.asc() : character.characterName.desc();
+            case CHARACTER_CLASS_NAME -> isAsc ? character.characterClassName.asc() : character.characterClassName.desc();
+            case ITEM_LEVEL -> isAsc ? character.itemLevel.asc() : character.itemLevel.desc();
+            case CREATED_DATE -> isAsc ? character.createdDate.asc() : character.createdDate.desc();
             default -> isAsc ? character.id.asc() : character.id.desc();
         };
     }
