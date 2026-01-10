@@ -325,4 +325,17 @@ class AdminApiTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
+
+    // =============== Dashboard API Tests ===============
+
+    @Test
+    @DisplayName("대시보드 통계 요약 조회")
+    @MeasurePerformance(maxQueries = 10)
+    void getSummary() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/stats/summary")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
 }

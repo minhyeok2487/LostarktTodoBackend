@@ -3,6 +3,7 @@ package lostark.todo.domain.admin.api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
 import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.member.service.MemberService;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-public class AdminMainController {
+public class AdminDashboardApi {
 
     private final MemberService memberService;
     private final CharacterService characterService;
@@ -41,5 +42,12 @@ public class AdminMainController {
     @GetMapping("/dash-board/characters")
     public ResponseEntity<?> searchCharactersDashBoard(@RequestParam(required = false, defaultValue = "14") int limit) {
         return new ResponseEntity<>(characterService.searchCharactersDashBoard(limit), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "대시보드 통계 요약",
+            response = DashboardSummaryResponse.class)
+    @GetMapping("/api/v1/stats/summary")
+    public ResponseEntity<?> getSummary() {
+        return new ResponseEntity<>(memberService.getDashboardSummary(), HttpStatus.OK);
     }
 }

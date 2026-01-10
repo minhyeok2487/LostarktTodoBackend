@@ -3,6 +3,8 @@ package lostark.todo.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
+import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.member.dto.SaveCharacterRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberResponse;
@@ -38,6 +40,7 @@ public class MemberService {
 
     private final MemberLockManager memberLockManager;
     private final MemberRepository memberRepository;
+    private final CharacterRepository characterRepository;
     private final AuthMailRepository authMailRepository;
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
@@ -179,5 +182,25 @@ public class MemberService {
     public void deleteByAdmin(Long memberId) {
         Member member = get(memberId);
         memberRepository.delete(member);
+    }
+
+    // 대시보드 통계 요약
+    @Transactional(readOnly = true)
+    public DashboardSummaryResponse getDashboardSummary() {
+        long totalMembers = memberRepository.count();
+        long totalCharacters = characterRepository.count();
+
+        List<DashboardResponse> memberStats = searchMemberDashBoard(1);
+        List<DashboardResponse> characterStats = characterRepository.searchCharactersDashBoard(1);
+
+        long todayNewMembers = memberStats.isEmpty() ? 0 : memberStats.get(0).getCount();
+        long todayNewCharacters = characterStats.isEmpty() ? 0 : characterStats.get(0).getCount();
+
+        return DashboardSummaryResponse.builder()
+                .totalMembers(totalMembers)
+                .totalCharacters(totalCharacters)
+                .todayNewMembers(todayNewMembers)
+                .todayNewCharacters(todayNewCharacters)
+                .build();
     }
 }
