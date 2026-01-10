@@ -444,7 +444,7 @@ public class CharacterService {
     }
 
     @Transactional
-    public void updateByAdmin(Long characterId, AdminCharacterUpdateRequest request) {
+    public Character updateByAdmin(Long characterId, AdminCharacterUpdateRequest request) {
         Character character = getByIdForAdmin(characterId);
         character.updateByAdmin(
                 request.getCharacterName(),
@@ -454,12 +454,17 @@ public class CharacterService {
                 request.getGoldCharacter(),
                 request.getIsDeleted()
         );
+        return character;
     }
 
     @Transactional
-    public void deleteByAdmin(Long characterId) {
+    public void deleteByAdmin(Long characterId, boolean hardDelete) {
         Character character = getByIdForAdmin(characterId);
-        todoV2Repository.deleteByCharacter(character);
-        characterRepository.delete(character);
+        if (hardDelete) {
+            todoV2Repository.deleteByCharacter(character);
+            characterRepository.delete(character);
+        } else {
+            character.updateCharacterStatus();
+        }
     }
 }

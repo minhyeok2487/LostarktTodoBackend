@@ -44,15 +44,15 @@ public class AdminCharacterApi {
     @PutMapping("/{characterId}")
     public ResponseEntity<?> update(@PathVariable Long characterId,
                                     @RequestBody AdminCharacterUpdateRequest request) {
-        characterService.updateByAdmin(characterId, request);
-        Character character = characterService.getByIdForAdmin(characterId);
-        return new ResponseEntity<>(AdminCharacterResponse.from(character), HttpStatus.OK);
+        Character updatedCharacter = characterService.updateByAdmin(characterId, request);
+        return new ResponseEntity<>(AdminCharacterResponse.from(updatedCharacter), HttpStatus.OK);
     }
 
     @ApiOperation(value = "어드민 캐릭터 삭제 API")
     @DeleteMapping("/{characterId}")
-    public ResponseEntity<?> delete(@PathVariable Long characterId) {
-        characterService.deleteByAdmin(characterId);
+    public ResponseEntity<?> delete(@PathVariable Long characterId,
+                                    @RequestParam(defaultValue = "false") boolean hardDelete) {
+        characterService.deleteByAdmin(characterId, hardDelete);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
