@@ -1,6 +1,7 @@
 package lostark.todo.domain.character.repository;
 
 import com.querydsl.core.types.ConstantImpl;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -223,7 +224,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                         loeItemLevel(request.getMaxItemLevel()),
                         eqIsDeleted(request.getIsDeleted())
                 )
-                .orderBy(character.id.desc())
+                .orderBy(getCharacterOrderSpecifier(request.getSortBy(), request.getSortDirection()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -274,5 +275,19 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     private BooleanExpression eqIsDeleted(Boolean isDeleted) {
         return isDeleted != null ? character.isDeleted.eq(isDeleted) : null;
+    }
+
+    private OrderSpecifier<?> getCharacterOrderSpecifier(String sortBy, String sortDirection) {
+        boolean isAsc = "ASC".equalsIgnoreCase(sortDirection);
+
+        return switch (sortBy) {
+            case "memberId" -> isAsc ? character.member.id.asc() : character.member.id.desc();
+            case "serverName" -> isAsc ? character.serverName.asc() : character.serverName.desc();
+            case "characterName" -> isAsc ? character.characterName.asc() : character.characterName.desc();
+            case "characterClassName" -> isAsc ? character.characterClassName.asc() : character.characterClassName.desc();
+            case "itemLevel" -> isAsc ? character.itemLevel.asc() : character.itemLevel.desc();
+            case "createdDate" -> isAsc ? character.createdDate.asc() : character.createdDate.desc();
+            default -> isAsc ? character.id.asc() : character.id.desc();
+        };
     }
 }
