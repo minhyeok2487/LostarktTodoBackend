@@ -131,12 +131,13 @@ public class ContentService {
         if (contentType == null || contentType.isEmpty()) {
             return contentRepository.findAll();
         }
-        return switch (contentType) {
-            case "day" -> new ArrayList<>(contentRepository.findAllByDayContent());
-            case "week" -> new ArrayList<>(contentRepository.findAllWeekContent(0));
-            case "cube" -> new ArrayList<>(contentRepository.findAllByCubeContent());
+        Class<? extends Content> type = switch (contentType) {
+            case "day" -> DayContent.class;
+            case "week" -> WeekContent.class;
+            case "cube" -> CubeContent.class;
             default -> throw new ConditionNotMetException("Invalid content type: " + contentType);
         };
+        return contentRepository.findAllByType(type);
     }
 
     @Transactional(readOnly = true)
