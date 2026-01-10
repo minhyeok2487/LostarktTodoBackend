@@ -48,4 +48,11 @@ public class AdminMemberApi {
         Member member = memberService.updateByAdmin(memberId, request);
         return new ResponseEntity<>(AdminMemberDetailResponse.from(member), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "어드민 회원 삭제 API")
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<?> delete(@PathVariable Long memberId) {
+        memberService.deleteByAdmin(memberId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

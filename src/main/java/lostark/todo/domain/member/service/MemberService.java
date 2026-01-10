@@ -173,4 +173,11 @@ public class MemberService {
         member.updateByAdmin(request.getRole(), request.getMainCharacter(), request.getAdsDate());
         return member;
     }
+
+    // Admin 회원 삭제
+    @Transactional
+    public void deleteByAdmin(Long memberId) {
+        Member member = get(memberId);
+        memberRepository.delete(member);
+    }
 }

@@ -128,6 +128,17 @@ class AdminApiTest {
     }
 
     @Test
+    @DisplayName("어드민 회원 삭제")
+    @MeasurePerformance(maxQueries = 100)
+    void deleteMember() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(delete("/admin/api/v1/members/" + testMember.getId())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("후원 목록 조회")
     @MeasurePerformance(maxQueries = 10)
     void searchAds() throws Exception {
