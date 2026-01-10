@@ -364,4 +364,32 @@ class AdminApiTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
+
+    // =============== Notification Admin API Tests ===============
+
+    @Test
+    @DisplayName("어드민 알림 목록 조회")
+    @MeasurePerformance(maxQueries = 30)
+    void getNotificationList() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/notifications")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 전체 공지 발송")
+    void broadcast() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("content", "테스트 공지사항입니다.");
+
+        mockMvc.perform(post("/admin/api/v1/notifications/broadcast")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
 }

@@ -2,13 +2,19 @@ package lostark.todo.domain.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.admin.dto.AdminNotificationResponse;
 import lostark.todo.domain.notification.dto.NotificationStatusResponse;
 import lostark.todo.domain.board.community.entity.Community;
 import lostark.todo.domain.member.entity.Member;
+import lostark.todo.domain.member.repository.MemberRepository;
 import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.domain.notification.repository.NotificationRepository;
 import lostark.todo.domain.notification.enums.NotificationType;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +30,7 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public List<Notification> search(Member member, List<Community> boards) {
@@ -111,5 +118,42 @@ public class NotificationService {
 
     public void updateReadAll(Member member) {
         notificationRepository.updateReadAll(member);
+    }
+
+    // =============== Admin Methods ===============
+
+    @Transactional(readOnly = true)
+    public Page<AdminNotificationResponse> getNotificationsForAdmin(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findAll(
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "createdDate")));
+
+        return notifications.map(AdminNotificationResponse::from);
+    }
+
+    @Transactional
+    public int broadcast(String content) {
+        List<Member> allMembers = memberRepository.findAll();
+        int count = 0;
+
+        for (Member member : allMembers) {
+            Notification notification = Notification.builder()
+                    .content(content)
+                    .isRead(false)
+                    .notificationType(NotificationType.BOARD)
+                    .receiver(member)
+                    .build();
+            notificationRepository.save(notification);
+            count++;
+        }
+
+        return count;
+    }
+
+    @Transactional
+    public void deleteByAdmin(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ConditionNotMetException("알림이 존재하지 않습니다. ID: " + notificationId));
+        notificationRepository.delete(notification);
     }
 }
