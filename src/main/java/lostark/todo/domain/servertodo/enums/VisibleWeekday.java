@@ -12,14 +12,6 @@ public enum VisibleWeekday {
     SUNDAY;
 
     public static VisibleWeekday fromDayOfWeek(DayOfWeek dayOfWeek) {
-        return switch (dayOfWeek) {
-            case MONDAY -> MONDAY;
-            case TUESDAY -> TUESDAY;
-            case WEDNESDAY -> WEDNESDAY;
-            case THURSDAY -> THURSDAY;
-            case FRIDAY -> FRIDAY;
-            case SATURDAY -> SATURDAY;
-            case SUNDAY -> SUNDAY;
-        };
+        return VisibleWeekday.valueOf(dayOfWeek.name());
     }
 }

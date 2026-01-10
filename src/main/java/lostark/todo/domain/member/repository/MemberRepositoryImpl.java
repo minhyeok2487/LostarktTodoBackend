@@ -18,10 +18,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
@@ -166,7 +166,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                 FROM member
                 UNION ALL
                 SELECT 'NEW_CHARACTER' as type, '캐릭터 등록' as message,
-                       CONCAT(character_class_name, ' ', CAST(FLOOR(item_level) AS CHAR)) as detail, created_date
+                       CONCAT(character_class_name, ' ', FLOOR(item_level)) as detail, created_date
                 FROM characters WHERE is_deleted = false
             ) as activities
             ORDER BY created_date DESC
@@ -179,23 +179,15 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
 
-        List<RecentActivityResponse> activities = new ArrayList<>();
-        for (Object[] row : results) {
-            LocalDateTime createdDate;
-            if (row[3] instanceof Timestamp) {
-                createdDate = ((Timestamp) row[3]).toLocalDateTime();
-            } else {
-                createdDate = (LocalDateTime) row[3];
-            }
-
-            activities.add(RecentActivityResponse.builder()
-                    .type((String) row[0])
-                    .message((String) row[1])
-                    .detail((String) row[2])
-                    .createdDate(createdDate)
-                    .build());
-        }
-
-        return activities;
+        return results.stream()
+                .map(row -> RecentActivityResponse.builder()
+                        .type((String) row[0])
+                        .message((String) row[1])
+                        .detail((String) row[2])
+                        .createdDate(row[3] instanceof Timestamp
+                                ? ((Timestamp) row[3]).toLocalDateTime()
+                                : (LocalDateTime) row[3])
+                        .build())
+                .collect(Collectors.toList());
     }
 }
