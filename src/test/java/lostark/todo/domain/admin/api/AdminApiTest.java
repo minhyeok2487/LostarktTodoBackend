@@ -96,7 +96,18 @@ class AdminApiTest {
     void searchMembers() throws Exception {
         assumeTrue(isAdmin, "Admin 권한이 필요합니다");
 
-        mockMvc.perform(get("/admin/members")
+        mockMvc.perform(get("/admin/api/v1/members")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 회원 상세 조회")
+    @MeasurePerformance(maxQueries = 10)
+    void getMemberDetail() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/members/" + testMember.getId())
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
