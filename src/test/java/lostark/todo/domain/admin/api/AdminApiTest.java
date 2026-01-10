@@ -351,4 +351,17 @@ class AdminApiTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
+
+    // =============== Friends Admin API Tests ===============
+
+    @Test
+    @DisplayName("어드민 깐부 목록 조회")
+    @MeasurePerformance(maxQueries = 30)
+    void getFriendList() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/friends")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
 }
