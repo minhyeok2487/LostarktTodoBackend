@@ -22,8 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -109,6 +108,22 @@ class AdminApiTest {
 
         mockMvc.perform(get("/admin/api/v1/members/" + testMember.getId())
                         .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 회원 정보 수정")
+    @MeasurePerformance(maxQueries = 10)
+    void updateMember() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("role", "USER");
+
+        mockMvc.perform(put("/admin/api/v1/members/" + testMember.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
 

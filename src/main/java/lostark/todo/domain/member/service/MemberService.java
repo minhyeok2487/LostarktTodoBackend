@@ -158,4 +158,19 @@ public class MemberService {
         List<Ads> search = adsRepository.search(request.getProposerEmail());
         search.forEach(Ads::updateCheck);
     }
+
+    // Admin 회원 정보 수정
+    @Transactional
+    public Member updateByAdmin(Long memberId, lostark.todo.domain.admin.dto.AdminMemberUpdateRequest request) {
+        Member member = get(memberId);
+        if (request.getMainCharacter() != null) {
+            boolean exists = member.getCharacters().stream()
+                    .anyMatch(c -> c.getCharacterName().equals(request.getMainCharacter()));
+            if (!exists) {
+                throw new ConditionNotMetException(MEMBER_CHARACTER_NOT_FOUND);
+            }
+        }
+        member.updateByAdmin(request.getRole(), request.getMainCharacter(), request.getAdsDate());
+        return member;
+    }
 }

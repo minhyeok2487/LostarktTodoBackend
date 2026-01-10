@@ -3,6 +3,7 @@ package lostark.todo.domain.admin.api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.admin.dto.AdminMemberDetailResponse;
+import lostark.todo.domain.admin.dto.AdminMemberUpdateRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberResponse;
 import lostark.todo.domain.member.entity.Member;
@@ -36,6 +37,15 @@ public class AdminMemberApi {
     @GetMapping("/{memberId}")
     public ResponseEntity<?> getDetail(@PathVariable Long memberId) {
         Member member = memberService.get(memberId);
+        return new ResponseEntity<>(AdminMemberDetailResponse.from(member), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "어드민 회원 정보 수정 API",
+            response = AdminMemberDetailResponse.class)
+    @PutMapping("/{memberId}")
+    public ResponseEntity<?> update(@PathVariable Long memberId,
+                                    @RequestBody AdminMemberUpdateRequest request) {
+        Member member = memberService.updateByAdmin(memberId, request);
         return new ResponseEntity<>(AdminMemberDetailResponse.from(member), HttpStatus.OK);
     }
 }
