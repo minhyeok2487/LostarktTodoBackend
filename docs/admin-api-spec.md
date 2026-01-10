@@ -753,6 +753,46 @@ GET /admin/api/v1/dashboard/summary
 
 ---
 
+### 4.4 최근 활동 조회
+
+```
+GET /admin/api/v1/dashboard/recent-activities
+```
+
+**Request Parameters**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| limit | int | 10 | 조회할 항목 수 |
+
+**Response**
+
+```json
+[
+  {
+    "type": "NEW_MEMBER",
+    "message": "새 회원 가입",
+    "detail": "user1234",
+    "createdDate": "2024-01-15T10:30:00"
+  },
+  {
+    "type": "NEW_CHARACTER",
+    "message": "캐릭터 등록",
+    "detail": "광전사 1620",
+    "createdDate": "2024-01-15T10:18:00"
+  }
+]
+```
+
+**활동 유형**
+
+| Type | Message | Detail |
+|------|---------|--------|
+| NEW_MEMBER | 새 회원 가입 | 회원 username |
+| NEW_CHARACTER | 캐릭터 등록 | 클래스명 아이템레벨 |
+
+---
+
 ## 5. Comments (댓글) API
 
 ### 5.1 댓글 목록 조회

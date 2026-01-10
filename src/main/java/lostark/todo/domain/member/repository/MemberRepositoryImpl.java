@@ -16,7 +16,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -153,5 +155,47 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                 .todayNewMembers(((Number) result[3]).longValue())
                 .todayNewCharacters(((Number) result[4]).longValue())
                 .build();
+    }
+
+    @Override
+    public List<RecentActivityResponse> getRecentActivities(int limit) {
+        String sql = """
+            SELECT type, message, detail, created_date FROM (
+                SELECT 'NEW_MEMBER' as type, '새 회원 가입' as message,
+                       username as detail, created_date
+                FROM member
+                UNION ALL
+                SELECT 'NEW_CHARACTER' as type, '캐릭터 등록' as message,
+                       CONCAT(character_class_name, ' ', CAST(FLOOR(item_level) AS CHAR)) as detail, created_date
+                FROM characters WHERE is_deleted = false
+            ) as activities
+            ORDER BY created_date DESC
+            LIMIT ?
+            """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, limit);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+
+        List<RecentActivityResponse> activities = new ArrayList<>();
+        for (Object[] row : results) {
+            LocalDateTime createdDate;
+            if (row[3] instanceof Timestamp) {
+                createdDate = ((Timestamp) row[3]).toLocalDateTime();
+            } else {
+                createdDate = (LocalDateTime) row[3];
+            }
+
+            activities.add(RecentActivityResponse.builder()
+                    .type((String) row[0])
+                    .message((String) row[1])
+                    .detail((String) row[2])
+                    .createdDate(createdDate)
+                    .build());
+        }
+
+        return activities;
     }
 }
