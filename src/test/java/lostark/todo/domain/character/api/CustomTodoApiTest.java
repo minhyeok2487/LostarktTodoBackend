@@ -1,15 +1,14 @@
-package lostark.todo.domain.schedule.api;
+package lostark.todo.domain.character.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lostark.todo.config.DataSourceProxyConfig;
 import lostark.todo.config.MeasurePerformance;
 import lostark.todo.domain.character.entity.Character;
+import lostark.todo.domain.character.entity.CustomTodo;
+import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
+import lostark.todo.domain.character.repository.CustomTodoRepository;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
-import lostark.todo.domain.schedule.entity.Schedule;
-import lostark.todo.domain.schedule.enums.ScheduleCategory;
-import lostark.todo.domain.schedule.enums.ScheduleRaidCategory;
-import lostark.todo.domain.schedule.repository.ScheduleRepository;
 import lostark.todo.global.config.TokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,9 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -38,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Import(DataSourceProxyConfig.class)
-class ScheduleApiTest {
+class CustomTodoApiTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,7 +49,7 @@ class ScheduleApiTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private CustomTodoRepository customTodoRepository;
 
     private static final String TEST_USERNAME = "repeat2487@gmail.com";
 
@@ -71,39 +67,24 @@ class ScheduleApiTest {
     }
 
     @Test
-    @DisplayName("월별 일정 조회 - N+1 문제 해결 검증")
-    @MeasurePerformance(maxQueries = 3)
-    void search_noNPlusOne() throws Exception {
-        mockMvc.perform(get("/api/v1/schedule")
-                        .header("Authorization", "Bearer " + token)
-                        .param("year", "2026")
-                        .param("month", "1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("레이드 카테고리 조회")
-    @MeasurePerformance(maxQueries = 5)
-    void getScheduleRaidCategory() throws Exception {
-        mockMvc.perform(get("/api/v1/schedule/raid/category")
+    @DisplayName("커스텀 숙제 조회")
+    @MeasurePerformance(maxQueries = 10)
+    void search() throws Exception {
+        mockMvc.perform(get("/api/v1/custom")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("일정 생성")
+    @DisplayName("커스텀 숙제 추가")
     @MeasurePerformance(maxQueries = 15)
     void create() throws Exception {
         Map<String, Object> request = new HashMap<>();
-        request.put("scheduleCategory", "ALONE");
-        request.put("scheduleRaidCategory", "RAID");
-        request.put("raidName", "발탄");
-        request.put("dayOfWeek", "MONDAY");
-        request.put("time", "19:00");
-        request.put("repeatWeek", false);
-        request.put("leaderCharacterId", testCharacter.getId());
+        request.put("characterId", testCharacter.getId());
+        request.put("contentName", "테스트 숙제");
+        request.put("frequency", CustomTodoFrequencyEnum.DAILY.name());
 
-        mockMvc.perform(post("/api/v1/schedule")
+        mockMvc.perform(post("/api/v1/custom")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -111,29 +92,16 @@ class ScheduleApiTest {
     }
 
     @Test
-    @DisplayName("일정 자세히 보기")
-    @MeasurePerformance(maxQueries = 10)
-    void getSchedule() throws Exception {
-        Schedule schedule = createTestSchedule();
-
-        mockMvc.perform(get("/api/v1/schedule/{scheduleId}", schedule.getId())
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("일정 수정")
+    @DisplayName("커스텀 숙제 수정")
     @MeasurePerformance(maxQueries = 15)
-    void edit() throws Exception {
-        Schedule schedule = createTestSchedule();
+    void update() throws Exception {
+        CustomTodo customTodo = createTestCustomTodo();
 
         Map<String, Object> request = new HashMap<>();
-        request.put("dayOfWeek", "TUESDAY");
-        request.put("time", "20:00");
-        request.put("memo", "메모 수정");
-        request.put("autoCheck", true);
+        request.put("characterId", testCharacter.getId());
+        request.put("contentName", "수정된 숙제");
 
-        mockMvc.perform(patch("/api/v1/schedule/{scheduleId}", schedule.getId())
+        mockMvc.perform(patch("/api/v1/custom/{customTodoId}", customTodo.getId())
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -141,28 +109,39 @@ class ScheduleApiTest {
     }
 
     @Test
-    @DisplayName("일정 삭제")
-    @MeasurePerformance(maxQueries = 10)
-    void remove() throws Exception {
-        Schedule schedule = createTestSchedule();
+    @DisplayName("커스텀 숙제 체크")
+    @MeasurePerformance(maxQueries = 15)
+    void check() throws Exception {
+        CustomTodo customTodo = createTestCustomTodo();
 
-        mockMvc.perform(delete("/api/v1/schedule/{scheduleId}", schedule.getId())
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("customTodoId", customTodo.getId());
+
+        mockMvc.perform(post("/api/v1/custom/check")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("커스텀 숙제 삭제")
+    @MeasurePerformance(maxQueries = 15)
+    void remove() throws Exception {
+        CustomTodo customTodo = createTestCustomTodo();
+
+        mockMvc.perform(delete("/api/v1/custom/{customTodoId}", customTodo.getId())
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
-    private Schedule createTestSchedule() {
-        return scheduleRepository.save(Schedule.builder()
-                .characterId(testCharacter.getId())
-                .scheduleRaidCategory(ScheduleRaidCategory.RAID)
-                .scheduleCategory(ScheduleCategory.ALONE)
-                .raidName("테스트 레이드")
-                .dayOfWeek(DayOfWeek.MONDAY)
-                .time(LocalTime.of(19, 0))
-                .repeatWeek(true)
-                .leader(true)
-                .leaderScheduleId(0L)
-                .autoCheck(true)
+    private CustomTodo createTestCustomTodo() {
+        return customTodoRepository.save(CustomTodo.builder()
+                .character(testCharacter)
+                .contentName("테스트 커스텀 숙제")
+                .frequency(CustomTodoFrequencyEnum.DAILY)
+                .isChecked(false)
                 .build());
     }
 }
