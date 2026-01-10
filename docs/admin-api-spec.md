@@ -685,7 +685,26 @@ DELETE /admin/api/v1/contents/{contentId}
 
 ## 4. Dashboard (대시보드) API
 
-### 4.1 일일 가입자 수 통계
+### 4.1 어드민 회원 정보
+
+```
+GET /admin/api/v1/dashboard/member
+```
+
+**Response**
+
+```json
+{
+  "memberId": 1,
+  "username": "admin@email.com",
+  "role": "ADMIN",
+  "mainCharacter": "캐릭터명"
+}
+```
+
+---
+
+### 4.2 일일 가입자 수 통계
 
 ```
 GET /admin/api/v1/dashboard/daily-members
@@ -693,9 +712,9 @@ GET /admin/api/v1/dashboard/daily-members
 
 **Request Parameters**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| limit | int | 14 | 조회 일수 |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| limit | int | No | 14 | 조회 일수 |
 
 **Response**
 
@@ -709,7 +728,7 @@ GET /admin/api/v1/dashboard/daily-members
 
 ---
 
-### 4.2 일일 가입 캐릭터 수 통계
+### 4.3 일일 가입 캐릭터 수 통계
 
 ```
 GET /admin/api/v1/dashboard/daily-characters
@@ -717,9 +736,9 @@ GET /admin/api/v1/dashboard/daily-characters
 
 **Request Parameters**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| limit | int | 14 | 조회 일수 |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| limit | int | No | 14 | 조회 일수 |
 
 **Response**
 
@@ -733,7 +752,7 @@ GET /admin/api/v1/dashboard/daily-characters
 
 ---
 
-### 4.3 전체 통계 요약
+### 4.4 전체 통계 요약
 
 ```
 GET /admin/api/v1/dashboard/summary
@@ -753,7 +772,7 @@ GET /admin/api/v1/dashboard/summary
 
 ---
 
-### 4.4 최근 활동 조회
+### 4.5 최근 활동 조회
 
 ```
 GET /admin/api/v1/dashboard/recent-activities
@@ -986,6 +1005,68 @@ DELETE /admin/api/v1/notifications/{notificationId}
 | notificationId | Long | 알림 ID |
 
 **Response**: `200 OK`
+
+---
+
+## 8. Ads (후원) API
+
+### 8.1 후원 목록 조회
+
+```
+GET /admin/api/v1/ads
+```
+
+**Request Parameters**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| adsId | Long | No | - | 커서 기반 페이징용 ID |
+| limit | int | No | 20 | 페이지당 항목 수 |
+
+**Response**
+
+```json
+{
+  "content": [
+    {
+      "adsId": 1,
+      "createdDate": "2024-01-15T10:30:00",
+      "name": "후원자명",
+      "proposerEmail": "sponsor@email.com",
+      "memberId": 123,
+      "checked": false
+    }
+  ],
+  "hasNext": true
+}
+```
+
+---
+
+### 8.2 광고 제거 날짜 변경
+
+```
+POST /admin/api/v1/ads/date
+```
+
+**Request Body**
+
+```json
+{
+  "proposerEmail": "user@email.com",
+  "price": 5000
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| proposerEmail | String | Yes | 대상 회원 이메일 |
+| price | Long | Yes | 후원 금액 (광고 제거 기간 계산용) |
+
+**Response**: `200 OK`
+
+**비즈니스 로직**
+- price 기반으로 광고 제거 기간 계산하여 회원의 adsDate 업데이트
 
 ---
 
