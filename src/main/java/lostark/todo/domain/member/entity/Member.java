@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "member", indexes = {
         @Index(name = "idx_username", columnList = "username", unique = true),
-        @Index(name = "idx_member_created_date", columnList = "created_date")
+        @Index(name = "idx_member_created_date", columnList = "createdDate")
 })
 public class Member extends BaseTimeEntity {
 

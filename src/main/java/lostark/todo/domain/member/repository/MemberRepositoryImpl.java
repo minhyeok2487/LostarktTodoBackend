@@ -1,6 +1,7 @@
 package lostark.todo.domain.member.repository;
 
 import com.querydsl.core.types.ConstantImpl;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
@@ -89,6 +90,7 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                         eqAuthProvider(request.getAuthProvider()),
                         eqMainCharacter(request.getMainCharacter())
                 )
+                .orderBy(getOrderSpecifier(request.getSortBy(), request.getSortDirection()))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
                 .fetch();
@@ -100,6 +102,18 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
         ).fetchCount();
 
         return new PageImpl<>(fetch, pageRequest, total);
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sortBy, String sortDirection) {
+        boolean isAsc = "ASC".equalsIgnoreCase(sortDirection);
+
+        return switch (sortBy) {
+            case "memberId" -> isAsc ? member.id.asc() : member.id.desc();
+            case "username" -> isAsc ? member.username.asc() : member.username.desc();
+            case "authProvider" -> isAsc ? member.authProvider.asc() : member.authProvider.desc();
+            case "mainCharacter" -> isAsc ? member.mainCharacter.asc() : member.mainCharacter.desc();
+            default -> isAsc ? member.createdDate.asc() : member.createdDate.desc();
+        };
     }
 
     private BooleanExpression containsUsername(String username) {
