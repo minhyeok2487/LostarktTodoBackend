@@ -27,8 +27,8 @@ public class AdminCharacterResponse {
     public static AdminCharacterResponse from(Character character) {
         return AdminCharacterResponse.builder()
                 .characterId(character.getId())
-                .memberId(character.getMember().getId())
-                .memberUsername(character.getMember().getUsername())
+                .memberId(character.getMember() != null ? character.getMember().getId() : 0)
+                .memberUsername(character.getMember() != null ? character.getMember().getUsername() : null)
                 .serverName(character.getServerName())
                 .characterName(character.getCharacterName())
                 .characterLevel(character.getCharacterLevel())

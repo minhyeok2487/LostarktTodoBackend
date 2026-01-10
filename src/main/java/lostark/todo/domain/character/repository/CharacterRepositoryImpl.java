@@ -281,7 +281,9 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
         boolean isAsc = "ASC".equalsIgnoreCase(sortDirection);
 
         return switch (sortBy) {
-            case "memberId" -> isAsc ? character.member.id.asc() : character.member.id.desc();
+            case "memberId" -> isAsc
+                    ? character.member.id.asc().nullsLast()
+                    : character.member.id.desc().nullsLast();
             case "serverName" -> isAsc ? character.serverName.asc() : character.serverName.desc();
             case "characterName" -> isAsc ? character.characterName.asc() : character.characterName.desc();
             case "characterClassName" -> isAsc ? character.characterClassName.asc() : character.characterClassName.desc();
