@@ -29,7 +29,10 @@ public class AdminNotificationApi {
     @PostMapping("/broadcast")
     public ResponseEntity<?> broadcast(@RequestBody BroadcastNotificationRequest request) {
         int count = notificationService.broadcast(request.getContent());
-        return new ResponseEntity<>("알림 발송 완료: " + count + "명", HttpStatus.OK);
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("message", "전체 공지가 발송되었습니다.");
+        response.put("sentCount", count);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @ApiOperation(value = "어드민 알림 삭제")

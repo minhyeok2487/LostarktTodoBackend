@@ -134,20 +134,17 @@ public class NotificationService {
     @Transactional
     public int broadcast(String content) {
         List<Member> allMembers = memberRepository.findAll();
-        int count = 0;
+        List<Notification> notifications = allMembers.stream()
+                .map(member -> Notification.builder()
+                        .content(content)
+                        .isRead(false)
+                        .notificationType(NotificationType.BOARD)
+                        .receiver(member)
+                        .build())
+                .toList();
 
-        for (Member member : allMembers) {
-            Notification notification = Notification.builder()
-                    .content(content)
-                    .isRead(false)
-                    .notificationType(NotificationType.BOARD)
-                    .receiver(member)
-                    .build();
-            notificationRepository.save(notification);
-            count++;
-        }
-
-        return count;
+        notificationRepository.saveAll(notifications);
+        return notifications.size();
     }
 
     @Transactional
