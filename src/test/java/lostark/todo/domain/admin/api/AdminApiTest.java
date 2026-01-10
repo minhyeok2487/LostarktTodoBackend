@@ -338,4 +338,17 @@ class AdminApiTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
+
+    // =============== Comments Admin API Tests ===============
+
+    @Test
+    @DisplayName("어드민 댓글 목록 조회")
+    @MeasurePerformance(maxQueries = 30)
+    void getCommentList() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/comments")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
 }
