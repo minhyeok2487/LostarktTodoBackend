@@ -1,10 +1,14 @@
 package lostark.todo.domain.character.repository;
 
+import lostark.todo.domain.admin.dto.AdminCharacterResponse;
+import lostark.todo.domain.admin.dto.AdminCharacterSearchRequest;
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.character.dto.DeletedCharacterResponse;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,4 +36,6 @@ public interface CharacterCustomRepository  {
     List<Character> getCharacter(String characterName);
 
     List<DeletedCharacterResponse> getDeletedCharacter(String username);
+
+    Page<AdminCharacterResponse> searchAdminCharacter(AdminCharacterSearchRequest request, Pageable pageable);
 }

@@ -3,6 +3,7 @@ package lostark.todo.domain.admin.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lostark.todo.config.DataSourceProxyConfig;
 import lostark.todo.config.MeasurePerformance;
+import lostark.todo.domain.character.entity.Character;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.enums.Role;
 import lostark.todo.domain.member.service.MemberService;
@@ -188,6 +189,78 @@ class AdminApiTest {
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    // =============== Character Admin API Tests ===============
+
+    @Test
+    @DisplayName("어드민 캐릭터 목록 조회")
+    @MeasurePerformance(maxQueries = 15)
+    void searchCharacters() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/characters")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 캐릭터 목록 조회 - 검색조건")
+    @MeasurePerformance(maxQueries = 15)
+    void searchCharactersWithFilter() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/characters")
+                        .header("Authorization", "Bearer " + token)
+                        .param("memberId", String.valueOf(testMember.getId()))
+                        .param("minItemLevel", "1600"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 캐릭터 상세 조회")
+    @MeasurePerformance(maxQueries = 10)
+    void getCharacterDetail() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+        assumeTrue(!testMember.getCharacters().isEmpty(), "테스트 캐릭터가 필요합니다");
+
+        Character character = testMember.getCharacters().get(0);
+        mockMvc.perform(get("/admin/api/v1/characters/" + character.getId())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 캐릭터 정보 수정")
+    @MeasurePerformance(maxQueries = 15)
+    void updateCharacter() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+        assumeTrue(!testMember.getCharacters().isEmpty(), "테스트 캐릭터가 필요합니다");
+
+        Character character = testMember.getCharacters().get(0);
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("memo", "테스트 메모");
+        request.put("sortNumber", 1);
+
+        mockMvc.perform(put("/admin/api/v1/characters/" + character.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 캐릭터 삭제")
+    @MeasurePerformance(maxQueries = 100)
+    void deleteCharacter() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+        assumeTrue(!testMember.getCharacters().isEmpty(), "테스트 캐릭터가 필요합니다");
+
+        Character character = testMember.getCharacters().get(0);
+        mockMvc.perform(delete("/admin/api/v1/characters/" + character.getId())
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 }
