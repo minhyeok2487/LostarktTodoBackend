@@ -2,10 +2,12 @@ package lostark.todo.domain.board.comments.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.admin.dto.AdminCommentResponse;
 import lostark.todo.domain.board.comments.dto.CommentListDto;
 import lostark.todo.domain.board.comments.dto.CommentResponseDto;
 import lostark.todo.domain.board.comments.entity.Comments;
 import lostark.todo.domain.board.comments.repository.CommentsRepository;
+import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +40,28 @@ public class CommentsService {
         }
 
         return new CommentListDto(commentResponseDtoList, totalPages);
+    }
+
+    // =============== Admin Methods ===============
+
+    @Transactional(readOnly = true)
+    public Page<AdminCommentResponse> getCommentsForAdmin(Pageable pageable) {
+        Page<Comments> comments = commentsRepository.findAll(
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "createdDate")));
+
+        return comments.map(AdminCommentResponse::from);
+    }
+
+    @Transactional
+    public void deleteByAdmin(Long commentId) {
+        Comments comment = commentsRepository.findById(commentId)
+                .orElseThrow(() -> new ConditionNotMetException("댓글이 존재하지 않습니다. ID: " + commentId));
+
+        // 답글도 함께 삭제
+        List<Comments> replies = commentsRepository.findAllByParentId(commentId);
+        commentsRepository.deleteAll(replies);
+
+        commentsRepository.delete(comment);
     }
 }

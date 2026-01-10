@@ -160,4 +160,26 @@ public class Character extends BaseTimeEntity {
         }
         this.characterName = newCharacterName;
     }
+
+    public void updateByAdmin(String characterName, Double itemLevel, Integer sortNumber,
+                              String memo, Boolean goldCharacter, Boolean isDeleted) {
+        if (characterName != null) {
+            this.characterName = characterName;
+        }
+        if (itemLevel != null) {
+            this.itemLevel = itemLevel;
+        }
+        if (sortNumber != null) {
+            this.sortNumber = sortNumber;
+        }
+        if (memo != null) {
+            this.memo = memo.isEmpty() ? null : memo;
+        }
+        if (goldCharacter != null) {
+            this.goldCharacter = goldCharacter;
+        }
+        if (isDeleted != null) {
+            this.isDeleted = isDeleted;
+        }
+    }
 }

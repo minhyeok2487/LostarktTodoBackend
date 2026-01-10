@@ -2,8 +2,13 @@ package lostark.todo.domain.friend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lostark.todo.domain.admin.dto.AdminFriendResponse;
 import lostark.todo.domain.friend.dto.UpdateFriendSettingRequest;
 import lostark.todo.domain.character.repository.CharacterRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import lostark.todo.domain.friend.enums.FriendshipPair;
 import lostark.todo.domain.friend.dto.FriendFindCharacterResponse;
 import lostark.todo.domain.character.dto.CharacterResponse;
@@ -170,5 +175,26 @@ public class FriendsService {
         } else {
             throw new RuntimeException();
         }
+    }
+
+    // =============== Admin Methods ===============
+
+    @Transactional(readOnly = true)
+    public Page<AdminFriendResponse> getFriendsForAdmin(Pageable pageable) {
+        Page<Friends> friends = friendsRepository.findAll(
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "createdDate")));
+
+        return friends.map(AdminFriendResponse::from);
+    }
+
+    @Transactional
+    public void deleteByAdmin(Long friendId) {
+        Friends friend = friendsRepository.findById(friendId)
+                .orElseThrow(() -> new ConditionNotMetException("깐부 관계가 존재하지 않습니다. ID: " + friendId));
+
+        // 양쪽 관계 모두 삭제
+        friendsRepository.deleteByMemberFriend(friend.getMember().getId(), friend.getFromMember());
+        friendsRepository.deleteByMemberFriend(friend.getFromMember(), friend.getMember().getId());
     }
 }

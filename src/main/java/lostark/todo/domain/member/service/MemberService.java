@@ -3,6 +3,8 @@ package lostark.todo.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
+import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.member.dto.SaveCharacterRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberResponse;
@@ -38,6 +40,7 @@ public class MemberService {
 
     private final MemberLockManager memberLockManager;
     private final MemberRepository memberRepository;
+    private final CharacterRepository characterRepository;
     private final AuthMailRepository authMailRepository;
     private final PasswordEncoder passwordEncoder;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
@@ -157,5 +160,49 @@ public class MemberService {
 
         List<Ads> search = adsRepository.search(request.getProposerEmail());
         search.forEach(Ads::updateCheck);
+    }
+
+    // Admin 회원 정보 수정
+    @Transactional
+    public Member updateByAdmin(Long memberId, lostark.todo.domain.admin.dto.AdminMemberUpdateRequest request) {
+        Member member = get(memberId);
+        if (request.getMainCharacter() != null) {
+            boolean exists = member.getCharacters().stream()
+                    .anyMatch(c -> c.getCharacterName().equals(request.getMainCharacter()));
+            if (!exists) {
+                throw new ConditionNotMetException(MEMBER_CHARACTER_NOT_FOUND);
+            }
+        }
+        member.updateByAdmin(request.getRole(), request.getMainCharacter(), request.getAdsDate());
+        return member;
+    }
+
+    // Admin 회원 삭제
+    @Transactional
+    public void deleteByAdmin(Long memberId) {
+        Member member = get(memberId);
+        memberRepository.delete(member);
+    }
+
+    // 대시보드 통계 요약
+    @Transactional(readOnly = true)
+    public DashboardSummaryResponse getDashboardSummary() {
+        long totalMembers = memberRepository.count();
+        long totalCharacters = characterRepository.count();
+        long activeMembers = memberRepository.countActiveMembers();
+
+        List<DashboardResponse> memberStats = searchMemberDashBoard(1);
+        List<DashboardResponse> characterStats = characterRepository.searchCharactersDashBoard(1);
+
+        long todayNewMembers = memberStats.isEmpty() ? 0 : memberStats.get(0).getCount();
+        long todayNewCharacters = characterStats.isEmpty() ? 0 : characterStats.get(0).getCount();
+
+        return DashboardSummaryResponse.builder()
+                .totalMembers(totalMembers)
+                .totalCharacters(totalCharacters)
+                .todayNewMembers(todayNewMembers)
+                .todayNewCharacters(todayNewCharacters)
+                .activeMembers(activeMembers)
+                .build();
     }
 }

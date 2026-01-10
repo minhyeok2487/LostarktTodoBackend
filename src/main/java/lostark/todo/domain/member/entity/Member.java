@@ -130,6 +130,19 @@ public class Member extends BaseTimeEntity {
         this.adsDate = Objects.requireNonNullElseGet(adsDate, LocalDateTime::now).plusDays(date);
     }
 
+    // Admin 회원 정보 수정
+    public void updateByAdmin(Role role, String mainCharacter, LocalDateTime adsDate) {
+        if (role != null) {
+            this.role = role;
+        }
+        if (mainCharacter != null) {
+            this.mainCharacter = mainCharacter;
+        }
+        if (adsDate != null) {
+            this.adsDate = adsDate;
+        }
+    }
+
     // 이미 등록된 캐릭터인지 확인
     public void existCharacter(String characterName) {
         this.characters.stream()

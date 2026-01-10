@@ -3,8 +3,13 @@ package lostark.todo.domain.character.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import lostark.todo.domain.admin.dto.AdminCharacterResponse;
+import lostark.todo.domain.admin.dto.AdminCharacterSearchRequest;
+import lostark.todo.domain.admin.dto.AdminCharacterUpdateRequest;
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.character.dto.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lostark.todo.domain.character.enums.DayTodoCategoryEnum;
 import lostark.todo.domain.character.repository.TodoV2Repository;
 import lostark.todo.domain.content.service.ContentService;
@@ -425,5 +430,41 @@ public class CharacterService {
                 .sum();
     }
 
+    // =============== Admin Methods ===============
 
+    @Transactional(readOnly = true)
+    public Page<AdminCharacterResponse> searchAdminCharacter(AdminCharacterSearchRequest request, Pageable pageable) {
+        return characterRepository.searchAdminCharacter(request, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Character getByIdForAdmin(Long characterId) {
+        return characterRepository.findById(characterId).orElseThrow(
+                () -> new ConditionNotMetException("캐릭터가 존재하지 않습니다. ID: " + characterId));
+    }
+
+    @Transactional
+    public Character updateByAdmin(Long characterId, AdminCharacterUpdateRequest request) {
+        Character character = getByIdForAdmin(characterId);
+        character.updateByAdmin(
+                request.getCharacterName(),
+                request.getItemLevel(),
+                request.getSortNumber(),
+                request.getMemo(),
+                request.getGoldCharacter(),
+                request.getIsDeleted()
+        );
+        return character;
+    }
+
+    @Transactional
+    public void deleteByAdmin(Long characterId, boolean hardDelete) {
+        Character character = getByIdForAdmin(characterId);
+        if (hardDelete) {
+            todoV2Repository.deleteByCharacter(character);
+            characterRepository.delete(character);
+        } else {
+            character.updateCharacterStatus();
+        }
+    }
 }

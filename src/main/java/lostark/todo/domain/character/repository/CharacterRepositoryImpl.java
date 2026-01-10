@@ -7,6 +7,8 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lostark.todo.domain.admin.dto.AdminCharacterResponse;
+import lostark.todo.domain.admin.dto.AdminCharacterSearchRequest;
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.admin.dto.QDashboardResponse;
 import lostark.todo.domain.character.dto.DeletedCharacterResponse;
@@ -14,6 +16,9 @@ import lostark.todo.domain.character.dto.QDeletedCharacterResponse;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.character.entity.Character;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -205,4 +210,69 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
         return character.isDeleted.eq(isDeleted);
     }
 
+    @Override
+    public Page<AdminCharacterResponse> searchAdminCharacter(AdminCharacterSearchRequest request, Pageable pageable) {
+        List<Character> content = factory.selectFrom(character)
+                .leftJoin(character.member, member).fetchJoin()
+                .where(
+                        eqMemberId(request.getMemberId()),
+                        eqServerName(request.getServerName()),
+                        containsCharacterName(request.getCharacterName()),
+                        eqCharacterClassName(request.getCharacterClassName()),
+                        goeItemLevel(request.getMinItemLevel()),
+                        loeItemLevel(request.getMaxItemLevel()),
+                        eqIsDeleted(request.getIsDeleted())
+                )
+                .orderBy(character.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = factory.select(character.count())
+                .from(character)
+                .where(
+                        eqMemberId(request.getMemberId()),
+                        eqServerName(request.getServerName()),
+                        containsCharacterName(request.getCharacterName()),
+                        eqCharacterClassName(request.getCharacterClassName()),
+                        goeItemLevel(request.getMinItemLevel()),
+                        loeItemLevel(request.getMaxItemLevel()),
+                        eqIsDeleted(request.getIsDeleted())
+                )
+                .fetchOne();
+
+        List<AdminCharacterResponse> responses = content.stream()
+                .map(AdminCharacterResponse::from)
+                .toList();
+
+        return new PageImpl<>(responses, pageable, total != null ? total : 0);
+    }
+
+    private BooleanExpression eqMemberId(Long memberId) {
+        return memberId != null ? character.member.id.eq(memberId) : null;
+    }
+
+    private BooleanExpression eqServerName(String serverName) {
+        return serverName != null ? character.serverName.eq(serverName) : null;
+    }
+
+    private BooleanExpression containsCharacterName(String characterName) {
+        return characterName != null ? character.characterName.contains(characterName) : null;
+    }
+
+    private BooleanExpression eqCharacterClassName(String className) {
+        return className != null ? character.characterClassName.eq(className) : null;
+    }
+
+    private BooleanExpression goeItemLevel(Double minLevel) {
+        return minLevel != null ? character.itemLevel.goe(minLevel) : null;
+    }
+
+    private BooleanExpression loeItemLevel(Double maxLevel) {
+        return maxLevel != null ? character.itemLevel.loe(maxLevel) : null;
+    }
+
+    private BooleanExpression eqIsDeleted(Boolean isDeleted) {
+        return isDeleted != null ? character.isDeleted.eq(isDeleted) : null;
+    }
 }

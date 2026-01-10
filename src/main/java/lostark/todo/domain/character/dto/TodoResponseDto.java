@@ -50,7 +50,7 @@ public class TodoResponseDto {
                 .id(todo.getId())
                 .check(false)
                 .name("")
-                .gold(todo.getGold())
+                .gold(todo.getWeekContent().getGold())
                 .realGold(calcRealGold(todo, goldCharacter))
                 .message(todo.getMessage())
                 .currentGate(todo.isChecked() ? todo.getWeekContent().getGate() : 0)
@@ -67,10 +67,10 @@ public class TodoResponseDto {
     }
 
     private int calcRealGold(TodoV2 todo, boolean goldCharacter) {
-        int baseGold = todo.getGold();
+        int baseGold = todo.getWeekContent().getGold();
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
 
-        if (todo.isMoreRewardCheck() && todo.getCharacterGold() == 0) {
+        if (todo.isMoreRewardCheck() && todo.getWeekContent().getCharacterGold() == 0) {
             return goldCharacter ? baseGold - moreRewardGold : 0;
         }
 
@@ -78,10 +78,10 @@ public class TodoResponseDto {
     }
 
     private int calcCharacterGold(TodoV2 todo, boolean goldCharacter) {
-        int baseGold = todo.getCharacterGold();
+        int baseGold = todo.getWeekContent().getCharacterGold();
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
 
-        if (todo.isMoreRewardCheck() && todo.getCharacterGold() != 0) {
+        if (todo.isMoreRewardCheck() && todo.getWeekContent().getCharacterGold() != 0) {
             return goldCharacter ? baseGold - moreRewardGold : 0;
         }
 
@@ -94,8 +94,8 @@ public class TodoResponseDto {
     }
 
     public void updateExistingTodo(TodoV2 todo, boolean goldCharacter) {
-        int todoGold = todo.getGold();
-        int todoCharacterGold = todo.getCharacterGold();
+        int todoGold = todo.getWeekContent().getGold();
+        int todoCharacterGold = todo.getWeekContent().getCharacterGold();
         int moreRewardGold = todo.getWeekContent().getMoreRewardGold();
         boolean isMoreRewardChecked = todo.isMoreRewardCheck();
 
