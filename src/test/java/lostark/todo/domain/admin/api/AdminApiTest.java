@@ -63,7 +63,7 @@ class AdminApiTest {
     void getMember() throws Exception {
         assumeTrue(isAdmin, "Admin 권한이 필요합니다");
 
-        mockMvc.perform(get("/admin/member")
+        mockMvc.perform(get("/admin/api/v1/dashboard/member")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -74,7 +74,7 @@ class AdminApiTest {
     void searchMemberDashBoard() throws Exception {
         assumeTrue(isAdmin, "Admin 권한이 필요합니다");
 
-        mockMvc.perform(get("/admin/dash-board/member")
+        mockMvc.perform(get("/admin/api/v1/dashboard/daily-members")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -85,7 +85,7 @@ class AdminApiTest {
     void searchCharactersDashBoard() throws Exception {
         assumeTrue(isAdmin, "Admin 권한이 필요합니다");
 
-        mockMvc.perform(get("/admin/dash-board/characters")
+        mockMvc.perform(get("/admin/api/v1/dashboard/daily-characters")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -185,7 +185,7 @@ class AdminApiTest {
         request.put("guardianStone", 1000.0);
         request.put("jewelry", 0.0);
 
-        mockMvc.perform(post("/admin/api/v1/content")
+        mockMvc.perform(post("/admin/api/v1/contents")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -334,7 +334,7 @@ class AdminApiTest {
     void getSummary() throws Exception {
         assumeTrue(isAdmin, "Admin 권한이 필요합니다");
 
-        mockMvc.perform(get("/admin/api/v1/stats/summary")
+        mockMvc.perform(get("/admin/api/v1/dashboard/summary")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }

@@ -511,7 +511,7 @@ GET /admin/api/v1/contents/{contentId}
 ### 3.3 컨텐츠 추가
 
 ```
-POST /admin/api/v1/content
+POST /admin/api/v1/contents
 ```
 
 **Request Body (DayContent)**
@@ -688,14 +688,14 @@ DELETE /admin/api/v1/contents/{contentId}
 ### 4.1 일일 가입자 수 통계
 
 ```
-GET /admin/dash-board/member
+GET /admin/api/v1/dashboard/daily-members
 ```
 
 **Request Parameters**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| limit | int | 7 | 조회 일수 |
+| limit | int | 14 | 조회 일수 |
 
 **Response**
 
@@ -712,14 +712,14 @@ GET /admin/dash-board/member
 ### 4.2 일일 가입 캐릭터 수 통계
 
 ```
-GET /admin/dash-board/characters
+GET /admin/api/v1/dashboard/daily-characters
 ```
 
 **Request Parameters**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| limit | int | 7 | 조회 일수 |
+| limit | int | 14 | 조회 일수 |
 
 **Response**
 
@@ -736,7 +736,7 @@ GET /admin/dash-board/characters
 ### 4.3 전체 통계 요약
 
 ```
-GET /admin/api/v1/stats/summary
+GET /admin/api/v1/dashboard/summary
 ```
 
 **Response**
