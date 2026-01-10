@@ -127,17 +127,11 @@ public class ContentService {
     // =============== Admin Methods ===============
 
     @Transactional(readOnly = true)
-    public List<Content> getContentListForAdmin(String contentType) {
-        if (contentType == null || contentType.isEmpty()) {
+    public List<Content> getContentListForAdmin(Category category) {
+        if (category == null) {
             return contentRepository.findAll();
         }
-        Class<? extends Content> type = switch (contentType) {
-            case "day" -> DayContent.class;
-            case "week" -> WeekContent.class;
-            case "cube" -> CubeContent.class;
-            default -> throw new ConditionNotMetException("Invalid content type: " + contentType);
-        };
-        return contentRepository.findAllByType(type);
+        return contentRepository.findAllByCategory(category);
     }
 
     @Transactional(readOnly = true)
