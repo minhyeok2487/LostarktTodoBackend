@@ -28,7 +28,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "member", indexes = @Index(name = "idx_username", columnList = "username", unique = true))
+@Table(name = "member", indexes = {
+        @Index(name = "idx_username", columnList = "username", unique = true),
+        @Index(name = "idx_member_created_date", columnList = "created_date")
+})
 public class Member extends BaseTimeEntity {
 
     // 회원 테이블

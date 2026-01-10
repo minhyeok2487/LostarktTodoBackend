@@ -6,7 +6,12 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lostark.todo.domain.admin.dto.*;
+import lostark.todo.domain.admin.dto.DashboardResponse;
+import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
+import lostark.todo.domain.admin.dto.QDashboardResponse;
+import lostark.todo.domain.admin.dto.QSearchAdminMemberResponse;
+import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
+import lostark.todo.domain.admin.dto.SearchAdminMemberResponse;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.entity.QMember;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
@@ -16,12 +21,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
@@ -155,39 +157,5 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                 .todayNewMembers(((Number) result[3]).longValue())
                 .todayNewCharacters(((Number) result[4]).longValue())
                 .build();
-    }
-
-    @Override
-    public List<RecentActivityResponse> getRecentActivities(int limit) {
-        String sql = """
-            SELECT type, message, detail, created_date FROM (
-                SELECT 'NEW_MEMBER' as type, '새 회원 가입' as message,
-                       username as detail, created_date
-                FROM member
-                UNION ALL
-                SELECT 'NEW_CHARACTER' as type, '캐릭터 등록' as message,
-                       CONCAT(character_class_name, ' ', FLOOR(item_level)) as detail, created_date
-                FROM characters WHERE is_deleted = false
-            ) as activities
-            ORDER BY created_date DESC
-            LIMIT ?
-            """;
-
-        Query query = entityManager.createNativeQuery(sql);
-        query.setParameter(1, limit);
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> results = query.getResultList();
-
-        return results.stream()
-                .map(row -> RecentActivityResponse.builder()
-                        .type((String) row[0])
-                        .message((String) row[1])
-                        .detail((String) row[2])
-                        .createdDate(row[3] instanceof Timestamp
-                                ? ((Timestamp) row[3]).toLocalDateTime()
-                                : (LocalDateTime) row[3])
-                        .build())
-                .collect(Collectors.toList());
     }
 }

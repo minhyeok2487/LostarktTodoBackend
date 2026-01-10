@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
-import lostark.todo.domain.admin.dto.RecentActivityResponse;
 import lostark.todo.domain.member.dto.MemberResponse;
 import lostark.todo.domain.character.service.CharacterService;
 import lostark.todo.domain.member.service.MemberService;
@@ -50,12 +49,5 @@ public class AdminDashboardApi {
     @GetMapping("/summary")
     public ResponseEntity<?> getSummary() {
         return new ResponseEntity<>(memberService.getDashboardSummary(), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "최근 활동 조회",
-            response = RecentActivityResponse.class)
-    @GetMapping("/recent-activities")
-    public ResponseEntity<?> getRecentActivities(@RequestParam(defaultValue = "10") int limit) {
-        return new ResponseEntity<>(memberService.getRecentActivities(limit), HttpStatus.OK);
     }
 }

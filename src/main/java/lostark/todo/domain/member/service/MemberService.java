@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
-import lostark.todo.domain.admin.dto.RecentActivityResponse;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.member.dto.SaveCharacterRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
@@ -189,11 +188,5 @@ public class MemberService {
     @Transactional(readOnly = true)
     public DashboardSummaryResponse getDashboardSummary() {
         return memberRepository.getDashboardSummaryOptimized();
-    }
-
-    // 최근 활동 조회
-    @Transactional(readOnly = true)
-    public List<RecentActivityResponse> getRecentActivities(int limit) {
-        return memberRepository.getRecentActivities(limit);
     }
 }

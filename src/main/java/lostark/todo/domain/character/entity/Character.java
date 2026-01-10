@@ -16,7 +16,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@Table(name = "characters")
+@Table(name = "characters", indexes = {
+        @Index(name = "idx_characters_created_date", columnList = "created_date"),
+        @Index(name = "idx_characters_deleted_member", columnList = "is_deleted, member_id")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
