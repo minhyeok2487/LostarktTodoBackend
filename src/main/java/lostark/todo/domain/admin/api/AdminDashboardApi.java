@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/admin/api/v1/dashboard")
 @RequiredArgsConstructor
 public class AdminDashboardApi {
 
@@ -32,21 +32,21 @@ public class AdminDashboardApi {
 
     @ApiOperation(value = "일일 가입자 수 통계 호출",
             response = DashboardResponse.class)
-    @GetMapping("/dash-board/member")
+    @GetMapping("/daily-members")
     public ResponseEntity<?> searchMemberDashBoard(@RequestParam(required = false, defaultValue = "14") int limit) {
         return new ResponseEntity<>(memberService.searchMemberDashBoard(limit), HttpStatus.OK);
     }
 
     @ApiOperation(value = "일일 가입 캐릭터 수 통계 호출",
             response = DashboardResponse.class)
-    @GetMapping("/dash-board/characters")
+    @GetMapping("/daily-characters")
     public ResponseEntity<?> searchCharactersDashBoard(@RequestParam(required = false, defaultValue = "14") int limit) {
         return new ResponseEntity<>(characterService.searchCharactersDashBoard(limit), HttpStatus.OK);
     }
 
     @ApiOperation(value = "대시보드 통계 요약",
             response = DashboardSummaryResponse.class)
-    @GetMapping("/api/v1/stats/summary")
+    @GetMapping("/summary")
     public ResponseEntity<?> getSummary() {
         return new ResponseEntity<>(memberService.getDashboardSummary(), HttpStatus.OK);
     }

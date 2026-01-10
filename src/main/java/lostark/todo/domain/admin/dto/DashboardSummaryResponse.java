@@ -11,4 +11,5 @@ public class DashboardSummaryResponse {
     private long totalCharacters;
     private long todayNewMembers;
     private long todayNewCharacters;
+    private long activeMembers;
 }

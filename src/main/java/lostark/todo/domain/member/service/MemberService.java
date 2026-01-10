@@ -189,6 +189,7 @@ public class MemberService {
     public DashboardSummaryResponse getDashboardSummary() {
         long totalMembers = memberRepository.count();
         long totalCharacters = characterRepository.count();
+        long activeMembers = memberRepository.countActiveMembers();
 
         List<DashboardResponse> memberStats = searchMemberDashBoard(1);
         List<DashboardResponse> characterStats = characterRepository.searchCharactersDashBoard(1);
@@ -201,6 +202,7 @@ public class MemberService {
                 .totalCharacters(totalCharacters)
                 .todayNewMembers(todayNewMembers)
                 .todayNewCharacters(todayNewCharacters)
+                .activeMembers(activeMembers)
                 .build();
     }
 }

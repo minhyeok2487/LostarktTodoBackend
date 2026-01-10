@@ -18,4 +18,6 @@ public interface MemberCustomRepository {
     List<DashboardResponse> searchMemberDashBoard(int limit);
 
     PageImpl<SearchAdminMemberResponse> searchAdminMember(SearchAdminMemberRequest request, PageRequest pageRequest);
+
+    long countActiveMembers();
 }

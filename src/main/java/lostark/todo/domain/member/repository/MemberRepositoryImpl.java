@@ -114,4 +114,15 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
         }
         return null;
     }
+
+    @Override
+    public long countActiveMembers() {
+        Long count = factory
+                .select(member.id.countDistinct())
+                .from(member)
+                .innerJoin(member.characters, character)
+                .where(character.isDeleted.eq(false))
+                .fetchOne();
+        return count != null ? count : 0;
+    }
 }
