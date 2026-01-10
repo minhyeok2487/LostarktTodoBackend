@@ -1,11 +1,14 @@
 package lostark.todo.domain.character.repository;
 
 import com.querydsl.core.types.ConstantImpl;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lostark.todo.domain.admin.enums.CharacterSortBy;
+import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 import lostark.todo.domain.admin.dto.AdminCharacterResponse;
 import lostark.todo.domain.admin.dto.AdminCharacterSearchRequest;
@@ -223,7 +226,7 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
                         loeItemLevel(request.getMaxItemLevel()),
                         eqIsDeleted(request.getIsDeleted())
                 )
-                .orderBy(character.id.desc())
+                .orderBy(getCharacterOrderSpecifier(request.getSortBy(), request.getSortDirection()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -274,5 +277,21 @@ public class CharacterRepositoryImpl implements CharacterCustomRepository {
 
     private BooleanExpression eqIsDeleted(Boolean isDeleted) {
         return isDeleted != null ? character.isDeleted.eq(isDeleted) : null;
+    }
+
+    private OrderSpecifier<?> getCharacterOrderSpecifier(CharacterSortBy sortBy, Sort.Direction sortDirection) {
+        boolean isAsc = sortDirection == Sort.Direction.ASC;
+
+        return switch (sortBy) {
+            case MEMBER_ID -> isAsc
+                    ? character.member.id.asc().nullsLast()
+                    : character.member.id.desc().nullsLast();
+            case SERVER_NAME -> isAsc ? character.serverName.asc() : character.serverName.desc();
+            case CHARACTER_NAME -> isAsc ? character.characterName.asc() : character.characterName.desc();
+            case CHARACTER_CLASS_NAME -> isAsc ? character.characterClassName.asc() : character.characterClassName.desc();
+            case ITEM_LEVEL -> isAsc ? character.itemLevel.asc() : character.itemLevel.desc();
+            case CREATED_DATE -> isAsc ? character.createdDate.asc() : character.createdDate.desc();
+            default -> isAsc ? character.id.asc() : character.id.desc();
+        };
     }
 }

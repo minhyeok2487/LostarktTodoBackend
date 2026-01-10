@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.admin.dto.AddContentRequest;
 import lostark.todo.domain.content.entity.Content;
+import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.service.ContentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class AdminContentApi {
 
     @ApiOperation(value = "컨텐츠 목록 조회")
     @GetMapping
-    public ResponseEntity<?> getContentList(@RequestParam(required = false) String contentType) {
-        return new ResponseEntity<>(contentService.getContentListForAdmin(contentType), HttpStatus.OK);
+    public ResponseEntity<?> getContentList(@RequestParam(required = false) Category category) {
+        return new ResponseEntity<>(contentService.getContentListForAdmin(category), HttpStatus.OK);
     }
 
     @ApiOperation(value = "컨텐츠 상세 조회")
