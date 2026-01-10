@@ -29,8 +29,17 @@ public class ServerTodoApi {
 
     @ApiOperation("서버 공통 숙제 생성")
     @PostMapping
-    public ResponseEntity<?> createServerTodo(@Valid @RequestBody ServerTodoCreateRequest request) {
-        return new ResponseEntity<>(serverTodoService.createServerTodo(request), HttpStatus.CREATED);
+    public ResponseEntity<?> createServerTodo(@AuthenticationPrincipal String username,
+                                              @Valid @RequestBody ServerTodoCreateRequest request) {
+        return new ResponseEntity<>(serverTodoService.createServerTodo(username, request), HttpStatus.CREATED);
+    }
+
+    @ApiOperation("서버 숙제 삭제 (사용자 생성만)")
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<?> deleteServerTodo(@AuthenticationPrincipal String username,
+                                              @PathVariable Long todoId) {
+        serverTodoService.deleteServerTodo(username, todoId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation("서버 공통 숙제 조회")

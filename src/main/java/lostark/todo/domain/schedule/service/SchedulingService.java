@@ -10,6 +10,7 @@ import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
 import lostark.todo.domain.member.repository.LifeEnergyRepository;
 import lostark.todo.domain.servertodo.repository.ServerTodoStateRepository;
+import lostark.todo.domain.servertodo.enums.VisibleWeekday;
 import lostark.todo.domain.schedule.dto.AuctionRequestDto;
 import lostark.todo.domain.schedule.repository.ScheduleRepository;
 import lostark.todo.global.keyvalue.KeyValueRepository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +94,12 @@ public class SchedulingService {
 
         log.info("커스텀 일일 숙제 업데이트 = {}", customTodoRepository.update(CustomTodoFrequencyEnum.DAILY));
 
-        log.info("서버 공통 숙제 체크 초기화 = {}", serverTodoStateRepository.resetAllChecked());
+        // 오늘 요일에 해당하는 관리자 생성 서버 숙제만 리셋
+        VisibleWeekday today = VisibleWeekday.fromDayOfWeek(LocalDate.now().getDayOfWeek());
+        log.info("서버 공통 숙제 초기화 ({}) = {}", today, serverTodoStateRepository.resetByVisibleWeekday(today));
+
+        // 사용자 생성 일일 서버 숙제 리셋
+        log.info("사용자 서버 숙제 일일 초기화 = {}", serverTodoStateRepository.resetByFrequency(CustomTodoFrequencyEnum.DAILY));
     }
 
     private void updateDayTodoGold() {
@@ -144,6 +151,9 @@ public class SchedulingService {
 
         // 버스비 삭제
         raidBusGoldRepository.deleteAllRaidBusGold();
+
+        // 사용자 생성 주간 서버 숙제 리셋
+        log.info("사용자 서버 숙제 주간 초기화 = {}", serverTodoStateRepository.resetByFrequency(CustomTodoFrequencyEnum.WEEKLY));
     }
 
     // 매일 10분마다 일정 레이드 자동 체크

@@ -1,5 +1,7 @@
 package lostark.todo.domain.servertodo.enums;
 
+import java.time.DayOfWeek;
+
 public enum VisibleWeekday {
     MONDAY,
     TUESDAY,
@@ -7,5 +9,9 @@ public enum VisibleWeekday {
     THURSDAY,
     FRIDAY,
     SATURDAY,
-    SUNDAY
+    SUNDAY;
+
+    public static VisibleWeekday fromDayOfWeek(DayOfWeek dayOfWeek) {
+        return VisibleWeekday.valueOf(dayOfWeek.name());
+    }
 }

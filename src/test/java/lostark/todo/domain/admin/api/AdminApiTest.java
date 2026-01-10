@@ -339,6 +339,18 @@ class AdminApiTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("최근 활동 조회")
+    @MeasurePerformance(maxQueries = 5)
+    void getRecentActivities() throws Exception {
+        assumeTrue(isAdmin, "Admin 권한이 필요합니다");
+
+        mockMvc.perform(get("/admin/api/v1/dashboard/recent-activities")
+                        .header("Authorization", "Bearer " + token)
+                        .param("limit", "10"))
+                .andExpect(status().isOk());
+    }
+
     // =============== Comments Admin API Tests ===============
 
     @Test

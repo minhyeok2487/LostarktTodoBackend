@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.admin.dto.DashboardResponse;
 import lostark.todo.domain.admin.dto.DashboardSummaryResponse;
+import lostark.todo.domain.admin.dto.RecentActivityResponse;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.member.dto.SaveCharacterRequest;
 import lostark.todo.domain.admin.dto.SearchAdminMemberRequest;
@@ -184,25 +185,15 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    // 대시보드 통계 요약
+    // 대시보드 통계 요약 (단일 쿼리로 최적화)
     @Transactional(readOnly = true)
     public DashboardSummaryResponse getDashboardSummary() {
-        long totalMembers = memberRepository.count();
-        long totalCharacters = characterRepository.count();
-        long activeMembers = memberRepository.countActiveMembers();
+        return memberRepository.getDashboardSummaryOptimized();
+    }
 
-        List<DashboardResponse> memberStats = searchMemberDashBoard(1);
-        List<DashboardResponse> characterStats = characterRepository.searchCharactersDashBoard(1);
-
-        long todayNewMembers = memberStats.isEmpty() ? 0 : memberStats.get(0).getCount();
-        long todayNewCharacters = characterStats.isEmpty() ? 0 : characterStats.get(0).getCount();
-
-        return DashboardSummaryResponse.builder()
-                .totalMembers(totalMembers)
-                .totalCharacters(totalCharacters)
-                .todayNewMembers(todayNewMembers)
-                .todayNewCharacters(todayNewCharacters)
-                .activeMembers(activeMembers)
-                .build();
+    // 최근 활동 조회
+    @Transactional(readOnly = true)
+    public List<RecentActivityResponse> getRecentActivities(int limit) {
+        return memberRepository.getRecentActivities(limit);
     }
 }

@@ -35,18 +35,38 @@ public class ServerTodoService {
     private static final String SERVER_TODO_NOT_FOUND = "등록된 서버 숙제가 아닙니다.";
     private static final String SERVER_NOT_BELONG_TO_MEMBER = "해당 서버에는 캐릭터가 없습니다.";
     private static final String SERVER_TODO_STATE_NOT_FOUND = "서버 숙제가 활성화되어 있지 않습니다.";
+    private static final String SERVER_TODO_DELETE_NOT_ALLOWED = "삭제 권한이 없습니다.";
 
     @Transactional
-    public ServerTodo createServerTodo(ServerTodoCreateRequest request) {
+    public ServerTodo createServerTodo(String username, ServerTodoCreateRequest request) {
+        Member member = request.isCustom() ? memberRepository.get(username) : null;
+
         ServerTodo serverTodo = ServerTodo.builder()
                 .contentName(request.getContentName())
                 .defaultEnabled(request.getDefaultEnabled())
                 .visibleWeekdays(request.getVisibleWeekdays() != null
                     ? request.getVisibleWeekdays()
                     : EnumSet.noneOf(lostark.todo.domain.servertodo.enums.VisibleWeekday.class))
+                .member(member)
+                .frequency(request.getFrequency())
                 .build();
 
         return serverTodoRepository.save(serverTodo);
+    }
+
+    @Transactional
+    public void deleteServerTodo(String username, Long todoId) {
+        Member member = memberRepository.get(username);
+        ServerTodo todo = serverTodoRepository.findById(todoId)
+                .orElseThrow(() -> new ConditionNotMetException(SERVER_TODO_NOT_FOUND));
+
+        // 사용자 생성 숙제만 삭제 가능 (본인 것만)
+        if (todo.getMember() == null || todo.getMember().getId() != member.getId()) {
+            throw new ConditionNotMetException(SERVER_TODO_DELETE_NOT_ALLOWED);
+        }
+
+        serverTodoStateRepository.deleteByServerTodoId(todoId);
+        serverTodoRepository.delete(todo);
     }
 
     @Transactional(readOnly = true)
@@ -106,7 +126,7 @@ public class ServerTodoService {
     }
 
     private ServerTodoOverviewResponse buildOverview(Member member, List<String> serverNames) {
-        List<ServerTodo> todos = serverTodoRepository.findAllVisible();
+        List<ServerTodo> todos = serverTodoRepository.findAllVisible(member.getId());
         List<ServerTodoState> states = serverNames.isEmpty()
                 ? List.of()
                 : serverTodoStateRepository.findByMemberAndServerNames(member.getId(), serverNames);

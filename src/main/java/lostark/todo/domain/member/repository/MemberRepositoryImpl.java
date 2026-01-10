@@ -14,9 +14,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static lostark.todo.domain.member.entity.QMember.member;
 import static lostark.todo.domain.character.entity.QCharacter.character;
@@ -27,6 +32,7 @@ import static lostark.todo.global.exhandler.ErrorMessageConstants.MEMER_NOT_FOUN
 public class MemberRepositoryImpl implements MemberCustomRepository {
 
     private final JPAQueryFactory factory;
+    private final EntityManager entityManager;
 
     @Override
     public Member get(String username) {
@@ -124,5 +130,64 @@ public class MemberRepositoryImpl implements MemberCustomRepository {
                 .where(character.isDeleted.eq(false))
                 .fetchOne();
         return count != null ? count : 0;
+    }
+
+    @Override
+    public DashboardSummaryResponse getDashboardSummaryOptimized() {
+        String sql = """
+            SELECT
+                (SELECT COUNT(*) FROM member) as total_members,
+                (SELECT COUNT(*) FROM characters) as total_characters,
+                (SELECT COUNT(DISTINCT m.member_id) FROM member m
+                    INNER JOIN characters c ON m.member_id = c.member_id
+                    WHERE c.is_deleted = false) as active_members,
+                (SELECT COUNT(*) FROM member WHERE DATE(created_date) = CURDATE()) as today_new_members,
+                (SELECT COUNT(*) FROM characters WHERE DATE(created_date) = CURDATE()) as today_new_characters
+            """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        Object[] result = (Object[]) query.getSingleResult();
+
+        return DashboardSummaryResponse.builder()
+                .totalMembers(((Number) result[0]).longValue())
+                .totalCharacters(((Number) result[1]).longValue())
+                .activeMembers(((Number) result[2]).longValue())
+                .todayNewMembers(((Number) result[3]).longValue())
+                .todayNewCharacters(((Number) result[4]).longValue())
+                .build();
+    }
+
+    @Override
+    public List<RecentActivityResponse> getRecentActivities(int limit) {
+        String sql = """
+            SELECT type, message, detail, created_date FROM (
+                SELECT 'NEW_MEMBER' as type, '새 회원 가입' as message,
+                       username as detail, created_date
+                FROM member
+                UNION ALL
+                SELECT 'NEW_CHARACTER' as type, '캐릭터 등록' as message,
+                       CONCAT(character_class_name, ' ', FLOOR(item_level)) as detail, created_date
+                FROM characters WHERE is_deleted = false
+            ) as activities
+            ORDER BY created_date DESC
+            LIMIT ?
+            """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, limit);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+
+        return results.stream()
+                .map(row -> RecentActivityResponse.builder()
+                        .type((String) row[0])
+                        .message((String) row[1])
+                        .detail((String) row[2])
+                        .createdDate(row[3] instanceof Timestamp
+                                ? ((Timestamp) row[3]).toLocalDateTime()
+                                : (LocalDateTime) row[3])
+                        .build())
+                .collect(Collectors.toList());
     }
 }
