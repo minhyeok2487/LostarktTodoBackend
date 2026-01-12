@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import lostark.todo.global.service.webHook.WebHookService;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,6 +36,13 @@ public class ExControllerAdvice {
             return handleExceptionInternal(cause, request, false);
         }
         return handleExceptionInternal(ex, request, true);
+    }
+
+    // 클라이언트 연결 종료 예외 처리 (web hook 미전송, 응답 불필요)
+    @ExceptionHandler(ClientAbortException.class)
+    public void handleClientAbortException(ClientAbortException ex, HttpServletRequest request) {
+        // 클라이언트가 연결을 끊었으므로 응답을 보낼 수 없음 - 무시
+        log.debug("{} {} - Client disconnected", request.getMethod(), request.getRequestURI());
     }
 
     // 유효성 검사 예외 처리 (web hook 미전송)
