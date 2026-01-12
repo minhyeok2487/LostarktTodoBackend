@@ -79,7 +79,7 @@ public class AuthService {
     }
 
     // 로그인 검증
-    @Transactional
+    @Transactional(readOnly = true)
     public Member validateLogin(LoginMemberRequest request) {
         Member member = memberRepository.get(request.getUsername());
         if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {

@@ -7,6 +7,7 @@ import lostark.todo.global.service.webHook.WebHookService;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
@@ -25,6 +26,15 @@ public class ExControllerAdvice {
     @ExceptionHandler(ConditionNotMetException.class)
     public ResponseEntity<ErrorResponse> handlerConditionNotMetException(ConditionNotMetException ex, HttpServletRequest request) {
         return handleExceptionInternal(ex, request, false);
+    }
+
+    // InvalidDataAccessApiUsageException 중 ConditionNotMetException이 원인인 경우 (web hook 미전송)
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException ex, HttpServletRequest request) {
+        if (ex.getCause() instanceof ConditionNotMetException cause) {
+            return handleExceptionInternal(cause, request, false);
+        }
+        return handleExceptionInternal(ex, request, true);
     }
 
     // 유효성 검사 예외 처리 (web hook 미전송)
