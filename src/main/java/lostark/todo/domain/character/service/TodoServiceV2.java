@@ -130,7 +130,7 @@ public class TodoServiceV2 {
 
         // 상위 관문이 존재하지 않으면 해당 TodoV2 삭제
         character.getTodoV2List().remove(existingTodo);
-        todoV2Repository.delete(existingTodo);
+        todoV2Repository.deleteByIdSafe(existingTodo.getId());
     }
 
     // 2주기 레이드일때 등록된 값 체크해서 초기화주간 인지 확인
@@ -160,7 +160,7 @@ public class TodoServiceV2 {
         if (!removedList.isEmpty()) {
             removedList.forEach(todoV2 -> {
                 character.getTodoV2List().remove(todoV2);
-                todoV2Repository.delete(todoV2);
+                todoV2Repository.deleteByIdSafe(todoV2.getId());
             });
         } else {
             // 추가할 항목 생성 및 추가

@@ -84,7 +84,7 @@ public class ScheduleService {
         if (schedule.isLeader()) {
             scheduleRepository.remove(scheduleId);
         } else {
-            scheduleRepository.delete(schedule);
+            scheduleRepository.deleteByIdSafe(schedule.getId());
         }
     }
 

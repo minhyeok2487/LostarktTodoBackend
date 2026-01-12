@@ -79,4 +79,11 @@ public class GeneralTodoFolderRepositoryImpl implements GeneralTodoFolderReposit
                 .orderBy(folder.sortOrder.asc(), folder.id.asc())
                 .fetch();
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(folder)
+                .where(folder.id.eq(id))
+                .execute();
+    }
 }

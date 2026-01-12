@@ -245,4 +245,11 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
     private BooleanExpression eqUsername(String username) {
         return member.username.eq(username);
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(schedule)
+                .where(schedule.id.eq(id))
+                .execute();
+    }
 }

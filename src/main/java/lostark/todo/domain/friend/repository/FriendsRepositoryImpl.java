@@ -138,4 +138,11 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
     private BooleanExpression FriendCondition(long toMemberId, long fromMemberId) {
         return friends.member.id.eq(toMemberId).and(friends.fromMember.eq(fromMemberId));
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(friends)
+                .where(friends.id.eq(id))
+                .execute();
+    }
 }

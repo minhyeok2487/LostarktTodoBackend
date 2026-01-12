@@ -197,7 +197,7 @@ class GeneralTodoServiceTest {
             generalTodoService.deleteFolder("test@test.com", 1L);
 
             // then
-            verify(folderRepository).delete(testFolder);
+            verify(folderRepository).deleteByIdSafe(testFolder.getId());
         }
     }
 
@@ -281,7 +281,7 @@ class GeneralTodoServiceTest {
             generalTodoService.deleteCategory("test@test.com", 1L);
 
             // then
-            verify(categoryRepository).delete(testCategory);
+            verify(categoryRepository).deleteByIdSafe(testCategory.getId());
         }
     }
 
@@ -326,7 +326,7 @@ class GeneralTodoServiceTest {
             generalTodoService.deleteStatus("test@test.com", 1L, 1L);
 
             // then
-            verify(statusRepository).delete(testStatus);
+            verify(statusRepository).deleteByIdSafe(testStatus.getId());
         }
 
         @Test
@@ -468,7 +468,7 @@ class GeneralTodoServiceTest {
             generalTodoService.deleteItem("test@test.com", 1L);
 
             // then
-            verify(itemRepository).delete(testItem);
+            verify(itemRepository).deleteByIdSafe(testItem.getId());
         }
 
         @Test

@@ -46,4 +46,11 @@ public class GeneralTodoItemRepositoryImpl implements GeneralTodoItemRepositoryC
                 .orderBy(item.folder.id.asc(), item.category.id.asc(), item.createdDate.asc(), item.id.asc())
                 .fetch();
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(item)
+                .where(item.id.eq(id))
+                .execute();
+    }
 }

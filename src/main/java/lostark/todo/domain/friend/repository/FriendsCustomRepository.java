@@ -21,4 +21,6 @@ public interface FriendsCustomRepository {
     FriendStatus isFriend(long toMemberId, long fromMemberId);
 
     Map<Long, FriendshipPair> findFriendshipPairs(long memberId);
+
+    void deleteByIdSafe(Long id);
 }

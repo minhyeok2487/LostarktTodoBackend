@@ -105,7 +105,7 @@ public class GeneralTodoService {
     public void deleteFolder(String username, Long folderId) {
         Member member = memberRepository.get(username);
         GeneralTodoFolder folder = getFolder(folderId, member.getId());
-        folderRepository.delete(folder);
+        folderRepository.deleteByIdSafe(folder.getId());
     }
 
     public GeneralTodoCategoryResponse createCategory(String username, Long folderId, CreateGeneralTodoCategoryRequest request) {
@@ -170,7 +170,7 @@ public class GeneralTodoService {
     public void deleteCategory(String username, Long categoryId) {
         Member member = memberRepository.get(username);
         GeneralTodoCategory category = getCategory(categoryId, member.getId());
-        categoryRepository.delete(category);
+        categoryRepository.deleteByIdSafe(category.getId());
     }
 
     public GeneralTodoStatusResponse createStatus(String username, Long categoryId, CreateGeneralTodoStatusRequest request) {
@@ -235,7 +235,7 @@ public class GeneralTodoService {
         if (itemRepository.existsByStatusId(statusId)) {
             throw new ConditionNotMetException("상태에 연결된 할 일이 있어 삭제할 수 없습니다.");
         }
-        statusRepository.delete(status);
+        statusRepository.deleteByIdSafe(status.getId());
     }
 
     public GeneralTodoItemResponse createItem(String username, CreateGeneralTodoItemRequest request) {
@@ -337,7 +337,7 @@ public class GeneralTodoService {
     public void deleteItem(String username, Long itemId) {
         Member member = memberRepository.get(username);
         GeneralTodoItem item = getItem(itemId, member.getId());
-        itemRepository.delete(item);
+        itemRepository.deleteByIdSafe(item.getId());
     }
 
     private GeneralTodoFolder getFolder(Long folderId, Long memberId) {

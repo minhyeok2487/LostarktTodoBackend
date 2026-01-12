@@ -11,4 +11,6 @@ public interface GeneralTodoItemRepositoryCustom {
     Optional<GeneralTodoItem> findByIdAndMemberId(Long itemId, Long memberId);
 
     List<GeneralTodoItemResponse> fetchResponses(Long memberId, String username);
+
+    void deleteByIdSafe(Long id);
 }

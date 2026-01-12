@@ -170,8 +170,12 @@ public class FriendsService {
         } else if (category.equals(FriendRequestCategory.DELETE)) {
             Friends toMemberEntity = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
             Friends fromMemberEntity = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
-            friendsRepository.delete(toMemberEntity);
-            friendsRepository.delete(fromMemberEntity);
+            if (toMemberEntity != null) {
+                friendsRepository.deleteByIdSafe(toMemberEntity.getId());
+            }
+            if (fromMemberEntity != null) {
+                friendsRepository.deleteByIdSafe(fromMemberEntity.getId());
+            }
         } else {
             throw new RuntimeException();
         }

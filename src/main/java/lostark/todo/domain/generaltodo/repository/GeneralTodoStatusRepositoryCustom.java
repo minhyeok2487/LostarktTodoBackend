@@ -19,4 +19,6 @@ public interface GeneralTodoStatusRepositoryCustom {
     void updateSortOrders(Long categoryId, Long memberId, List<Long> orderedStatusIds);
 
     List<GeneralTodoStatusResponse> fetchResponses(Long memberId, String username);
+
+    void deleteByIdSafe(Long id);
 }

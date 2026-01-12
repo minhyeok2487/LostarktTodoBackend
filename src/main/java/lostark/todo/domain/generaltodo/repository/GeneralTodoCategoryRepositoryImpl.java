@@ -84,4 +84,11 @@ public class GeneralTodoCategoryRepositoryImpl implements GeneralTodoCategoryRep
                 .orderBy(category.folder.id.asc(), category.sortOrder.asc(), category.id.asc())
                 .fetch();
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(category)
+                .where(category.id.eq(id))
+                .execute();
+    }
 }

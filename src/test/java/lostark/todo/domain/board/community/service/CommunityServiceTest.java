@@ -473,7 +473,7 @@ class CommunityServiceTest {
             communityService.updateLike("test@test.com", 1L);
 
             // then
-            verify(communityLikeRepository).delete(existingLike);
+            verify(communityLikeRepository).deleteByIdSafe(existingLike.getId());
             verify(communityLikeRepository, never()).save(any(CommunityLike.class));
         }
     }

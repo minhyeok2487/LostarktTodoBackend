@@ -348,7 +348,7 @@ class ScheduleServiceTest {
             scheduleService.remove("test@test.com", 2L);
 
             // then
-            verify(scheduleRepository).delete(schedule);
+            verify(scheduleRepository).deleteByIdSafe(schedule.getId());
             verify(scheduleRepository, never()).remove(anyLong());
         }
 

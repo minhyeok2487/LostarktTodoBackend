@@ -29,4 +29,11 @@ public class TodoV2RepositoryImpl implements TodoV2CustomRepository {
                 .where(todoV2.character.eq(character))
                 .execute();
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(todoV2)
+                .where(todoV2.id.eq(id))
+                .execute();
+    }
 }
