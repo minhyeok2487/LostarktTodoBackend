@@ -12,6 +12,9 @@ public class DoubleDeserializer extends JsonDeserializer<Double> {
     @Override
     public Double deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         String value = p.getText();
+        if (value == null || value.isBlank()) {
+            return 0.0;
+        }
         try {
             NumberFormat format = NumberFormat.getInstance(Locale.US);
             Number number = format.parse(value);
