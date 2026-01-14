@@ -19,4 +19,6 @@ public interface GeneralTodoFolderRepositoryCustom {
     List<Long> findIdsByMemberId(Long memberId);
 
     List<GeneralTodoFolderResponse> fetchResponses(Long memberId, String username);
+
+    void deleteByIdSafe(Long id);
 }

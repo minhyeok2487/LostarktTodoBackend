@@ -59,9 +59,8 @@ public class CommentsService {
                 .orElseThrow(() -> new ConditionNotMetException("댓글이 존재하지 않습니다. ID: " + commentId));
 
         // 답글도 함께 삭제
-        List<Comments> replies = commentsRepository.findAllByParentId(commentId);
-        commentsRepository.deleteAll(replies);
+        commentsRepository.deleteByParentIdSafe(commentId);
 
-        commentsRepository.delete(comment);
+        commentsRepository.deleteByIdSafe(comment.getId());
     }
 }

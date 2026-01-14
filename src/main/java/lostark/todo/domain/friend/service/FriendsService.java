@@ -170,10 +170,14 @@ public class FriendsService {
         } else if (category.equals(FriendRequestCategory.DELETE)) {
             Friends toMemberEntity = friendsRepository.findByMemberAndFromMember(toMember, fromMember.getId());
             Friends fromMemberEntity = friendsRepository.findByMemberAndFromMember(fromMember, toMember.getId());
-            friendsRepository.delete(toMemberEntity);
-            friendsRepository.delete(fromMemberEntity);
+            if (toMemberEntity != null) {
+                friendsRepository.deleteByIdSafe(toMemberEntity.getId());
+            }
+            if (fromMemberEntity != null) {
+                friendsRepository.deleteByIdSafe(fromMemberEntity.getId());
+            }
         } else {
-            throw new RuntimeException();
+            throw new ConditionNotMetException("지원하지 않는 친구 요청 카테고리입니다: " + category);
         }
     }
 

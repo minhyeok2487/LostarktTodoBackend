@@ -127,7 +127,7 @@ public class CommunityService {
         Member member = memberRepository.get(username);
         Optional<CommunityLike> communityLike = communityLikeRepository.findByCommunityIdAndMemberId(communityId, member.getId());
         if (communityLike.isPresent()) {
-            communityLikeRepository.delete(communityLike.get());
+            communityLikeRepository.deleteByIdSafe(communityLike.get().getId());
         } else {
             communityLikeRepository.save(CommunityLike.builder().communityId(communityId).memberId(member.getId()).build());
         }

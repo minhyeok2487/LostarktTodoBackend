@@ -19,4 +19,6 @@ public interface GeneralTodoCategoryRepositoryCustom {
     void updateSortOrders(Long folderId, Long memberId, List<Long> orderedCategoryIds);
 
     List<GeneralTodoCategoryResponse> fetchResponses(Long memberId, String username);
+
+    void deleteByIdSafe(Long id);
 }

@@ -7,4 +7,6 @@ public interface TodoV2CustomRepository {
     void resetTodoV2();
 
     void removeCharacter(Character character);
+
+    void deleteByIdSafe(Long id);
 }

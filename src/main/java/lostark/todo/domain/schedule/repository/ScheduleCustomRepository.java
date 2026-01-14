@@ -32,4 +32,6 @@ public interface ScheduleCustomRepository {
     void remove(long scheduleId);
 
     void checkScheduleRaids();
+
+    void deleteByIdSafe(Long id);
 }

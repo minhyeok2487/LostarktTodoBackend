@@ -82,4 +82,11 @@ public class GeneralTodoStatusRepositoryImpl implements GeneralTodoStatusReposit
                 .orderBy(status.category.id.asc(), status.sortOrder.asc(), status.id.asc())
                 .fetch();
     }
+
+    @Override
+    public void deleteByIdSafe(Long id) {
+        factory.delete(status)
+                .where(status.id.eq(id))
+                .execute();
+    }
 }

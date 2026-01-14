@@ -85,6 +85,8 @@ public class LostarkCharacterApiClient {
             return sortedList;
         } catch (NullPointerException e) {
             throw new ConditionNotMetException("존재하지 않는 캐릭터명 입니다.");
+        } catch (ConditionNotMetException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -101,9 +103,9 @@ public class LostarkCharacterApiClient {
         try {
             JSONArray parse = (JSONArray) parser.parse(inputStreamReader);
             return filterLevel(parse);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -119,7 +121,7 @@ public class LostarkCharacterApiClient {
             }
         }
         if (filteredArray.isEmpty()) {
-            throw new RuntimeException("아이템 레벨 1415 이상 캐릭터가 없습니다.");
+            throw new ConditionNotMetException("아이템 레벨 1415 이상 캐릭터가 없습니다.");
         }
 
         return filteredArray;
@@ -136,6 +138,8 @@ public class LostarkCharacterApiClient {
                 return profile.get("CharacterImage").toString();
             }
             return null;
+        } catch (ConditionNotMetException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -159,6 +163,8 @@ public class LostarkCharacterApiClient {
                     character.setCombatPower(newCombatPower);
                 }
             }
+        } catch (ConditionNotMetException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
