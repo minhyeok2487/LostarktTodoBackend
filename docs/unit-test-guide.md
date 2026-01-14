@@ -341,7 +341,7 @@ void fail_updateAfter15Minutes() {
 
 ### 특정 메서드 테스트 실행
 ```bash
-./gradlew test --tests "lostark.todo.domain.character.service.CharacterServiceTest.UpdateDayCheckTest"
+./gradlew test --tests "lostark.todo.domain.character.service.CharacterServiceTest\$UpdateDayCheckTest"
 ```
 
 ## 테스트 작성 시 주의사항
