@@ -177,7 +177,7 @@ public class FriendsService {
                 friendsRepository.deleteByIdSafe(fromMemberEntity.getId());
             }
         } else {
-            throw new RuntimeException();
+            throw new ConditionNotMetException("지원하지 않는 친구 요청 카테고리입니다: " + category);
         }
     }
 
