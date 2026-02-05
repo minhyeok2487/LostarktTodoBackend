@@ -1,5 +1,6 @@
 package lostark.todo.domain.inspection.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,8 @@ public class InspectionCharacterResponse {
     private double itemLevel;
     private double combatPower;
     private int noChangeThreshold;
+
+    @JsonProperty("isActive")
     private boolean isActive;
     private LocalDateTime createdDate;
     private Double previousCombatPower;
