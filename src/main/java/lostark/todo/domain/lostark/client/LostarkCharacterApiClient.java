@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
+import lostark.todo.domain.inspection.dto.ArkgridEffectDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.character.entity.Character;
@@ -167,6 +168,63 @@ public class LostarkCharacterApiClient {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 군장검사용 프로필 조회 (레벨 제한 없음)
+     */
+    public CharacterJsonDto getCharacterProfileForInspection(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/profiles";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            ObjectMapper objectMapper = new ObjectMapper();
+            CharacterJsonDto character = objectMapper.readValue(reader, CharacterJsonDto.class);
+
+            if (character == null) {
+                throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다.");
+            }
+
+            return character;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("프로필 조회 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 아크그리드 Effects 조회
+     */
+    public List<ArkgridEffectDto> getArkgridEffects(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/arkgrid";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject arkgrid = (JSONObject) parser.parse(reader);
+
+            List<ArkgridEffectDto> effects = new ArrayList<>();
+            if (arkgrid != null && arkgrid.get("Effects") != null) {
+                JSONArray effectsArray = (JSONArray) arkgrid.get("Effects");
+                for (Object obj : effectsArray) {
+                    JSONObject effect = (JSONObject) obj;
+                    effects.add(new ArkgridEffectDto(
+                            effect.get("Name").toString(),
+                            Integer.parseInt(effect.get("Level").toString()),
+                            effect.get("Tooltip") != null ? effect.get("Tooltip").toString() : null
+                    ));
+                }
+            }
+            return effects;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("아크그리드 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            return new ArrayList<>();
         }
     }
 
