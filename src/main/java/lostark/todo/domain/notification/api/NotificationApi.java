@@ -68,6 +68,9 @@ public class NotificationApi {
                 case COMMUNITY -> {
                     object.put("communityId", notification.getCommunityId());
                 }
+                case INSPECTION -> {
+                    object.put("inspectionCharacterId", notification.getInspectionCharacterId());
+                }
                 default -> throw new IllegalArgumentException("Unknown notification type: " + notification.getNotificationType());
             }
 
