@@ -15,6 +15,7 @@ import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.notification.service.NotificationService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -192,7 +193,9 @@ public class InspectionService {
 
     /**
      * 일일 데이터 수집 (스케줄러 및 수동 새로고침에서 호출)
+     * 캐릭터별 개별 트랜잭션으로 처리하여 장애 격리
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void fetchDailyData(InspectionCharacter character, String apiKey) {
         try {
             // 1. 프로필 조회와 아크그리드 효과 조회를 병렬로 실행

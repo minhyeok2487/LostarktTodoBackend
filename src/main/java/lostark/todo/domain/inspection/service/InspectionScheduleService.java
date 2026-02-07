@@ -23,9 +23,10 @@ public class InspectionScheduleService {
 
     /**
      * 매 정시에 실행되어 해당 시간에 수집 설정된 사용자의 캐릭터 데이터를 수집
+     * 캐릭터별로 개별 트랜잭션으로 처리 (InspectionService.fetchDailyData의 @Transactional 활용)
      */
     @Scheduled(cron = "0 0 * * * ?", zone = "Asia/Seoul")
-    @Transactional
+    @Transactional(readOnly = true)
     public void fetchScheduledInspectionData() {
         int currentHour = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).getHour();
         log.info("===== 군장검사 스케줄러 실행 ({}시) =====", currentHour);
@@ -40,6 +41,10 @@ public class InspectionScheduleService {
 
         log.info("{}시 수집 대상 캐릭터 수: {}", currentHour, characters.size());
 
+        processCharacters(characters);
+    }
+
+    private void processCharacters(List<InspectionCharacter> characters) {
         int successCount = 0;
         int failCount = 0;
 
@@ -53,6 +58,7 @@ public class InspectionScheduleService {
                     continue;
                 }
 
+                // 캐릭터별 개별 트랜잭션으로 처리
                 inspectionService.fetchDailyData(character, apiKey);
                 successCount++;
 
