@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.*;
@@ -34,6 +35,7 @@ public class InspectionService {
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final NotificationService notificationService;
     private final MemberService memberService;
+    private final ObjectMapper objectMapper;
 
     private static final ExecutorService INSPECTION_EXECUTOR = new ThreadPoolExecutor(
             4, 8, 60L, TimeUnit.SECONDS,
@@ -83,17 +85,33 @@ public class InspectionService {
 
         inspectionCharacterRepository.save(inspectionCharacter);
 
-        // 초기 히스토리 저장 (모든 API 데이터 함께 조회)
+        // 초기 히스토리 저장 (모든 API 데이터 병렬 조회)
         String charName = request.getCharacterName();
         String key = member.getApiKey();
-        List<ArkgridEffectDto> effects = lostarkCharacterApiClient.getArkgridEffects(charName, key);
-        List<EquipmentDto> equipments = lostarkCharacterApiClient.getEquipment(charName, key);
-        List<EngravingDto> engravings = lostarkCharacterApiClient.getEngravings(charName, key);
-        CardApiResponse cardsResponse = lostarkCharacterApiClient.getCards(charName, key);
-        List<GemDto> gems = lostarkCharacterApiClient.getGems(charName, key);
-        ArkPassiveApiResponse arkPassiveResponse = lostarkCharacterApiClient.getArkPassive(charName, key);
-        saveHistoryRecord(inspectionCharacter, profile, effects, equipments,
-                engravings, cardsResponse, gems, arkPassiveResponse);
+        try {
+            CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getArkgridEffects(charName, key), INSPECTION_EXECUTOR);
+            CompletableFuture<List<EquipmentDto>> equipmentFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getEquipment(charName, key), INSPECTION_EXECUTOR);
+            CompletableFuture<List<EngravingDto>> engravingsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getEngravings(charName, key), INSPECTION_EXECUTOR);
+            CompletableFuture<CardApiResponse> cardsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getCards(charName, key), INSPECTION_EXECUTOR);
+            CompletableFuture<List<GemDto>> gemsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getGems(charName, key), INSPECTION_EXECUTOR);
+            CompletableFuture<ArkPassiveApiResponse> arkPassiveFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getArkPassive(charName, key), INSPECTION_EXECUTOR);
+
+            saveHistoryRecord(inspectionCharacter, profile,
+                    effectsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
+                    equipmentFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
+                    engravingsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
+                    cardsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
+                    gemsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
+                    arkPassiveFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        } catch (Exception e) {
+            log.warn("초기 히스토리 저장 실패 - 캐릭터: {}, 오류: {}", charName, e.getMessage());
+        }
 
         return InspectionCharacterResponse.from(inspectionCharacter);
     }
@@ -211,14 +229,13 @@ public class InspectionService {
 
     /**
      * 일일 데이터 수집 (스케줄러 및 수동 새로고침에서 호출)
-     * 캐릭터별 개별 트랜잭션으로 처리하여 장애 격리
+     * API 호출은 트랜잭션 밖에서 수행하고, DB 저장만 트랜잭션으로 처리
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void fetchDailyData(InspectionCharacter character, String apiKey) {
         try {
             String charName = character.getCharacterName();
 
-            // 1. 모든 API를 병렬로 조회 (전용 스레드풀 + 타임아웃)
+            // 1. 모든 API를 병렬로 조회 (트랜잭션 밖에서 수행)
             CompletableFuture<CharacterJsonDto> profileFuture = CompletableFuture.supplyAsync(() ->
                     lostarkCharacterApiClient.getCharacterProfileForInspection(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
@@ -242,36 +259,9 @@ public class InspectionService {
             List<GemDto> gems = gemsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             ArkPassiveApiResponse arkPassiveResponse = arkPassiveFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-            // 2. 이전 전투력 및 장비 정보 저장
-            double previousCombatPower = character.getCombatPower();
-            List<EquipmentHistory> previousEquipments = getPreviousEquipments(character.getId());
-
-            // 3. 캐릭터 정보 업데이트
-            character.updateProfile(
-                    profile.getCharacterImage(),
-                    profile.getItemAvgLevel(),
-                    profile.getCombatPower(),
-                    profile.getServerName(),
-                    profile.getCharacterClassName(),
-                    profile.getTitle(),
-                    profile.getGuildName(),
-                    profile.getTownName(),
-                    profile.getTownLevel(),
-                    profile.getExpeditionLevel()
-            );
-
-            // 4. 히스토리 저장
-            saveHistoryRecord(character, profile, effects, equipments,
+            // 2. DB 저장은 별도 트랜잭션으로 처리
+            saveFetchedData(character, profile, effects, equipments,
                     engravings, cardsResponse, gems, arkPassiveResponse);
-
-            // 5. 알림 체크 (전투력 + 장비 변화)
-            checkAndNotify(character, profile.getCombatPower(), previousCombatPower);
-
-            // 6. 장비 변화 알림
-            List<EquipmentHistory> newEquipments = equipments.stream()
-                    .map(EquipmentParsingUtil::parse)
-                    .collect(Collectors.toList());
-            checkEquipmentChanges(character, previousEquipments, newEquipments);
 
         } catch (TimeoutException e) {
             log.error("군장검사 API 타임아웃 - 캐릭터: {}", character.getCharacterName());
@@ -279,6 +269,41 @@ public class InspectionService {
             log.error("군장검사 데이터 수집 실패 - 캐릭터: {}, 오류: {}",
                     character.getCharacterName(), e.getMessage());
         }
+    }
+
+    /**
+     * API에서 가져온 데이터를 DB에 저장 (개별 트랜잭션)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveFetchedData(InspectionCharacter character, CharacterJsonDto profile,
+                                 List<ArkgridEffectDto> effects, List<EquipmentDto> equipments,
+                                 List<EngravingDto> engravings, CardApiResponse cardsResponse,
+                                 List<GemDto> gems, ArkPassiveApiResponse arkPassiveResponse) {
+        double previousCombatPower = character.getCombatPower();
+        List<EquipmentHistory> previousEquipments = getPreviousEquipments(character.getId());
+
+        character.updateProfile(
+                profile.getCharacterImage(),
+                profile.getItemAvgLevel(),
+                profile.getCombatPower(),
+                profile.getServerName(),
+                profile.getCharacterClassName(),
+                profile.getTitle(),
+                profile.getGuildName(),
+                profile.getTownName(),
+                profile.getTownLevel(),
+                profile.getExpeditionLevel()
+        );
+
+        saveHistoryRecord(character, profile, effects, equipments,
+                engravings, cardsResponse, gems, arkPassiveResponse);
+
+        checkAndNotify(character, profile.getCombatPower(), previousCombatPower);
+
+        List<EquipmentHistory> newEquipments = equipments.stream()
+                .map(EquipmentParsingUtil::parse)
+                .collect(Collectors.toList());
+        checkEquipmentChanges(character, previousEquipments, newEquipments);
     }
 
     /**
@@ -464,21 +489,31 @@ public class InspectionService {
     }
 
     /**
+     * 수집 시간 조회
+     */
+    @Transactional(readOnly = true)
+    public int getScheduleHour(String username) {
+        Member member = memberService.get(username);
+        return member.getInspectionScheduleHour();
+    }
+
+    /**
+     * 수집 시간 변경
+     */
+    public void updateScheduleHour(String username, int scheduleHour) {
+        Member member = memberService.get(username);
+        member.setInspectionScheduleHour(scheduleHour);
+    }
+
+    /**
      * Stats 배열을 JSON 문자열로 직렬화
      */
-    private String serializeStats(java.util.List<CharacterJsonDto.StatDto> stats) {
+    private String serializeStats(List<CharacterJsonDto.StatDto> stats) {
         if (stats == null || stats.isEmpty()) {
             return null;
         }
         try {
-            org.json.simple.JSONArray array = new org.json.simple.JSONArray();
-            for (CharacterJsonDto.StatDto stat : stats) {
-                org.json.simple.JSONObject obj = new org.json.simple.JSONObject();
-                obj.put("type", stat.getType());
-                obj.put("value", stat.getValue());
-                array.add(obj);
-            }
-            return array.toJSONString();
+            return objectMapper.writeValueAsString(stats);
         } catch (Exception e) {
             log.warn("스탯 직렬화 실패: {}", e.getMessage());
             return null;

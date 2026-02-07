@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.inspection.dto.*;
 import lostark.todo.domain.inspection.service.InspectionService;
-import lostark.todo.domain.member.entity.Member;
-import lostark.todo.domain.member.service.MemberService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +26,6 @@ import java.util.List;
 public class InspectionApi {
 
     private final InspectionService inspectionService;
-    private final MemberService memberService;
 
     @ApiOperation(value = "군장검사 캐릭터 등록")
     @PostMapping("/characters")
@@ -93,9 +90,8 @@ public class InspectionApi {
     @ApiOperation(value = "군장검사 수집 시간 조회")
     @GetMapping("/schedule")
     public ResponseEntity<?> getSchedule(@AuthenticationPrincipal String username) {
-        Member member = memberService.get(username);
         return new ResponseEntity<>(
-                Collections.singletonMap("scheduleHour", member.getInspectionScheduleHour()),
+                Collections.singletonMap("scheduleHour", inspectionService.getScheduleHour(username)),
                 HttpStatus.OK);
     }
 
@@ -104,8 +100,7 @@ public class InspectionApi {
     public ResponseEntity<?> updateSchedule(
             @AuthenticationPrincipal String username,
             @RequestBody @Valid UpdateInspectionScheduleRequest request) {
-        Member member = memberService.get(username);
-        member.setInspectionScheduleHour(request.getScheduleHour());
+        inspectionService.updateScheduleHour(username, request.getScheduleHour());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

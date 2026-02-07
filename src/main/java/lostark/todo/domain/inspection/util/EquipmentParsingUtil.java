@@ -80,7 +80,8 @@ public class EquipmentParsingUtil {
             try {
                 int quality = Integer.parseInt(qualityObj.toString());
                 equipment.setQuality(quality == -1 ? null : quality);
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.debug("숫자 파싱 실패: {}", e.getMessage());
             }
         }
 
@@ -164,7 +165,8 @@ public class EquipmentParsingUtil {
         if (matcher.find()) {
             try {
                 equipment.setAdvancedRefinement(Integer.parseInt(matcher.group(1)));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.debug("숫자 파싱 실패: {}", e.getMessage());
             }
         }
     }
@@ -175,7 +177,8 @@ public class EquipmentParsingUtil {
         if (matcher.find()) {
             try {
                 return Integer.parseInt(matcher.group(1));
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
+                log.debug("숫자 파싱 실패: {}", e.getMessage());
             }
         }
         return null;

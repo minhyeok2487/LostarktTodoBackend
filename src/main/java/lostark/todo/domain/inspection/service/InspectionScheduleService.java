@@ -6,7 +6,6 @@ import lostark.todo.domain.inspection.entity.InspectionCharacter;
 import lostark.todo.domain.inspection.repository.InspectionCharacterRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -26,7 +25,6 @@ public class InspectionScheduleService {
      * 캐릭터별로 개별 트랜잭션으로 처리 (InspectionService.fetchDailyData의 @Transactional 활용)
      */
     @Scheduled(cron = "0 0 * * * ?", zone = "Asia/Seoul")
-    @Transactional(readOnly = true)
     public void fetchScheduledInspectionData() {
         int currentHour = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).getHour();
         log.info("===== 군장검사 스케줄러 실행 ({}시) =====", currentHour);
