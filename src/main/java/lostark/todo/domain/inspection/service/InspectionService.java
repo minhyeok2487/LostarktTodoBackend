@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +34,13 @@ public class InspectionService {
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final NotificationService notificationService;
     private final MemberService memberService;
+
+    private static final ExecutorService INSPECTION_EXECUTOR = new ThreadPoolExecutor(
+            4, 8, 60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(50),
+            new ThreadPoolExecutor.CallerRunsPolicy()
+    );
+    private static final long API_TIMEOUT_SECONDS = 10;
 
     /**
      * 군장검사 캐릭터 등록
@@ -211,29 +218,29 @@ public class InspectionService {
         try {
             String charName = character.getCharacterName();
 
-            // 1. 모든 API를 병렬로 조회
+            // 1. 모든 API를 병렬로 조회 (전용 스레드풀 + 타임아웃)
             CompletableFuture<CharacterJsonDto> profileFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getCharacterProfileForInspection(charName, apiKey));
+                    lostarkCharacterApiClient.getCharacterProfileForInspection(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkgridEffects(charName, apiKey));
+                    lostarkCharacterApiClient.getArkgridEffects(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<List<EquipmentDto>> equipmentFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEquipment(charName, apiKey));
+                    lostarkCharacterApiClient.getEquipment(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<List<EngravingDto>> engravingsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEngravings(charName, apiKey));
+                    lostarkCharacterApiClient.getEngravings(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<CardApiResponse> cardsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getCards(charName, apiKey));
+                    lostarkCharacterApiClient.getCards(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<List<GemDto>> gemsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getGems(charName, apiKey));
+                    lostarkCharacterApiClient.getGems(charName, apiKey), INSPECTION_EXECUTOR);
             CompletableFuture<ArkPassiveApiResponse> arkPassiveFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkPassive(charName, apiKey));
+                    lostarkCharacterApiClient.getArkPassive(charName, apiKey), INSPECTION_EXECUTOR);
 
-            CharacterJsonDto profile = profileFuture.join();
-            List<ArkgridEffectDto> effects = effectsFuture.join();
-            List<EquipmentDto> equipments = equipmentFuture.join();
-            List<EngravingDto> engravings = engravingsFuture.join();
-            CardApiResponse cardsResponse = cardsFuture.join();
-            List<GemDto> gems = gemsFuture.join();
-            ArkPassiveApiResponse arkPassiveResponse = arkPassiveFuture.join();
+            CharacterJsonDto profile = profileFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            List<ArkgridEffectDto> effects = effectsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            List<EquipmentDto> equipments = equipmentFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            List<EngravingDto> engravings = engravingsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            CardApiResponse cardsResponse = cardsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            List<GemDto> gems = gemsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            ArkPassiveApiResponse arkPassiveResponse = arkPassiveFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             // 2. 이전 전투력 및 장비 정보 저장
             double previousCombatPower = character.getCombatPower();
@@ -266,6 +273,8 @@ public class InspectionService {
                     .collect(Collectors.toList());
             checkEquipmentChanges(character, previousEquipments, newEquipments);
 
+        } catch (TimeoutException e) {
+            log.error("군장검사 API 타임아웃 - 캐릭터: {}", character.getCharacterName());
         } catch (Exception e) {
             log.error("군장검사 데이터 수집 실패 - 캐릭터: {}, 오류: {}",
                     character.getCharacterName(), e.getMessage());

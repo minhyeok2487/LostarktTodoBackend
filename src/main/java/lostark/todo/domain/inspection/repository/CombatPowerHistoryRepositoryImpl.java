@@ -18,8 +18,7 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
     @Override
     public List<CombatPowerHistory> findByCharacterAndDateRange(long inspectionCharacterId,
                                                                  LocalDate startDate, LocalDate endDate) {
-        return factory.selectFrom(combatPowerHistory).distinct()
-                .leftJoin(combatPowerHistory.arkgridEffects).fetchJoin()
+        return factory.selectFrom(combatPowerHistory)
                 .where(
                         combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
                         combatPowerHistory.recordDate.between(startDate, endDate)
@@ -106,10 +105,10 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
             return Collections.emptyMap();
         }
 
-        // 각 캐릭터의 최근 2개 히스토리를 한 번에 조회하기 위해
-        // 전체 결과를 가져온 후 그룹핑 (캐릭터별 최근 2일치만 필요하므로 날짜 범위 제한)
+        // 각 캐릭터의 최근 2개 히스토리를 한 번에 조회
+        // 목록 조회용이므로 최근 3일치면 충분
         LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusDays(30);
+        LocalDate startDate = endDate.minusDays(3);
 
         List<CombatPowerHistory> allHistories = factory.selectFrom(combatPowerHistory)
                 .where(

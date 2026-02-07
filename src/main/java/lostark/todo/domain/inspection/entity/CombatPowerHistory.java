@@ -51,6 +51,7 @@ public class CombatPowerHistory extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @BatchSize(size = 20)
     @Builder.Default
     private List<ArkgridEffectHistory> arkgridEffects = new ArrayList<>();
 

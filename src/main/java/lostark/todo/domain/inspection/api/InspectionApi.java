@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,6 +54,10 @@ public class InspectionApi {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         if (endDate == null) endDate = LocalDate.now();
         if (startDate == null) startDate = endDate.minusDays(30);
+        // 최대 90일 제한
+        if (ChronoUnit.DAYS.between(startDate, endDate) > 90) {
+            startDate = endDate.minusDays(90);
+        }
         return new ResponseEntity<>(
                 inspectionService.getDetail(username, inspectionCharacterId, startDate, endDate),
                 HttpStatus.OK);
