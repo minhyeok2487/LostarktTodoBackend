@@ -46,11 +46,8 @@ public class InspectionService {
         }
 
         // 중복 체크
-        Optional<InspectionCharacter> existing = inspectionCharacterRepository
-                .findByIdAndUsername(0, username); // dummy - check by name instead
-        List<InspectionCharacter> memberChars = inspectionCharacterRepository.findByMember(member);
-        boolean isDuplicate = memberChars.stream()
-                .anyMatch(c -> c.getCharacterName().equals(request.getCharacterName()));
+        boolean isDuplicate = inspectionCharacterRepository.existsByMemberAndCharacterName(
+                member, request.getCharacterName());
         if (isDuplicate) {
             throw new ConditionNotMetException("이미 등록된 캐릭터입니다: " + request.getCharacterName());
         }

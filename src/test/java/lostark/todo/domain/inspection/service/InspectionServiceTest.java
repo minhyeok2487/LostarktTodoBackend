@@ -105,7 +105,8 @@ class InspectionServiceTest {
         void success() {
             // given
             given(memberService.get("test@test.com")).willReturn(testMember);
-            given(inspectionCharacterRepository.findByMember(testMember)).willReturn(Collections.emptyList());
+            given(inspectionCharacterRepository.existsByMemberAndCharacterName(testMember, "테스트캐릭터"))
+                    .willReturn(false);
             given(lostarkCharacterApiClient.getCharacterProfileForInspection("테스트캐릭터", "test-api-key"))
                     .willReturn(testProfile);
             given(lostarkCharacterApiClient.getArkgridEffects("테스트캐릭터", "test-api-key"))
@@ -150,7 +151,8 @@ class InspectionServiceTest {
         void fail_duplicateCharacter() {
             // given
             given(memberService.get("test@test.com")).willReturn(testMember);
-            given(inspectionCharacterRepository.findByMember(testMember)).willReturn(List.of(testCharacter));
+            given(inspectionCharacterRepository.existsByMemberAndCharacterName(testMember, "테스트캐릭터"))
+                    .willReturn(true);
 
             CreateInspectionCharacterRequest request = new CreateInspectionCharacterRequest();
             request.setCharacterName("테스트캐릭터");
