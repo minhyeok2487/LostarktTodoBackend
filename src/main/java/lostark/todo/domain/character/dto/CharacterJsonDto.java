@@ -43,4 +43,37 @@ public class CharacterJsonDto {
     @JsonProperty("ServerName")
     @ApiModelProperty(notes = "서버 이름")
     private String serverName;
+
+    @JsonProperty("Title")
+    private String title;
+
+    @JsonProperty("GuildName")
+    private String guildName;
+
+    @JsonProperty("TownName")
+    private String townName;
+
+    @JsonProperty("TownLevel")
+    private Integer townLevel;
+
+    @JsonProperty("ExpeditionLevel")
+    private Integer expeditionLevel;
+
+    @JsonProperty("Stats")
+    private java.util.List<StatDto> stats;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class StatDto {
+        @JsonProperty("Type")
+        private String type;
+
+        @JsonProperty("Value")
+        private String value;
+
+        @JsonProperty("Tooltip")
+        private java.util.List<String> tooltip;
+    }
 }
