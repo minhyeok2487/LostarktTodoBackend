@@ -49,44 +49,29 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
 
     @Override
     public long countConsecutiveUnchangedDays(long inspectionCharacterId) {
-        // 최신 기록의 전투력 가져오기
-        CombatPowerHistory latest = factory.selectFrom(combatPowerHistory)
-                .where(combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId))
+        // 최근 90일 데이터를 조회 후 Java에서 연속 무변동 일수 계산
+        LocalDate cutoffDate = LocalDate.now().minusDays(90);
+        List<CombatPowerHistory> histories = factory.selectFrom(combatPowerHistory)
+                .where(
+                        combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
+                        combatPowerHistory.recordDate.goe(cutoffDate)
+                )
                 .orderBy(combatPowerHistory.recordDate.desc())
-                .fetchFirst();
+                .fetch();
 
-        if (latest == null) {
+        if (histories.isEmpty()) {
             return 0;
         }
 
-        double latestCombatPower = latest.getCombatPower();
-
-        // 전투력이 다른 가장 최근 기록의 날짜를 찾아서, 그 이후 레코드 수를 카운트
-        Long count = factory.select(combatPowerHistory.count())
-                .from(combatPowerHistory)
-                .where(
-                        combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
-                        combatPowerHistory.combatPower.eq(latestCombatPower),
-                        combatPowerHistory.recordDate.goe(
-                                factory.select(combatPowerHistory.recordDate.max())
-                                        .from(combatPowerHistory)
-                                        .where(
-                                                combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
-                                                combatPowerHistory.combatPower.ne(latestCombatPower)
-                                        )
-                        )
-                )
-                .fetchOne();
-
-        // 전투력이 다른 기록이 전혀 없는 경우 전체 개수 반환
-        if (count == null || count == 0) {
-            Long totalCount = factory.select(combatPowerHistory.count())
-                    .from(combatPowerHistory)
-                    .where(combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId))
-                    .fetchOne();
-            return totalCount != null ? totalCount : 0;
+        double latestPower = histories.get(0).getCombatPower();
+        long count = 0;
+        for (CombatPowerHistory h : histories) {
+            if (h.getCombatPower() == latestPower) {
+                count++;
+            } else {
+                break;
+            }
         }
-
         return count;
     }
 

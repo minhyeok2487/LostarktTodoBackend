@@ -1,14 +1,14 @@
 package lostark.todo.domain.inspection.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.inspection.entity.EquipmentHistory;
-import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 @DisplayName("EquipmentParsingUtil 단위 테스트")
 class EquipmentParsingUtilTest {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     // ── 공통 Tooltip JSON 빌더 헬퍼 ──
 
     /**
@@ -24,73 +26,72 @@ class EquipmentParsingUtilTest {
      * qualityValue=-1이면 품질이 없는 장비, leftStr2에 아이템 레벨 포함
      */
     private static String buildItemTitleElement(int qualityValue, int itemLevel) {
-        JSONObject value = new JSONObject();
+        ObjectNode value = MAPPER.createObjectNode();
         value.put("qualityValue", qualityValue);
         value.put("leftStr2",
                 "<FONT SIZE='12'>아이템 레벨 " + String.format("%,d", itemLevel) + " (티어 4)</FONT>");
 
-        JSONObject element = new JSONObject();
+        ObjectNode element = MAPPER.createObjectNode();
         element.put("type", "ItemTitle");
-        element.put("value", value.toJSONString());
-        return element.toJSONString();
+        element.put("value", value.toString());
+        return element.toString();
     }
 
     /**
      * ItemPartBox element JSON을 생성한다.
      */
     private static String buildItemPartBoxElement(String titleHtml, String contentHtml) {
-        JSONObject value = new JSONObject();
+        ObjectNode value = MAPPER.createObjectNode();
         value.put("Element_000", titleHtml);
         value.put("Element_001", contentHtml);
 
-        JSONObject element = new JSONObject();
+        ObjectNode element = MAPPER.createObjectNode();
         element.put("type", "ItemPartBox");
-        element.put("value", value.toJSONString());
-        return element.toJSONString();
+        element.put("value", value.toString());
+        return element.toString();
     }
 
     /**
      * SingleTextBox element JSON을 생성한다 (상급 재련 정보).
      */
     private static String buildSingleTextBoxElement(String textHtml) {
-        JSONObject element = new JSONObject();
+        ObjectNode element = MAPPER.createObjectNode();
         element.put("type", "SingleTextBox");
         element.put("value", textHtml);
-        return element.toJSONString();
+        return element.toString();
     }
 
     /**
      * IndentStringGroup element JSON을 생성한다 (어빌리티 스톤 각인).
      */
     private static String buildIndentStringGroupElement(String... engravingHtmls) {
-        JSONObject value = new JSONObject();
+        ObjectNode value = MAPPER.createObjectNode();
         for (int i = 0; i < engravingHtmls.length; i++) {
-            JSONObject item = new JSONObject();
+            ObjectNode item = MAPPER.createObjectNode();
             item.put("contentStr", engravingHtmls[i]);
-            value.put("Element_" + String.format("%03d", i), item);
+            value.set("Element_" + String.format("%03d", i), item);
         }
 
-        JSONObject element = new JSONObject();
+        ObjectNode element = MAPPER.createObjectNode();
         element.put("type", "IndentStringGroup");
-        element.put("value", value.toJSONString());
-        return element.toJSONString();
+        element.put("value", value.toString());
+        return element.toString();
     }
 
     /**
      * 여러 element를 하나의 Tooltip JSON 문자열로 조합한다.
      */
     private static String buildTooltipJson(String... elementJsons) {
-        JSONObject tooltip = new JSONObject();
+        ObjectNode tooltip = MAPPER.createObjectNode();
         for (int i = 0; i < elementJsons.length; i++) {
             try {
-                org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
-                Object parsed = parser.parse(elementJsons[i]);
-                tooltip.put("Element_" + String.format("%03d", i), parsed);
+                tooltip.set("Element_" + String.format("%03d", i),
+                        MAPPER.readTree(elementJsons[i]));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        return tooltip.toJSONString();
+        return tooltip.toString();
     }
 
     // ── 테스트 케이스 ──
@@ -719,14 +720,14 @@ class EquipmentParsingUtilTest {
         @DisplayName("Tooltip JSON의 value가 null인 element는 무시된다")
         void parse_nullValueInElement_noException() {
             // given
-            JSONObject tooltip = new JSONObject();
-            JSONObject element = new JSONObject();
+            ObjectNode tooltip = MAPPER.createObjectNode();
+            ObjectNode element = MAPPER.createObjectNode();
             element.put("type", "ItemTitle");
-            element.put("value", null);
-            tooltip.put("Element_000", element);
+            element.putNull("value");
+            tooltip.set("Element_000", element);
 
             EquipmentDto dto = new EquipmentDto(
-                    "무기", "+20 테스트 무기", "icon_url", "유물", tooltip.toJSONString()
+                    "무기", "+20 테스트 무기", "icon_url", "유물", tooltip.toString()
             );
 
             // when / then
@@ -957,22 +958,22 @@ class EquipmentParsingUtilTest {
         @DisplayName("알 수 없는 elementType은 무시된다")
         void parse_unknownElementType_ignored() {
             // given
-            JSONObject tooltip = new JSONObject();
-            JSONObject unknownElement = new JSONObject();
+            ObjectNode tooltip = MAPPER.createObjectNode();
+            ObjectNode unknownElement = MAPPER.createObjectNode();
             unknownElement.put("type", "UnknownType");
             unknownElement.put("value", "some value");
-            tooltip.put("Element_000", unknownElement);
+            tooltip.set("Element_000", unknownElement);
 
-            JSONObject titleElement = new JSONObject();
+            ObjectNode titleElement = MAPPER.createObjectNode();
             titleElement.put("type", "ItemTitle");
-            JSONObject titleValue = new JSONObject();
+            ObjectNode titleValue = MAPPER.createObjectNode();
             titleValue.put("qualityValue", 80);
             titleValue.put("leftStr2", "아이템 레벨 1,640 (티어 4)");
-            titleElement.put("value", titleValue);
-            tooltip.put("Element_001", titleElement);
+            titleElement.set("value", titleValue);
+            tooltip.set("Element_001", titleElement);
 
             EquipmentDto dto = new EquipmentDto(
-                    "무기", "+20 테스트 무기", "icon_url", "유물", tooltip.toJSONString()
+                    "무기", "+20 테스트 무기", "icon_url", "유물", tooltip.toString()
             );
 
             // when
@@ -987,11 +988,11 @@ class EquipmentParsingUtilTest {
         @DisplayName("element가 JSONObject가 아닌 경우 무시된다")
         void parse_nonJsonObjectElement_ignored() {
             // given
-            JSONObject tooltip = new JSONObject();
+            ObjectNode tooltip = MAPPER.createObjectNode();
             tooltip.put("Element_000", "string_value_not_object");
 
             EquipmentDto dto = new EquipmentDto(
-                    "무기", "+20 테스트 무기", "icon_url", "유물", tooltip.toJSONString()
+                    "무기", "+20 테스트 무기", "icon_url", "유물", tooltip.toString()
             );
 
             // when / then

@@ -1,17 +1,19 @@
 package lostark.todo.domain.inspection.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.inspection.entity.EquipmentHistory;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
 public class EquipmentParsingUtil {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Pattern ITEM_LEVEL_PATTERN = Pattern.compile("아이템 레벨 (\\d[\\d,]*)");
     private static final Pattern REFINEMENT_PATTERN = Pattern.compile("\\+(\\d+)");
     private static final Pattern ADVANCED_REFINEMENT_PATTERN = Pattern.compile("\\[상급 재련\\]\\s*(\\d+)단계");
@@ -31,8 +33,7 @@ public class EquipmentParsingUtil {
 
         if (dto.getTooltip() != null && !dto.getTooltip().isEmpty()) {
             try {
-                JSONParser parser = new JSONParser();
-                JSONObject tooltip = (JSONObject) parser.parse(dto.getTooltip());
+                JsonNode tooltip = MAPPER.readTree(dto.getTooltip());
                 parseTooltip(tooltip, equipment, dto.getType());
             } catch (Exception e) {
                 log.warn("장비 툴팁 파싱 실패 - 장비: {}, 오류: {}", dto.getName(), e.getMessage());
@@ -42,14 +43,14 @@ public class EquipmentParsingUtil {
         return equipment;
     }
 
-    private static void parseTooltip(JSONObject tooltip, EquipmentHistory equipment, String type) {
-        for (Object key : tooltip.keySet()) {
-            Object elementObj = tooltip.get(key.toString());
-            if (!(elementObj instanceof JSONObject)) continue;
+    private static void parseTooltip(JsonNode tooltip, EquipmentHistory equipment, String type) {
+        Iterator<String> fieldNames = tooltip.fieldNames();
+        while (fieldNames.hasNext()) {
+            String key = fieldNames.next();
+            JsonNode element = tooltip.get(key);
+            if (!element.isObject()) continue;
 
-            JSONObject element = (JSONObject) elementObj;
-            String elementType = getStringValue(element, "type");
-
+            String elementType = getTextOrNull(element, "type");
             if (elementType == null) continue;
 
             switch (elementType) {
@@ -71,21 +72,21 @@ public class EquipmentParsingUtil {
         }
     }
 
-    private static void parseItemTitle(JSONObject element, EquipmentHistory equipment) {
-        JSONObject value = getJsonObject(element, "value");
+    private static void parseItemTitle(JsonNode element, EquipmentHistory equipment) {
+        JsonNode value = getJsonNode(element, "value");
         if (value == null) return;
 
-        Object qualityObj = value.get("qualityValue");
-        if (qualityObj != null) {
+        JsonNode qualityNode = value.get("qualityValue");
+        if (qualityNode != null && !qualityNode.isNull()) {
             try {
-                int quality = Integer.parseInt(qualityObj.toString());
+                int quality = qualityNode.asInt();
                 equipment.setQuality(quality == -1 ? null : quality);
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 log.debug("숫자 파싱 실패: {}", e.getMessage());
             }
         }
 
-        String leftStr2 = getStringValue(value, "leftStr2");
+        String leftStr2 = getTextOrNull(value, "leftStr2");
         if (leftStr2 != null) {
             String plainText = stripHtml(leftStr2);
             Matcher matcher = ITEM_LEVEL_PATTERN.matcher(plainText);
@@ -99,12 +100,12 @@ public class EquipmentParsingUtil {
         }
     }
 
-    private static void parseItemPartBox(JSONObject element, EquipmentHistory equipment, String type) {
-        JSONObject value = getJsonObject(element, "value");
+    private static void parseItemPartBox(JsonNode element, EquipmentHistory equipment, String type) {
+        JsonNode value = getJsonNode(element, "value");
         if (value == null) return;
 
-        String element000 = getStringValue(value, "Element_000");
-        String element001 = getStringValue(value, "Element_001");
+        String element000 = getTextOrNull(value, "Element_000");
+        String element001 = getTextOrNull(value, "Element_001");
 
         if (element000 == null || element001 == null) return;
 
@@ -124,19 +125,20 @@ public class EquipmentParsingUtil {
         }
     }
 
-    private static void parseIndentStringGroup(JSONObject element, EquipmentHistory equipment, String type) {
+    private static void parseIndentStringGroup(JsonNode element, EquipmentHistory equipment, String type) {
         if (!"어빌리티 스톤".equals(type)) return;
 
-        JSONObject value = getJsonObject(element, "value");
+        JsonNode value = getJsonNode(element, "value");
         if (value == null) return;
 
         StringBuilder engravingBuilder = new StringBuilder();
-        for (Object key : value.keySet()) {
-            Object itemObj = value.get(key.toString());
-            if (!(itemObj instanceof JSONObject)) continue;
+        Iterator<String> fieldNames = value.fieldNames();
+        while (fieldNames.hasNext()) {
+            String key = fieldNames.next();
+            JsonNode item = value.get(key);
+            if (!item.isObject()) continue;
 
-            JSONObject item = (JSONObject) itemObj;
-            String contentStr = getStringValue(item, "contentStr");
+            String contentStr = getTextOrNull(item, "contentStr");
             if (contentStr == null) continue;
 
             String plainContent = stripHtml(contentStr).trim();
@@ -156,8 +158,8 @@ public class EquipmentParsingUtil {
         }
     }
 
-    private static void parseSingleTextBox(JSONObject element, EquipmentHistory equipment) {
-        String value = getStringValue(element, "value");
+    private static void parseSingleTextBox(JsonNode element, EquipmentHistory equipment) {
+        String value = getTextOrNull(element, "value");
         if (value == null) return;
 
         String plainText = stripHtml(value).trim();
@@ -193,23 +195,24 @@ public class EquipmentParsingUtil {
         return "목걸이".equals(type) || "귀걸이".equals(type) || "반지".equals(type);
     }
 
-    private static String getStringValue(JSONObject obj, String key) {
-        Object val = obj.get(key);
-        return val != null ? val.toString() : null;
+    private static String getTextOrNull(JsonNode node, String field) {
+        JsonNode child = node.get(field);
+        if (child == null || child.isNull()) return null;
+        return child.asText();
     }
 
-    private static JSONObject getJsonObject(JSONObject obj, String key) {
-        Object val = obj.get(key);
-        if (val instanceof JSONObject) {
-            return (JSONObject) val;
-        }
-        if (val instanceof String) {
+    /**
+     * element의 "value" 필드를 JsonNode로 반환.
+     * value가 문자열인 경우 JSON으로 한번 더 파싱.
+     */
+    private static JsonNode getJsonNode(JsonNode node, String field) {
+        JsonNode child = node.get(field);
+        if (child == null || child.isNull()) return null;
+        if (child.isObject()) return child;
+        if (child.isTextual()) {
             try {
-                JSONParser parser = new JSONParser();
-                Object parsed = parser.parse((String) val);
-                if (parsed instanceof JSONObject) {
-                    return (JSONObject) parsed;
-                }
+                JsonNode parsed = MAPPER.readTree(child.asText());
+                if (parsed.isObject()) return parsed;
             } catch (Exception e) {
                 log.warn("툴팁 내부 JSON 파싱 실패: {}", e.getMessage());
             }

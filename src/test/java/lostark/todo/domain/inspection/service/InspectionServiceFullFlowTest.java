@@ -24,6 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,10 +56,6 @@ class InspectionServiceFullFlowTest {
     @Mock
     private MemberService memberService;
 
-    @Spy
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-    @InjectMocks
     private InspectionService inspectionService;
 
     private Member testMember;
@@ -72,6 +72,17 @@ class InspectionServiceFullFlowTest {
 
     @BeforeEach
     void setUp() {
+        ExecutorService realExecutor = new ThreadPoolExecutor(
+                4, 4, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        inspectionService = new InspectionService(
+                inspectionCharacterRepository,
+                combatPowerHistoryRepository,
+                lostarkCharacterApiClient,
+                notificationService,
+                memberService,
+                new ObjectMapper(),
+                realExecutor);
+
         testMember = Member.builder()
                 .id(1L)
                 .username("test@test.com")

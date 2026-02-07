@@ -1,5 +1,6 @@
 package lostark.todo.domain.inspection.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.*;
 import lostark.todo.domain.inspection.entity.ArkgridEffectHistory;
@@ -19,11 +20,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -54,7 +60,6 @@ class InspectionPerformanceTest {
     @Mock
     private MemberService memberService;
 
-    @InjectMocks
     private InspectionService inspectionService;
 
     // InspectionScheduleService 내부의 inspectionService를 mock으로 주입하기 위해 별도 mock 사용
@@ -72,6 +77,17 @@ class InspectionPerformanceTest {
 
     @BeforeEach
     void setUp() {
+        ExecutorService realExecutor = new ThreadPoolExecutor(
+                4, 4, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        inspectionService = new InspectionService(
+                inspectionCharacterRepository,
+                combatPowerHistoryRepository,
+                lostarkCharacterApiClient,
+                notificationService,
+                memberService,
+                new ObjectMapper(),
+                realExecutor);
+
         // InspectionScheduleService에 mock InspectionService 주입
         inspectionScheduleService = new InspectionScheduleService(
                 inspectionCharacterRepository, inspectionServiceMock);

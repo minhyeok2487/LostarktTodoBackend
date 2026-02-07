@@ -1,6 +1,5 @@
 package lostark.todo.domain.inspection.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.*;
@@ -14,6 +13,7 @@ import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.service.MemberService;
 import lostark.todo.domain.notification.service.NotificationService;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,6 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class InspectionService {
@@ -36,13 +35,26 @@ public class InspectionService {
     private final NotificationService notificationService;
     private final MemberService memberService;
     private final ObjectMapper objectMapper;
+    private final ExecutorService inspectionExecutor;
 
-    private static final ExecutorService INSPECTION_EXECUTOR = new ThreadPoolExecutor(
-            4, 8, 60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(50),
-            new ThreadPoolExecutor.CallerRunsPolicy()
-    );
     private static final long API_TIMEOUT_SECONDS = 10;
+
+    public InspectionService(
+            InspectionCharacterRepository inspectionCharacterRepository,
+            CombatPowerHistoryRepository combatPowerHistoryRepository,
+            LostarkCharacterApiClient lostarkCharacterApiClient,
+            NotificationService notificationService,
+            MemberService memberService,
+            ObjectMapper objectMapper,
+            @Qualifier("inspectionExecutor") ExecutorService inspectionExecutor) {
+        this.inspectionCharacterRepository = inspectionCharacterRepository;
+        this.combatPowerHistoryRepository = combatPowerHistoryRepository;
+        this.lostarkCharacterApiClient = lostarkCharacterApiClient;
+        this.notificationService = notificationService;
+        this.memberService = memberService;
+        this.objectMapper = objectMapper;
+        this.inspectionExecutor = inspectionExecutor;
+    }
 
     /**
      * 군장검사 캐릭터 등록
@@ -90,17 +102,17 @@ public class InspectionService {
         String key = member.getApiKey();
         try {
             CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkgridEffects(charName, key), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getArkgridEffects(charName, key), inspectionExecutor);
             CompletableFuture<List<EquipmentDto>> equipmentFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEquipment(charName, key), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getEquipment(charName, key), inspectionExecutor);
             CompletableFuture<List<EngravingDto>> engravingsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEngravings(charName, key), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getEngravings(charName, key), inspectionExecutor);
             CompletableFuture<CardApiResponse> cardsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getCards(charName, key), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getCards(charName, key), inspectionExecutor);
             CompletableFuture<List<GemDto>> gemsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getGems(charName, key), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getGems(charName, key), inspectionExecutor);
             CompletableFuture<ArkPassiveApiResponse> arkPassiveFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkPassive(charName, key), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getArkPassive(charName, key), inspectionExecutor);
 
             saveHistoryRecord(inspectionCharacter, profile,
                     effectsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
@@ -237,19 +249,19 @@ public class InspectionService {
 
             // 1. 모든 API를 병렬로 조회 (트랜잭션 밖에서 수행)
             CompletableFuture<CharacterJsonDto> profileFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getCharacterProfileForInspection(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getCharacterProfileForInspection(charName, apiKey), inspectionExecutor);
             CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkgridEffects(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getArkgridEffects(charName, apiKey), inspectionExecutor);
             CompletableFuture<List<EquipmentDto>> equipmentFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEquipment(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getEquipment(charName, apiKey), inspectionExecutor);
             CompletableFuture<List<EngravingDto>> engravingsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEngravings(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getEngravings(charName, apiKey), inspectionExecutor);
             CompletableFuture<CardApiResponse> cardsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getCards(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getCards(charName, apiKey), inspectionExecutor);
             CompletableFuture<List<GemDto>> gemsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getGems(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getGems(charName, apiKey), inspectionExecutor);
             CompletableFuture<ArkPassiveApiResponse> arkPassiveFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkPassive(charName, apiKey), INSPECTION_EXECUTOR);
+                    lostarkCharacterApiClient.getArkPassive(charName, apiKey), inspectionExecutor);
 
             CharacterJsonDto profile = profileFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             List<ArkgridEffectDto> effects = effectsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS);

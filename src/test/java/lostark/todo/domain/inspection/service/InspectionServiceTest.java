@@ -1,5 +1,6 @@
 package lostark.todo.domain.inspection.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.*;
 import lostark.todo.domain.inspection.entity.CombatPowerHistory;
@@ -18,10 +19,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,7 +54,6 @@ class InspectionServiceTest {
     @Mock
     private MemberService memberService;
 
-    @InjectMocks
     private InspectionService inspectionService;
 
     private Member testMember;
@@ -58,6 +63,17 @@ class InspectionServiceTest {
 
     @BeforeEach
     void setUp() {
+        ExecutorService realExecutor = new ThreadPoolExecutor(
+                4, 4, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        inspectionService = new InspectionService(
+                inspectionCharacterRepository,
+                combatPowerHistoryRepository,
+                lostarkCharacterApiClient,
+                notificationService,
+                memberService,
+                new ObjectMapper(),
+                realExecutor);
+
         testMember = Member.builder()
                 .id(1L)
                 .username("test@test.com")
