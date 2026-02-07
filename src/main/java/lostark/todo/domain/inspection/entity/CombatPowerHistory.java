@@ -49,6 +49,11 @@ public class CombatPowerHistory extends BaseTimeEntity {
     @Builder.Default
     private List<ArkgridEffectHistory> arkgridEffects = new ArrayList<>();
 
+    @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    private List<EquipmentHistory> equipments = new ArrayList<>();
+
     public void updateData(double combatPower, double itemLevel, String characterImage) {
         this.combatPower = combatPower;
         this.itemLevel = itemLevel;
@@ -60,6 +65,14 @@ public class CombatPowerHistory extends BaseTimeEntity {
         newEffects.forEach(effect -> {
             effect.setCombatPowerHistory(this);
             this.arkgridEffects.add(effect);
+        });
+    }
+
+    public void replaceEquipments(List<EquipmentHistory> newEquipments) {
+        this.equipments.clear();
+        newEquipments.forEach(equipment -> {
+            equipment.setCombatPowerHistory(this);
+            this.equipments.add(equipment);
         });
     }
 }
