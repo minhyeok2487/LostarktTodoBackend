@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.*;
-import lostark.todo.domain.inspection.entity.ArkgridEffectHistory;
-import lostark.todo.domain.inspection.entity.CombatPowerHistory;
-import lostark.todo.domain.inspection.entity.EquipmentHistory;
-import lostark.todo.domain.inspection.entity.InspectionCharacter;
+import lostark.todo.domain.inspection.entity.*;;
 import lostark.todo.domain.inspection.util.EquipmentChangeDetector;
 import lostark.todo.domain.inspection.util.EquipmentParsingUtil;
 import lostark.todo.domain.inspection.repository.CombatPowerHistoryRepository;
@@ -79,12 +76,17 @@ public class InspectionService {
 
         inspectionCharacterRepository.save(inspectionCharacter);
 
-        // 초기 히스토리 저장 (아크그리드 효과, 장비 정보도 함께 조회)
-        List<ArkgridEffectDto> effects = lostarkCharacterApiClient
-                .getArkgridEffects(request.getCharacterName(), member.getApiKey());
-        List<EquipmentDto> equipments = lostarkCharacterApiClient
-                .getEquipment(request.getCharacterName(), member.getApiKey());
-        saveHistoryRecord(inspectionCharacter, profile, effects, equipments);
+        // 초기 히스토리 저장 (모든 API 데이터 함께 조회)
+        String charName = request.getCharacterName();
+        String key = member.getApiKey();
+        List<ArkgridEffectDto> effects = lostarkCharacterApiClient.getArkgridEffects(charName, key);
+        List<EquipmentDto> equipments = lostarkCharacterApiClient.getEquipment(charName, key);
+        List<EngravingDto> engravings = lostarkCharacterApiClient.getEngravings(charName, key);
+        CardApiResponse cardsResponse = lostarkCharacterApiClient.getCards(charName, key);
+        List<GemDto> gems = lostarkCharacterApiClient.getGems(charName, key);
+        ArkPassiveApiResponse arkPassiveResponse = lostarkCharacterApiClient.getArkPassive(charName, key);
+        saveHistoryRecord(inspectionCharacter, profile, effects, equipments,
+                engravings, cardsResponse, gems, arkPassiveResponse);
 
         return InspectionCharacterResponse.from(inspectionCharacter);
     }
@@ -207,17 +209,31 @@ public class InspectionService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void fetchDailyData(InspectionCharacter character, String apiKey) {
         try {
-            // 1. 프로필, 아크그리드 효과, 장비 정보를 병렬로 조회
+            String charName = character.getCharacterName();
+
+            // 1. 모든 API를 병렬로 조회
             CompletableFuture<CharacterJsonDto> profileFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getCharacterProfileForInspection(character.getCharacterName(), apiKey));
+                    lostarkCharacterApiClient.getCharacterProfileForInspection(charName, apiKey));
             CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getArkgridEffects(character.getCharacterName(), apiKey));
+                    lostarkCharacterApiClient.getArkgridEffects(charName, apiKey));
             CompletableFuture<List<EquipmentDto>> equipmentFuture = CompletableFuture.supplyAsync(() ->
-                    lostarkCharacterApiClient.getEquipment(character.getCharacterName(), apiKey));
+                    lostarkCharacterApiClient.getEquipment(charName, apiKey));
+            CompletableFuture<List<EngravingDto>> engravingsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getEngravings(charName, apiKey));
+            CompletableFuture<CardApiResponse> cardsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getCards(charName, apiKey));
+            CompletableFuture<List<GemDto>> gemsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getGems(charName, apiKey));
+            CompletableFuture<ArkPassiveApiResponse> arkPassiveFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getArkPassive(charName, apiKey));
 
             CharacterJsonDto profile = profileFuture.join();
             List<ArkgridEffectDto> effects = effectsFuture.join();
             List<EquipmentDto> equipments = equipmentFuture.join();
+            List<EngravingDto> engravings = engravingsFuture.join();
+            CardApiResponse cardsResponse = cardsFuture.join();
+            List<GemDto> gems = gemsFuture.join();
+            ArkPassiveApiResponse arkPassiveResponse = arkPassiveFuture.join();
 
             // 2. 이전 전투력 및 장비 정보 저장
             double previousCombatPower = character.getCombatPower();
@@ -238,7 +254,8 @@ public class InspectionService {
             );
 
             // 4. 히스토리 저장
-            saveHistoryRecord(character, profile, effects, equipments);
+            saveHistoryRecord(character, profile, effects, equipments,
+                    engravings, cardsResponse, gems, arkPassiveResponse);
 
             // 5. 알림 체크 (전투력 + 장비 변화)
             checkAndNotify(character, profile.getCombatPower(), previousCombatPower);
@@ -256,10 +273,12 @@ public class InspectionService {
     }
 
     /**
-     * 히스토리 레코드 저장 (upsert)
+     * 히스토리 레코드 저장 (upsert) - 전체 API 데이터 포함
      */
     private void saveHistoryRecord(InspectionCharacter character, CharacterJsonDto profile,
-                                   List<ArkgridEffectDto> effects, List<EquipmentDto> equipments) {
+                                   List<ArkgridEffectDto> effects, List<EquipmentDto> equipments,
+                                   List<EngravingDto> engravings, CardApiResponse cardsResponse,
+                                   List<GemDto> gems, ArkPassiveApiResponse arkPassiveResponse) {
         LocalDate today = LocalDate.now();
         String statsJson = serializeStats(profile.getStats());
 
@@ -281,6 +300,11 @@ public class InspectionService {
                     .statsJson(statsJson)
                     .arkgridEffects(new ArrayList<>())
                     .equipments(new ArrayList<>())
+                    .engravings(new ArrayList<>())
+                    .cards(new ArrayList<>())
+                    .cardSetEffects(new ArrayList<>())
+                    .gems(new ArrayList<>())
+                    .arkPassives(new ArrayList<>())
                     .build();
             combatPowerHistoryRepository.save(history);
         }
@@ -293,15 +317,70 @@ public class InspectionService {
                         .effectTooltip(effect.getTooltip())
                         .build())
                 .collect(Collectors.toList());
-
         history.replaceArkgridEffects(effectHistories);
 
         // 장비 정보 저장
         List<EquipmentHistory> equipmentHistories = equipments.stream()
                 .map(EquipmentParsingUtil::parse)
                 .collect(Collectors.toList());
-
         history.replaceEquipments(equipmentHistories);
+
+        // 각인 정보 저장
+        List<EngravingHistory> engravingHistories = engravings.stream()
+                .map(e -> EngravingHistory.builder()
+                        .name(e.getName())
+                        .level(e.getLevel())
+                        .grade(e.getGrade())
+                        .abilityStoneLevel(e.getAbilityStoneLevel())
+                        .build())
+                .collect(Collectors.toList());
+        history.replaceEngravings(engravingHistories);
+
+        // 카드 정보 저장
+        List<CardHistory> cardHistories = cardsResponse.getCards().stream()
+                .map(c -> CardHistory.builder()
+                        .name(c.getName())
+                        .icon(c.getIcon())
+                        .awakeCount(c.getAwakeCount())
+                        .awakeTotal(c.getAwakeTotal())
+                        .grade(c.getGrade())
+                        .build())
+                .collect(Collectors.toList());
+        history.replaceCards(cardHistories);
+
+        // 카드 세트효과 저장
+        List<CardSetEffectHistory> cardSetEffectHistories = cardsResponse.getCardSetEffects().stream()
+                .map(e -> CardSetEffectHistory.builder()
+                        .name(e.getName())
+                        .description(e.getDescription())
+                        .build())
+                .collect(Collectors.toList());
+        history.replaceCardSetEffects(cardSetEffectHistories);
+
+        // 보석 정보 저장
+        List<GemHistory> gemHistories = gems.stream()
+                .map(g -> GemHistory.builder()
+                        .skillName(g.getSkillName())
+                        .gemLevel(g.getGemLevel())
+                        .description(g.getDescription())
+                        .option(g.getOption())
+                        .icon(g.getIcon())
+                        .build())
+                .collect(Collectors.toList());
+        history.replaceGems(gemHistories);
+
+        // 아크패시브 정보 저장
+        history.setArkPassivePointsJson(arkPassiveResponse.getPointsJson());
+        List<ArkPassiveHistory> arkPassiveHistories = arkPassiveResponse.getEffects().stream()
+                .map(a -> ArkPassiveHistory.builder()
+                        .category(a.getCategory())
+                        .name(a.getName())
+                        .level(a.getLevel())
+                        .icon(a.getIcon())
+                        .description(a.getDescription())
+                        .build())
+                .collect(Collectors.toList());
+        history.replaceArkPassives(arkPassiveHistories);
     }
 
     /**

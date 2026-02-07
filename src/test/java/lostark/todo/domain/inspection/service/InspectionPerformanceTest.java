@@ -132,6 +132,18 @@ class InspectionPerformanceTest {
         testProfile.setCharacterImage("https://img.test.com/char1.png");
         testProfile.setItemAvgLevel(1620.0);
         testProfile.setCombatPower(2300.0);
+
+        // 신규 API 기본 스텁
+        given(lostarkCharacterApiClient.getEquipment(anyString(), anyString()))
+                .willReturn(Collections.emptyList());
+        given(lostarkCharacterApiClient.getEngravings(anyString(), anyString()))
+                .willReturn(Collections.emptyList());
+        given(lostarkCharacterApiClient.getCards(anyString(), anyString()))
+                .willReturn(new CardApiResponse(Collections.emptyList(), Collections.emptyList()));
+        given(lostarkCharacterApiClient.getGems(anyString(), anyString()))
+                .willReturn(Collections.emptyList());
+        given(lostarkCharacterApiClient.getArkPassive(anyString(), anyString()))
+                .willReturn(new ArkPassiveApiResponse(null, Collections.emptyList()));
     }
 
     // =========================================================================
@@ -876,6 +888,12 @@ class InspectionPerformanceTest {
                 .itemLevel(character.getItemLevel())
                 .characterImage(character.getCharacterImage())
                 .arkgridEffects(new ArrayList<>())
+                .equipments(new ArrayList<>())
+                .engravings(new ArrayList<>())
+                .cards(new ArrayList<>())
+                .cardSetEffects(new ArrayList<>())
+                .gems(new ArrayList<>())
+                .arkPassives(new ArrayList<>())
                 .build();
     }
 
@@ -889,6 +907,12 @@ class InspectionPerformanceTest {
                 .itemLevel(itemLevel)
                 .characterImage(character.getCharacterImage())
                 .arkgridEffects(new ArrayList<>())
+                .equipments(new ArrayList<>())
+                .engravings(new ArrayList<>())
+                .cards(new ArrayList<>())
+                .cardSetEffects(new ArrayList<>())
+                .gems(new ArrayList<>())
+                .arkPassives(new ArrayList<>())
                 .build();
     }
 }

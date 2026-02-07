@@ -93,7 +93,25 @@ class InspectionServiceTest {
                 .combatPower(2200.0)
                 .itemLevel(1620.0)
                 .arkgridEffects(new ArrayList<>())
+                .equipments(new ArrayList<>())
+                .engravings(new ArrayList<>())
+                .cards(new ArrayList<>())
+                .cardSetEffects(new ArrayList<>())
+                .gems(new ArrayList<>())
+                .arkPassives(new ArrayList<>())
                 .build();
+
+        // 신규 API 기본 스텁
+        given(lostarkCharacterApiClient.getEquipment(anyString(), anyString()))
+                .willReturn(Collections.emptyList());
+        given(lostarkCharacterApiClient.getEngravings(anyString(), anyString()))
+                .willReturn(Collections.emptyList());
+        given(lostarkCharacterApiClient.getCards(anyString(), anyString()))
+                .willReturn(new CardApiResponse(Collections.emptyList(), Collections.emptyList()));
+        given(lostarkCharacterApiClient.getGems(anyString(), anyString()))
+                .willReturn(Collections.emptyList());
+        given(lostarkCharacterApiClient.getArkPassive(anyString(), anyString()))
+                .willReturn(new ArkPassiveApiResponse(null, Collections.emptyList()));
     }
 
     @Nested
