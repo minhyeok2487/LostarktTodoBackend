@@ -259,6 +259,54 @@ class EquipmentChangeDetectorTest {
     }
 
     @Nested
+    @DisplayName("비전투 장비 제외")
+    class NonCombatEquipmentExclusion {
+
+        @Test
+        @DisplayName("나침반/부적/보주 타입 장비는 변화가 있어도 알림을 생성하지 않는다")
+        void excludeNonCombatEquipment() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipment("나침반", "구 나침반", null, null, null),
+                    buildEquipment("부적", "구 부적", null, null, null),
+                    buildEquipment("보주", "구 보주", null, null, null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipment("나침반", "신 나침반", null, null, null),
+                    buildEquipment("부적", "신 부적", null, null, null),
+                    buildEquipment("보주", "신 보주", null, null, null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).isEmpty();
+        }
+
+        @Test
+        @DisplayName("비전투 장비 제외 시 전투 장비 변화는 정상 감지한다")
+        void excludeNonCombat_detectsCombatChanges() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipment("나침반", "구 나침반", null, null, null),
+                    buildEquipment("무기", "+24 운명의 업화 롱 스태프", 24, null, 97)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipment("나침반", "신 나침반", null, null, null),
+                    buildEquipment("무기", "+24 운명의 업화 롱 스태프", 25, null, 97)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).contains("무기").contains("강화");
+        }
+    }
+
+    @Nested
     @DisplayName("엣지 케이스")
     class EdgeCases {
 

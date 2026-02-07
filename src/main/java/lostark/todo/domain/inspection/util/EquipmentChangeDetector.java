@@ -6,11 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EquipmentChangeDetector {
 
     private static final int MAX_NOTIFICATIONS_PER_CHARACTER = 5;
+
+    private static final Set<String> EXCLUDED_TYPES = Set.of("나침반", "부적", "보주");
 
     private EquipmentChangeDetector() {
     }
@@ -37,6 +40,11 @@ public class EquipmentChangeDetector {
         for (EquipmentHistory newEquip : newEquipments) {
             if (changes.size() >= MAX_NOTIFICATIONS_PER_CHARACTER) {
                 break;
+            }
+
+            // 비전투 장비는 알림 제외
+            if (EXCLUDED_TYPES.contains(newEquip.getType())) {
+                continue;
             }
 
             EquipmentHistory prevEquip = prevByType.get(newEquip.getType());
