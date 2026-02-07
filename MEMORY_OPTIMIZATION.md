@@ -685,29 +685,34 @@ docker stats loatodo-test
 docker inspect loatodo-test | grep -i memory
 ```
 
-### 7-3. JVM 내부 메모리 모니터링 (컨테이너 진입)
+### 7-3. JVM 내부 메모리 모니터링
+
+> **주의**: 프로덕션 Dockerfile은 `amazoncorretto:17-al2023-headless` (JRE 전용) 이미지를 사용하므로, 컨테이너 내부에서 `jcmd`, `jmap`, `jstat`, `jps` 등 JDK 진단 도구를 사용할 수 없다.
+> 프로덕션 메모리 모니터링은 **7-4. Actuator 엔드포인트**를 사용하는 것을 권장한다.
+> JDK 도구가 필요한 경우 아래 두 가지 방법이 있다:
+> 1. **로컬 환경**에서 직접 `java -jar`로 실행하여 진단 (로컬에는 JDK 설치됨)
+> 2. **디버깅용 이미지**로 임시 교체: `amazoncorretto:17-al2023` (JDK 포함, 이미지 크기 증가)
+
+#### 로컬 환경에서 JDK 도구 사용
 
 ```bash
-# 컨테이너 내부로 진입
-docker exec -it loatodo-test bash
-
-# JVM 프로세스 ID 확인
+# 로컬에서 직접 실행 후 PID 확인
 jps -l
 
-# 힙 메모리 요약 (PID를 1로 가정 - Docker 컨테이너에서는 보통 1)
-jcmd 1 GC.heap_info
+# 힙 메모리 요약
+jcmd <PID> GC.heap_info
 
 # 상세 힙 히스토그램 (어떤 객체가 메모리를 많이 쓰는지)
-jmap -histo 1 | head -30
+jmap -histo <PID> | head -30
 
 # GC 상태 모니터링 (1초 간격)
-jstat -gcutil 1 1000
+jstat -gcutil <PID> 1000
 
 # VM 플래그 확인 (Xmx, Xms 등 설정 확인)
-jcmd 1 VM.flags
+jcmd <PID> VM.flags
 
-# Native Memory Tracking (Dockerfile에 -XX:NativeMemoryTracking=summary 추가 필요)
-jcmd 1 VM.native_memory summary
+# Native Memory Tracking (-XX:NativeMemoryTracking=summary JVM 옵션 추가 필요)
+jcmd <PID> VM.native_memory summary
 ```
 
 ### 7-4. Actuator 엔드포인트 활용
@@ -778,27 +783,22 @@ chmod +x memory-check.sh
 
 ### 7-6. Native Memory Tracking (고급)
 
-Dockerfile에 다음 옵션을 추가하면 JVM의 Native Memory 사용량을 정밀하게 추적할 수 있다:
-
-```dockerfile
-ENTRYPOINT ["java", \
-  "-Xms256m", \
-  "-Xmx512m", \
-  "-XX:MaxMetaspaceSize=128m", \
-  "-XX:+UseG1GC", \
-  "-XX:NativeMemoryTracking=summary", \
-  "-jar", "app.jar"]
-```
+로컬에서 JVM 옵션에 `-XX:NativeMemoryTracking=summary`를 추가하면 Native Memory 사용량을 정밀하게 추적할 수 있다:
 
 ```bash
-# Native Memory 요약
-docker exec loatodo-test jcmd 1 VM.native_memory summary
+# 로컬 실행 시 NMT 옵션 추가
+java -Xms256m -Xmx512m -XX:MaxMetaspaceSize=160m -XX:+UseG1GC \
+  -XX:NativeMemoryTracking=summary \
+  -Dspring.profiles.active=local -jar build/libs/todo-0.0.1-SNAPSHOT.jar
+
+# Native Memory 요약 (로컬에서 PID로 조회)
+jcmd <PID> VM.native_memory summary
 
 # 출력 예시:
 # Total: reserved=1500MB, committed=800MB
 #   - Java Heap (reserved=512MB, committed=256MB)
-#   - Class (reserved=128MB, committed=80MB)     ← Metaspace
-#   - Thread (reserved=30MB, committed=30MB)      ← 쓰레드 스택
+#   - Class (reserved=160MB, committed=107MB)     ← Metaspace
+#   - Thread (reserved=27MB, committed=27MB)       ← 쓰레드 스택
 #   - GC (reserved=50MB, committed=50MB)
 ```
 
