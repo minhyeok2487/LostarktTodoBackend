@@ -114,7 +114,7 @@ public class InspectionService {
                     gemsFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS),
                     arkPassiveFuture.get(API_TIMEOUT_SECONDS, TimeUnit.SECONDS));
         } catch (Exception e) {
-            log.warn("초기 히스토리 저장 실패 - 캐릭터: {}, 오류: {}", charName, e.getMessage());
+            log.warn("초기 히스토리 저장 실패 - 캐릭터: {}", charName, e);
         }
 
         return InspectionCharacterResponse.from(inspectionCharacter);
@@ -270,8 +270,8 @@ public class InspectionService {
         } catch (TimeoutException e) {
             log.error("군장검사 API 타임아웃 - 캐릭터: {}", character.getCharacterName());
         } catch (Exception e) {
-            log.error("군장검사 데이터 수집 실패 - 캐릭터: {}, 오류: {}",
-                    character.getCharacterName(), e.getMessage());
+            log.error("군장검사 데이터 수집 실패 - 캐릭터: {}",
+                    character.getCharacterName(), e);
         }
     }
 

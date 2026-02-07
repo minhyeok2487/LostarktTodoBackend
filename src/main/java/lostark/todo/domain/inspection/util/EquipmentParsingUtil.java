@@ -36,7 +36,7 @@ public class EquipmentParsingUtil {
                 JsonNode tooltip = MAPPER.readTree(dto.getTooltip());
                 parseTooltip(tooltip, equipment, dto.getType());
             } catch (Exception e) {
-                log.warn("장비 툴팁 파싱 실패 - 장비: {}, 오류: {}", dto.getName(), e.getMessage());
+                log.warn("장비 툴팁 파싱 실패 - 장비: {}", dto.getName(), e);
             }
         }
 
@@ -214,7 +214,7 @@ public class EquipmentParsingUtil {
                 JsonNode parsed = MAPPER.readTree(child.asText());
                 if (parsed.isObject()) return parsed;
             } catch (Exception e) {
-                log.warn("툴팁 내부 JSON 파싱 실패: {}", e.getMessage());
+                log.warn("툴팁 내부 JSON 파싱 실패", e);
             }
         }
         return null;

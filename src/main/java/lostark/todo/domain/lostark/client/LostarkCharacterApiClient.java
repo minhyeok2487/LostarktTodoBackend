@@ -223,7 +223,7 @@ public class LostarkCharacterApiClient {
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("아크그리드 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            log.warn("아크그리드 조회 실패 - 캐릭터: {}", characterName, e);
             return new ArrayList<>();
         }
     }
@@ -255,7 +255,7 @@ public class LostarkCharacterApiClient {
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("장비 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            log.warn("장비 정보 조회 실패 - 캐릭터: {}", characterName, e);
             return new ArrayList<>();
         }
     }
@@ -321,7 +321,7 @@ public class LostarkCharacterApiClient {
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("아크패시브 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            log.warn("아크패시브 정보 조회 실패 - 캐릭터: {}", characterName, e);
             return new ArkPassiveApiResponse(null, new ArrayList<>(), new ArrayList<>());
         }
     }
@@ -375,7 +375,7 @@ public class LostarkCharacterApiClient {
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("각인 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            log.warn("각인 정보 조회 실패 - 캐릭터: {}", characterName, e);
             return new ArrayList<>();
         }
     }
@@ -437,7 +437,7 @@ public class LostarkCharacterApiClient {
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("보석 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            log.warn("보석 정보 조회 실패 - 캐릭터: {}", characterName, e);
             return new ArrayList<>();
         }
     }
@@ -493,7 +493,7 @@ public class LostarkCharacterApiClient {
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("카드 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            log.warn("카드 정보 조회 실패 - 캐릭터: {}", characterName, e);
             return new CardApiResponse(new ArrayList<>(), new ArrayList<>());
         }
     }

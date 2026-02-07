@@ -245,7 +245,7 @@ public class InspectionPersistenceService {
         try {
             return objectMapper.writeValueAsString(stats);
         } catch (Exception e) {
-            log.warn("스탯 직렬화 실패: {}", e.getMessage());
+            log.warn("스탯 직렬화 실패", e);
             return null;
         }
     }

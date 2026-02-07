@@ -68,8 +68,8 @@ public class InspectionScheduleService {
                 break;
             } catch (Exception e) {
                 failCount++;
-                log.error("데이터 수집 실패 - 캐릭터: {}, 오류: {}",
-                        character.getCharacterName(), e.getMessage());
+                log.error("데이터 수집 실패 - 캐릭터: {}",
+                        character.getCharacterName(), e);
             }
         }
 
