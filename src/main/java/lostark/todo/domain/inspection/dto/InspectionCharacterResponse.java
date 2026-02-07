@@ -29,6 +29,8 @@ public class InspectionCharacterResponse {
     private LocalDateTime createdDate;
     private Double previousCombatPower;
     private double combatPowerChange;
+    private Double previousItemLevel;
+    private double itemLevelChange;
     private long unchangedDays;
 
     public static InspectionCharacterResponse from(InspectionCharacter entity) {

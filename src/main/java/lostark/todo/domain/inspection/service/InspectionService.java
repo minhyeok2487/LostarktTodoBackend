@@ -111,6 +111,8 @@ public class InspectionService {
                 CombatPowerHistory previous = latest2.get(1);
                 response.setPreviousCombatPower(previous.getCombatPower());
                 response.setCombatPowerChange(latest.getCombatPower() - previous.getCombatPower());
+                response.setPreviousItemLevel(previous.getItemLevel());
+                response.setItemLevelChange(latest.getItemLevel() - previous.getItemLevel());
             }
             response.setUnchangedDays(unchangedDaysMap.getOrDefault(character.getId(), 0L));
 
@@ -306,6 +308,8 @@ public class InspectionService {
             CombatPowerHistory previous = latest2.get(1);
             response.setPreviousCombatPower(previous.getCombatPower());
             response.setCombatPowerChange(latest.getCombatPower() - previous.getCombatPower());
+            response.setPreviousItemLevel(previous.getItemLevel());
+            response.setItemLevelChange(latest.getItemLevel() - previous.getItemLevel());
         }
 
         long unchangedDays = combatPowerHistoryRepository.countConsecutiveUnchangedDays(inspectionCharacterId);

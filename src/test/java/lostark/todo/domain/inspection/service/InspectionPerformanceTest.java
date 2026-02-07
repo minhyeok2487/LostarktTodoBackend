@@ -255,10 +255,10 @@ class InspectionPerformanceTest {
             given(inspectionCharacterRepository.findByMember(testMember))
                     .willReturn(List.of(char1, char2));
 
-            CombatPowerHistory h1Latest = buildHistory(char1, 2250.0, 0);
-            CombatPowerHistory h1Prev = buildHistory(char1, 2200.0, 1);
-            CombatPowerHistory h2Latest = buildHistory(char2, 2150.0, 0);
-            CombatPowerHistory h2Prev = buildHistory(char2, 2100.0, 1);
+            CombatPowerHistory h1Latest = buildHistoryWithItemLevel(char1, 2250.0, 1625.0, 0);
+            CombatPowerHistory h1Prev = buildHistoryWithItemLevel(char1, 2200.0, 1620.0, 1);
+            CombatPowerHistory h2Latest = buildHistoryWithItemLevel(char2, 2150.0, 1610.0, 0);
+            CombatPowerHistory h2Prev = buildHistoryWithItemLevel(char2, 2100.0, 1600.0, 1);
 
             given(combatPowerHistoryRepository.findLatest2ByCharacterIds(List.of(1L, 2L)))
                     .willReturn(Map.of(
@@ -278,12 +278,16 @@ class InspectionPerformanceTest {
             assertThat(resp1.getCharacterName()).isEqualTo("캐릭터1");
             assertThat(resp1.getCombatPowerChange()).isEqualTo(50.0);
             assertThat(resp1.getPreviousCombatPower()).isEqualTo(2200.0);
+            assertThat(resp1.getItemLevelChange()).isEqualTo(5.0);
+            assertThat(resp1.getPreviousItemLevel()).isEqualTo(1620.0);
             assertThat(resp1.getUnchangedDays()).isEqualTo(1L);
 
             InspectionCharacterResponse resp2 = result.get(1);
             assertThat(resp2.getCharacterName()).isEqualTo("캐릭터2");
             assertThat(resp2.getCombatPowerChange()).isEqualTo(50.0);
             assertThat(resp2.getPreviousCombatPower()).isEqualTo(2100.0);
+            assertThat(resp2.getItemLevelChange()).isEqualTo(10.0);
+            assertThat(resp2.getPreviousItemLevel()).isEqualTo(1600.0);
         }
 
         @Test
@@ -321,6 +325,8 @@ class InspectionPerformanceTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getPreviousCombatPower()).isNull();
             assertThat(result.get(0).getCombatPowerChange()).isEqualTo(0.0);
+            assertThat(result.get(0).getPreviousItemLevel()).isNull();
+            assertThat(result.get(0).getItemLevelChange()).isEqualTo(0.0);
             assertThat(result.get(0).getUnchangedDays()).isEqualTo(0L);
         }
 
@@ -344,6 +350,8 @@ class InspectionPerformanceTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getPreviousCombatPower()).isNull();
             assertThat(result.get(0).getCombatPowerChange()).isEqualTo(0.0);
+            assertThat(result.get(0).getPreviousItemLevel()).isNull();
+            assertThat(result.get(0).getItemLevelChange()).isEqualTo(0.0);
             assertThat(result.get(0).getUnchangedDays()).isEqualTo(1L);
         }
 
@@ -570,8 +578,8 @@ class InspectionPerformanceTest {
         @DisplayName("성공 - 2개 이상 히스토리에서 변화량 정확히 계산")
         void success_accurateChangeCalculation() {
             // given
-            CombatPowerHistory latest = buildHistory(char1, 2300.0, 0);
-            CombatPowerHistory previous = buildHistory(char1, 2200.0, 1);
+            CombatPowerHistory latest = buildHistoryWithItemLevel(char1, 2300.0, 1630.0, 0);
+            CombatPowerHistory previous = buildHistoryWithItemLevel(char1, 2200.0, 1620.0, 1);
 
             given(inspectionCharacterRepository.findByIdAndUsername(1L, "test@test.com"))
                     .willReturn(Optional.of(char1));
@@ -588,6 +596,8 @@ class InspectionPerformanceTest {
             // then
             assertThat(result.getCharacter().getCombatPowerChange()).isEqualTo(100.0);
             assertThat(result.getCharacter().getPreviousCombatPower()).isEqualTo(2200.0);
+            assertThat(result.getCharacter().getItemLevelChange()).isEqualTo(10.0);
+            assertThat(result.getCharacter().getPreviousItemLevel()).isEqualTo(1620.0);
             assertThat(result.getCharacter().getUnchangedDays()).isEqualTo(1L);
         }
 
@@ -612,6 +622,8 @@ class InspectionPerformanceTest {
             // then
             assertThat(result.getCharacter().getPreviousCombatPower()).isNull();
             assertThat(result.getCharacter().getCombatPowerChange()).isEqualTo(0.0);
+            assertThat(result.getCharacter().getPreviousItemLevel()).isNull();
+            assertThat(result.getCharacter().getItemLevelChange()).isEqualTo(0.0);
         }
 
         @Test
@@ -633,6 +645,8 @@ class InspectionPerformanceTest {
             // then
             assertThat(result.getCharacter().getPreviousCombatPower()).isNull();
             assertThat(result.getCharacter().getCombatPowerChange()).isEqualTo(0.0);
+            assertThat(result.getCharacter().getPreviousItemLevel()).isNull();
+            assertThat(result.getCharacter().getItemLevelChange()).isEqualTo(0.0);
             assertThat(result.getCharacter().getUnchangedDays()).isEqualTo(0L);
             assertThat(result.getHistories()).isEmpty();
         }
@@ -860,6 +874,19 @@ class InspectionPerformanceTest {
                 .recordDate(LocalDate.now().minusDays(daysAgo))
                 .combatPower(combatPower)
                 .itemLevel(character.getItemLevel())
+                .characterImage(character.getCharacterImage())
+                .arkgridEffects(new ArrayList<>())
+                .build();
+    }
+
+    private CombatPowerHistory buildHistoryWithItemLevel(InspectionCharacter character,
+                                                          double combatPower, double itemLevel, int daysAgo) {
+        return CombatPowerHistory.builder()
+                .id((long) (Math.random() * 10000))
+                .inspectionCharacter(character)
+                .recordDate(LocalDate.now().minusDays(daysAgo))
+                .combatPower(combatPower)
+                .itemLevel(itemLevel)
                 .characterImage(character.getCharacterImage())
                 .arkgridEffects(new ArrayList<>())
                 .build();
