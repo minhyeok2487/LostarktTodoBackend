@@ -61,20 +61,32 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
 
         double latestCombatPower = latest.getCombatPower();
 
-        // 같은 전투력을 가진 연속 기록 수 카운트
-        List<CombatPowerHistory> recentHistories = factory.selectFrom(combatPowerHistory)
-                .where(combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId))
-                .orderBy(combatPowerHistory.recordDate.desc())
-                .fetch();
+        // 전투력이 다른 가장 최근 기록의 날짜를 찾아서, 그 이후 레코드 수를 카운트
+        Long count = factory.select(combatPowerHistory.count())
+                .from(combatPowerHistory)
+                .where(
+                        combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
+                        combatPowerHistory.combatPower.eq(latestCombatPower),
+                        combatPowerHistory.recordDate.goe(
+                                factory.select(combatPowerHistory.recordDate.max())
+                                        .from(combatPowerHistory)
+                                        .where(
+                                                combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
+                                                combatPowerHistory.combatPower.ne(latestCombatPower)
+                                        )
+                        )
+                )
+                .fetchOne();
 
-        long count = 0;
-        for (CombatPowerHistory history : recentHistories) {
-            if (Double.compare(history.getCombatPower(), latestCombatPower) == 0) {
-                count++;
-            } else {
-                break;
-            }
+        // 전투력이 다른 기록이 전혀 없는 경우 전체 개수 반환
+        if (count == null || count == 0) {
+            Long totalCount = factory.select(combatPowerHistory.count())
+                    .from(combatPowerHistory)
+                    .where(combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId))
+                    .fetchOne();
+            return totalCount != null ? totalCount : 0;
         }
+
         return count;
     }
 }
