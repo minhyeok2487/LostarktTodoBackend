@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lostark.todo.global.entity.BaseTimeEntity;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ public class CombatPowerHistory extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @BatchSize(size = 30)
     @Builder.Default
     private List<EquipmentHistory> equipments = new ArrayList<>();
 
