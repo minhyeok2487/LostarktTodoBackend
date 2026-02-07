@@ -12,7 +12,7 @@ EXPOSE $PORT
 ENTRYPOINT ["java", \
   "-Xms256m", \
   "-Xmx512m", \
-  "-XX:MaxMetaspaceSize=128m", \
+  "-XX:MaxMetaspaceSize=160m", \
   "-XX:+UseG1GC", \
   "-XX:MaxGCPauseMillis=200", \
   "-XX:+UseStringDeduplication", \
