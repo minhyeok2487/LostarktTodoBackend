@@ -25,7 +25,7 @@ public class OtherConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean(name = "inspectionExecutor")
+    @Bean(name = "inspectionExecutor", destroyMethod = "shutdown")
     public ExecutorService inspectionExecutor() {
         return new ThreadPoolExecutor(
                 4, 8, 60L, TimeUnit.SECONDS,

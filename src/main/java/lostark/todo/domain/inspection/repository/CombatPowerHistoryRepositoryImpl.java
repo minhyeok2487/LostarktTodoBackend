@@ -66,7 +66,7 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
         double latestPower = histories.get(0).getCombatPower();
         long count = 0;
         for (CombatPowerHistory h : histories) {
-            if (h.getCombatPower() == latestPower) {
+            if (Double.compare(h.getCombatPower(), latestPower) == 0) {
                 count++;
             } else {
                 break;
@@ -152,7 +152,7 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
             double latestPower = histories.get(0).getCombatPower();
             long count = 0;
             for (CombatPowerHistory h : histories) {
-                if (h.getCombatPower() == latestPower) {
+                if (Double.compare(h.getCombatPower(), latestPower) == 0) {
                     count++;
                 } else {
                     break;
