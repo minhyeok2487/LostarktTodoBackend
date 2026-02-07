@@ -74,13 +74,14 @@ class InspectionServiceFullFlowTest {
     void setUp() {
         ExecutorService realExecutor = new ThreadPoolExecutor(
                 4, 4, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        InspectionPersistenceService inspectionPersistenceService = new InspectionPersistenceService(
+                combatPowerHistoryRepository, notificationService, new ObjectMapper());
         inspectionService = new InspectionService(
                 inspectionCharacterRepository,
                 combatPowerHistoryRepository,
                 lostarkCharacterApiClient,
-                notificationService,
+                inspectionPersistenceService,
                 memberService,
-                new ObjectMapper(),
                 realExecutor);
 
         testMember = Member.builder()
