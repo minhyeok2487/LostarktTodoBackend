@@ -27,6 +27,17 @@ class EquipmentChangeDetectorTest {
         return eq;
     }
 
+    private static EquipmentHistory buildEquipmentFull(String type, String name,
+                                                        Integer refinement, Integer advancedRefinement,
+                                                        Integer quality, String grindingEffect,
+                                                        String arkPassiveEffect, String braceletEffect) {
+        EquipmentHistory eq = buildEquipment(type, name, refinement, advancedRefinement, quality);
+        eq.setGrindingEffect(grindingEffect);
+        eq.setArkPassiveEffect(arkPassiveEffect);
+        eq.setBraceletEffect(braceletEffect);
+        return eq;
+    }
+
     @Nested
     @DisplayName("장비 교체 감지")
     class EquipmentReplacement {
@@ -303,6 +314,209 @@ class EquipmentChangeDetectorTest {
             // then
             assertThat(changes).hasSize(1);
             assertThat(changes.get(0)).contains("무기").contains("강화");
+        }
+    }
+
+    @Nested
+    @DisplayName("연마 효과 변화 감지")
+    class GrindingEffectChange {
+
+        @Test
+        @DisplayName("같은 악세서리에서 연마 효과가 변경되면 알림을 생성한다")
+        void detectGrindingEffectChange() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("목걸이", "업화 목걸이", null, null, 90,
+                            "공격력 +1.20%", "도약 +3", null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("목걸이", "업화 목걸이", null, null, 90,
+                            "공격력 +2.40%", "도약 +3", null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).isEqualTo("[테스트캐릭터] 목걸이 연마 효과가 변경되었습니다!");
+        }
+
+        @Test
+        @DisplayName("연마 효과가 동일하면 알림을 생성하지 않는다")
+        void noChange_whenSameGrindingEffect() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("귀걸이", "업화 귀걸이", null, null, 85,
+                            "치명타 피해 +4.00%", null, null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("귀걸이", "업화 귀걸이", null, null, 85,
+                            "치명타 피해 +4.00%", null, null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).isEmpty();
+        }
+
+        @Test
+        @DisplayName("장비 교체 시 연마 효과 변화는 별도 알림을 생성하지 않는다")
+        void replacement_skipsGrindingEffectChange() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("목걸이", "구 목걸이", null, null, 80,
+                            "공격력 +1.20%", null, null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("목걸이", "신 목걸이", null, null, 95,
+                            "공격력 +2.40%", null, null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).contains("교체");
+        }
+    }
+
+    @Nested
+    @DisplayName("아크 패시브 포인트 변화 감지")
+    class ArkPassiveEffectChange {
+
+        @Test
+        @DisplayName("같은 장비에서 아크 패시브가 변경되면 이전/이후 값을 포함한 알림을 생성한다")
+        void detectArkPassiveChange() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("귀걸이", "업화 귀걸이", null, null, 90,
+                            "치명타 피해 +4.00%", "깨달음 +12", null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("귀걸이", "업화 귀걸이", null, null, 90,
+                            "치명타 피해 +4.00%", "깨달음 +13", null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).isEqualTo(
+                    "[테스트캐릭터] 귀걸이 아크 패시브가 변경되었습니다! (깨달음 +12 → 깨달음 +13)");
+        }
+
+        @Test
+        @DisplayName("아크 패시브가 null에서 값으로 변하면 알림을 생성한다")
+        void detectArkPassive_fromNullToValue() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("반지", "업화 반지", null, null, 85,
+                            null, null, null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("반지", "업화 반지", null, null, 85,
+                            null, "도약 +3", null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).contains("아크 패시브").contains("없음 → 도약 +3");
+        }
+
+        @Test
+        @DisplayName("장비 교체 시 아크 패시브 변화는 별도 알림을 생성하지 않는다")
+        void replacement_skipsArkPassiveChange() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("귀걸이", "구 귀걸이", null, null, 80,
+                            null, "깨달음 +10", null)
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("귀걸이", "신 귀걸이", null, null, 95,
+                            null, "깨달음 +15", null)
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).contains("교체");
+        }
+    }
+
+    @Nested
+    @DisplayName("팔찌 효과 변화 감지")
+    class BraceletEffectChange {
+
+        @Test
+        @DisplayName("같은 팔찌에서 효과가 변경되면 알림을 생성한다")
+        void detectBraceletEffectChange() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("팔찌", "화평석 팔찌", null, null, null,
+                            null, null, "치명 +80 신속 +80 [상급] 정밀")
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("팔찌", "화평석 팔찌", null, null, null,
+                            null, null, "치명 +80 신속 +80 [상급] 정밀 [상급] 순환")
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).isEqualTo("[테스트캐릭터] 팔찌 효과가 변경되었습니다!");
+        }
+
+        @Test
+        @DisplayName("팔찌 효과가 동일하면 알림을 생성하지 않는다")
+        void noChange_whenSameBraceletEffect() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("팔찌", "화평석 팔찌", null, null, null,
+                            null, null, "치명 +80 신속 +80")
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("팔찌", "화평석 팔찌", null, null, null,
+                            null, null, "치명 +80 신속 +80")
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).isEmpty();
+        }
+
+        @Test
+        @DisplayName("팔찌 교체 시 효과 변화는 별도 알림을 생성하지 않는다")
+        void replacement_skipsBraceletEffectChange() {
+            // given
+            List<EquipmentHistory> prev = List.of(
+                    buildEquipmentFull("팔찌", "구 팔찌", null, null, null,
+                            null, null, "치명 +60")
+            );
+            List<EquipmentHistory> next = List.of(
+                    buildEquipmentFull("팔찌", "신 팔찌", null, null, null,
+                            null, null, "치명 +80 신속 +80")
+            );
+
+            // when
+            List<String> changes = EquipmentChangeDetector.detectChanges(CHARACTER_NAME, prev, next);
+
+            // then
+            assertThat(changes).hasSize(1);
+            assertThat(changes.get(0)).contains("교체");
         }
     }
 

@@ -81,12 +81,39 @@ public class EquipmentChangeDetector {
                         characterName, newEquip.getType(),
                         prevEquip.getQuality(), newEquip.getQuality()));
             }
+
+            // 연마 효과 변화
+            if (changes.size() < MAX_NOTIFICATIONS_PER_CHARACTER
+                    && hasStringChanged(prevEquip.getGrindingEffect(), newEquip.getGrindingEffect())) {
+                changes.add(String.format("[%s] %s 연마 효과가 변경되었습니다!",
+                        characterName, newEquip.getType()));
+            }
+
+            // 아크 패시브 포인트 변화
+            if (changes.size() < MAX_NOTIFICATIONS_PER_CHARACTER
+                    && hasStringChanged(prevEquip.getArkPassiveEffect(), newEquip.getArkPassiveEffect())) {
+                String prevArk = prevEquip.getArkPassiveEffect() != null ? prevEquip.getArkPassiveEffect() : "없음";
+                String newArk = newEquip.getArkPassiveEffect() != null ? newEquip.getArkPassiveEffect() : "없음";
+                changes.add(String.format("[%s] %s 아크 패시브가 변경되었습니다! (%s → %s)",
+                        characterName, newEquip.getType(), prevArk, newArk));
+            }
+
+            // 팔찌 효과 변화
+            if (changes.size() < MAX_NOTIFICATIONS_PER_CHARACTER
+                    && hasStringChanged(prevEquip.getBraceletEffect(), newEquip.getBraceletEffect())) {
+                changes.add(String.format("[%s] %s 효과가 변경되었습니다!",
+                        characterName, newEquip.getType()));
+            }
         }
 
         return changes;
     }
 
     private static boolean hasChanged(Integer prev, Integer next) {
+        return !Objects.equals(prev, next);
+    }
+
+    private static boolean hasStringChanged(String prev, String next) {
         return !Objects.equals(prev, next);
     }
 }
