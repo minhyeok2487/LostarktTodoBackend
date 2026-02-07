@@ -6,7 +6,9 @@ import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.*;
 import lostark.todo.domain.inspection.entity.ArkgridEffectHistory;
 import lostark.todo.domain.inspection.entity.CombatPowerHistory;
+import lostark.todo.domain.inspection.entity.EquipmentHistory;
 import lostark.todo.domain.inspection.entity.InspectionCharacter;
+import lostark.todo.domain.inspection.util.EquipmentParsingUtil;
 import lostark.todo.domain.inspection.repository.CombatPowerHistoryRepository;
 import lostark.todo.domain.inspection.repository.InspectionCharacterRepository;
 import lostark.todo.domain.lostark.client.LostarkCharacterApiClient;
@@ -71,10 +73,12 @@ public class InspectionService {
 
         inspectionCharacterRepository.save(inspectionCharacter);
 
-        // 초기 히스토리 저장 (아크그리드 효과도 함께 조회)
+        // 초기 히스토리 저장 (아크그리드 효과, 장비 정보도 함께 조회)
         List<ArkgridEffectDto> effects = lostarkCharacterApiClient
                 .getArkgridEffects(request.getCharacterName(), member.getApiKey());
-        saveHistoryRecord(inspectionCharacter, profile, effects);
+        List<EquipmentDto> equipments = lostarkCharacterApiClient
+                .getEquipment(request.getCharacterName(), member.getApiKey());
+        saveHistoryRecord(inspectionCharacter, profile, effects, equipments);
 
         return InspectionCharacterResponse.from(inspectionCharacter);
     }
@@ -197,14 +201,17 @@ public class InspectionService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void fetchDailyData(InspectionCharacter character, String apiKey) {
         try {
-            // 1. 프로필 조회와 아크그리드 효과 조회를 병렬로 실행
+            // 1. 프로필, 아크그리드 효과, 장비 정보를 병렬로 조회
             CompletableFuture<CharacterJsonDto> profileFuture = CompletableFuture.supplyAsync(() ->
                     lostarkCharacterApiClient.getCharacterProfileForInspection(character.getCharacterName(), apiKey));
             CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
                     lostarkCharacterApiClient.getArkgridEffects(character.getCharacterName(), apiKey));
+            CompletableFuture<List<EquipmentDto>> equipmentFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getEquipment(character.getCharacterName(), apiKey));
 
             CharacterJsonDto profile = profileFuture.join();
             List<ArkgridEffectDto> effects = effectsFuture.join();
+            List<EquipmentDto> equipments = equipmentFuture.join();
 
             // 2. 이전 전투력 저장
             double previousCombatPower = character.getCombatPower();
@@ -219,7 +226,7 @@ public class InspectionService {
             );
 
             // 4. 히스토리 저장
-            saveHistoryRecord(character, profile, effects);
+            saveHistoryRecord(character, profile, effects, equipments);
 
             // 5. 알림 체크
             checkAndNotify(character, profile.getCombatPower(), previousCombatPower);
@@ -234,7 +241,7 @@ public class InspectionService {
      * 히스토리 레코드 저장 (upsert)
      */
     private void saveHistoryRecord(InspectionCharacter character, CharacterJsonDto profile,
-                                   List<ArkgridEffectDto> effects) {
+                                   List<ArkgridEffectDto> effects, List<EquipmentDto> equipments) {
         LocalDate today = LocalDate.now();
 
         // 오늘 기록이 이미 있으면 업데이트, 없으면 새로 생성
@@ -253,6 +260,7 @@ public class InspectionService {
                     .itemLevel(profile.getItemAvgLevel())
                     .characterImage(profile.getCharacterImage())
                     .arkgridEffects(new ArrayList<>())
+                    .equipments(new ArrayList<>())
                     .build();
             combatPowerHistoryRepository.save(history);
         }
@@ -267,6 +275,13 @@ public class InspectionService {
                 .collect(Collectors.toList());
 
         history.replaceArkgridEffects(effectHistories);
+
+        // 장비 정보 저장
+        List<EquipmentHistory> equipmentHistories = equipments.stream()
+                .map(EquipmentParsingUtil::parse)
+                .collect(Collectors.toList());
+
+        history.replaceEquipments(equipmentHistories);
     }
 
     /**
