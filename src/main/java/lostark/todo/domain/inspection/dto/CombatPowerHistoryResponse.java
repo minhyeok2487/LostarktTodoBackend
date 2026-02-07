@@ -21,6 +21,7 @@ public class CombatPowerHistoryResponse {
     private double combatPower;
     private double itemLevel;
     private List<ArkgridEffectResponse> arkgridEffects;
+    private List<EquipmentHistoryResponse> equipments;
 
     public static CombatPowerHistoryResponse from(CombatPowerHistory entity) {
         return CombatPowerHistoryResponse.builder()
@@ -30,6 +31,9 @@ public class CombatPowerHistoryResponse {
                 .itemLevel(entity.getItemLevel())
                 .arkgridEffects(entity.getArkgridEffects().stream()
                         .map(ArkgridEffectResponse::from)
+                        .collect(Collectors.toList()))
+                .equipments(entity.getEquipments().stream()
+                        .map(EquipmentHistoryResponse::from)
                         .collect(Collectors.toList()))
                 .build();
     }
