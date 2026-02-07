@@ -176,19 +176,18 @@ CREATE TABLE IF NOT EXISTS ark_passive_effect_history (
 -- ============================================
 -- 기존 테이블 ALTER (신규 컬럼 추가)
 -- 이미 inspection_character, combat_power_history가 있는 경우
+-- 컬럼이 이미 존재하면 에러 발생 → 무시하고 다음 실행
 -- ============================================
 
--- inspection_character에 신규 컬럼 추가
-ALTER TABLE inspection_character
-    ADD COLUMN IF NOT EXISTS title VARCHAR(255),
-    ADD COLUMN IF NOT EXISTS guild_name VARCHAR(255),
-    ADD COLUMN IF NOT EXISTS town_name VARCHAR(255),
-    ADD COLUMN IF NOT EXISTS town_level INT,
-    ADD COLUMN IF NOT EXISTS expedition_level INT;
+-- inspection_character에 신규 컬럼 추가 (개별 실행)
+ALTER TABLE inspection_character ADD COLUMN title VARCHAR(255);
+ALTER TABLE inspection_character ADD COLUMN guild_name VARCHAR(255);
+ALTER TABLE inspection_character ADD COLUMN town_name VARCHAR(255);
+ALTER TABLE inspection_character ADD COLUMN town_level INT;
+ALTER TABLE inspection_character ADD COLUMN expedition_level INT;
 
--- combat_power_history에 신규 컬럼 추가
-ALTER TABLE combat_power_history
-    ADD COLUMN IF NOT EXISTS stats_json TEXT,
-    ADD COLUMN IF NOT EXISTS ark_passive_title VARCHAR(255),
-    ADD COLUMN IF NOT EXISTS town_name VARCHAR(255),
-    ADD COLUMN IF NOT EXISTS town_level INT;
+-- combat_power_history에 신규 컬럼 추가 (개별 실행)
+ALTER TABLE combat_power_history ADD COLUMN stats_json TEXT;
+ALTER TABLE combat_power_history ADD COLUMN ark_passive_title VARCHAR(255);
+ALTER TABLE combat_power_history ADD COLUMN town_name VARCHAR(255);
+ALTER TABLE combat_power_history ADD COLUMN town_level INT;
