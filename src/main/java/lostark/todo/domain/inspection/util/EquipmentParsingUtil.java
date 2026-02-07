@@ -210,7 +210,8 @@ public class EquipmentParsingUtil {
                 if (parsed instanceof JSONObject) {
                     return (JSONObject) parsed;
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                log.warn("툴팁 내부 JSON 파싱 실패: {}", e.getMessage());
             }
         }
         return null;

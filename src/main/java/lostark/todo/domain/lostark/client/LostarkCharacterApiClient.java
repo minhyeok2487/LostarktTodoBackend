@@ -1,5 +1,6 @@
 package lostark.todo.domain.lostark.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +23,6 @@ import lostark.todo.domain.character.entity.Settings;
 import lostark.todo.domain.character.entity.WeekTodo;
 import lostark.todo.domain.content.entity.DayContent;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +32,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,6 +42,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class LostarkCharacterApiClient {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final LostarkApiClient apiClient;
     private final ContentRepository contentRepository;
@@ -58,21 +58,19 @@ public class LostarkCharacterApiClient {
     @Transactional
     public List<Character> createCharacterList(String characterName, String apiKey) {
         try {
-            JSONArray jsonArray = findCharacters(characterName, apiKey);
+            JsonNode jsonArray = findCharacters(characterName, apiKey);
 
             // 일일 컨텐츠 통계(카오스던전, 가디언토벌) 호출
             Map<Category, List<DayContent>> dayContent = contentRepository.getDayContents();
 
             List<Character> characterList = new ArrayList<>();
-            for (Object o : jsonArray) {
-                JSONObject jsonObject = (JSONObject) o;
-
+            for (JsonNode jsonObject : jsonArray) {
                 Character character = Character.builder()
-                        .characterName(jsonObject.get("CharacterName").toString())
-                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-                        .characterClassName(jsonObject.get("CharacterClassName").toString())
-                        .serverName(jsonObject.get("ServerName").toString())
-                        .itemLevel(Double.parseDouble(jsonObject.get("ItemAvgLevel").toString().replace(",", "")))
+                        .characterName(jsonObject.get("CharacterName").asText())
+                        .characterLevel(jsonObject.get("CharacterLevel").asInt())
+                        .characterClassName(jsonObject.get("CharacterClassName").asText())
+                        .serverName(jsonObject.get("ServerName").asText())
+                        .itemLevel(Double.parseDouble(jsonObject.get("ItemAvgLevel").asText().replace(",", "")))
                         .dayTodo(new DayTodo())
                         .weekTodo(new WeekTodo())
                         .build();
@@ -105,36 +103,34 @@ public class LostarkCharacterApiClient {
     /**
      * 캐릭터 리스트 출력
      */
-    public JSONArray findCharacters(String characterName, String apiKey) {
+    public JsonNode findCharacters(String characterName, String apiKey) {
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/" + encodeCharacterName + "/siblings";
         InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-        JSONParser parser = new JSONParser();
         try {
-            JSONArray parse = (JSONArray) parser.parse(inputStreamReader);
-            return filterLevel(parse);
+            JsonNode jsonArray = MAPPER.readTree(inputStreamReader);
+            return filterLevel(jsonArray);
         } catch (ConditionNotMetException e) {
             throw e;
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     // 1415이상만 필터링 메소드
-    private JSONArray filterLevel(JSONArray jsonArray) {
-        JSONArray filteredArray = new JSONArray();
-        for (Object obj : jsonArray) {
-            JSONObject jsonObject = (JSONObject) obj;
-            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemAvgLevel").toString().replace(",", ""));
+    private JsonNode filterLevel(JsonNode jsonArray) {
+        List<JsonNode> filtered = new ArrayList<>();
+        for (JsonNode jsonObject : jsonArray) {
+            double itemMaxLevel = Double.parseDouble(jsonObject.get("ItemAvgLevel").asText().replace(",", ""));
             if (itemMaxLevel >= 1415D) {
-                filteredArray.add(jsonObject);
+                filtered.add(jsonObject);
             }
         }
-        if (filteredArray.isEmpty()) {
+        if (filtered.isEmpty()) {
             throw new ConditionNotMetException("아이템 레벨 1415 이상 캐릭터가 없습니다.");
         }
 
-        return filteredArray;
+        return MAPPER.valueToTree(filtered);
     }
 
     public String getCharacterImageUrl(String characterName, String apiKey) {
@@ -142,10 +138,9 @@ public class LostarkCharacterApiClient {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
-            if (profile != null && profile.get("CharacterImage") != null) {
-                return profile.get("CharacterImage").toString();
+            JsonNode profile = MAPPER.readTree(inputStreamReader);
+            if (profile != null && profile.has("CharacterImage") && !profile.get("CharacterImage").isNull()) {
+                return profile.get("CharacterImage").asText();
             }
             return null;
         } catch (ConditionNotMetException e) {
@@ -161,13 +156,12 @@ public class LostarkCharacterApiClient {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject profile = (JSONObject) parser.parse(inputStreamReader);
-            if (profile != null && profile.get("CharacterImage") != null) {
-                character.setCharacterImage(profile.get("CharacterImage").toString());
+            JsonNode profile = MAPPER.readTree(inputStreamReader);
+            if (profile != null && profile.has("CharacterImage") && !profile.get("CharacterImage").isNull()) {
+                character.setCharacterImage(profile.get("CharacterImage").asText());
             }
-            if (profile != null && profile.get("CombatPower") != null) {
-                String combatPowerStr = profile.get("CombatPower").toString().replace(",", "");
+            if (profile != null && profile.has("CombatPower") && !profile.get("CombatPower").isNull()) {
+                String combatPowerStr = profile.get("CombatPower").asText().replace(",", "");
                 double newCombatPower = Double.parseDouble(combatPowerStr);
                 if (newCombatPower > character.getCombatPower()) {
                     character.setCombatPower(newCombatPower);
@@ -189,8 +183,7 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/profiles";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            ObjectMapper objectMapper = new ObjectMapper();
-            CharacterJsonDto character = objectMapper.readValue(reader, CharacterJsonDto.class);
+            CharacterJsonDto character = MAPPER.readValue(reader, CharacterJsonDto.class);
 
             if (character == null) {
                 throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다.");
@@ -213,18 +206,16 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/arkgrid";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject arkgrid = (JSONObject) parser.parse(reader);
+            JsonNode arkgrid = MAPPER.readTree(reader);
 
             List<ArkgridEffectDto> effects = new ArrayList<>();
-            if (arkgrid != null && arkgrid.get("Effects") != null) {
-                JSONArray effectsArray = (JSONArray) arkgrid.get("Effects");
-                for (Object obj : effectsArray) {
-                    JSONObject effect = (JSONObject) obj;
+            if (arkgrid != null && arkgrid.has("Effects") && arkgrid.get("Effects").isArray()) {
+                for (JsonNode effect : arkgrid.get("Effects")) {
                     effects.add(new ArkgridEffectDto(
-                            effect.get("Name").toString(),
-                            Integer.parseInt(effect.get("Level").toString()),
-                            effect.get("Tooltip") != null ? effect.get("Tooltip").toString() : null
+                            effect.get("Name").asText(),
+                            effect.get("Level").asInt(),
+                            effect.has("Tooltip") && !effect.get("Tooltip").isNull()
+                                    ? effect.get("Tooltip").asText() : null
                     ));
                 }
             }
@@ -246,19 +237,17 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/equipment";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONArray equipmentArray = (JSONArray) parser.parse(reader);
+            JsonNode equipmentArray = MAPPER.readTree(reader);
 
             List<EquipmentDto> equipments = new ArrayList<>();
-            if (equipmentArray != null) {
-                for (Object obj : equipmentArray) {
-                    JSONObject item = (JSONObject) obj;
+            if (equipmentArray != null && equipmentArray.isArray()) {
+                for (JsonNode item : equipmentArray) {
                     equipments.add(new EquipmentDto(
-                            item.get("Type") != null ? item.get("Type").toString() : null,
-                            item.get("Name") != null ? item.get("Name").toString() : null,
-                            item.get("Icon") != null ? item.get("Icon").toString() : null,
-                            item.get("Grade") != null ? item.get("Grade").toString() : null,
-                            item.get("Tooltip") != null ? item.get("Tooltip").toString() : null
+                            getTextOrNull(item, "Type"),
+                            getTextOrNull(item, "Name"),
+                            getTextOrNull(item, "Icon"),
+                            getTextOrNull(item, "Grade"),
+                            getTextOrNull(item, "Tooltip")
                     ));
                 }
             }
@@ -280,54 +269,47 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/arkpassive";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject arkPassiveObj = (JSONObject) parser.parse(reader);
+            JsonNode arkPassiveObj = MAPPER.readTree(reader);
 
             String title = null;
             List<ArkPassivePointDto> points = new ArrayList<>();
             List<ArkPassiveEffectDto> effects = new ArrayList<>();
 
-            if (arkPassiveObj != null) {
-                // Title
-                if (arkPassiveObj.get("Title") != null) {
-                    title = arkPassiveObj.get("Title").toString();
-                }
+            if (arkPassiveObj != null && !arkPassiveObj.isNull()) {
+                title = getTextOrNull(arkPassiveObj, "Title");
 
                 // Points 배열 파싱
-                if (arkPassiveObj.get("Points") != null) {
-                    JSONArray pointsArray = (JSONArray) arkPassiveObj.get("Points");
-                    for (Object obj : pointsArray) {
-                        JSONObject point = (JSONObject) obj;
+                JsonNode pointsNode = arkPassiveObj.get("Points");
+                if (pointsNode != null && pointsNode.isArray()) {
+                    for (JsonNode point : pointsNode) {
                         points.add(new ArkPassivePointDto(
-                                point.get("Name") != null ? point.get("Name").toString() : null,
-                                point.get("Value") != null ? Integer.parseInt(point.get("Value").toString()) : 0,
-                                point.get("Tooltip") != null ? point.get("Tooltip").toString() : null
+                                getTextOrNull(point, "Name"),
+                                point.has("Value") ? point.get("Value").asInt(0) : 0,
+                                getTextOrNull(point, "Tooltip")
                         ));
                     }
                 }
 
                 // Effects 배열에서 각 계열별 스킬 파싱
-                if (arkPassiveObj.get("Effects") != null) {
-                    JSONArray effectsArray = (JSONArray) arkPassiveObj.get("Effects");
-                    for (Object obj : effectsArray) {
-                        JSONObject effectGroup = (JSONObject) obj;
-                        String category = effectGroup.get("Name") != null ? effectGroup.get("Name").toString() : null;
+                JsonNode effectsNode = arkPassiveObj.get("Effects");
+                if (effectsNode != null && effectsNode.isArray()) {
+                    for (JsonNode effectGroup : effectsNode) {
+                        String category = getTextOrNull(effectGroup, "Name");
 
-                        if (effectGroup.get("Skills") != null) {
-                            JSONArray skillsArray = (JSONArray) effectGroup.get("Skills");
-                            for (Object skillObj : skillsArray) {
-                                JSONObject skill = (JSONObject) skillObj;
-                                String rawName = skill.get("Name") != null ? skill.get("Name").toString() : null;
+                        JsonNode skillsNode = effectGroup.get("Skills");
+                        if (skillsNode != null && skillsNode.isArray()) {
+                            for (JsonNode skill : skillsNode) {
+                                String rawName = getTextOrNull(skill, "Name");
                                 String effectName = stripHtmlTags(rawName);
-                                String description = skill.get("Description") != null ? skill.get("Description").toString() : null;
+                                String description = getTextOrNull(skill, "Description");
                                 int tier = parseTierFromDescription(description);
 
                                 effects.add(new ArkPassiveEffectDto(
                                         category,
                                         effectName,
-                                        skill.get("Icon") != null ? skill.get("Icon").toString() : null,
+                                        getTextOrNull(skill, "Icon"),
                                         tier,
-                                        skill.get("Level") != null ? Integer.parseInt(skill.get("Level").toString()) : 0
+                                        skill.has("Level") ? skill.get("Level").asInt(0) : 0
                                 ));
                             }
                         }
@@ -373,20 +355,19 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/engravings";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject engravingsObj = (JSONObject) parser.parse(reader);
+            JsonNode engravingsObj = MAPPER.readTree(reader);
 
             List<EngravingDto> engravings = new ArrayList<>();
-            if (engravingsObj != null && engravingsObj.get("ArkPassiveEffects") != null) {
-                JSONArray effectsArray = (JSONArray) engravingsObj.get("ArkPassiveEffects");
-                for (Object obj : effectsArray) {
-                    JSONObject effect = (JSONObject) obj;
+            JsonNode effectsNode = engravingsObj != null ? engravingsObj.get("ArkPassiveEffects") : null;
+            if (effectsNode != null && effectsNode.isArray()) {
+                for (JsonNode effect : effectsNode) {
                     engravings.add(new EngravingDto(
-                            effect.get("Name") != null ? effect.get("Name").toString() : null,
-                            effect.get("Level") != null ? Integer.parseInt(effect.get("Level").toString()) : 0,
-                            effect.get("Grade") != null ? effect.get("Grade").toString() : null,
-                            effect.get("AbilityStoneLevel") != null ? Integer.parseInt(effect.get("AbilityStoneLevel").toString()) : null,
-                            effect.get("Description") != null ? effect.get("Description").toString() : null
+                            getTextOrNull(effect, "Name"),
+                            effect.has("Level") ? effect.get("Level").asInt(0) : 0,
+                            getTextOrNull(effect, "Grade"),
+                            effect.has("AbilityStoneLevel") && !effect.get("AbilityStoneLevel").isNull()
+                                    ? effect.get("AbilityStoneLevel").asInt() : null,
+                            getTextOrNull(effect, "Description")
                     ));
                 }
             }
@@ -408,48 +389,45 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/gems";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject gemsObj = (JSONObject) parser.parse(reader);
+            JsonNode gemsObj = MAPPER.readTree(reader);
 
             List<GemDto> gems = new ArrayList<>();
-            if (gemsObj == null) {
+            if (gemsObj == null || gemsObj.isNull()) {
                 return gems;
             }
 
             // Gems 배열에서 슬롯별 레벨/등급 매핑
-            Map<Long, Integer> gemLevelBySlot = new java.util.HashMap<>();
-            Map<Long, String> gemGradeBySlot = new java.util.HashMap<>();
-            if (gemsObj.get("Gems") != null) {
-                JSONArray gemsArray = (JSONArray) gemsObj.get("Gems");
-                for (Object obj : gemsArray) {
-                    JSONObject gem = (JSONObject) obj;
-                    long slot = (long) gem.get("Slot");
-                    int level = gem.get("Level") != null ? Integer.parseInt(gem.get("Level").toString()) : 0;
-                    String grade = gem.get("Grade") != null ? gem.get("Grade").toString() : null;
+            Map<Long, Integer> gemLevelBySlot = new HashMap<>();
+            Map<Long, String> gemGradeBySlot = new HashMap<>();
+            JsonNode gemsArrayNode = gemsObj.get("Gems");
+            if (gemsArrayNode != null && gemsArrayNode.isArray()) {
+                for (JsonNode gem : gemsArrayNode) {
+                    long slot = gem.get("Slot").asLong();
+                    int level = gem.has("Level") ? gem.get("Level").asInt(0) : 0;
+                    String grade = getTextOrNull(gem, "Grade");
                     gemLevelBySlot.put(slot, level);
                     gemGradeBySlot.put(slot, grade);
                 }
             }
 
             // Effects.Skills 배열에서 스킬 상세 정보 파싱
-            if (gemsObj.get("Effects") != null) {
-                JSONObject effectsObj = (JSONObject) gemsObj.get("Effects");
-                if (effectsObj.get("Skills") != null) {
-                    JSONArray skillsArray = (JSONArray) effectsObj.get("Skills");
-                    for (Object obj : skillsArray) {
-                        JSONObject skill = (JSONObject) obj;
-                        int gemSlot = skill.get("GemSlot") != null ? Integer.parseInt(skill.get("GemSlot").toString()) : -1;
+            JsonNode effectsNode = gemsObj.get("Effects");
+            if (effectsNode != null && !effectsNode.isNull()) {
+                JsonNode skillsNode = effectsNode.get("Skills");
+                if (skillsNode != null && skillsNode.isArray()) {
+                    for (JsonNode skill : skillsNode) {
+                        int gemSlot = skill.has("GemSlot") ? skill.get("GemSlot").asInt(-1) : -1;
                         int gemLevel = gemLevelBySlot.getOrDefault((long) gemSlot, 0);
                         String gemGrade = gemGradeBySlot.getOrDefault((long) gemSlot, null);
 
                         gems.add(new GemDto(
-                                skill.get("Name") != null ? skill.get("Name").toString() : null,
+                                getTextOrNull(skill, "Name"),
                                 gemSlot,
-                                skill.get("Icon") != null ? skill.get("Icon").toString() : null,
+                                getTextOrNull(skill, "Icon"),
                                 gemLevel,
                                 gemGrade,
-                                skill.get("Description") != null ? skill.get("Description").toString() : null,
-                                skill.get("Option") != null ? skill.get("Option").toString() : null
+                                getTextOrNull(skill, "Description"),
+                                getTextOrNull(skill, "Option")
                         ));
                     }
                 }
@@ -473,41 +451,37 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/cards";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JSONParser parser = new JSONParser();
-            JSONObject cardsObj = (JSONObject) parser.parse(reader);
+            JsonNode cardsObj = MAPPER.readTree(reader);
 
             List<CardDto> cards = new ArrayList<>();
             List<CardSetEffectDto> cardSetEffects = new ArrayList<>();
 
-            if (cardsObj != null) {
+            if (cardsObj != null && !cardsObj.isNull()) {
                 // Cards 배열 파싱
-                if (cardsObj.get("Cards") != null) {
-                    JSONArray cardsArray = (JSONArray) cardsObj.get("Cards");
-                    for (Object obj : cardsArray) {
-                        JSONObject card = (JSONObject) obj;
+                JsonNode cardsArrayNode = cardsObj.get("Cards");
+                if (cardsArrayNode != null && cardsArrayNode.isArray()) {
+                    for (JsonNode card : cardsArrayNode) {
                         cards.add(new CardDto(
-                                card.get("Slot") != null ? Integer.parseInt(card.get("Slot").toString()) : 0,
-                                card.get("Name") != null ? card.get("Name").toString() : null,
-                                card.get("Icon") != null ? card.get("Icon").toString() : null,
-                                card.get("AwakeCount") != null ? Integer.parseInt(card.get("AwakeCount").toString()) : 0,
-                                card.get("AwakeTotal") != null ? Integer.parseInt(card.get("AwakeTotal").toString()) : 0,
-                                card.get("Grade") != null ? card.get("Grade").toString() : null
+                                card.has("Slot") ? card.get("Slot").asInt(0) : 0,
+                                getTextOrNull(card, "Name"),
+                                getTextOrNull(card, "Icon"),
+                                card.has("AwakeCount") ? card.get("AwakeCount").asInt(0) : 0,
+                                card.has("AwakeTotal") ? card.get("AwakeTotal").asInt(0) : 0,
+                                getTextOrNull(card, "Grade")
                         ));
                     }
                 }
 
                 // Effects 배열 파싱 (세트 효과)
-                if (cardsObj.get("Effects") != null) {
-                    JSONArray effectsArray = (JSONArray) cardsObj.get("Effects");
-                    for (Object obj : effectsArray) {
-                        JSONObject effectGroup = (JSONObject) obj;
-                        if (effectGroup.get("Items") != null) {
-                            JSONArray items = (JSONArray) effectGroup.get("Items");
-                            for (Object itemObj : items) {
-                                JSONObject item = (JSONObject) itemObj;
+                JsonNode effectsNode = cardsObj.get("Effects");
+                if (effectsNode != null && effectsNode.isArray()) {
+                    for (JsonNode effectGroup : effectsNode) {
+                        JsonNode itemsNode = effectGroup.get("Items");
+                        if (itemsNode != null && itemsNode.isArray()) {
+                            for (JsonNode item : itemsNode) {
                                 cardSetEffects.add(new CardSetEffectDto(
-                                        item.get("Name") != null ? item.get("Name").toString() : null,
-                                        item.get("Description") != null ? item.get("Description").toString() : null
+                                        getTextOrNull(item, "Name"),
+                                        getTextOrNull(item, "Description")
                                 ));
                             }
                         }
@@ -530,8 +504,7 @@ public class LostarkCharacterApiClient {
             String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/profiles";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            ObjectMapper objectMapper = new ObjectMapper();
-            CharacterJsonDto character = objectMapper.readValue(reader, CharacterJsonDto.class);
+            CharacterJsonDto character = MAPPER.readValue(reader, CharacterJsonDto.class);
 
             if (character == null) {
                 throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다. (인게임에서 한번 접속해주세요.)");
@@ -549,6 +522,14 @@ public class LostarkCharacterApiClient {
         } catch (Exception e) {
             throw new RuntimeException("알 수 없는 오류가 발생했습니다: " + e.getMessage(), e);
         }
+    }
+
+    private static String getTextOrNull(JsonNode node, String field) {
+        JsonNode value = node.get(field);
+        if (value == null || value.isNull()) {
+            return null;
+        }
+        return value.asText();
     }
 
 }

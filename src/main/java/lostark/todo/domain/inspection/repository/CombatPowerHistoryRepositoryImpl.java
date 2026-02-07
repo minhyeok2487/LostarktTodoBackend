@@ -138,9 +138,42 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
             return Collections.emptyMap();
         }
 
+        // 모든 캐릭터의 히스토리를 한 번의 쿼리로 조회 (최근 90일)
+        LocalDate cutoffDate = LocalDate.now().minusDays(90);
+        List<CombatPowerHistory> allHistories = factory.selectFrom(combatPowerHistory)
+                .where(
+                        combatPowerHistory.inspectionCharacter.id.in(characterIds),
+                        combatPowerHistory.recordDate.goe(cutoffDate)
+                )
+                .orderBy(
+                        combatPowerHistory.inspectionCharacter.id.asc(),
+                        combatPowerHistory.recordDate.desc()
+                )
+                .fetch();
+
+        // 캐릭터별 그룹핑
+        Map<Long, List<CombatPowerHistory>> grouped = allHistories.stream()
+                .collect(Collectors.groupingBy(h -> h.getInspectionCharacter().getId()));
+
+        // 각 캐릭터별 연속 무변동 일수 계산 (Java에서 처리)
         Map<Long, Long> result = new HashMap<>();
-        for (Long characterId : characterIds) {
-            result.put(characterId, countConsecutiveUnchangedDays(characterId));
+        for (Long charId : characterIds) {
+            List<CombatPowerHistory> histories = grouped.get(charId);
+            if (histories == null || histories.isEmpty()) {
+                result.put(charId, 0L);
+                continue;
+            }
+            // histories는 날짜 내림차순 정렬됨
+            double latestPower = histories.get(0).getCombatPower();
+            long count = 0;
+            for (CombatPowerHistory h : histories) {
+                if (h.getCombatPower() == latestPower) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            result.put(charId, count);
         }
         return result;
     }

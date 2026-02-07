@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -89,10 +90,9 @@ public class InspectionApi {
 
     @ApiOperation(value = "군장검사 수집 시간 조회")
     @GetMapping("/schedule")
-    public ResponseEntity<?> getSchedule(@AuthenticationPrincipal String username) {
-        return new ResponseEntity<>(
-                Collections.singletonMap("scheduleHour", inspectionService.getScheduleHour(username)),
-                HttpStatus.OK);
+    public ResponseEntity<Map<String, Integer>> getSchedule(@AuthenticationPrincipal String username) {
+        return ResponseEntity.ok(
+                Collections.singletonMap("scheduleHour", inspectionService.getScheduleHour(username)));
     }
 
     @ApiOperation(value = "군장검사 수집 시간 변경")
