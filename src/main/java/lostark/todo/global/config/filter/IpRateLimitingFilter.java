@@ -1,5 +1,7 @@
 package lostark.todo.global.config.filter;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -12,15 +14,17 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @ConditionalOnProperty(name = "rate-limit.enabled", havingValue = "true", matchIfMissing = true)
 public class IpRateLimitingFilter implements Filter {
 
-    // IP별로 버킷을 저장하는 ConcurrentHashMap
-    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+    // Caffeine 캐시: 최대 10,000개 IP, 10분 미사용 시 자동 삭제
+    private final Cache<String, Bucket> buckets = Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .build();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -33,7 +37,7 @@ public class IpRateLimitingFilter implements Filter {
         }
 
         String clientIp = getClientIp(request);
-        Bucket bucket = buckets.computeIfAbsent(clientIp, this::createNewBucket);
+        Bucket bucket = buckets.get(clientIp, this::createNewBucket);
 
         // 토큰이 있으면 요청 허용, 없으면 429 응답
         if (!bucket.tryConsume(1)) {
@@ -50,7 +54,6 @@ public class IpRateLimitingFilter implements Filter {
                 .addLimit(Bandwidth.classic(50, Refill.greedy(50, Duration.ofMinutes(1))))
                 .build();
     }
-
 
     // 클라이언트 IP 추출
     private String getClientIp(HttpServletRequest request) {

@@ -9,4 +9,11 @@ COPY ${JAR_FILE} app.jar
 ENV PORT 8080
 EXPOSE $PORT
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+  "-Xms256m", \
+  "-Xmx512m", \
+  "-XX:MaxMetaspaceSize=128m", \
+  "-XX:+UseG1GC", \
+  "-XX:MaxGCPauseMillis=200", \
+  "-XX:+UseStringDeduplication", \
+  "-jar", "app.jar"]
