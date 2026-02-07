@@ -268,7 +268,7 @@ public class InspectionService {
                     engravings, cardsResponse, gems, arkPassiveResponse);
 
         } catch (TimeoutException e) {
-            log.error("군장검사 API 타임아웃 - 캐릭터: {}", character.getCharacterName());
+            log.error("군장검사 API 타임아웃 - 캐릭터: {}", character.getCharacterName(), e);
         } catch (Exception e) {
             log.error("군장검사 데이터 수집 실패 - 캐릭터: {}",
                     character.getCharacterName(), e);

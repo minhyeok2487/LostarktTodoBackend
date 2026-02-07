@@ -60,9 +60,10 @@ public class EquipmentChangeDetector {
 
             // 재련 단계 변화
             if (hasChanged(prevEquip.getRefinement(), newEquip.getRefinement())) {
+                int prevRef = prevEquip.getRefinement() != null ? prevEquip.getRefinement() : 0;
+                int newRef = newEquip.getRefinement() != null ? newEquip.getRefinement() : 0;
                 changes.add(String.format("[%s] %s가 강화되었습니다! (+%d → +%d)",
-                        characterName, newEquip.getType(),
-                        prevEquip.getRefinement(), newEquip.getRefinement()));
+                        characterName, newEquip.getType(), prevRef, newRef));
             }
 
             // 상급 재련 변화
@@ -77,9 +78,10 @@ public class EquipmentChangeDetector {
             // 품질 변화
             if (changes.size() < MAX_NOTIFICATIONS_PER_CHARACTER
                     && hasChanged(prevEquip.getQuality(), newEquip.getQuality())) {
+                int prevQual = prevEquip.getQuality() != null ? prevEquip.getQuality() : 0;
+                int newQual = newEquip.getQuality() != null ? newEquip.getQuality() : 0;
                 changes.add(String.format("[%s] %s 품질이 변경되었습니다! (%d → %d)",
-                        characterName, newEquip.getType(),
-                        prevEquip.getQuality(), newEquip.getQuality()));
+                        characterName, newEquip.getType(), prevQual, newQual));
             }
 
             // 연마 효과 변화

@@ -52,8 +52,10 @@ public class InspectionApi {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         if (endDate == null) endDate = LocalDate.now();
         if (startDate == null) startDate = endDate.minusDays(30);
-        // 최대 90일 제한
-        if (ChronoUnit.DAYS.between(startDate, endDate) > 90) {
+        // 날짜 범위 유효성 검사
+        if (startDate.isAfter(endDate)) {
+            startDate = endDate.minusDays(30);
+        } else if (ChronoUnit.DAYS.between(startDate, endDate) > 90) {
             startDate = endDate.minusDays(90);
         }
         return new ResponseEntity<>(
