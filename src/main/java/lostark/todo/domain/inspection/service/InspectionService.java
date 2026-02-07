@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.*;
-import lostark.todo.domain.inspection.entity.*;;
+import lostark.todo.domain.inspection.entity.*;
 import lostark.todo.domain.inspection.util.EquipmentChangeDetector;
 import lostark.todo.domain.inspection.util.EquipmentParsingUtil;
 import lostark.todo.domain.inspection.repository.CombatPowerHistoryRepository;
@@ -304,7 +304,8 @@ public class InspectionService {
                     .cards(new ArrayList<>())
                     .cardSetEffects(new ArrayList<>())
                     .gems(new ArrayList<>())
-                    .arkPassives(new ArrayList<>())
+                    .arkPassivePoints(new ArrayList<>())
+                    .arkPassiveEffects(new ArrayList<>())
                     .build();
             combatPowerHistoryRepository.save(history);
         }
@@ -332,6 +333,7 @@ public class InspectionService {
                         .level(e.getLevel())
                         .grade(e.getGrade())
                         .abilityStoneLevel(e.getAbilityStoneLevel())
+                        .description(e.getDescription())
                         .build())
                 .collect(Collectors.toList());
         history.replaceEngravings(engravingHistories);
@@ -339,6 +341,7 @@ public class InspectionService {
         // 카드 정보 저장
         List<CardHistory> cardHistories = cardsResponse.getCards().stream()
                 .map(c -> CardHistory.builder()
+                        .slot(c.getSlot())
                         .name(c.getName())
                         .icon(c.getIcon())
                         .awakeCount(c.getAwakeCount())
@@ -361,26 +364,40 @@ public class InspectionService {
         List<GemHistory> gemHistories = gems.stream()
                 .map(g -> GemHistory.builder()
                         .skillName(g.getSkillName())
-                        .gemLevel(g.getGemLevel())
+                        .gemSlot(g.getGemSlot())
+                        .skillIcon(g.getSkillIcon())
+                        .level(g.getLevel())
+                        .grade(g.getGrade())
                         .description(g.getDescription())
                         .option(g.getOption())
-                        .icon(g.getIcon())
                         .build())
                 .collect(Collectors.toList());
         history.replaceGems(gemHistories);
 
         // 아크패시브 정보 저장
-        history.setArkPassivePointsJson(arkPassiveResponse.getPointsJson());
-        List<ArkPassiveHistory> arkPassiveHistories = arkPassiveResponse.getEffects().stream()
-                .map(a -> ArkPassiveHistory.builder()
-                        .category(a.getCategory())
-                        .name(a.getName())
-                        .level(a.getLevel())
-                        .icon(a.getIcon())
-                        .description(a.getDescription())
+        history.setArkPassiveTitle(arkPassiveResponse.getTitle());
+        history.setTownName(profile.getTownName());
+        history.setTownLevel(profile.getTownLevel());
+
+        List<ArkPassivePointHistory> arkPassivePointHistories = arkPassiveResponse.getPoints().stream()
+                .map(p -> ArkPassivePointHistory.builder()
+                        .name(p.getName())
+                        .value(p.getValue())
+                        .description(p.getDescription())
                         .build())
                 .collect(Collectors.toList());
-        history.replaceArkPassives(arkPassiveHistories);
+        history.replaceArkPassivePoints(arkPassivePointHistories);
+
+        List<ArkPassiveEffectHistory> arkPassiveEffectHistories = arkPassiveResponse.getEffects().stream()
+                .map(e -> ArkPassiveEffectHistory.builder()
+                        .category(e.getCategory())
+                        .effectName(e.getEffectName())
+                        .icon(e.getIcon())
+                        .tier(e.getTier())
+                        .level(e.getLevel())
+                        .build())
+                .collect(Collectors.toList());
+        history.replaceArkPassiveEffects(arkPassiveEffectHistories);
     }
 
     /**

@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 public class GemDto {
 
     private String skillName;
-    private int gemLevel;
+    private int gemSlot;
+    private String skillIcon;
+    private int level;
+    private String grade;
     private String description;
     private String option;
-    private String icon;
 }

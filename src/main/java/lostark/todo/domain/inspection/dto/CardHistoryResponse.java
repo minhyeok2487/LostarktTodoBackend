@@ -12,6 +12,7 @@ import lostark.todo.domain.inspection.entity.CardHistory;
 @AllArgsConstructor
 public class CardHistoryResponse {
 
+    private int slot;
     private String name;
     private String icon;
     private int awakeCount;
@@ -20,6 +21,7 @@ public class CardHistoryResponse {
 
     public static CardHistoryResponse from(CardHistory entity) {
         return CardHistoryResponse.builder()
+                .slot(entity.getSlot())
                 .name(entity.getName())
                 .icon(entity.getIcon())
                 .awakeCount(entity.getAwakeCount())

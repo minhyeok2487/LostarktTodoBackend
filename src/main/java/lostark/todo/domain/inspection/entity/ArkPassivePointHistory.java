@@ -12,14 +12,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "ark_passive_history", indexes = {
-        @Index(name = "idx_ark_passive_history", columnList = "combat_power_history_id")
+@Table(name = "ark_passive_point_history", indexes = {
+        @Index(name = "idx_ark_passive_point_history", columnList = "combat_power_history_id")
 })
-public class ArkPassiveHistory extends BaseTimeEntity {
+public class ArkPassivePointHistory extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ark_passive_history_id")
+    @Column(name = "ark_passive_point_history_id")
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,15 +28,9 @@ public class ArkPassiveHistory extends BaseTimeEntity {
     private CombatPowerHistory combatPowerHistory;
 
     @Column(nullable = false)
-    private String category;
-
     private String name;
 
-    private int level;
+    private int value;
 
-    @Column(length = 500)
-    private String icon;
-
-    @Column(columnDefinition = "TEXT")
     private String description;
 }

@@ -35,4 +35,7 @@ public class EngravingHistory extends BaseTimeEntity {
     private String grade;
 
     private Integer abilityStoneLevel;
+
+    @Column(length = 2000)
+    private String description;
 }

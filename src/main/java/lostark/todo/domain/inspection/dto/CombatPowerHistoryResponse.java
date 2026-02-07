@@ -21,14 +21,17 @@ public class CombatPowerHistoryResponse {
     private double combatPower;
     private double itemLevel;
     private String statsJson;
+    private String townName;
+    private Integer townLevel;
     private List<ArkgridEffectResponse> arkgridEffects;
     private List<EquipmentHistoryResponse> equipments;
     private List<EngravingHistoryResponse> engravings;
     private List<CardHistoryResponse> cards;
     private List<CardSetEffectHistoryResponse> cardSetEffects;
     private List<GemHistoryResponse> gems;
-    private List<ArkPassiveHistoryResponse> arkPassives;
-    private String arkPassivePointsJson;
+    private List<ArkPassivePointHistoryResponse> arkPassivePoints;
+    private List<ArkPassiveEffectHistoryResponse> arkPassiveEffects;
+    private String arkPassiveTitle;
 
     public static CombatPowerHistoryResponse from(CombatPowerHistory entity) {
         return CombatPowerHistoryResponse.builder()
@@ -37,6 +40,8 @@ public class CombatPowerHistoryResponse {
                 .combatPower(entity.getCombatPower())
                 .itemLevel(entity.getItemLevel())
                 .statsJson(entity.getStatsJson())
+                .townName(entity.getTownName())
+                .townLevel(entity.getTownLevel())
                 .arkgridEffects(entity.getArkgridEffects().stream()
                         .map(ArkgridEffectResponse::from)
                         .collect(Collectors.toList()))
@@ -55,10 +60,13 @@ public class CombatPowerHistoryResponse {
                 .gems(entity.getGems().stream()
                         .map(GemHistoryResponse::from)
                         .collect(Collectors.toList()))
-                .arkPassives(entity.getArkPassives().stream()
-                        .map(ArkPassiveHistoryResponse::from)
+                .arkPassivePoints(entity.getArkPassivePoints().stream()
+                        .map(ArkPassivePointHistoryResponse::from)
                         .collect(Collectors.toList()))
-                .arkPassivePointsJson(entity.getArkPassivePointsJson())
+                .arkPassiveEffects(entity.getArkPassiveEffects().stream()
+                        .map(ArkPassiveEffectHistoryResponse::from)
+                        .collect(Collectors.toList()))
+                .arkPassiveTitle(entity.getArkPassiveTitle())
                 .build();
     }
 }

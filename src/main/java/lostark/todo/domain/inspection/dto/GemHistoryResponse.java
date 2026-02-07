@@ -13,18 +13,22 @@ import lostark.todo.domain.inspection.entity.GemHistory;
 public class GemHistoryResponse {
 
     private String skillName;
-    private int gemLevel;
+    private int gemSlot;
+    private String skillIcon;
+    private int level;
+    private String grade;
     private String description;
     private String option;
-    private String icon;
 
     public static GemHistoryResponse from(GemHistory entity) {
         return GemHistoryResponse.builder()
                 .skillName(entity.getSkillName())
-                .gemLevel(entity.getGemLevel())
+                .gemSlot(entity.getGemSlot())
+                .skillIcon(entity.getSkillIcon())
+                .level(entity.getLevel())
+                .grade(entity.getGrade())
                 .description(entity.getDescription())
                 .option(entity.getOption())
-                .icon(entity.getIcon())
                 .build();
     }
 }

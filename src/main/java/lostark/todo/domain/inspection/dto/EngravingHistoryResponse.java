@@ -16,6 +16,7 @@ public class EngravingHistoryResponse {
     private int level;
     private String grade;
     private Integer abilityStoneLevel;
+    private String description;
 
     public static EngravingHistoryResponse from(EngravingHistory entity) {
         return EngravingHistoryResponse.builder()
@@ -23,6 +24,7 @@ public class EngravingHistoryResponse {
                 .level(entity.getLevel())
                 .grade(entity.getGrade())
                 .abilityStoneLevel(entity.getAbilityStoneLevel())
+                .description(entity.getDescription())
                 .build();
     }
 }

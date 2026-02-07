@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArkPassiveApiResponse {
+public class ArkPassiveEffectDto {
 
-    private String title;
-    private List<ArkPassivePointDto> points;
-    private List<ArkPassiveEffectDto> effects;
+    private String category;
+    private String effectName;
+    private String icon;
+    private int tier;
+    private int level;
 }

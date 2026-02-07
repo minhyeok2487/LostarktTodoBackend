@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArkPassiveDto {
+public class ArkPassivePointDto {
 
-    private String category;
     private String name;
-    private int level;
-    private String icon;
+    private int value;
     private String description;
 }

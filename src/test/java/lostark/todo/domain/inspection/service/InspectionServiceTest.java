@@ -98,7 +98,8 @@ class InspectionServiceTest {
                 .cards(new ArrayList<>())
                 .cardSetEffects(new ArrayList<>())
                 .gems(new ArrayList<>())
-                .arkPassives(new ArrayList<>())
+                .arkPassivePoints(new ArrayList<>())
+                .arkPassiveEffects(new ArrayList<>())
                 .build();
 
         // 신규 API 기본 스텁
@@ -111,7 +112,7 @@ class InspectionServiceTest {
         given(lostarkCharacterApiClient.getGems(anyString(), anyString()))
                 .willReturn(Collections.emptyList());
         given(lostarkCharacterApiClient.getArkPassive(anyString(), anyString()))
-                .willReturn(new ArkPassiveApiResponse(null, Collections.emptyList()));
+                .willReturn(new ArkPassiveApiResponse(null, Collections.emptyList(), Collections.emptyList()));
     }
 
     @Nested

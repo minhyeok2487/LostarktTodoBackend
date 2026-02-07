@@ -27,6 +27,8 @@ public class CardHistory extends BaseTimeEntity {
     @JsonBackReference
     private CombatPowerHistory combatPowerHistory;
 
+    private int slot;
+
     @Column(nullable = false)
     private String name;
 

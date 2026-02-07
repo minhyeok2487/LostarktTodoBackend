@@ -143,7 +143,7 @@ class InspectionPerformanceTest {
         given(lostarkCharacterApiClient.getGems(anyString(), anyString()))
                 .willReturn(Collections.emptyList());
         given(lostarkCharacterApiClient.getArkPassive(anyString(), anyString()))
-                .willReturn(new ArkPassiveApiResponse(null, Collections.emptyList()));
+                .willReturn(new ArkPassiveApiResponse(null, Collections.emptyList(), Collections.emptyList()));
     }
 
     // =========================================================================
@@ -893,7 +893,8 @@ class InspectionPerformanceTest {
                 .cards(new ArrayList<>())
                 .cardSetEffects(new ArrayList<>())
                 .gems(new ArrayList<>())
-                .arkPassives(new ArrayList<>())
+                .arkPassivePoints(new ArrayList<>())
+                .arkPassiveEffects(new ArrayList<>())
                 .build();
     }
 
@@ -912,7 +913,8 @@ class InspectionPerformanceTest {
                 .cards(new ArrayList<>())
                 .cardSetEffects(new ArrayList<>())
                 .gems(new ArrayList<>())
-                .arkPassives(new ArrayList<>())
+                .arkPassivePoints(new ArrayList<>())
+                .arkPassiveEffects(new ArrayList<>())
                 .build();
     }
 }

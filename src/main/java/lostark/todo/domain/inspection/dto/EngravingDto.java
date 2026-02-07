@@ -13,4 +13,5 @@ public class EngravingDto {
     private int level;
     private String grade;
     private Integer abilityStoneLevel;
+    private String description;
 }

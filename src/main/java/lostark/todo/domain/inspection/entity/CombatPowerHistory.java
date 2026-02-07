@@ -86,12 +86,21 @@ public class CombatPowerHistory extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @BatchSize(size = 10)
+    @Builder.Default
+    private List<ArkPassivePointHistory> arkPassivePoints = new ArrayList<>();
+
+    @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     @BatchSize(size = 30)
     @Builder.Default
-    private List<ArkPassiveHistory> arkPassives = new ArrayList<>();
+    private List<ArkPassiveEffectHistory> arkPassiveEffects = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String arkPassivePointsJson;
+    private String arkPassiveTitle;
+
+    private String townName;
+
+    private Integer townLevel;
 
     public void updateData(double combatPower, double itemLevel, String characterImage, String statsJson) {
         this.combatPower = combatPower;
@@ -148,11 +157,19 @@ public class CombatPowerHistory extends BaseTimeEntity {
         });
     }
 
-    public void replaceArkPassives(List<ArkPassiveHistory> newArkPassives) {
-        this.arkPassives.clear();
-        newArkPassives.forEach(passive -> {
-            passive.setCombatPowerHistory(this);
-            this.arkPassives.add(passive);
+    public void replaceArkPassivePoints(List<ArkPassivePointHistory> newPoints) {
+        this.arkPassivePoints.clear();
+        newPoints.forEach(point -> {
+            point.setCombatPowerHistory(this);
+            this.arkPassivePoints.add(point);
+        });
+    }
+
+    public void replaceArkPassiveEffects(List<ArkPassiveEffectHistory> newEffects) {
+        this.arkPassiveEffects.clear();
+        newEffects.forEach(effect -> {
+            effect.setCombatPowerHistory(this);
+            this.arkPassiveEffects.add(effect);
         });
     }
 }

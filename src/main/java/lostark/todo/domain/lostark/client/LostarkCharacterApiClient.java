@@ -12,7 +12,8 @@ import lostark.todo.domain.inspection.dto.EngravingDto;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.inspection.dto.GemDto;
 import lostark.todo.domain.inspection.dto.ArkPassiveApiResponse;
-import lostark.todo.domain.inspection.dto.ArkPassiveDto;
+import lostark.todo.domain.inspection.dto.ArkPassiveEffectDto;
+import lostark.todo.domain.inspection.dto.ArkPassivePointDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.character.entity.Character;
@@ -271,7 +272,7 @@ public class LostarkCharacterApiClient {
     }
 
     /**
-     * 아크패시브 정보 조회 (Points + Effects)
+     * 아크패시브 정보 조회 (Title + Points + Effects)
      */
     public ArkPassiveApiResponse getArkPassive(String characterName, String apiKey) {
         try {
@@ -282,23 +283,27 @@ public class LostarkCharacterApiClient {
             JSONParser parser = new JSONParser();
             JSONObject arkPassiveObj = (JSONObject) parser.parse(reader);
 
-            List<ArkPassiveDto> effects = new ArrayList<>();
-            String pointsJson = null;
+            String title = null;
+            List<ArkPassivePointDto> points = new ArrayList<>();
+            List<ArkPassiveEffectDto> effects = new ArrayList<>();
 
             if (arkPassiveObj != null) {
-                // Points 배열을 JSON 문자열로 저장
+                // Title
+                if (arkPassiveObj.get("Title") != null) {
+                    title = arkPassiveObj.get("Title").toString();
+                }
+
+                // Points 배열 파싱
                 if (arkPassiveObj.get("Points") != null) {
                     JSONArray pointsArray = (JSONArray) arkPassiveObj.get("Points");
-                    org.json.simple.JSONArray pointsForSave = new org.json.simple.JSONArray();
                     for (Object obj : pointsArray) {
                         JSONObject point = (JSONObject) obj;
-                        org.json.simple.JSONObject p = new org.json.simple.JSONObject();
-                        p.put("name", point.get("Name") != null ? point.get("Name").toString() : null);
-                        p.put("value", point.get("Value") != null ? Integer.parseInt(point.get("Value").toString()) : 0);
-                        p.put("tooltip", point.get("Tooltip") != null ? point.get("Tooltip").toString() : null);
-                        pointsForSave.add(p);
+                        points.add(new ArkPassivePointDto(
+                                point.get("Name") != null ? point.get("Name").toString() : null,
+                                point.get("Value") != null ? Integer.parseInt(point.get("Value").toString()) : 0,
+                                point.get("Tooltip") != null ? point.get("Tooltip").toString() : null
+                        ));
                     }
-                    pointsJson = pointsForSave.toJSONString();
                 }
 
                 // Effects 배열에서 각 계열별 스킬 파싱
@@ -312,12 +317,17 @@ public class LostarkCharacterApiClient {
                             JSONArray skillsArray = (JSONArray) effectGroup.get("Skills");
                             for (Object skillObj : skillsArray) {
                                 JSONObject skill = (JSONObject) skillObj;
-                                effects.add(new ArkPassiveDto(
+                                String rawName = skill.get("Name") != null ? skill.get("Name").toString() : null;
+                                String effectName = stripHtmlTags(rawName);
+                                String description = skill.get("Description") != null ? skill.get("Description").toString() : null;
+                                int tier = parseTierFromDescription(description);
+
+                                effects.add(new ArkPassiveEffectDto(
                                         category,
-                                        skill.get("Name") != null ? skill.get("Name").toString() : null,
-                                        skill.get("Level") != null ? Integer.parseInt(skill.get("Level").toString()) : 0,
+                                        effectName,
                                         skill.get("Icon") != null ? skill.get("Icon").toString() : null,
-                                        skill.get("Description") != null ? skill.get("Description").toString() : null
+                                        tier,
+                                        skill.get("Level") != null ? Integer.parseInt(skill.get("Level").toString()) : 0
                                 ));
                             }
                         }
@@ -325,13 +335,33 @@ public class LostarkCharacterApiClient {
                 }
             }
 
-            return new ArkPassiveApiResponse(pointsJson, effects);
+            return new ArkPassiveApiResponse(title, points, effects);
         } catch (ConditionNotMetException e) {
             throw e;
         } catch (Exception e) {
             log.warn("아크패시브 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
-            return new ArkPassiveApiResponse(null, new ArrayList<>());
+            return new ArkPassiveApiResponse(null, new ArrayList<>(), new ArrayList<>());
         }
+    }
+
+    /**
+     * HTML 태그 제거 (예: "<FONT color='#83E9FF'>점화 Lv.3</FONT>" -> "점화 Lv.3")
+     */
+    private String stripHtmlTags(String text) {
+        if (text == null) return null;
+        return text.replaceAll("<[^>]+>", "").trim();
+    }
+
+    /**
+     * Description 텍스트에서 tier 값 파싱 (예: "[진화] ..." -> tier 추출)
+     * 깨달음=1, 도약=2, 진화=3 매핑. 매칭 실패시 0.
+     */
+    private int parseTierFromDescription(String description) {
+        if (description == null) return 0;
+        if (description.contains("[진화]")) return 3;
+        if (description.contains("[도약]")) return 2;
+        if (description.contains("[깨달음]")) return 1;
+        return 0;
     }
 
     /**
@@ -355,7 +385,8 @@ public class LostarkCharacterApiClient {
                             effect.get("Name") != null ? effect.get("Name").toString() : null,
                             effect.get("Level") != null ? Integer.parseInt(effect.get("Level").toString()) : 0,
                             effect.get("Grade") != null ? effect.get("Grade").toString() : null,
-                            effect.get("AbilityStoneLevel") != null ? Integer.parseInt(effect.get("AbilityStoneLevel").toString()) : null
+                            effect.get("AbilityStoneLevel") != null ? Integer.parseInt(effect.get("AbilityStoneLevel").toString()) : null,
+                            effect.get("Description") != null ? effect.get("Description").toString() : null
                     ));
                 }
             }
@@ -385,15 +416,18 @@ public class LostarkCharacterApiClient {
                 return gems;
             }
 
-            // Gems 배열에서 슬롯별 레벨 매핑
+            // Gems 배열에서 슬롯별 레벨/등급 매핑
             Map<Long, Integer> gemLevelBySlot = new java.util.HashMap<>();
+            Map<Long, String> gemGradeBySlot = new java.util.HashMap<>();
             if (gemsObj.get("Gems") != null) {
                 JSONArray gemsArray = (JSONArray) gemsObj.get("Gems");
                 for (Object obj : gemsArray) {
                     JSONObject gem = (JSONObject) obj;
                     long slot = (long) gem.get("Slot");
                     int level = gem.get("Level") != null ? Integer.parseInt(gem.get("Level").toString()) : 0;
+                    String grade = gem.get("Grade") != null ? gem.get("Grade").toString() : null;
                     gemLevelBySlot.put(slot, level);
+                    gemGradeBySlot.put(slot, grade);
                 }
             }
 
@@ -406,13 +440,16 @@ public class LostarkCharacterApiClient {
                         JSONObject skill = (JSONObject) obj;
                         int gemSlot = skill.get("GemSlot") != null ? Integer.parseInt(skill.get("GemSlot").toString()) : -1;
                         int gemLevel = gemLevelBySlot.getOrDefault((long) gemSlot, 0);
+                        String gemGrade = gemGradeBySlot.getOrDefault((long) gemSlot, null);
 
                         gems.add(new GemDto(
                                 skill.get("Name") != null ? skill.get("Name").toString() : null,
+                                gemSlot,
+                                skill.get("Icon") != null ? skill.get("Icon").toString() : null,
                                 gemLevel,
+                                gemGrade,
                                 skill.get("Description") != null ? skill.get("Description").toString() : null,
-                                skill.get("Option") != null ? skill.get("Option").toString() : null,
-                                skill.get("Icon") != null ? skill.get("Icon").toString() : null
+                                skill.get("Option") != null ? skill.get("Option").toString() : null
                         ));
                     }
                 }
@@ -449,6 +486,7 @@ public class LostarkCharacterApiClient {
                     for (Object obj : cardsArray) {
                         JSONObject card = (JSONObject) obj;
                         cards.add(new CardDto(
+                                card.get("Slot") != null ? Integer.parseInt(card.get("Slot").toString()) : 0,
                                 card.get("Name") != null ? card.get("Name").toString() : null,
                                 card.get("Icon") != null ? card.get("Icon").toString() : null,
                                 card.get("AwakeCount") != null ? Integer.parseInt(card.get("AwakeCount").toString()) : 0,

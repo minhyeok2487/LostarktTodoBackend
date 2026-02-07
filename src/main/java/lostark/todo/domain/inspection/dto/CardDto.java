@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CardDto {
 
+    private int slot;
     private String name;
     private String icon;
     private int awakeCount;
