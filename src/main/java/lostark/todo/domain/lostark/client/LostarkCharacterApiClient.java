@@ -10,6 +10,7 @@ import lostark.todo.domain.inspection.dto.CardDto;
 import lostark.todo.domain.inspection.dto.CardSetEffectDto;
 import lostark.todo.domain.inspection.dto.EngravingDto;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
+import lostark.todo.domain.inspection.dto.GemDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.character.entity.Character;
@@ -297,6 +298,65 @@ public class LostarkCharacterApiClient {
             throw e;
         } catch (Exception e) {
             log.warn("각인 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 보석 정보 조회 (Gems + Effects.Skills)
+     */
+    public List<GemDto> getGems(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/gems";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject gemsObj = (JSONObject) parser.parse(reader);
+
+            List<GemDto> gems = new ArrayList<>();
+            if (gemsObj == null) {
+                return gems;
+            }
+
+            // Gems 배열에서 슬롯별 레벨 매핑
+            Map<Long, Integer> gemLevelBySlot = new java.util.HashMap<>();
+            if (gemsObj.get("Gems") != null) {
+                JSONArray gemsArray = (JSONArray) gemsObj.get("Gems");
+                for (Object obj : gemsArray) {
+                    JSONObject gem = (JSONObject) obj;
+                    long slot = (long) gem.get("Slot");
+                    int level = gem.get("Level") != null ? Integer.parseInt(gem.get("Level").toString()) : 0;
+                    gemLevelBySlot.put(slot, level);
+                }
+            }
+
+            // Effects.Skills 배열에서 스킬 상세 정보 파싱
+            if (gemsObj.get("Effects") != null) {
+                JSONObject effectsObj = (JSONObject) gemsObj.get("Effects");
+                if (effectsObj.get("Skills") != null) {
+                    JSONArray skillsArray = (JSONArray) effectsObj.get("Skills");
+                    for (Object obj : skillsArray) {
+                        JSONObject skill = (JSONObject) obj;
+                        int gemSlot = skill.get("GemSlot") != null ? Integer.parseInt(skill.get("GemSlot").toString()) : -1;
+                        int gemLevel = gemLevelBySlot.getOrDefault((long) gemSlot, 0);
+
+                        gems.add(new GemDto(
+                                skill.get("Name") != null ? skill.get("Name").toString() : null,
+                                gemLevel,
+                                skill.get("Description") != null ? skill.get("Description").toString() : null,
+                                skill.get("Option") != null ? skill.get("Option").toString() : null,
+                                skill.get("Icon") != null ? skill.get("Icon").toString() : null
+                        ));
+                    }
+                }
+            }
+
+            return gems;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("보석 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
             return new ArrayList<>();
         }
     }

@@ -26,6 +26,7 @@ public class CombatPowerHistoryResponse {
     private List<EngravingHistoryResponse> engravings;
     private List<CardHistoryResponse> cards;
     private List<CardSetEffectHistoryResponse> cardSetEffects;
+    private List<GemHistoryResponse> gems;
 
     public static CombatPowerHistoryResponse from(CombatPowerHistory entity) {
         return CombatPowerHistoryResponse.builder()
@@ -48,6 +49,9 @@ public class CombatPowerHistoryResponse {
                         .collect(Collectors.toList()))
                 .cardSetEffects(entity.getCardSetEffects().stream()
                         .map(CardSetEffectHistoryResponse::from)
+                        .collect(Collectors.toList()))
+                .gems(entity.getGems().stream()
+                        .map(GemHistoryResponse::from)
                         .collect(Collectors.toList()))
                 .build();
     }
