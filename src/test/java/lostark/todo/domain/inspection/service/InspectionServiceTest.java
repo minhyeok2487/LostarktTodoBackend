@@ -246,6 +246,7 @@ class InspectionServiceTest {
                     .willReturn(Optional.of(testCharacter));
             given(combatPowerHistoryRepository.findByCharacterAndDateRange(eq(1L), any(), any()))
                     .willReturn(List.of(testHistory));
+            given(combatPowerHistoryRepository.findLatest2(1L)).willReturn(List.of(testHistory));
             given(combatPowerHistoryRepository.countConsecutiveUnchangedDays(1L)).willReturn(0L);
 
             // when
@@ -362,6 +363,7 @@ class InspectionServiceTest {
                     .willReturn(Optional.of(testHistory));
             given(combatPowerHistoryRepository.findByCharacterAndDateRange(anyLong(), any(), any()))
                     .willReturn(List.of(testHistory));
+            given(combatPowerHistoryRepository.findLatest2(anyLong())).willReturn(List.of(testHistory));
             given(combatPowerHistoryRepository.countConsecutiveUnchangedDays(anyLong())).willReturn(0L);
 
             // when

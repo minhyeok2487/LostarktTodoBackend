@@ -300,15 +300,13 @@ public class InspectionService {
      * 변화량 정보 추가
      */
     private void enrichWithChangeInfo(InspectionCharacterResponse response, long inspectionCharacterId) {
-        // 최근 2개 기록 가져오기
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusDays(30);
-        List<CombatPowerHistory> recentHistories = combatPowerHistoryRepository
-                .findByCharacterAndDateRange(inspectionCharacterId, startDate, endDate);
+        // 최근 2개 기록만 조회 (limit 2)
+        List<CombatPowerHistory> latest2 = combatPowerHistoryRepository
+                .findLatest2(inspectionCharacterId);
 
-        if (recentHistories.size() >= 2) {
-            CombatPowerHistory latest = recentHistories.get(recentHistories.size() - 1);
-            CombatPowerHistory previous = recentHistories.get(recentHistories.size() - 2);
+        if (latest2.size() >= 2) {
+            CombatPowerHistory latest = latest2.get(0);   // desc 정렬이므로 첫 번째가 최신
+            CombatPowerHistory previous = latest2.get(1);
             response.setPreviousCombatPower(previous.getCombatPower());
             response.setCombatPowerChange(latest.getCombatPower() - previous.getCombatPower());
         }
