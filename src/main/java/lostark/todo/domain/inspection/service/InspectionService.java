@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,8 +73,10 @@ public class InspectionService {
 
         inspectionCharacterRepository.save(inspectionCharacter);
 
-        // 초기 히스토리 저장
-        saveHistoryRecord(inspectionCharacter, profile, member.getApiKey());
+        // 초기 히스토리 저장 (아크그리드 효과도 함께 조회)
+        List<ArkgridEffectDto> effects = lostarkCharacterApiClient
+                .getArkgridEffects(request.getCharacterName(), member.getApiKey());
+        saveHistoryRecord(inspectionCharacter, profile, effects);
 
         return InspectionCharacterResponse.from(inspectionCharacter);
     }
@@ -192,9 +195,14 @@ public class InspectionService {
      */
     public void fetchDailyData(InspectionCharacter character, String apiKey) {
         try {
-            // 1. 프로필 조회
-            CharacterJsonDto profile = lostarkCharacterApiClient
-                    .getCharacterProfileForInspection(character.getCharacterName(), apiKey);
+            // 1. 프로필 조회와 아크그리드 효과 조회를 병렬로 실행
+            CompletableFuture<CharacterJsonDto> profileFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getCharacterProfileForInspection(character.getCharacterName(), apiKey));
+            CompletableFuture<List<ArkgridEffectDto>> effectsFuture = CompletableFuture.supplyAsync(() ->
+                    lostarkCharacterApiClient.getArkgridEffects(character.getCharacterName(), apiKey));
+
+            CharacterJsonDto profile = profileFuture.join();
+            List<ArkgridEffectDto> effects = effectsFuture.join();
 
             // 2. 이전 전투력 저장
             double previousCombatPower = character.getCombatPower();
@@ -209,7 +217,7 @@ public class InspectionService {
             );
 
             // 4. 히스토리 저장
-            saveHistoryRecord(character, profile, apiKey);
+            saveHistoryRecord(character, profile, effects);
 
             // 5. 알림 체크
             checkAndNotify(character, profile.getCombatPower(), previousCombatPower);
@@ -223,12 +231,9 @@ public class InspectionService {
     /**
      * 히스토리 레코드 저장 (upsert)
      */
-    private void saveHistoryRecord(InspectionCharacter character, CharacterJsonDto profile, String apiKey) {
+    private void saveHistoryRecord(InspectionCharacter character, CharacterJsonDto profile,
+                                   List<ArkgridEffectDto> effects) {
         LocalDate today = LocalDate.now();
-
-        // 아크그리드 효과 조회
-        List<ArkgridEffectDto> effects = lostarkCharacterApiClient
-                .getArkgridEffects(character.getCharacterName(), apiKey);
 
         // 오늘 기록이 이미 있으면 업데이트, 없으면 새로 생성
         Optional<CombatPowerHistory> existingHistory = combatPowerHistoryRepository
