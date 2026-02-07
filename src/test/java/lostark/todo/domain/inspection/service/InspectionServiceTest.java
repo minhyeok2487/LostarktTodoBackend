@@ -21,10 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -175,9 +172,10 @@ class InspectionServiceTest {
             // given
             given(memberService.get("test@test.com")).willReturn(testMember);
             given(inspectionCharacterRepository.findByMember(testMember)).willReturn(List.of(testCharacter));
-            given(combatPowerHistoryRepository.findByCharacterAndDateRange(anyLong(), any(), any()))
-                    .willReturn(Collections.emptyList());
-            given(combatPowerHistoryRepository.countConsecutiveUnchangedDays(anyLong())).willReturn(0L);
+            given(combatPowerHistoryRepository.findLatest2ByCharacterIds(anyList()))
+                    .willReturn(Collections.emptyMap());
+            given(combatPowerHistoryRepository.countConsecutiveUnchangedDaysBatch(anyList()))
+                    .willReturn(Collections.emptyMap());
 
             // when
             List<InspectionCharacterResponse> result = inspectionService.getAll("test@test.com");
@@ -206,21 +204,25 @@ class InspectionServiceTest {
         void success_withChangeInfo() {
             // given
             CombatPowerHistory history1 = CombatPowerHistory.builder()
+                    .inspectionCharacter(testCharacter)
                     .combatPower(2200.0)
                     .recordDate(LocalDate.now().minusDays(1))
                     .arkgridEffects(new ArrayList<>())
                     .build();
             CombatPowerHistory history2 = CombatPowerHistory.builder()
+                    .inspectionCharacter(testCharacter)
                     .combatPower(2250.0)
                     .recordDate(LocalDate.now())
                     .arkgridEffects(new ArrayList<>())
                     .build();
 
+            // findLatest2ByCharacterIds returns desc order (latest first)
             given(memberService.get("test@test.com")).willReturn(testMember);
             given(inspectionCharacterRepository.findByMember(testMember)).willReturn(List.of(testCharacter));
-            given(combatPowerHistoryRepository.findByCharacterAndDateRange(anyLong(), any(), any()))
-                    .willReturn(List.of(history1, history2));
-            given(combatPowerHistoryRepository.countConsecutiveUnchangedDays(anyLong())).willReturn(0L);
+            given(combatPowerHistoryRepository.findLatest2ByCharacterIds(anyList()))
+                    .willReturn(Map.of(1L, List.of(history2, history1)));
+            given(combatPowerHistoryRepository.countConsecutiveUnchangedDaysBatch(anyList()))
+                    .willReturn(Map.of(1L, 0L));
 
             // when
             List<InspectionCharacterResponse> result = inspectionService.getAll("test@test.com");

@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,11 +86,32 @@ public class InspectionService {
         Member member = memberService.get(username);
         List<InspectionCharacter> characters = inspectionCharacterRepository.findByMember(member);
 
+        if (characters.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 배치 쿼리로 모든 캐릭터의 변화량 정보를 한 번에 조회
+        List<Long> characterIds = characters.stream()
+                .map(InspectionCharacter::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<CombatPowerHistory>> latest2Map =
+                combatPowerHistoryRepository.findLatest2ByCharacterIds(characterIds);
+        Map<Long, Long> unchangedDaysMap =
+                combatPowerHistoryRepository.countConsecutiveUnchangedDaysBatch(characterIds);
+
         return characters.stream().map(character -> {
             InspectionCharacterResponse response = InspectionCharacterResponse.from(character);
 
-            // 변화량 정보 추가
-            enrichWithChangeInfo(response, character.getId());
+            // 배치 조회 결과로 변화량 정보 설정
+            List<CombatPowerHistory> latest2 = latest2Map.getOrDefault(character.getId(), Collections.emptyList());
+            if (latest2.size() >= 2) {
+                CombatPowerHistory latest = latest2.get(0);
+                CombatPowerHistory previous = latest2.get(1);
+                response.setPreviousCombatPower(previous.getCombatPower());
+                response.setCombatPowerChange(latest.getCombatPower() - previous.getCombatPower());
+            }
+            response.setUnchangedDays(unchangedDaysMap.getOrDefault(character.getId(), 0L));
 
             return response;
         }).collect(Collectors.toList());
