@@ -22,6 +22,11 @@ public class InspectionCharacterResponse {
     private String characterImage;
     private double itemLevel;
     private double combatPower;
+    private String title;
+    private String guildName;
+    private String townName;
+    private Integer townLevel;
+    private Integer expeditionLevel;
     private int noChangeThreshold;
 
     @JsonProperty("isActive")
@@ -42,6 +47,11 @@ public class InspectionCharacterResponse {
                 .characterImage(entity.getCharacterImage())
                 .itemLevel(entity.getItemLevel())
                 .combatPower(entity.getCombatPower())
+                .title(entity.getTitle())
+                .guildName(entity.getGuildName())
+                .townName(entity.getTownName())
+                .townLevel(entity.getTownLevel())
+                .expeditionLevel(entity.getExpeditionLevel())
                 .noChangeThreshold(entity.getNoChangeThreshold())
                 .isActive(entity.isActive())
                 .createdDate(entity.getCreatedDate())

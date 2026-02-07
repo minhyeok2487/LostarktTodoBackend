@@ -48,6 +48,16 @@ public class InspectionCharacter extends BaseTimeEntity {
 
     private double combatPower;
 
+    private String title;
+
+    private String guildName;
+
+    private String townName;
+
+    private Integer townLevel;
+
+    private Integer expeditionLevel;
+
     @ColumnDefault("3")
     @Builder.Default
     private int noChangeThreshold = 3;
@@ -63,12 +73,19 @@ public class InspectionCharacter extends BaseTimeEntity {
     private List<CombatPowerHistory> histories = new ArrayList<>();
 
     public void updateProfile(String characterImage, double itemLevel, double combatPower,
-                              String serverName, String characterClassName) {
+                              String serverName, String characterClassName,
+                              String title, String guildName, String townName,
+                              Integer townLevel, Integer expeditionLevel) {
         this.characterImage = characterImage;
         this.itemLevel = itemLevel;
         this.combatPower = combatPower;
         this.serverName = serverName;
         this.characterClassName = characterClassName;
+        this.title = title;
+        this.guildName = guildName;
+        this.townName = townName;
+        this.townLevel = townLevel;
+        this.expeditionLevel = expeditionLevel;
     }
 
     public void updateSettings(int noChangeThreshold, boolean isActive) {

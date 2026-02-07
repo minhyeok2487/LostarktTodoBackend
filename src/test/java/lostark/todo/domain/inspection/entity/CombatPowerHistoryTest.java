@@ -35,7 +35,7 @@ class CombatPowerHistoryTest {
         @DisplayName("성공 - 데이터 업데이트")
         void success() {
             // when
-            history.updateData(2200.0, 1620.0, "https://img.test.com/new.png");
+            history.updateData(2200.0, 1620.0, "https://img.test.com/new.png", null);
 
             // then
             assertThat(history.getCombatPower()).isEqualTo(2200.0);

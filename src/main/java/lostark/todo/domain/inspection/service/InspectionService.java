@@ -67,6 +67,11 @@ public class InspectionService {
                 .characterImage(profile.getCharacterImage())
                 .itemLevel(profile.getItemAvgLevel())
                 .combatPower(profile.getCombatPower())
+                .title(profile.getTitle())
+                .guildName(profile.getGuildName())
+                .townName(profile.getTownName())
+                .townLevel(profile.getTownLevel())
+                .expeditionLevel(profile.getExpeditionLevel())
                 .noChangeThreshold(request.getNoChangeThreshold())
                 .isActive(true)
                 .histories(new ArrayList<>())
@@ -224,7 +229,12 @@ public class InspectionService {
                     profile.getItemAvgLevel(),
                     profile.getCombatPower(),
                     profile.getServerName(),
-                    profile.getCharacterClassName()
+                    profile.getCharacterClassName(),
+                    profile.getTitle(),
+                    profile.getGuildName(),
+                    profile.getTownName(),
+                    profile.getTownLevel(),
+                    profile.getExpeditionLevel()
             );
 
             // 4. 히스토리 저장
@@ -251,6 +261,7 @@ public class InspectionService {
     private void saveHistoryRecord(InspectionCharacter character, CharacterJsonDto profile,
                                    List<ArkgridEffectDto> effects, List<EquipmentDto> equipments) {
         LocalDate today = LocalDate.now();
+        String statsJson = serializeStats(profile.getStats());
 
         // 오늘 기록이 이미 있으면 업데이트, 없으면 새로 생성
         Optional<CombatPowerHistory> existingHistory = combatPowerHistoryRepository
@@ -259,7 +270,7 @@ public class InspectionService {
         CombatPowerHistory history;
         if (existingHistory.isPresent()) {
             history = existingHistory.get();
-            history.updateData(profile.getCombatPower(), profile.getItemAvgLevel(), profile.getCharacterImage());
+            history.updateData(profile.getCombatPower(), profile.getItemAvgLevel(), profile.getCharacterImage(), statsJson);
         } else {
             history = CombatPowerHistory.builder()
                     .inspectionCharacter(character)
@@ -267,6 +278,7 @@ public class InspectionService {
                     .combatPower(profile.getCombatPower())
                     .itemLevel(profile.getItemAvgLevel())
                     .characterImage(profile.getCharacterImage())
+                    .statsJson(statsJson)
                     .arkgridEffects(new ArrayList<>())
                     .equipments(new ArrayList<>())
                     .build();
@@ -344,6 +356,28 @@ public class InspectionService {
         String content = String.join("\n", changes);
         notificationService.createInspectionNotification(member, content, character.getId());
         log.info("장비 변화 알림 생성 - 캐릭터: {}, 변화: {}건", character.getCharacterName(), changes.size());
+    }
+
+    /**
+     * Stats 배열을 JSON 문자열로 직렬화
+     */
+    private String serializeStats(java.util.List<CharacterJsonDto.StatDto> stats) {
+        if (stats == null || stats.isEmpty()) {
+            return null;
+        }
+        try {
+            org.json.simple.JSONArray array = new org.json.simple.JSONArray();
+            for (CharacterJsonDto.StatDto stat : stats) {
+                org.json.simple.JSONObject obj = new org.json.simple.JSONObject();
+                obj.put("type", stat.getType());
+                obj.put("value", stat.getValue());
+                array.add(obj);
+            }
+            return array.toJSONString();
+        } catch (Exception e) {
+            log.warn("스탯 직렬화 실패: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**

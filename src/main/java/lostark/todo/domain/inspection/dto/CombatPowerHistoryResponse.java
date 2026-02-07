@@ -20,6 +20,7 @@ public class CombatPowerHistoryResponse {
     private LocalDate recordDate;
     private double combatPower;
     private double itemLevel;
+    private String statsJson;
     private List<ArkgridEffectResponse> arkgridEffects;
     private List<EquipmentHistoryResponse> equipments;
 
@@ -29,6 +30,7 @@ public class CombatPowerHistoryResponse {
                 .recordDate(entity.getRecordDate())
                 .combatPower(entity.getCombatPower())
                 .itemLevel(entity.getItemLevel())
+                .statsJson(entity.getStatsJson())
                 .arkgridEffects(entity.getArkgridEffects().stream()
                         .map(ArkgridEffectResponse::from)
                         .collect(Collectors.toList()))

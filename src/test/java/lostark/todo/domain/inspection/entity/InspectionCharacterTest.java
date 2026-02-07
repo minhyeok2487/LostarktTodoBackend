@@ -44,7 +44,12 @@ class InspectionCharacterTest {
                     1620.0,
                     2200.0,
                     "카제로스",
-                    "워로드"
+                    "워로드",
+                    "모험가",
+                    "테스트길드",
+                    "테스트영지",
+                    60,
+                    250
             );
 
             // then
@@ -53,6 +58,11 @@ class InspectionCharacterTest {
             assertThat(character.getCombatPower()).isEqualTo(2200.0);
             assertThat(character.getServerName()).isEqualTo("카제로스");
             assertThat(character.getCharacterClassName()).isEqualTo("워로드");
+            assertThat(character.getTitle()).isEqualTo("모험가");
+            assertThat(character.getGuildName()).isEqualTo("테스트길드");
+            assertThat(character.getTownName()).isEqualTo("테스트영지");
+            assertThat(character.getTownLevel()).isEqualTo(60);
+            assertThat(character.getExpeditionLevel()).isEqualTo(250);
         }
     }
 

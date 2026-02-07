@@ -46,6 +46,9 @@ public class CombatPowerHistory extends BaseTimeEntity {
     @Column(length = 500)
     private String characterImage;
 
+    @Column(columnDefinition = "TEXT")
+    private String statsJson;
+
     @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Builder.Default
@@ -57,10 +60,11 @@ public class CombatPowerHistory extends BaseTimeEntity {
     @Builder.Default
     private List<EquipmentHistory> equipments = new ArrayList<>();
 
-    public void updateData(double combatPower, double itemLevel, String characterImage) {
+    public void updateData(double combatPower, double itemLevel, String characterImage, String statsJson) {
         this.combatPower = combatPower;
         this.itemLevel = itemLevel;
         this.characterImage = characterImage;
+        this.statsJson = statsJson;
     }
 
     public void replaceArkgridEffects(List<ArkgridEffectHistory> newEffects) {
