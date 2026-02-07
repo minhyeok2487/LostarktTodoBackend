@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.ArkgridEffectDto;
+import lostark.todo.domain.inspection.dto.CardApiResponse;
+import lostark.todo.domain.inspection.dto.CardDto;
+import lostark.todo.domain.inspection.dto.CardSetEffectDto;
 import lostark.todo.domain.inspection.dto.EngravingDto;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.content.enums.Category;
@@ -295,6 +298,65 @@ public class LostarkCharacterApiClient {
         } catch (Exception e) {
             log.warn("각인 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 카드 정보 조회 (Cards + Effects)
+     */
+    public CardApiResponse getCards(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/cards";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject cardsObj = (JSONObject) parser.parse(reader);
+
+            List<CardDto> cards = new ArrayList<>();
+            List<CardSetEffectDto> cardSetEffects = new ArrayList<>();
+
+            if (cardsObj != null) {
+                // Cards 배열 파싱
+                if (cardsObj.get("Cards") != null) {
+                    JSONArray cardsArray = (JSONArray) cardsObj.get("Cards");
+                    for (Object obj : cardsArray) {
+                        JSONObject card = (JSONObject) obj;
+                        cards.add(new CardDto(
+                                card.get("Name") != null ? card.get("Name").toString() : null,
+                                card.get("Icon") != null ? card.get("Icon").toString() : null,
+                                card.get("AwakeCount") != null ? Integer.parseInt(card.get("AwakeCount").toString()) : 0,
+                                card.get("AwakeTotal") != null ? Integer.parseInt(card.get("AwakeTotal").toString()) : 0,
+                                card.get("Grade") != null ? card.get("Grade").toString() : null
+                        ));
+                    }
+                }
+
+                // Effects 배열 파싱 (세트 효과)
+                if (cardsObj.get("Effects") != null) {
+                    JSONArray effectsArray = (JSONArray) cardsObj.get("Effects");
+                    for (Object obj : effectsArray) {
+                        JSONObject effectGroup = (JSONObject) obj;
+                        if (effectGroup.get("Items") != null) {
+                            JSONArray items = (JSONArray) effectGroup.get("Items");
+                            for (Object itemObj : items) {
+                                JSONObject item = (JSONObject) itemObj;
+                                cardSetEffects.add(new CardSetEffectDto(
+                                        item.get("Name") != null ? item.get("Name").toString() : null,
+                                        item.get("Description") != null ? item.get("Description").toString() : null
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new CardApiResponse(cards, cardSetEffects);
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("카드 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            return new CardApiResponse(new ArrayList<>(), new ArrayList<>());
         }
     }
 

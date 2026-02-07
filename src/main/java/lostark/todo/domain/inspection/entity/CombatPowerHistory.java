@@ -66,6 +66,18 @@ public class CombatPowerHistory extends BaseTimeEntity {
     @Builder.Default
     private List<EngravingHistory> engravings = new ArrayList<>();
 
+    @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @BatchSize(size = 20)
+    @Builder.Default
+    private List<CardHistory> cards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @BatchSize(size = 10)
+    @Builder.Default
+    private List<CardSetEffectHistory> cardSetEffects = new ArrayList<>();
+
     public void updateData(double combatPower, double itemLevel, String characterImage, String statsJson) {
         this.combatPower = combatPower;
         this.itemLevel = itemLevel;
@@ -94,6 +106,22 @@ public class CombatPowerHistory extends BaseTimeEntity {
         newEngravings.forEach(engraving -> {
             engraving.setCombatPowerHistory(this);
             this.engravings.add(engraving);
+        });
+    }
+
+    public void replaceCards(List<CardHistory> newCards) {
+        this.cards.clear();
+        newCards.forEach(card -> {
+            card.setCombatPowerHistory(this);
+            this.cards.add(card);
+        });
+    }
+
+    public void replaceCardSetEffects(List<CardSetEffectHistory> newEffects) {
+        this.cardSetEffects.clear();
+        newEffects.forEach(effect -> {
+            effect.setCombatPowerHistory(this);
+            this.cardSetEffects.add(effect);
         });
     }
 }
