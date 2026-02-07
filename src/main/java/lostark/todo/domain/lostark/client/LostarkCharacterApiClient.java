@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.ArkgridEffectDto;
+import lostark.todo.domain.inspection.dto.EngravingDto;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
@@ -259,6 +260,40 @@ public class LostarkCharacterApiClient {
             throw e;
         } catch (Exception e) {
             log.warn("장비 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 각인 정보 조회 (ArkPassiveEffects)
+     */
+    public List<EngravingDto> getEngravings(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/engravings";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject engravingsObj = (JSONObject) parser.parse(reader);
+
+            List<EngravingDto> engravings = new ArrayList<>();
+            if (engravingsObj != null && engravingsObj.get("ArkPassiveEffects") != null) {
+                JSONArray effectsArray = (JSONArray) engravingsObj.get("ArkPassiveEffects");
+                for (Object obj : effectsArray) {
+                    JSONObject effect = (JSONObject) obj;
+                    engravings.add(new EngravingDto(
+                            effect.get("Name") != null ? effect.get("Name").toString() : null,
+                            effect.get("Level") != null ? Integer.parseInt(effect.get("Level").toString()) : 0,
+                            effect.get("Grade") != null ? effect.get("Grade").toString() : null,
+                            effect.get("AbilityStoneLevel") != null ? Integer.parseInt(effect.get("AbilityStoneLevel").toString()) : null
+                    ));
+                }
+            }
+            return engravings;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("각인 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
             return new ArrayList<>();
         }
     }

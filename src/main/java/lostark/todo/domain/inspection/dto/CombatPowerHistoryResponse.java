@@ -23,6 +23,7 @@ public class CombatPowerHistoryResponse {
     private String statsJson;
     private List<ArkgridEffectResponse> arkgridEffects;
     private List<EquipmentHistoryResponse> equipments;
+    private List<EngravingHistoryResponse> engravings;
 
     public static CombatPowerHistoryResponse from(CombatPowerHistory entity) {
         return CombatPowerHistoryResponse.builder()
@@ -36,6 +37,9 @@ public class CombatPowerHistoryResponse {
                         .collect(Collectors.toList()))
                 .equipments(entity.getEquipments().stream()
                         .map(EquipmentHistoryResponse::from)
+                        .collect(Collectors.toList()))
+                .engravings(entity.getEngravings().stream()
+                        .map(EngravingHistoryResponse::from)
                         .collect(Collectors.toList()))
                 .build();
     }
