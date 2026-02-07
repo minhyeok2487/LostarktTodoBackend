@@ -8,6 +8,7 @@ import lostark.todo.domain.inspection.entity.ArkgridEffectHistory;
 import lostark.todo.domain.inspection.entity.CombatPowerHistory;
 import lostark.todo.domain.inspection.entity.EquipmentHistory;
 import lostark.todo.domain.inspection.entity.InspectionCharacter;
+import lostark.todo.domain.inspection.util.EquipmentChangeDetector;
 import lostark.todo.domain.inspection.util.EquipmentParsingUtil;
 import lostark.todo.domain.inspection.repository.CombatPowerHistoryRepository;
 import lostark.todo.domain.inspection.repository.InspectionCharacterRepository;
@@ -213,8 +214,9 @@ public class InspectionService {
             List<ArkgridEffectDto> effects = effectsFuture.join();
             List<EquipmentDto> equipments = equipmentFuture.join();
 
-            // 2. 이전 전투력 저장
+            // 2. 이전 전투력 및 장비 정보 저장
             double previousCombatPower = character.getCombatPower();
+            List<EquipmentHistory> previousEquipments = getPreviousEquipments(character.getId());
 
             // 3. 캐릭터 정보 업데이트
             character.updateProfile(
@@ -228,8 +230,14 @@ public class InspectionService {
             // 4. 히스토리 저장
             saveHistoryRecord(character, profile, effects, equipments);
 
-            // 5. 알림 체크
+            // 5. 알림 체크 (전투력 + 장비 변화)
             checkAndNotify(character, profile.getCombatPower(), previousCombatPower);
+
+            // 6. 장비 변화 알림
+            List<EquipmentHistory> newEquipments = equipments.stream()
+                    .map(EquipmentParsingUtil::parse)
+                    .collect(Collectors.toList());
+            checkEquipmentChanges(character, previousEquipments, newEquipments);
 
         } catch (Exception e) {
             log.error("군장검사 데이터 수집 실패 - 캐릭터: {}, 오류: {}",
@@ -308,6 +316,34 @@ public class InspectionService {
             log.info("무변동 알림 생성 - 캐릭터: {}, {}일 무변동",
                     character.getCharacterName(), unchangedDays);
         }
+    }
+
+    /**
+     * 이전 히스토리의 장비 목록 조회
+     */
+    private List<EquipmentHistory> getPreviousEquipments(long inspectionCharacterId) {
+        return combatPowerHistoryRepository.findLatest(inspectionCharacterId)
+                .map(CombatPowerHistory::getEquipments)
+                .orElse(Collections.emptyList());
+    }
+
+    /**
+     * 장비 변화 감지 후 알림 발송
+     */
+    private void checkEquipmentChanges(InspectionCharacter character,
+                                        List<EquipmentHistory> previousEquipments,
+                                        List<EquipmentHistory> newEquipments) {
+        List<String> changes = EquipmentChangeDetector.detectChanges(
+                character.getCharacterName(), previousEquipments, newEquipments);
+
+        if (changes.isEmpty()) {
+            return;
+        }
+
+        Member member = character.getMember();
+        String content = String.join("\n", changes);
+        notificationService.createInspectionNotification(member, content, character.getId());
+        log.info("장비 변화 알림 생성 - 캐릭터: {}, 변화: {}건", character.getCharacterName(), changes.size());
     }
 
     /**
