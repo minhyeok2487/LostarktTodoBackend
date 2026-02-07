@@ -11,6 +11,8 @@ import lostark.todo.domain.inspection.dto.CardSetEffectDto;
 import lostark.todo.domain.inspection.dto.EngravingDto;
 import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.inspection.dto.GemDto;
+import lostark.todo.domain.inspection.dto.ArkPassiveApiResponse;
+import lostark.todo.domain.inspection.dto.ArkPassiveDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.character.entity.Character;
@@ -265,6 +267,70 @@ public class LostarkCharacterApiClient {
         } catch (Exception e) {
             log.warn("장비 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 아크패시브 정보 조회 (Points + Effects)
+     */
+    public ArkPassiveApiResponse getArkPassive(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/arkpassive";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONObject arkPassiveObj = (JSONObject) parser.parse(reader);
+
+            List<ArkPassiveDto> effects = new ArrayList<>();
+            String pointsJson = null;
+
+            if (arkPassiveObj != null) {
+                // Points 배열을 JSON 문자열로 저장
+                if (arkPassiveObj.get("Points") != null) {
+                    JSONArray pointsArray = (JSONArray) arkPassiveObj.get("Points");
+                    org.json.simple.JSONArray pointsForSave = new org.json.simple.JSONArray();
+                    for (Object obj : pointsArray) {
+                        JSONObject point = (JSONObject) obj;
+                        org.json.simple.JSONObject p = new org.json.simple.JSONObject();
+                        p.put("name", point.get("Name") != null ? point.get("Name").toString() : null);
+                        p.put("value", point.get("Value") != null ? Integer.parseInt(point.get("Value").toString()) : 0);
+                        p.put("tooltip", point.get("Tooltip") != null ? point.get("Tooltip").toString() : null);
+                        pointsForSave.add(p);
+                    }
+                    pointsJson = pointsForSave.toJSONString();
+                }
+
+                // Effects 배열에서 각 계열별 스킬 파싱
+                if (arkPassiveObj.get("Effects") != null) {
+                    JSONArray effectsArray = (JSONArray) arkPassiveObj.get("Effects");
+                    for (Object obj : effectsArray) {
+                        JSONObject effectGroup = (JSONObject) obj;
+                        String category = effectGroup.get("Name") != null ? effectGroup.get("Name").toString() : null;
+
+                        if (effectGroup.get("Skills") != null) {
+                            JSONArray skillsArray = (JSONArray) effectGroup.get("Skills");
+                            for (Object skillObj : skillsArray) {
+                                JSONObject skill = (JSONObject) skillObj;
+                                effects.add(new ArkPassiveDto(
+                                        category,
+                                        skill.get("Name") != null ? skill.get("Name").toString() : null,
+                                        skill.get("Level") != null ? Integer.parseInt(skill.get("Level").toString()) : 0,
+                                        skill.get("Icon") != null ? skill.get("Icon").toString() : null,
+                                        skill.get("Description") != null ? skill.get("Description").toString() : null
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new ArkPassiveApiResponse(pointsJson, effects);
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("아크패시브 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            return new ArkPassiveApiResponse(null, new ArrayList<>());
         }
     }
 

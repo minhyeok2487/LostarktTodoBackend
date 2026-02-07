@@ -84,6 +84,15 @@ public class CombatPowerHistory extends BaseTimeEntity {
     @Builder.Default
     private List<GemHistory> gems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "combatPowerHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @BatchSize(size = 30)
+    @Builder.Default
+    private List<ArkPassiveHistory> arkPassives = new ArrayList<>();
+
+    @Column(columnDefinition = "TEXT")
+    private String arkPassivePointsJson;
+
     public void updateData(double combatPower, double itemLevel, String characterImage, String statsJson) {
         this.combatPower = combatPower;
         this.itemLevel = itemLevel;
@@ -136,6 +145,14 @@ public class CombatPowerHistory extends BaseTimeEntity {
         newGems.forEach(gem -> {
             gem.setCombatPowerHistory(this);
             this.gems.add(gem);
+        });
+    }
+
+    public void replaceArkPassives(List<ArkPassiveHistory> newArkPassives) {
+        this.arkPassives.clear();
+        newArkPassives.forEach(passive -> {
+            passive.setCombatPowerHistory(this);
+            this.arkPassives.add(passive);
         });
     }
 }

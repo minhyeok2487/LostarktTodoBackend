@@ -27,6 +27,8 @@ public class CombatPowerHistoryResponse {
     private List<CardHistoryResponse> cards;
     private List<CardSetEffectHistoryResponse> cardSetEffects;
     private List<GemHistoryResponse> gems;
+    private List<ArkPassiveHistoryResponse> arkPassives;
+    private String arkPassivePointsJson;
 
     public static CombatPowerHistoryResponse from(CombatPowerHistory entity) {
         return CombatPowerHistoryResponse.builder()
@@ -53,6 +55,10 @@ public class CombatPowerHistoryResponse {
                 .gems(entity.getGems().stream()
                         .map(GemHistoryResponse::from)
                         .collect(Collectors.toList()))
+                .arkPassives(entity.getArkPassives().stream()
+                        .map(ArkPassiveHistoryResponse::from)
+                        .collect(Collectors.toList()))
+                .arkPassivePointsJson(entity.getArkPassivePointsJson())
                 .build();
     }
 }
