@@ -18,7 +18,8 @@ public class CombatPowerHistoryRepositoryImpl implements CombatPowerHistoryCusto
     @Override
     public List<CombatPowerHistory> findByCharacterAndDateRange(long inspectionCharacterId,
                                                                  LocalDate startDate, LocalDate endDate) {
-        return factory.selectFrom(combatPowerHistory)
+        return factory.selectFrom(combatPowerHistory).distinct()
+                .leftJoin(combatPowerHistory.arkgridEffects).fetchJoin()
                 .where(
                         combatPowerHistory.inspectionCharacter.id.eq(inspectionCharacterId),
                         combatPowerHistory.recordDate.between(startDate, endDate)
