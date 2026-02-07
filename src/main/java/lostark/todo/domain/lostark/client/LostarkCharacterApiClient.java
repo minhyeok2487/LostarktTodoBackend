@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.character.dto.CharacterJsonDto;
 import lostark.todo.domain.inspection.dto.ArkgridEffectDto;
+import lostark.todo.domain.inspection.dto.EquipmentDto;
 import lostark.todo.domain.content.enums.Category;
 import lostark.todo.domain.content.repository.ContentRepository;
 import lostark.todo.domain.character.entity.Character;
@@ -224,6 +225,40 @@ public class LostarkCharacterApiClient {
             throw e;
         } catch (Exception e) {
             log.warn("아크그리드 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 장비 정보 조회
+     */
+    public List<EquipmentDto> getEquipment(String characterName, String apiKey) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/equipment";
+
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JSONParser parser = new JSONParser();
+            JSONArray equipmentArray = (JSONArray) parser.parse(reader);
+
+            List<EquipmentDto> equipments = new ArrayList<>();
+            if (equipmentArray != null) {
+                for (Object obj : equipmentArray) {
+                    JSONObject item = (JSONObject) obj;
+                    equipments.add(new EquipmentDto(
+                            item.get("Type") != null ? item.get("Type").toString() : null,
+                            item.get("Name") != null ? item.get("Name").toString() : null,
+                            item.get("Icon") != null ? item.get("Icon").toString() : null,
+                            item.get("Grade") != null ? item.get("Grade").toString() : null,
+                            item.get("Tooltip") != null ? item.get("Tooltip").toString() : null
+                    ));
+                }
+            }
+            return equipments;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("장비 정보 조회 실패 - 캐릭터: {}, 오류: {}", characterName, e.getMessage());
             return new ArrayList<>();
         }
     }
