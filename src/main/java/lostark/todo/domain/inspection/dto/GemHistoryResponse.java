@@ -15,6 +15,7 @@ public class GemHistoryResponse {
     private String skillName;
     private int gemSlot;
     private String skillIcon;
+    private String gemIcon;
     private int level;
     private String grade;
     private String description;
@@ -25,6 +26,7 @@ public class GemHistoryResponse {
                 .skillName(entity.getSkillName())
                 .gemSlot(entity.getGemSlot())
                 .skillIcon(entity.getSkillIcon())
+                .gemIcon(entity.getGemIcon())
                 .level(entity.getLevel())
                 .grade(entity.getGrade())
                 .description(entity.getDescription())

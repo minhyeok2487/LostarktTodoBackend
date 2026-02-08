@@ -161,6 +161,7 @@ public class InspectionPersistenceService {
                         .skillName(g.getSkillName())
                         .gemSlot(g.getGemSlot())
                         .skillIcon(g.getSkillIcon())
+                        .gemIcon(g.getGemIcon())
                         .level(g.getLevel())
                         .grade(g.getGrade())
                         .description(g.getDescription())

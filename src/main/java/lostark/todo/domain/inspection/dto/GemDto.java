@@ -12,6 +12,7 @@ public class GemDto {
     private String skillName;
     private int gemSlot;
     private String skillIcon;
+    private String gemIcon;
     private int level;
     private String grade;
     private String description;
