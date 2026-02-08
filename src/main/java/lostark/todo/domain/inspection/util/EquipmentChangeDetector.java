@@ -2,12 +2,7 @@ package lostark.todo.domain.inspection.util;
 
 import lostark.todo.domain.inspection.entity.EquipmentHistory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class EquipmentChangeDetector {
 
@@ -32,8 +27,8 @@ public class EquipmentChangeDetector {
             return List.of();
         }
 
-        Map<String, EquipmentHistory> prevByType = previousEquipments.stream()
-                .collect(Collectors.toMap(EquipmentHistory::getType, e -> e, (a, b) -> a));
+        // 인덱스 기반 매칭: 동일 이름/타입 중복 장비(귀걸이x2, 반지x2) 처리
+        Set<Integer> matchedPrevIndices = new HashSet<>();
 
         List<String> changes = new ArrayList<>();
 
@@ -47,7 +42,27 @@ public class EquipmentChangeDetector {
                 continue;
             }
 
-            EquipmentHistory prevEquip = prevByType.get(newEquip.getType());
+            // 1차: 이름이 같은 이전 장비 중 아직 매칭 안 된 것
+            EquipmentHistory prevEquip = null;
+            for (int i = 0; i < previousEquipments.size(); i++) {
+                if (!matchedPrevIndices.contains(i)
+                        && Objects.equals(previousEquipments.get(i).getName(), newEquip.getName())) {
+                    prevEquip = previousEquipments.get(i);
+                    matchedPrevIndices.add(i);
+                    break;
+                }
+            }
+            // 2차: 같은 타입의 이전 장비 중 아직 매칭 안 된 것
+            if (prevEquip == null) {
+                for (int i = 0; i < previousEquipments.size(); i++) {
+                    if (!matchedPrevIndices.contains(i)
+                            && Objects.equals(previousEquipments.get(i).getType(), newEquip.getType())) {
+                        prevEquip = previousEquipments.get(i);
+                        matchedPrevIndices.add(i);
+                        break;
+                    }
+                }
+            }
             if (prevEquip == null) {
                 continue;
             }

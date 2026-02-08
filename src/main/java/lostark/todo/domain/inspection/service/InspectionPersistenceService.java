@@ -164,7 +164,7 @@ public class InspectionPersistenceService {
                         .level(g.getLevel())
                         .grade(g.getGrade())
                         .description(g.getDescription())
-                        .option(g.getOption())
+                        .gemOption(g.getGemOption())
                         .build())
                 .collect(Collectors.toList());
         history.replaceGems(gemHistories);

@@ -18,7 +18,7 @@ public class GemHistoryResponse {
     private int level;
     private String grade;
     private String description;
-    private String option;
+    private String gemOption;
 
     public static GemHistoryResponse from(GemHistory entity) {
         return GemHistoryResponse.builder()
@@ -28,7 +28,7 @@ public class GemHistoryResponse {
                 .level(entity.getLevel())
                 .grade(entity.getGrade())
                 .description(entity.getDescription())
-                .option(entity.getOption())
+                .gemOption(entity.getGemOption())
                 .build();
     }
 }

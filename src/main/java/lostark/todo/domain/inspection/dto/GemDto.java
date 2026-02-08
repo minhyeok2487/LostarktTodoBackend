@@ -15,5 +15,5 @@ public class GemDto {
     private int level;
     private String grade;
     private String description;
-    private String option;
+    private String gemOption;
 }

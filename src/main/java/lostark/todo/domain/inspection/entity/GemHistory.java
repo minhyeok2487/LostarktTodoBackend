@@ -42,5 +42,5 @@ public class GemHistory extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String option;
+    private String gemOption;
 }
