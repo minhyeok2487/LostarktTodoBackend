@@ -35,6 +35,9 @@ public class GemHistory extends BaseTimeEntity {
     @Column(length = 500)
     private String skillIcon;
 
+    @Column(length = 500)
+    private String gemIcon;
+
     private int level;
 
     private String grade;
@@ -42,5 +45,5 @@ public class GemHistory extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String option;
+    private String gemOption;
 }

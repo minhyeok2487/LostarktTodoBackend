@@ -15,20 +15,22 @@ public class GemHistoryResponse {
     private String skillName;
     private int gemSlot;
     private String skillIcon;
+    private String gemIcon;
     private int level;
     private String grade;
     private String description;
-    private String option;
+    private String gemOption;
 
     public static GemHistoryResponse from(GemHistory entity) {
         return GemHistoryResponse.builder()
                 .skillName(entity.getSkillName())
                 .gemSlot(entity.getGemSlot())
                 .skillIcon(entity.getSkillIcon())
+                .gemIcon(entity.getGemIcon())
                 .level(entity.getLevel())
                 .grade(entity.getGrade())
                 .description(entity.getDescription())
-                .option(entity.getOption())
+                .gemOption(entity.getGemOption())
                 .build();
     }
 }

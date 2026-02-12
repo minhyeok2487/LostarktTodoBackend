@@ -396,17 +396,20 @@ public class LostarkCharacterApiClient {
                 return gems;
             }
 
-            // Gems 배열에서 슬롯별 레벨/등급 매핑
+            // Gems 배열에서 슬롯별 레벨/등급/아이콘 매핑
             Map<Long, Integer> gemLevelBySlot = new HashMap<>();
             Map<Long, String> gemGradeBySlot = new HashMap<>();
+            Map<Long, String> gemIconBySlot = new HashMap<>();
             JsonNode gemsArrayNode = gemsObj.get("Gems");
             if (gemsArrayNode != null && gemsArrayNode.isArray()) {
                 for (JsonNode gem : gemsArrayNode) {
                     long slot = gem.get("Slot").asLong();
                     int level = gem.has("Level") ? gem.get("Level").asInt(0) : 0;
                     String grade = getTextOrNull(gem, "Grade");
+                    String icon = getTextOrNull(gem, "Icon");
                     gemLevelBySlot.put(slot, level);
                     gemGradeBySlot.put(slot, grade);
+                    gemIconBySlot.put(slot, icon);
                 }
             }
 
@@ -419,14 +422,27 @@ public class LostarkCharacterApiClient {
                         int gemSlot = skill.has("GemSlot") ? skill.get("GemSlot").asInt(-1) : -1;
                         int gemLevel = gemLevelBySlot.getOrDefault((long) gemSlot, 0);
                         String gemGrade = gemGradeBySlot.getOrDefault((long) gemSlot, null);
+                        String gemIcon = gemIconBySlot.getOrDefault((long) gemSlot, null);
+
+                        // Description은 배열로 반환됨 (예: ["몰아치기 피해 9.5% 증가"])
+                        String description = null;
+                        JsonNode descNode = skill.get("Description");
+                        if (descNode != null && !descNode.isNull()) {
+                            if (descNode.isArray() && descNode.size() > 0) {
+                                description = descNode.get(0).asText();
+                            } else if (descNode.isTextual()) {
+                                description = descNode.asText();
+                            }
+                        }
 
                         gems.add(new GemDto(
                                 getTextOrNull(skill, "Name"),
                                 gemSlot,
                                 getTextOrNull(skill, "Icon"),
+                                gemIcon,
                                 gemLevel,
                                 gemGrade,
-                                getTextOrNull(skill, "Description"),
+                                description,
                                 getTextOrNull(skill, "Option")
                         ));
                     }

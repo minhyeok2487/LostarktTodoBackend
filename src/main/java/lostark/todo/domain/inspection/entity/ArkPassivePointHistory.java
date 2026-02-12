@@ -32,5 +32,6 @@ public class ArkPassivePointHistory extends BaseTimeEntity {
 
     private int value;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 }

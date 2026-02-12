@@ -78,7 +78,7 @@ public class InspectionCharacter extends BaseTimeEntity {
                               Integer townLevel, Integer expeditionLevel) {
         this.characterImage = characterImage;
         this.itemLevel = itemLevel;
-        this.combatPower = combatPower;
+        this.combatPower = Math.max(this.combatPower, combatPower);
         this.serverName = serverName;
         this.characterClassName = characterClassName;
         this.title = title;

@@ -84,12 +84,12 @@ public class InspectionPersistenceService {
         CombatPowerHistory history;
         if (existingHistory.isPresent()) {
             history = existingHistory.get();
-            history.updateData(profile.getCombatPower(), profile.getItemAvgLevel(), profile.getCharacterImage(), statsJson);
+            history.updateData(character.getCombatPower(), profile.getItemAvgLevel(), profile.getCharacterImage(), statsJson);
         } else {
             history = CombatPowerHistory.builder()
                     .inspectionCharacter(character)
                     .recordDate(today)
-                    .combatPower(profile.getCombatPower())
+                    .combatPower(character.getCombatPower())
                     .itemLevel(profile.getItemAvgLevel())
                     .characterImage(profile.getCharacterImage())
                     .statsJson(statsJson)
@@ -161,10 +161,11 @@ public class InspectionPersistenceService {
                         .skillName(g.getSkillName())
                         .gemSlot(g.getGemSlot())
                         .skillIcon(g.getSkillIcon())
+                        .gemIcon(g.getGemIcon())
                         .level(g.getLevel())
                         .grade(g.getGrade())
                         .description(g.getDescription())
-                        .option(g.getOption())
+                        .gemOption(g.getGemOption())
                         .build())
                 .collect(Collectors.toList());
         history.replaceGems(gemHistories);

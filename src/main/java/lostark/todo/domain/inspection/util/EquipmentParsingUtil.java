@@ -18,7 +18,7 @@ public class EquipmentParsingUtil {
     private static final Pattern REFINEMENT_PATTERN = Pattern.compile("\\+(\\d+)");
     private static final Pattern ADVANCED_REFINEMENT_PATTERN = Pattern.compile("\\[상급 재련\\]\\s*(\\d+)단계");
     private static final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>");
-    private static final Pattern ENGRAVING_PATTERN = Pattern.compile("([가-힣a-zA-Z\\s]+)\\s*Lv\\.(\\d+)");
+    private static final Pattern ENGRAVING_PATTERN = Pattern.compile("\\[?([가-힣a-zA-Z\\s]+?)\\]?\\s*Lv\\.(\\d+)");
 
     private EquipmentParsingUtil() {
     }
@@ -132,30 +132,57 @@ public class EquipmentParsingUtil {
         if (value == null) return;
 
         StringBuilder engravingBuilder = new StringBuilder();
+        int engravingCount = 0;
+        int maxEngravings = 2;
+
         Iterator<String> fieldNames = value.fieldNames();
-        while (fieldNames.hasNext()) {
+        while (fieldNames.hasNext() && engravingCount < maxEngravings) {
             String key = fieldNames.next();
             JsonNode item = value.get(key);
             if (!item.isObject()) continue;
 
-            String contentStr = getTextOrNull(item, "contentStr");
-            if (contentStr == null) continue;
+            JsonNode contentStrNode = item.get("contentStr");
+            if (contentStrNode == null || contentStrNode.isNull()) continue;
 
-            String plainContent = stripHtml(contentStr).trim();
-            Matcher matcher = ENGRAVING_PATTERN.matcher(plainContent);
-            while (matcher.find()) {
-                if (engravingBuilder.length() > 0) {
-                    engravingBuilder.append(", ");
+            // contentStr이 문자열인 경우 직접 사용
+            if (contentStrNode.isTextual()) {
+                String plainContent = stripHtml(contentStrNode.asText()).trim();
+                engravingCount = extractEngravings(plainContent, engravingBuilder, engravingCount, maxEngravings);
+            }
+            // contentStr이 객체인 경우 내부 Element들을 순회
+            else if (contentStrNode.isObject()) {
+                Iterator<String> innerFields = contentStrNode.fieldNames();
+                while (innerFields.hasNext() && engravingCount < maxEngravings) {
+                    String innerKey = innerFields.next();
+                    JsonNode innerItem = contentStrNode.get(innerKey);
+                    if (!innerItem.isObject()) continue;
+
+                    String innerContentStr = getTextOrNull(innerItem, "contentStr");
+                    if (innerContentStr == null) continue;
+
+                    String plainContent = stripHtml(innerContentStr).trim();
+                    engravingCount = extractEngravings(plainContent, engravingBuilder, engravingCount, maxEngravings);
                 }
-                engravingBuilder.append(matcher.group(1).trim())
-                        .append(" Lv.")
-                        .append(matcher.group(2));
             }
         }
 
         if (engravingBuilder.length() > 0) {
             equipment.setEngravings(engravingBuilder.toString());
         }
+    }
+
+    private static int extractEngravings(String plainContent, StringBuilder builder, int currentCount, int max) {
+        Matcher matcher = ENGRAVING_PATTERN.matcher(plainContent);
+        while (matcher.find() && currentCount < max) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append(matcher.group(1).trim())
+                    .append(" Lv.")
+                    .append(matcher.group(2));
+            currentCount++;
+        }
+        return currentCount;
     }
 
     private static void parseSingleTextBox(JsonNode element, EquipmentHistory equipment) {
