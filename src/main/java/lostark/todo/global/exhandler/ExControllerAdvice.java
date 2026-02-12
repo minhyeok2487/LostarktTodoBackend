@@ -90,8 +90,12 @@ public class ExControllerAdvice {
             // 기존 requestInfo에 헤더 정보 추가
             String updatedRequestInfo = requestInfo + "\n" + headerDetails;
 
-            // callEvent 호출
-            webHookService.callEvent(ex, updatedRequestInfo);
+            // callEvent 호출 (비동기, 실패해도 응답에 영향 없음)
+            try {
+                webHookService.callEvent(ex, updatedRequestInfo);
+            } catch (Exception webhookEx) {
+                log.warn("Webhook 호출 실패: {}", webhookEx.getMessage());
+            }
         } else {
             log.warn("{} - {}", requestInfo, ex.getMessage());
         }
