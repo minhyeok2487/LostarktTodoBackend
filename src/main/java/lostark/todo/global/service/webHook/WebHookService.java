@@ -12,15 +12,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
 public class WebHookService {
 
+    private static final long COOLDOWN_MILLIS = 5 * 60 * 1000; // 5분
+
     @Value("${discord.webhookURL}")
     private String url;
 
     private final RestTemplate restTemplate;
+    private final ConcurrentHashMap<String, Long> lastSentTime = new ConcurrentHashMap<>();
 
     public WebHookService() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -43,8 +47,18 @@ public class WebHookService {
     @Async("taskExecutor")
     public void callEvent(Exception ex, String requestInfo) {
         try {
+            String exceptionKey = ex.getClass().getSimpleName();
+            long now = System.currentTimeMillis();
+            Long lastSent = lastSentTime.get(exceptionKey);
+
+            if (lastSent != null && (now - lastSent) < COOLDOWN_MILLIS) {
+                log.debug("Webhook 쿨다운 중 ({}), 전송 생략", exceptionKey);
+                return;
+            }
+            lastSentTime.put(exceptionKey, now);
+
             JSONObject data = new JSONObject();
-            String message = "```" + ex.getClass().getSimpleName() + "발생";
+            String message = "```" + exceptionKey + "발생";
             message += "\n";
             message += ex.getMessage();
             message += "\n";
