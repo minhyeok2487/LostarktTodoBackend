@@ -68,6 +68,28 @@ Unable to acquire JDBC Connection
 - `addEnergyToAllLifeEnergies`: `0 0,30` → `0 5,35` (5분 오프셋)
 - `fetchScheduledInspectionData`: `0 0 * * * ?` → `0 2 * * * ?` (2분 오프셋)
 
+### 3-4. WebHook 쿨다운 및 블랙리스트
+
+#### 쿨다운 (동일 예외 5분 제한)
+- `ConcurrentHashMap<String, Long>`으로 예외 클래스별 마지막 전송 시각 관리
+- 동일 예외가 5분 내에 재발생하면 Discord 전송 생략, `log.debug`만 출력
+- 첫 번째 에러는 즉시 전송되므로 원인 파악 지연 없음
+- 메모리 사용: 예외 종류 수 × ~100바이트 (실질적으로 무시 가능)
+
+#### 블랙리스트 (비서버 에러 제외)
+- 에러 메시지에 아래 키워드가 포함되면 Discord 웹훅 미전송 (로그만 남김):
+  - `"점검중"` — 로스트아크 서버 정기점검 (우리 버그 아님)
+  - `"올바르지 않은 apiKey"` — 유저의 크롬 자동 번역으로 인한 API 키 오류
+- 블랙리스트 제외 시에도 `log.warn`으로 기록되므로 서버 로그에서 확인 가능
+
+#### 효과 (실제 Discord 로그 기준)
+| 에러 유형 | 수정 전 (2일간) | 수정 후 (예상) |
+|----------|:-:|:-:|
+| CannotCreateTransactionException (자정 크래시) | 20+ | 1 (쿨다운) |
+| "로스트아크 서버가 점검중" | 8+ | 0 (블랙리스트) |
+| "올바르지 않은 apiKey" | 10+ | 0 (블랙리스트) |
+| CombatPower null 파싱 에러 | 4+ | 1 (쿨다운) |
+
 ## 4. 향후 개선 계획
 
 ### Phase 2: MySQL EVENT (순수 SQL 작업 DB 이전)
