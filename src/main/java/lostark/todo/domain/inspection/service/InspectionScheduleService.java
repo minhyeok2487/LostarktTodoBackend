@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.inspection.entity.InspectionCharacter;
 import lostark.todo.domain.inspection.repository.InspectionCharacterRepository;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class InspectionScheduleService {
      * 캐릭터별로 개별 트랜잭션으로 처리 (InspectionService.fetchDailyData의 @Transactional 활용)
      */
     @Scheduled(cron = "0 2 * * * ?", zone = "Asia/Seoul")
+    @SchedulerLock(name = "fetchScheduledInspectionData", lockAtMostFor = "55m", lockAtLeastFor = "1m")
     public void fetchScheduledInspectionData() {
         int currentHour = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).getHour();
         log.info("===== 군장검사 스케줄러 실행 ({}시) =====", currentHour);
