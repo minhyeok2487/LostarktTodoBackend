@@ -11,6 +11,7 @@ import lostark.todo.domain.market.service.MarketService;
 import lostark.todo.domain.lostark.client.LostarkMarketApiClient;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -40,6 +41,7 @@ public class SchedulingService {
 
     // 매일 오전 0시 거래소 데이터 갱신
     @Scheduled(cron = "0 0 1 * * ?", zone = "Asia/Seoul")
+    @SchedulerLock(name = "updateMarketData", lockAtMostFor = "30m", lockAtLeastFor = "1m")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateMarketData() {
         updateMarketItems();
@@ -67,6 +69,7 @@ public class SchedulingService {
 
     // 매일 오전 6시 일일 숙제 초기화
     @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Seoul")
+    @SchedulerLock(name = "resetDayTodo", lockAtMostFor = "30m", lockAtLeastFor = "1m")
     public void resetDayTodo() {
         log.info("===== 일일 숙제 초기화 시작 =====");
         safeExecute(() -> dayTodoResetService.updateDayContentGauge(), "휴식게이지 업데이트");
@@ -83,6 +86,7 @@ public class SchedulingService {
      * 수요일 오전 6시 2분 주간 숙제 초기화
      */
     @Scheduled(cron = "0 2 6 * * 3", zone = "Asia/Seoul")
+    @SchedulerLock(name = "resetWeekTodo", lockAtMostFor = "30m", lockAtLeastFor = "1m")
     public void resetWeekTodo() {
         log.info("===== 주간 숙제 초기화 시작 =====");
         safeExecute(() -> weekTodoResetService.updateTwoCycle(), "2주기 체크 값 변경");
@@ -97,6 +101,7 @@ public class SchedulingService {
 
     // 매일 10분마다 일정 레이드 자동 체크
     @Scheduled(cron = "0 */10 * * * *", zone = "Asia/Seoul")
+    @SchedulerLock(name = "checkScheduleRaids", lockAtMostFor = "9m", lockAtLeastFor = "1m")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void checkScheduleRaids() {
         scheduleRepository.checkScheduleRaids();
@@ -104,6 +109,7 @@ public class SchedulingService {
 
     // 매일 5분, 35분마다 추가 (정시 스케줄 경합 방지를 위해 5분 오프셋)
     @Scheduled(cron = "0 5,35 * * * *", zone = "Asia/Seoul")
+    @SchedulerLock(name = "addEnergyToAllLifeEnergies", lockAtMostFor = "29m", lockAtLeastFor = "1m")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addEnergyToAllLifeEnergies() {
         int count = lifeEnergyRepository.addEnergyToAllLifeEnergies();
