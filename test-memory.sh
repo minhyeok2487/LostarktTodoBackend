@@ -11,7 +11,7 @@
 #   Phase 2: 동시 요청 부하 테스트 (자정 트래픽 시뮬레이션)
 #   Phase 3: 결과 수집
 
-BASE_URL="http://localhost:8080"
+BASE_URL="http://localhost:8888"
 ACTUATOR_URL="${BASE_URL}/manage"
 
 RED='\033[0;31m'
