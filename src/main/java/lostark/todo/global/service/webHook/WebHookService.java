@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -19,6 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebHookService {
 
     private static final long COOLDOWN_MILLIS = 5 * 60 * 1000; // 5분
+    private static final List<String> WEBHOOK_EXCLUDE_KEYWORDS = List.of(
+            "점검중",
+            "올바르지 않은 apiKey"
+    );
 
     @Value("${discord.webhookURL}")
     private String url;
@@ -47,6 +52,12 @@ public class WebHookService {
     @Async("taskExecutor")
     public void callEvent(Exception ex, String requestInfo) {
         try {
+            String errorMessage = ex.getMessage();
+            if (errorMessage != null && WEBHOOK_EXCLUDE_KEYWORDS.stream().anyMatch(errorMessage::contains)) {
+                log.warn("Webhook 제외 대상: {}", errorMessage);
+                return;
+            }
+
             String exceptionKey = ex.getClass().getSimpleName();
             long now = System.currentTimeMillis();
             Long lastSent = lastSentTime.get(exceptionKey);
