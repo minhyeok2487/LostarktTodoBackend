@@ -102,8 +102,8 @@ public class SchedulingService {
         scheduleRepository.checkScheduleRaids();
     }
 
-    // 매일 0분, 30분마다 추가
-    @Scheduled(cron = "0 0,30 * * * *", zone = "Asia/Seoul")
+    // 매일 5분, 35분마다 추가 (정시 스케줄 경합 방지를 위해 5분 오프셋)
+    @Scheduled(cron = "0 5,35 * * * *", zone = "Asia/Seoul")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addEnergyToAllLifeEnergies() {
         int count = lifeEnergyRepository.addEnergyToAllLifeEnergies();
