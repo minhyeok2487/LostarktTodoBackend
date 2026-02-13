@@ -1,193 +1,193 @@
--- ============================================
--- 군장검사(Inspection) DDL - MySQL 8.0
--- 실행 순서대로 정렬 (부모 → 자식)
--- ============================================
-
--- 1. inspection_character (최상위)
-CREATE TABLE IF NOT EXISTS inspection_character (
-    inspection_character_id BIGINT NOT NULL AUTO_INCREMENT,
-    member_id BIGINT,
-    character_name VARCHAR(255) NOT NULL,
-    server_name VARCHAR(255),
-    character_class_name VARCHAR(255),
-    character_image VARCHAR(500),
-    item_level DOUBLE NOT NULL DEFAULT 0,
-    combat_power DOUBLE NOT NULL DEFAULT 0,
-    title VARCHAR(255),
-    guild_name VARCHAR(255),
-    town_name VARCHAR(255),
-    town_level INT,
-    expedition_level INT,
-    no_change_threshold INT NOT NULL DEFAULT 3,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    created_date DATETIME(6),
-    last_modified_date DATETIME(6),
-    PRIMARY KEY (inspection_character_id),
-    UNIQUE KEY uk_inspection_member_char (member_id, character_name),
-    INDEX idx_inspection_member (member_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 2. combat_power_history (inspection_character 참조)
-CREATE TABLE IF NOT EXISTS combat_power_history (
-    combat_power_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    inspection_character_id BIGINT,
-    record_date DATE NOT NULL,
-    combat_power DOUBLE NOT NULL,
-    item_level DOUBLE,
-    character_image VARCHAR(500),
-    stats_json TEXT,
-    ark_passive_title VARCHAR(255),
-    town_name VARCHAR(255),
-    town_level INT,
-    created_date DATETIME(6),
-    last_modified_date DATETIME(6),
-    PRIMARY KEY (combat_power_history_id),
-    UNIQUE KEY uk_history_char_date (inspection_character_id, record_date),
-    INDEX idx_history_char_date (inspection_character_id, record_date),
-    CONSTRAINT fk_history_character FOREIGN KEY (inspection_character_id)
-        REFERENCES inspection_character (inspection_character_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 3. arkgrid_effect_history
-CREATE TABLE IF NOT EXISTS arkgrid_effect_history (
-    arkgrid_effect_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    effect_name VARCHAR(255) NOT NULL,
-    effect_level INT NOT NULL DEFAULT 0,
-    effect_tooltip VARCHAR(1000),
-    PRIMARY KEY (arkgrid_effect_history_id),
-    INDEX idx_arkgrid_history (combat_power_history_id),
-    CONSTRAINT fk_arkgrid_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 4. equipment_history
-CREATE TABLE IF NOT EXISTS equipment_history (
-    equipment_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    type VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    icon VARCHAR(500),
-    grade VARCHAR(255),
-    item_level INT,
-    quality INT,
-    refinement INT,
-    advanced_refinement INT,
-    basic_effect TEXT,
-    additional_effect TEXT,
-    ark_passive_effect VARCHAR(255),
-    grinding_effect TEXT,
-    bracelet_effect TEXT,
-    engravings VARCHAR(1000),
-    PRIMARY KEY (equipment_history_id),
-    INDEX idx_equipment_history (combat_power_history_id),
-    CONSTRAINT fk_equipment_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 5. engraving_history
-CREATE TABLE IF NOT EXISTS engraving_history (
-    engraving_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    name VARCHAR(255) NOT NULL,
-    level INT NOT NULL DEFAULT 0,
-    grade VARCHAR(255),
-    ability_stone_level INT,
-    description VARCHAR(2000),
-    PRIMARY KEY (engraving_history_id),
-    INDEX idx_engraving_history (combat_power_history_id),
-    CONSTRAINT fk_engraving_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 6. card_history
-CREATE TABLE IF NOT EXISTS card_history (
-    card_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    slot INT NOT NULL DEFAULT 0,
-    name VARCHAR(255) NOT NULL,
-    icon VARCHAR(500),
-    awake_count INT NOT NULL DEFAULT 0,
-    awake_total INT NOT NULL DEFAULT 0,
-    grade VARCHAR(255),
-    PRIMARY KEY (card_history_id),
-    INDEX idx_card_history (combat_power_history_id),
-    CONSTRAINT fk_card_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 7. card_set_effect_history
-CREATE TABLE IF NOT EXISTS card_set_effect_history (
-    card_set_effect_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    PRIMARY KEY (card_set_effect_history_id),
-    INDEX idx_card_set_effect_history (combat_power_history_id),
-    CONSTRAINT fk_card_set_effect_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 8. gem_history
-CREATE TABLE IF NOT EXISTS gem_history (
-    gem_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    skill_name VARCHAR(255) NOT NULL,
-    gem_slot INT NOT NULL DEFAULT 0,
-    skill_icon VARCHAR(500),
-    level INT NOT NULL DEFAULT 0,
-    grade VARCHAR(255),
-    description TEXT,
-    `option` VARCHAR(255),
-    PRIMARY KEY (gem_history_id),
-    INDEX idx_gem_history (combat_power_history_id),
-    CONSTRAINT fk_gem_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 9. ark_passive_point_history
-CREATE TABLE IF NOT EXISTS ark_passive_point_history (
-    ark_passive_point_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    name VARCHAR(255) NOT NULL,
-    value INT NOT NULL DEFAULT 0,
-    description VARCHAR(255),
-    PRIMARY KEY (ark_passive_point_history_id),
-    INDEX idx_ark_passive_point_history (combat_power_history_id),
-    CONSTRAINT fk_ark_passive_point_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 10. ark_passive_effect_history
-CREATE TABLE IF NOT EXISTS ark_passive_effect_history (
-    ark_passive_effect_history_id BIGINT NOT NULL AUTO_INCREMENT,
-    combat_power_history_id BIGINT,
-    category VARCHAR(255) NOT NULL,
-    effect_name VARCHAR(255),
-    icon VARCHAR(500),
-    tier INT NOT NULL DEFAULT 0,
-    level INT NOT NULL DEFAULT 0,
-    PRIMARY KEY (ark_passive_effect_history_id),
-    INDEX idx_ark_passive_effect_history (combat_power_history_id),
-    CONSTRAINT fk_ark_passive_effect_history FOREIGN KEY (combat_power_history_id)
-        REFERENCES combat_power_history (combat_power_history_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ============================================
--- 기존 테이블 ALTER (신규 컬럼 추가)
--- 이미 inspection_character, combat_power_history가 있는 경우
--- 컬럼이 이미 존재하면 에러 발생 → 무시하고 다음 실행
--- ============================================
-
--- inspection_character에 신규 컬럼 추가 (개별 실행)
-ALTER TABLE inspection_character ADD COLUMN title VARCHAR(255);
-ALTER TABLE inspection_character ADD COLUMN guild_name VARCHAR(255);
-ALTER TABLE inspection_character ADD COLUMN town_name VARCHAR(255);
-ALTER TABLE inspection_character ADD COLUMN town_level INT;
-ALTER TABLE inspection_character ADD COLUMN expedition_level INT;
-
--- combat_power_history에 신규 컬럼 추가 (개별 실행)
-ALTER TABLE combat_power_history ADD COLUMN stats_json TEXT;
-ALTER TABLE combat_power_history ADD COLUMN ark_passive_title VARCHAR(255);
-ALTER TABLE combat_power_history ADD COLUMN town_name VARCHAR(255);
-ALTER TABLE combat_power_history ADD COLUMN town_level INT;
+-- -- ============================================
+-- -- 군장검사(Inspection) DDL - MySQL 8.0
+-- -- 실행 순서대로 정렬 (부모 → 자식)
+-- -- ============================================
+-- 
+-- -- 1. inspection_character (최상위)
+-- CREATE TABLE IF NOT EXISTS inspection_character (
+--     inspection_character_id BIGINT NOT NULL AUTO_INCREMENT,
+--     member_id BIGINT,
+--     character_name VARCHAR(255) NOT NULL,
+--     server_name VARCHAR(255),
+--     character_class_name VARCHAR(255),
+--     character_image VARCHAR(500),
+--     item_level DOUBLE NOT NULL DEFAULT 0,
+--     combat_power DOUBLE NOT NULL DEFAULT 0,
+--     title VARCHAR(255),
+--     guild_name VARCHAR(255),
+--     town_name VARCHAR(255),
+--     town_level INT,
+--     expedition_level INT,
+--     no_change_threshold INT NOT NULL DEFAULT 3,
+--     is_active TINYINT(1) NOT NULL DEFAULT 1,
+--     created_date DATETIME(6),
+--     last_modified_date DATETIME(6),
+--     PRIMARY KEY (inspection_character_id),
+--     UNIQUE KEY uk_inspection_member_char (member_id, character_name),
+--     INDEX idx_inspection_member (member_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 2. combat_power_history (inspection_character 참조)
+-- CREATE TABLE IF NOT EXISTS combat_power_history (
+--     combat_power_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     inspection_character_id BIGINT,
+--     record_date DATE NOT NULL,
+--     combat_power DOUBLE NOT NULL,
+--     item_level DOUBLE,
+--     character_image VARCHAR(500),
+--     stats_json TEXT,
+--     ark_passive_title VARCHAR(255),
+--     town_name VARCHAR(255),
+--     town_level INT,
+--     created_date DATETIME(6),
+--     last_modified_date DATETIME(6),
+--     PRIMARY KEY (combat_power_history_id),
+--     UNIQUE KEY uk_history_char_date (inspection_character_id, record_date),
+--     INDEX idx_history_char_date (inspection_character_id, record_date),
+--     CONSTRAINT fk_history_character FOREIGN KEY (inspection_character_id)
+--         REFERENCES inspection_character (inspection_character_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 3. arkgrid_effect_history
+-- CREATE TABLE IF NOT EXISTS arkgrid_effect_history (
+--     arkgrid_effect_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     effect_name VARCHAR(255) NOT NULL,
+--     effect_level INT NOT NULL DEFAULT 0,
+--     effect_tooltip VARCHAR(1000),
+--     PRIMARY KEY (arkgrid_effect_history_id),
+--     INDEX idx_arkgrid_history (combat_power_history_id),
+--     CONSTRAINT fk_arkgrid_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 4. equipment_history
+-- CREATE TABLE IF NOT EXISTS equipment_history (
+--     equipment_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     type VARCHAR(255) NOT NULL,
+--     name VARCHAR(255) NOT NULL,
+--     icon VARCHAR(500),
+--     grade VARCHAR(255),
+--     item_level INT,
+--     quality INT,
+--     refinement INT,
+--     advanced_refinement INT,
+--     basic_effect TEXT,
+--     additional_effect TEXT,
+--     ark_passive_effect VARCHAR(255),
+--     grinding_effect TEXT,
+--     bracelet_effect TEXT,
+--     engravings VARCHAR(1000),
+--     PRIMARY KEY (equipment_history_id),
+--     INDEX idx_equipment_history (combat_power_history_id),
+--     CONSTRAINT fk_equipment_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 5. engraving_history
+-- CREATE TABLE IF NOT EXISTS engraving_history (
+--     engraving_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     name VARCHAR(255) NOT NULL,
+--     level INT NOT NULL DEFAULT 0,
+--     grade VARCHAR(255),
+--     ability_stone_level INT,
+--     description VARCHAR(2000),
+--     PRIMARY KEY (engraving_history_id),
+--     INDEX idx_engraving_history (combat_power_history_id),
+--     CONSTRAINT fk_engraving_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 6. card_history
+-- CREATE TABLE IF NOT EXISTS card_history (
+--     card_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     slot INT NOT NULL DEFAULT 0,
+--     name VARCHAR(255) NOT NULL,
+--     icon VARCHAR(500),
+--     awake_count INT NOT NULL DEFAULT 0,
+--     awake_total INT NOT NULL DEFAULT 0,
+--     grade VARCHAR(255),
+--     PRIMARY KEY (card_history_id),
+--     INDEX idx_card_history (combat_power_history_id),
+--     CONSTRAINT fk_card_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 7. card_set_effect_history
+-- CREATE TABLE IF NOT EXISTS card_set_effect_history (
+--     card_set_effect_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     name VARCHAR(255) NOT NULL,
+--     description TEXT,
+--     PRIMARY KEY (card_set_effect_history_id),
+--     INDEX idx_card_set_effect_history (combat_power_history_id),
+--     CONSTRAINT fk_card_set_effect_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 8. gem_history
+-- CREATE TABLE IF NOT EXISTS gem_history (
+--     gem_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     skill_name VARCHAR(255) NOT NULL,
+--     gem_slot INT NOT NULL DEFAULT 0,
+--     skill_icon VARCHAR(500),
+--     level INT NOT NULL DEFAULT 0,
+--     grade VARCHAR(255),
+--     description TEXT,
+--     `option` VARCHAR(255),
+--     PRIMARY KEY (gem_history_id),
+--     INDEX idx_gem_history (combat_power_history_id),
+--     CONSTRAINT fk_gem_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 9. ark_passive_point_history
+-- CREATE TABLE IF NOT EXISTS ark_passive_point_history (
+--     ark_passive_point_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     name VARCHAR(255) NOT NULL,
+--     value INT NOT NULL DEFAULT 0,
+--     description VARCHAR(255),
+--     PRIMARY KEY (ark_passive_point_history_id),
+--     INDEX idx_ark_passive_point_history (combat_power_history_id),
+--     CONSTRAINT fk_ark_passive_point_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- 10. ark_passive_effect_history
+-- CREATE TABLE IF NOT EXISTS ark_passive_effect_history (
+--     ark_passive_effect_history_id BIGINT NOT NULL AUTO_INCREMENT,
+--     combat_power_history_id BIGINT,
+--     category VARCHAR(255) NOT NULL,
+--     effect_name VARCHAR(255),
+--     icon VARCHAR(500),
+--     tier INT NOT NULL DEFAULT 0,
+--     level INT NOT NULL DEFAULT 0,
+--     PRIMARY KEY (ark_passive_effect_history_id),
+--     INDEX idx_ark_passive_effect_history (combat_power_history_id),
+--     CONSTRAINT fk_ark_passive_effect_history FOREIGN KEY (combat_power_history_id)
+--         REFERENCES combat_power_history (combat_power_history_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- 
+-- -- ============================================
+-- -- 기존 테이블 ALTER (신규 컬럼 추가)
+-- -- 이미 inspection_character, combat_power_history가 있는 경우
+-- -- 컬럼이 이미 존재하면 에러 발생 → 무시하고 다음 실행
+-- -- ============================================
+-- 
+-- -- inspection_character에 신규 컬럼 추가 (개별 실행)
+-- ALTER TABLE inspection_character ADD COLUMN title VARCHAR(255);
+-- ALTER TABLE inspection_character ADD COLUMN guild_name VARCHAR(255);
+-- ALTER TABLE inspection_character ADD COLUMN town_name VARCHAR(255);
+-- ALTER TABLE inspection_character ADD COLUMN town_level INT;
+-- ALTER TABLE inspection_character ADD COLUMN expedition_level INT;
+-- 
+-- -- combat_power_history에 신규 컬럼 추가 (개별 실행)
+-- ALTER TABLE combat_power_history ADD COLUMN stats_json TEXT;
+-- ALTER TABLE combat_power_history ADD COLUMN ark_passive_title VARCHAR(255);
+-- ALTER TABLE combat_power_history ADD COLUMN town_name VARCHAR(255);
+-- ALTER TABLE combat_power_history ADD COLUMN town_level INT;
