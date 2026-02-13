@@ -42,8 +42,6 @@ public class Notification extends BaseTimeEntity {
 
     private long communityId;
 
-    private long inspectionCharacterId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @JsonBackReference //순환참조 방지
