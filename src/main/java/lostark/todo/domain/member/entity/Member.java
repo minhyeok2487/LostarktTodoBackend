@@ -12,6 +12,7 @@ import lostark.todo.domain.board.comments.entity.Comments;
 import lostark.todo.domain.friend.entity.Friends;
 import lostark.todo.domain.notification.entity.Notification;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -59,6 +60,10 @@ public class Member extends BaseTimeEntity {
     private Role role;
 
     private LocalDateTime adsDate;
+
+    @ColumnDefault("7")
+    @Builder.Default
+    private int inspectionScheduleHour = 7;
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference

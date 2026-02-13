@@ -120,6 +120,18 @@ public class NotificationService {
         notificationRepository.updateReadAll(member);
     }
 
+    @Transactional
+    public void createInspectionNotification(Member receiver, String content, long inspectionCharacterId) {
+        Notification notification = Notification.builder()
+                .content(content)
+                .isRead(false)
+                .notificationType(NotificationType.INSPECTION)
+                .inspectionCharacterId(inspectionCharacterId)
+                .receiver(receiver)
+                .build();
+        notificationRepository.save(notification);
+    }
+
     // =============== Admin Methods ===============
 
     @Transactional(readOnly = true)

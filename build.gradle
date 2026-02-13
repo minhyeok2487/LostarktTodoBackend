@@ -82,6 +82,7 @@ dependencies {
 
 	//cache
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
 	//monitoring
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -89,6 +90,10 @@ dependencies {
 
 	//bucket4j
 	implementation group: 'com.github.vladimir-bukhtoyarov', name: 'bucket4j-core', version: '7.6.0'
+
+	//shedlock (스케줄러 분산 락)
+	implementation 'net.javacrumbs.shedlock:shedlock-spring:5.10.0'
+	implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.10.0'
 }
 
 //QueryDSL 플로그인 설정 START
