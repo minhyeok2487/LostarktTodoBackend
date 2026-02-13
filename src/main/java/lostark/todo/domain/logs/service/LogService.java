@@ -92,7 +92,7 @@ public class LogService {
         if (logs.getLogType().equals(LogType.DAILY)) {
             return repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), null);
         } else if (logs.getLogType().equals(LogType.WEEKLY)) {
-            repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
+            return repository.get(logs.getMemberId(), logs.getCharacterId(), logs.getLogContent(), logs.getLocalDate(), logs.getName());
         } else if (logs.getLogType().equals(LogType.ETC)) {
             return new ArrayList<>();
         }
