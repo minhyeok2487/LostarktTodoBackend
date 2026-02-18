@@ -10,10 +10,10 @@ ENV PORT 8080
 EXPOSE $PORT
 
 ENTRYPOINT ["java", \
-  "-Xms256m", \
-  "-Xmx512m", \
-  "-XX:MaxMetaspaceSize=160m", \
+  "-XX:MaxRAMPercentage=75.0", \
   "-XX:+UseG1GC", \
   "-XX:MaxGCPauseMillis=200", \
   "-XX:+UseStringDeduplication", \
+  "-XX:MaxDirectMemorySize=128m", \
+  "-XX:+HeapDumpOnOutOfMemoryError", \
   "-jar", "app.jar"]

@@ -26,8 +26,8 @@ public class LocalCacheConfig {
                                 .build()),
                 new CaffeineCache("content",
                         Caffeine.newBuilder()
-                                .maximumSize(500)
-                                .expireAfterWrite(30, TimeUnit.MINUTES)
+                                .maximumSize(250)
+                                .expireAfterWrite(15, TimeUnit.MINUTES)
                                 .build())
         ));
         return cacheManager;
