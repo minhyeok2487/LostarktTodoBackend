@@ -89,6 +89,14 @@ public class CharacterService {
         character.getWeekTodo().updateCubeTicket(num);
     }
 
+    /**
+     * 지옥 열쇠 업데이트
+     */
+    @Transactional
+    public void updateHellKey(Character character, int num) {
+        character.getWeekTodo().updateHellKey(num);
+    }
+
     @Transactional
     public boolean deleteByMember(Member member) {
         long result = characterRepository.deleteByMember(member);

@@ -151,6 +151,17 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "캐릭터 지옥 열쇠 업데이트", response = CharacterResponse.class)
+    @PostMapping("/hell-key")
+    public ResponseEntity<?> updateHellKey(@AuthenticationPrincipal String username,
+                                           @RequestParam(required = false) String friendUsername,
+                                           @RequestBody UpdateHellKeyRequest request) {
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        characterService.updateHellKey(updateCharacter, request.getNum());
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "주간 레이드 컨텐츠 골드 획득/해제")
     @PatchMapping("/raid/gold-check")
     public ResponseEntity<?> updateRaidGoldCheck(@AuthenticationPrincipal String username,
