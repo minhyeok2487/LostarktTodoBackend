@@ -15,4 +15,7 @@ public class SearchScheduleRequest {
     @ApiModelProperty(example = "1")
     @NotNull
     private int month;
+
+    @ApiModelProperty(example = "발탄", notes = "레이드 이름이나 메모에서 검색")
+    private String query;
 }

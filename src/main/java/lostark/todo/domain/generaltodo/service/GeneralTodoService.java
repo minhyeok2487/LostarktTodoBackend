@@ -56,6 +56,12 @@ public class GeneralTodoService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    public List<GeneralTodoItemResponse> search(String username, SearchGeneralTodoRequest request) {
+        Member member = memberRepository.get(username);
+        return itemRepository.search(member.getId(), member.getUsername(), request);
+    }
+
     public GeneralTodoFolderResponse createFolder(String username, CreateGeneralTodoFolderRequest request) {
         Member member = memberRepository.get(username);
         Long memberId = member.getId();
