@@ -25,6 +25,10 @@ public class WeekTodo {
 
     private int hellKey;
 
+    private int trialSand;
+
+    private static final int MAX_TRIAL_SAND = 5;
+
     public void updateWeekEpona() {
         if(this.weekEpona <3) {
             this.weekEpona++;
@@ -69,6 +73,16 @@ public class WeekTodo {
         this.hellKey += num;
         if (this.hellKey < 0) {
             this.hellKey = 0;
+        }
+    }
+
+    public void updateTrialSand(int num) {
+        this.trialSand += num;
+        if (this.trialSand < 0) {
+            this.trialSand = 0;
+        }
+        if (this.trialSand > MAX_TRIAL_SAND) {
+            this.trialSand = MAX_TRIAL_SAND;
         }
     }
 }

@@ -162,6 +162,17 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "캐릭터 시련의 모래 업데이트", response = CharacterResponse.class)
+    @PostMapping("/trial-sand")
+    public ResponseEntity<?> updateTrialSand(@AuthenticationPrincipal String username,
+                                             @RequestParam(required = false) String friendUsername,
+                                             @RequestBody UpdateTrialSandRequest request) {
+        Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
+                request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
+        characterService.updateTrialSand(updateCharacter, request.getNum());
+        return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "주간 레이드 컨텐츠 골드 획득/해제")
     @PatchMapping("/raid/gold-check")
     public ResponseEntity<?> updateRaidGoldCheck(@AuthenticationPrincipal String username,

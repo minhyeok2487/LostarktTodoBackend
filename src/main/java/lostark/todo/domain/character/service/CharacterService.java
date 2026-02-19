@@ -97,6 +97,14 @@ public class CharacterService {
         character.getWeekTodo().updateHellKey(num);
     }
 
+    /**
+     * 시련의 모래 업데이트
+     */
+    @Transactional
+    public void updateTrialSand(Character character, int num) {
+        character.getWeekTodo().updateTrialSand(num);
+    }
+
     @Transactional
     public boolean deleteByMember(Member member) {
         long result = characterRepository.deleteByMember(member);

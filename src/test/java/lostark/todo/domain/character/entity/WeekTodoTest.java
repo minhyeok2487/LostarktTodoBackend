@@ -76,4 +76,68 @@ class WeekTodoTest {
             assertThat(newWeekTodo.getHellKey()).isEqualTo(0);
         }
     }
+
+    @Nested
+    @DisplayName("시련의 모래 카운트 테스트")
+    class TrialSandTest {
+
+        @Test
+        @DisplayName("시련의 모래 추가 - 양수 값을 더하면 증가한다")
+        void updateTrialSand_positive() {
+            // given
+            int initialCount = weekTodo.getTrialSand();
+
+            // when
+            weekTodo.updateTrialSand(3);
+
+            // then
+            assertThat(weekTodo.getTrialSand()).isEqualTo(initialCount + 3);
+        }
+
+        @Test
+        @DisplayName("시련의 모래 감소 - 음수 값을 더하면 감소한다")
+        void updateTrialSand_negative() {
+            // given
+            weekTodo.updateTrialSand(5);
+
+            // when
+            weekTodo.updateTrialSand(-2);
+
+            // then
+            assertThat(weekTodo.getTrialSand()).isEqualTo(3);
+        }
+
+        @Test
+        @DisplayName("시련의 모래 감소 - 0 이하로 내려가면 0으로 유지된다")
+        void updateTrialSand_notBelowZero() {
+            // given
+            weekTodo.updateTrialSand(2);
+
+            // when
+            weekTodo.updateTrialSand(-5);
+
+            // then
+            assertThat(weekTodo.getTrialSand()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("시련의 모래 최대값은 5이다")
+        void updateTrialSand_maxIsFive() {
+            // when
+            weekTodo.updateTrialSand(10);
+
+            // then
+            assertThat(weekTodo.getTrialSand()).isEqualTo(5);
+        }
+
+        @Test
+        @DisplayName("시련의 모래 초기값은 0이다")
+        void trialSand_initialValue() {
+            // given
+            WeekTodo newWeekTodo = new WeekTodo();
+
+            // then
+            assertThat(newWeekTodo.getTrialSand()).isEqualTo(0);
+        }
+    }
 }
