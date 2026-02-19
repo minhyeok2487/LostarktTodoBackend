@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lostark.todo.domain.member.dto.LifeEnergySaveRequest;
 import lostark.todo.domain.member.dto.LifeEnergySpendRequest;
 import lostark.todo.domain.member.dto.LifeEnergyUpdateRequest;
+import lostark.todo.domain.member.dto.UpdateLifePotionRequest;
 import lostark.todo.domain.member.entity.LifeEnergy;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.LifeEnergyRepository;
@@ -55,5 +56,22 @@ public class LifeEnergyService {
         }
 
         return lifeEnergy;
+    }
+
+    @Transactional
+    public void updateLifePotion(Member member, UpdateLifePotionRequest request) {
+        switch (request.getType().toUpperCase()) {
+            case "SMALL":
+                member.updateLifePotionSmall(request.getNum());
+                break;
+            case "MEDIUM":
+                member.updateLifePotionMedium(request.getNum());
+                break;
+            case "LARGE":
+                member.updateLifePotionLarge(request.getNum());
+                break;
+            default:
+                throw new ConditionNotMetException("잘못된 물약 타입입니다: " + request.getType());
+        }
     }
 }

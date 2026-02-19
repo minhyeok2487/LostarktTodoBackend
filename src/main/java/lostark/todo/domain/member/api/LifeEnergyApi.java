@@ -63,4 +63,13 @@ public class LifeEnergyApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation(value = "생기 물약 업데이트")
+    @PostMapping("/potion")
+    public ResponseEntity<?> updateLifePotion(@AuthenticationPrincipal String username,
+                                               @RequestBody @Valid UpdateLifePotionRequest request) {
+        Member member = memberService.get(username);
+        service.updateLifePotion(member, request);
+        return new ResponseEntity<>(MemberResponse.toDto(member), HttpStatus.OK);
+    }
+
 }

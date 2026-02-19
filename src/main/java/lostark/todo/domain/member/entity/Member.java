@@ -60,6 +60,15 @@ public class Member extends BaseTimeEntity {
 
     private LocalDateTime adsDate;
 
+    @Builder.Default
+    private int lifePotionSmall = 0;
+
+    @Builder.Default
+    private int lifePotionMedium = 0;
+
+    @Builder.Default
+    private int lifePotionLarge = 0;
+
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Character> characters;
@@ -165,5 +174,29 @@ public class Member extends BaseTimeEntity {
                         .comparingInt(CharacterResponse::getSortNumber)
                         .thenComparing(Comparator.comparingDouble(CharacterResponse::getItemLevel).reversed()))
                 .collect(Collectors.toList());
+    }
+
+    // 소형 생기 물약 업데이트
+    public void updateLifePotionSmall(int num) {
+        this.lifePotionSmall += num;
+        if (this.lifePotionSmall < 0) {
+            this.lifePotionSmall = 0;
+        }
+    }
+
+    // 중형 생기 물약 업데이트
+    public void updateLifePotionMedium(int num) {
+        this.lifePotionMedium += num;
+        if (this.lifePotionMedium < 0) {
+            this.lifePotionMedium = 0;
+        }
+    }
+
+    // 대형 생기 물약 업데이트
+    public void updateLifePotionLarge(int num) {
+        this.lifePotionLarge += num;
+        if (this.lifePotionLarge < 0) {
+            this.lifePotionLarge = 0;
+        }
     }
 }
