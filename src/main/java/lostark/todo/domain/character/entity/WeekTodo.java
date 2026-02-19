@@ -23,6 +23,8 @@ public class WeekTodo {
 
     private int elysianCount;
 
+    private int hellKey;
+
     public void updateWeekEpona() {
         if(this.weekEpona <3) {
             this.weekEpona++;
@@ -60,6 +62,13 @@ public class WeekTodo {
             this.elysianCount = MIN_ELYSIAN_COUNT;
         } else {
             this.elysianCount = MAX_ELYSIAN_COUNT;
+        }
+    }
+
+    public void updateHellKey(int num) {
+        this.hellKey += num;
+        if (this.hellKey < 0) {
+            this.hellKey = 0;
         }
     }
 }
