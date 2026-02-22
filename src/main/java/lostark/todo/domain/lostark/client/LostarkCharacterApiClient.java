@@ -105,7 +105,7 @@ public class LostarkCharacterApiClient {
      */
     public JsonNode findCharacters(String characterName, String apiKey) {
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-        String link = "https://developer-lostark.game.onstove.com/characters/" + encodeCharacterName + "/siblings";
+        String link = apiClient.getBaseUrl() + "/characters/" + encodeCharacterName + "/siblings";
         InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
         try {
             JsonNode jsonArray = MAPPER.readTree(inputStreamReader);
@@ -136,7 +136,7 @@ public class LostarkCharacterApiClient {
     public String getCharacterImageUrl(String characterName, String apiKey) {
         try {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
+            String link = apiClient.getBaseUrl() + "/armories/characters/" + encodeCharacterName + "/profiles";
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
             JsonNode profile = MAPPER.readTree(inputStreamReader);
             if (profile != null && profile.has("CharacterImage") && !profile.get("CharacterImage").isNull()) {
@@ -154,7 +154,7 @@ public class LostarkCharacterApiClient {
         try {
             String characterName = character.getCharacterName();
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
+            String link = apiClient.getBaseUrl() + "/armories/characters/" + encodeCharacterName + "/profiles";
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
             JsonNode profile = MAPPER.readTree(inputStreamReader);
             if (profile != null && profile.has("CharacterImage") && !profile.get("CharacterImage").isNull()) {
@@ -180,7 +180,7 @@ public class LostarkCharacterApiClient {
     public CharacterJsonDto getCharacterProfileForInspection(String characterName, String apiKey) {
         try {
             String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/profiles";
+            String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/profiles";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
             CharacterJsonDto character = MAPPER.readValue(reader, CharacterJsonDto.class);
@@ -203,7 +203,7 @@ public class LostarkCharacterApiClient {
     // public List<ArkgridEffectDto> getArkgridEffects(String characterName, String apiKey) {
     //     try {
     //         String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-    //         String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/arkgrid";
+    //         String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/arkgrid";
     //
     //         InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
     //         JsonNode arkgrid = MAPPER.readTree(reader);
@@ -234,7 +234,7 @@ public class LostarkCharacterApiClient {
     // public List<EquipmentDto> getEquipment(String characterName, String apiKey) {
     //     try {
     //         String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-    //         String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/equipment";
+    //         String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/equipment";
     //
     //         InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
     //         JsonNode equipmentArray = MAPPER.readTree(reader);
@@ -266,7 +266,7 @@ public class LostarkCharacterApiClient {
     // public ArkPassiveApiResponse getArkPassive(String characterName, String apiKey) {
     //     try {
     //         String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-    //         String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/arkpassive";
+    //         String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/arkpassive";
     //
     //         InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
     //         JsonNode arkPassiveObj = MAPPER.readTree(reader);
@@ -331,7 +331,7 @@ public class LostarkCharacterApiClient {
      */
     public JsonNode getFullArmory(String characterName, String apiKey) {
         return callLostarkApi(
-                "https://developer-lostark.game.onstove.com/armories/characters/",
+                apiClient.getBaseUrl() + "/armories/characters/",
                 characterName, apiKey, "전투정보실");
     }
 
@@ -340,7 +340,7 @@ public class LostarkCharacterApiClient {
      */
     public JsonNode getSiblingsRaw(String characterName, String apiKey) {
         return callLostarkApi(
-                "https://developer-lostark.game.onstove.com/characters/",
+                apiClient.getBaseUrl() + "/characters/",
                 characterName, "/siblings", apiKey, "원정대");
     }
 
@@ -397,7 +397,7 @@ public class LostarkCharacterApiClient {
     // public List<EngravingDto> getEngravings(String characterName, String apiKey) {
     //     try {
     //         String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-    //         String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/engravings";
+    //         String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/engravings";
     //
     //         InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
     //         JsonNode engravingsObj = MAPPER.readTree(reader);
@@ -431,7 +431,7 @@ public class LostarkCharacterApiClient {
     // public List<GemDto> getGems(String characterName, String apiKey) {
     //     try {
     //         String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-    //         String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/gems";
+    //         String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/gems";
     //
     //         InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
     //         JsonNode gemsObj = MAPPER.readTree(reader);
@@ -509,7 +509,7 @@ public class LostarkCharacterApiClient {
     // public CardApiResponse getCards(String characterName, String apiKey) {
     //     try {
     //         String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-    //         String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/cards";
+    //         String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/cards";
     //
     //         InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
     //         JsonNode cardsObj = MAPPER.readTree(reader);
@@ -562,7 +562,7 @@ public class LostarkCharacterApiClient {
     public CharacterJsonDto getCharacter(String characterName, String apiKey) {
         try {
             String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
-            String url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedName + "/profiles";
+            String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/profiles";
 
             InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
             CharacterJsonDto character = MAPPER.readValue(reader, CharacterJsonDto.class);
