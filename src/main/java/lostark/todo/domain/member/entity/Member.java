@@ -176,27 +176,15 @@ public class Member extends BaseTimeEntity {
                 .collect(Collectors.toList());
     }
 
-    // 소형 생기 물약 업데이트
     public void updateLifePotionSmall(int num) {
-        this.lifePotionSmall += num;
-        if (this.lifePotionSmall < 0) {
-            this.lifePotionSmall = 0;
-        }
+        this.lifePotionSmall = Math.max(0, this.lifePotionSmall + num);
     }
 
-    // 중형 생기 물약 업데이트
     public void updateLifePotionMedium(int num) {
-        this.lifePotionMedium += num;
-        if (this.lifePotionMedium < 0) {
-            this.lifePotionMedium = 0;
-        }
+        this.lifePotionMedium = Math.max(0, this.lifePotionMedium + num);
     }
 
-    // 대형 생기 물약 업데이트
     public void updateLifePotionLarge(int num) {
-        this.lifePotionLarge += num;
-        if (this.lifePotionLarge < 0) {
-            this.lifePotionLarge = 0;
-        }
+        this.lifePotionLarge = Math.max(0, this.lifePotionLarge + num);
     }
 }

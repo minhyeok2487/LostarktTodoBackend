@@ -70,19 +70,10 @@ public class WeekTodo {
     }
 
     public void updateHellKey(int num) {
-        this.hellKey += num;
-        if (this.hellKey < 0) {
-            this.hellKey = 0;
-        }
+        this.hellKey = Math.max(0, this.hellKey + num);
     }
 
     public void updateTrialSand(int num) {
-        this.trialSand += num;
-        if (this.trialSand < 0) {
-            this.trialSand = 0;
-        }
-        if (this.trialSand > MAX_TRIAL_SAND) {
-            this.trialSand = MAX_TRIAL_SAND;
-        }
+        this.trialSand = Math.min(MAX_TRIAL_SAND, Math.max(0, this.trialSand + num));
     }
 }
