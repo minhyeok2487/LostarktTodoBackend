@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -40,15 +39,7 @@ public class GeneralTodoItemApi {
     @GetMapping("/search")
     public ResponseEntity<List<GeneralTodoItemResponse>> search(
             @AuthenticationPrincipal String username,
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false) Long folderId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long statusId) {
-        SearchGeneralTodoRequest request = new SearchGeneralTodoRequest();
-        request.setQuery(query);
-        request.setFolderId(folderId);
-        request.setCategoryId(categoryId);
-        request.setStatusId(statusId);
+            SearchGeneralTodoRequest request) {
         return new ResponseEntity<>(generalTodoService.search(username, request), HttpStatus.OK);
     }
 
