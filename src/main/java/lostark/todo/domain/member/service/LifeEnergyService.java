@@ -60,18 +60,10 @@ public class LifeEnergyService {
 
     @Transactional
     public void updateLifePotion(Member member, UpdateLifePotionRequest request) {
-        switch (request.getType().toUpperCase()) {
-            case "SMALL":
-                member.updateLifePotionSmall(request.getNum());
-                break;
-            case "MEDIUM":
-                member.updateLifePotionMedium(request.getNum());
-                break;
-            case "LARGE":
-                member.updateLifePotionLarge(request.getNum());
-                break;
-            default:
-                throw new ConditionNotMetException("잘못된 물약 타입입니다: " + request.getType());
+        switch (request.getType()) {
+            case SMALL -> member.updateLifePotionSmall(request.getNum());
+            case MEDIUM -> member.updateLifePotionMedium(request.getNum());
+            case LARGE -> member.updateLifePotionLarge(request.getNum());
         }
     }
 }
