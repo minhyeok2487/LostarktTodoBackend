@@ -327,6 +327,51 @@ public class LostarkCharacterApiClient {
     // }
 
     /**
+     * 전투정보실 전체 데이터 조회 (프록시)
+     */
+    public JsonNode getFullArmory(String characterName, String apiKey) {
+        return callLostarkApi(
+                "https://developer-lostark.game.onstove.com/armories/characters/",
+                characterName, apiKey, "전투정보실");
+    }
+
+    /**
+     * 원정대 캐릭터 목록 조회 (필터링 없음)
+     */
+    public JsonNode getSiblingsRaw(String characterName, String apiKey) {
+        return callLostarkApi(
+                "https://developer-lostark.game.onstove.com/characters/",
+                characterName, "/siblings", apiKey, "원정대");
+    }
+
+    /**
+     * 공통 API 호출 헬퍼 (캐릭터명 뒤 suffix 없음)
+     */
+    private JsonNode callLostarkApi(String baseUrl, String characterName, String apiKey, String label) {
+        return callLostarkApi(baseUrl, characterName, "", apiKey, label);
+    }
+
+    /**
+     * 공통 API 호출 헬퍼
+     */
+    private JsonNode callLostarkApi(String baseUrl, String characterName, String suffix, String apiKey, String label) {
+        try {
+            String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+            String url = baseUrl + encodedName + suffix;
+            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
+            JsonNode result = MAPPER.readTree(reader);
+            if (result == null || result.isNull()) {
+                throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다.");
+            }
+            return result;
+        } catch (ConditionNotMetException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(label + " 조회 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * HTML 태그 제거 (예: "<FONT color='#83E9FF'>점화 Lv.3</FONT>" -> "점화 Lv.3")
      */
     private String stripHtmlTags(String text) {
