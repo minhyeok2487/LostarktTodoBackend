@@ -1,8 +1,10 @@
 package lostark.todo.domain.lostark.client;
 
+import lombok.Getter;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -13,11 +15,15 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 @Service
+@Getter
 public class LostarkApiClient {
+
+    @Value("${lostark.api.base-url:https://developer-lostark.game.onstove.com}")
+    private String baseUrl;
 
     public JSONArray findEvents(String apiKey) {
         try {
-            String link = "https://developer-lostark.game.onstove.com/news/events";
+            String link = baseUrl + "/news/events";
             InputStreamReader inputStreamReader = lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
             return (JSONArray) parser.parse(inputStreamReader);

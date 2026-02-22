@@ -56,7 +56,7 @@ public class LostarkMarketApiClient {
 
     private JSONObject getMarketDataPaging(int categoryCode, String apiKey, int pageNo) {
         try {
-            String link = "https://developer-lostark.game.onstove.com/markets/items";
+            String link = lostarkApiClient.getBaseUrl() + "/markets/items";
             String parameter = "{\n"
                     + "  \"Sort\": \"RECENT_PRICE\",\n"
                     + "  \"CategoryCode\": "+ categoryCode +",\n"
@@ -78,7 +78,7 @@ public class LostarkMarketApiClient {
      */
     public JSONObject getAuctionItems(AuctionRequestDto request, String apiKey) {
         try {
-            String link = "https://developer-lostark.game.onstove.com/auctions/items";
+            String link = lostarkApiClient.getBaseUrl() + "/auctions/items";
             String parameter = "{"
                     + "Sort : \"BUY_PRICE\""
                     + ",CategoryCode : " + request.getCategoryCode()

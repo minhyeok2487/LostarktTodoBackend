@@ -45,6 +45,15 @@ public class MemberResponse {
 
     private List<LifeEnergyResponse> lifeEnergyResponses;
 
+    @ApiModelProperty(example = "소형 생기 물약 개수")
+    private int lifePotionSmall;
+
+    @ApiModelProperty(example = "중형 생기 물약 개수")
+    private int lifePotionMedium;
+
+    @ApiModelProperty(example = "대형 생기 물약 개수")
+    private int lifePotionLarge;
+
     public static MemberResponse toDto(Member member) {
         return MemberResponse.builder()
                 .memberId(member.getId())
@@ -54,6 +63,9 @@ public class MemberResponse {
                 .ads(isAds(member))
                 .adsDate(member.getAdsDate())
                 .lifeEnergyResponses(LifeEnergyResponse.toDto(member.getLifeEnergyList()))
+                .lifePotionSmall(member.getLifePotionSmall())
+                .lifePotionMedium(member.getLifePotionMedium())
+                .lifePotionLarge(member.getLifePotionLarge())
                 .build();
     }
 

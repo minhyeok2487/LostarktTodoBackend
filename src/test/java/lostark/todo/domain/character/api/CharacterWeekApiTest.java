@@ -167,6 +167,36 @@ class CharacterWeekApiTest {
     }
 
     @Test
+    @DisplayName("지옥 열쇠 증가")
+    @MeasurePerformance(maxQueries = 10)
+    void updateHellKey_increment() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("num", 1);
+
+        mockMvc.perform(post("/api/v1/character/week/hell-key")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("지옥 열쇠 감소")
+    @MeasurePerformance(maxQueries = 10)
+    void updateHellKey_decrement() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+        request.put("num", -1);
+
+        mockMvc.perform(post("/api/v1/character/week/hell-key")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("주간 레이드 추가/제거")
     @MeasurePerformance(maxQueries = 20)
     void updateWeekRaid() throws Exception {

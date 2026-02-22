@@ -1,5 +1,6 @@
 package lostark.todo.domain.schedule.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -12,6 +13,7 @@ import lostark.todo.domain.character.entity.QTodoV2;
 import lostark.todo.domain.schedule.dto.*;
 import lostark.todo.domain.schedule.entity.QSchedule;
 import lostark.todo.domain.schedule.entity.Schedule;
+import org.springframework.util.StringUtils;
 
 import com.querydsl.core.Tuple;
 
@@ -38,6 +40,18 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
         QSchedule ls = new QSchedule("ls");
         QCharacter lc = new QCharacter("lc");
 
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(eqUsername(username));
+        builder.and(isCurrent(request));
+
+        if (StringUtils.hasText(request.getQuery())) {
+            String query = request.getQuery().toLowerCase();
+            builder.and(
+                    schedule.raidName.lower().contains(query)
+                            .or(schedule.memo.lower().contains(query))
+            );
+        }
+
         return factory
                 .select(new QWeekScheduleResponse(
                         schedule.id,
@@ -55,10 +69,7 @@ public class ScheduleRepositoryImpl implements ScheduleCustomRepository {
                 .leftJoin(member).on(character.member.eq(member))
                 .leftJoin(ls).on(schedule.leaderScheduleId.eq(ls.id))
                 .leftJoin(lc).on(ls.characterId.eq(lc.id))
-                .where(
-                        eqUsername(username),
-                        isCurrent(request)
-                )
+                .where(builder)
                 .fetch();
     }
 

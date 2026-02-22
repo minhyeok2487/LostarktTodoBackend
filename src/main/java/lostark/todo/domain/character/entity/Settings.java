@@ -64,6 +64,12 @@ public class Settings {
    @ColumnDefault("true")
    private boolean showElysian;
 
+   @ColumnDefault("true")
+   private boolean showHellKey;
+
+   @ColumnDefault("true")
+   private boolean showTrialSand;
+
    public Settings() {
       this.showCharacter = true;
       this.showEpona = true;
@@ -81,6 +87,8 @@ public class Settings {
       this.linkCubeCal = false;
       this.showMoreButton = true;
       this.showElysian = true;
+      this.showHellKey = true;
+      this.showTrialSand = true;
    }
 
    public void update(String name, Object value) {

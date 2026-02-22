@@ -23,6 +23,12 @@ public class WeekTodo {
 
     private int elysianCount;
 
+    private int hellKey;
+
+    private int trialSand;
+
+    private static final int MAX_TRIAL_SAND = 5;
+
     public void updateWeekEpona() {
         if(this.weekEpona <3) {
             this.weekEpona++;
@@ -61,5 +67,13 @@ public class WeekTodo {
         } else {
             this.elysianCount = MAX_ELYSIAN_COUNT;
         }
+    }
+
+    public void updateHellKey(int num) {
+        this.hellKey = Math.max(0, this.hellKey + num);
+    }
+
+    public void updateTrialSand(int num) {
+        this.trialSand = Math.min(MAX_TRIAL_SAND, Math.max(0, this.trialSand + num));
     }
 }
