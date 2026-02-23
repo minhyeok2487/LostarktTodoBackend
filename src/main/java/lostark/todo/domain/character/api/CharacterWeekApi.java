@@ -162,14 +162,14 @@ public class CharacterWeekApi {
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "캐릭터 시련의 모래 업데이트", response = CharacterResponse.class)
-    @PostMapping("/trial-sand")
-    public ResponseEntity<?> updateTrialSand(@AuthenticationPrincipal String username,
-                                             @RequestParam(required = false) String friendUsername,
-                                             @RequestBody UpdateTrialSandRequest request) {
+    @ApiOperation(value = "캐릭터 할의 모래시계 체크", response = CharacterResponse.class)
+    @PostMapping("/hal-hourglass")
+    public ResponseEntity<?> updateHalHourglass(@AuthenticationPrincipal String username,
+                                                @RequestParam(required = false) String friendUsername,
+                                                @RequestBody BaseCharacterRequest request) {
         Character updateCharacter = characterMemberQueryService.getUpdateCharacter(username, friendUsername,
                 request.getCharacterId(), FriendPermissionType.CHECK_WEEK_TODO);
-        characterService.updateTrialSand(updateCharacter, request.getNum());
+        characterService.updateHalHourglass(updateCharacter);
         return new ResponseEntity<>(new CharacterResponse().toDto(updateCharacter), HttpStatus.OK);
     }
 

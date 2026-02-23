@@ -98,11 +98,11 @@ public class CharacterService {
     }
 
     /**
-     * 시련의 모래 업데이트
+     * 할의 모래시계 업데이트
      */
     @Transactional
-    public void updateTrialSand(Character character, int num) {
-        character.getWeekTodo().updateTrialSand(num);
+    public void updateHalHourglass(Character character) {
+        character.getWeekTodo().updateHalHourglass();
     }
 
     @Transactional

@@ -131,8 +131,8 @@ public class CharacterResponse {
     @ApiModelProperty(notes = "지옥 열쇠 갯수")
     private int hellKey;
 
-    @ApiModelProperty(notes = "시련의 모래 갯수")
-    private int trialSand;
+    @ApiModelProperty(notes = "할의 모래시계")
+    private boolean halHourglass;
 
     public CharacterResponse toDto(Character character) {
         CharacterResponse characterResponse = buildCharacterResponse(character);
@@ -181,7 +181,7 @@ public class CharacterResponse {
                 .beforeGuardianGauge(character.getDayTodo().getBeforeGuardianGauge())
                 .elysianCount(character.getWeekTodo().getElysianCount())
                 .hellKey(character.getWeekTodo().getHellKey())
-                .trialSand(character.getWeekTodo().getTrialSand())
+                .halHourglass(character.getWeekTodo().isHalHourglass())
                 .build();
     }
 

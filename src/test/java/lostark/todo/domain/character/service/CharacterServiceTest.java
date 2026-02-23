@@ -606,6 +606,26 @@ class CharacterServiceTest {
     }
 
     @Nested
+    @DisplayName("updateHalHourglass 메서드")
+    class UpdateHalHourglassTest {
+
+        @Test
+        @DisplayName("성공 - 할의 모래시계 업데이트")
+        void success() {
+            // given
+            WeekTodo weekTodo = new WeekTodo();
+            testCharacter.setWeekTodo(weekTodo);
+            assertThat(testCharacter.getWeekTodo().isHalHourglass()).isFalse();
+
+            // when
+            characterService.updateHalHourglass(testCharacter);
+
+            // then
+            assertThat(testCharacter.getWeekTodo().isHalHourglass()).isTrue();
+        }
+    }
+
+    @Nested
     @DisplayName("updateCubeTicket 메서드")
     class UpdateCubeTicketTest {
 

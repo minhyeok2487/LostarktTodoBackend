@@ -78,66 +78,44 @@ class WeekTodoTest {
     }
 
     @Nested
-    @DisplayName("시련의 모래 카운트 테스트")
-    class TrialSandTest {
+    @DisplayName("할의 모래시계 테스트")
+    class HalHourglassTest {
 
         @Test
-        @DisplayName("시련의 모래 추가 - 양수 값을 더하면 증가한다")
-        void updateTrialSand_positive() {
+        @DisplayName("할의 모래시계 토글 - false에서 true로 변경된다")
+        void updateHalHourglass_toggle() {
             // given
-            int initialCount = weekTodo.getTrialSand();
+            assertThat(weekTodo.isHalHourglass()).isFalse();
 
             // when
-            weekTodo.updateTrialSand(3);
+            weekTodo.updateHalHourglass();
 
             // then
-            assertThat(weekTodo.getTrialSand()).isEqualTo(initialCount + 3);
+            assertThat(weekTodo.isHalHourglass()).isTrue();
         }
 
         @Test
-        @DisplayName("시련의 모래 감소 - 음수 값을 더하면 감소한다")
-        void updateTrialSand_negative() {
+        @DisplayName("할의 모래시계 토글 - true에서 false로 변경된다")
+        void updateHalHourglass_toggleBack() {
             // given
-            weekTodo.updateTrialSand(5);
+            weekTodo.updateHalHourglass(); // false -> true
+            assertThat(weekTodo.isHalHourglass()).isTrue();
 
             // when
-            weekTodo.updateTrialSand(-2);
+            weekTodo.updateHalHourglass(); // true -> false
 
             // then
-            assertThat(weekTodo.getTrialSand()).isEqualTo(3);
+            assertThat(weekTodo.isHalHourglass()).isFalse();
         }
 
         @Test
-        @DisplayName("시련의 모래 감소 - 0 이하로 내려가면 0으로 유지된다")
-        void updateTrialSand_notBelowZero() {
-            // given
-            weekTodo.updateTrialSand(2);
-
-            // when
-            weekTodo.updateTrialSand(-5);
-
-            // then
-            assertThat(weekTodo.getTrialSand()).isEqualTo(0);
-        }
-
-        @Test
-        @DisplayName("시련의 모래 최대값은 5이다")
-        void updateTrialSand_maxIsFive() {
-            // when
-            weekTodo.updateTrialSand(10);
-
-            // then
-            assertThat(weekTodo.getTrialSand()).isEqualTo(5);
-        }
-
-        @Test
-        @DisplayName("시련의 모래 초기값은 0이다")
-        void trialSand_initialValue() {
+        @DisplayName("할의 모래시계 초기값은 false이다")
+        void halHourglass_initialValue() {
             // given
             WeekTodo newWeekTodo = new WeekTodo();
 
             // then
-            assertThat(newWeekTodo.getTrialSand()).isEqualTo(0);
+            assertThat(newWeekTodo.isHalHourglass()).isFalse();
         }
     }
 }

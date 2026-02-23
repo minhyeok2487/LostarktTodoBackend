@@ -197,6 +197,20 @@ class CharacterWeekApiTest {
     }
 
     @Test
+    @DisplayName("할의 모래시계 체크")
+    @MeasurePerformance(maxQueries = 10)
+    void updateHalHourglass() throws Exception {
+        Map<String, Object> request = new HashMap<>();
+        request.put("characterId", testCharacter.getId());
+
+        mockMvc.perform(post("/api/v1/character/week/hal-hourglass")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("주간 레이드 추가/제거")
     @MeasurePerformance(maxQueries = 20)
     void updateWeekRaid() throws Exception {
