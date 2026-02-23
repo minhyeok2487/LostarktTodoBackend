@@ -25,9 +25,7 @@ public class WeekTodo {
 
     private int hellKey;
 
-    private int trialSand;
-
-    private static final int MAX_TRIAL_SAND = 5;
+    private boolean halHourglass;
 
     public void updateWeekEpona() {
         if(this.weekEpona <3) {
@@ -73,7 +71,7 @@ public class WeekTodo {
         this.hellKey = Math.max(0, this.hellKey + num);
     }
 
-    public void updateTrialSand(int num) {
-        this.trialSand = Math.min(MAX_TRIAL_SAND, Math.max(0, this.trialSand + num));
+    public void updateHalHourglass() {
+        this.halHourglass = !this.halHourglass;
     }
 }

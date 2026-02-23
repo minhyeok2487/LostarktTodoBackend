@@ -68,7 +68,7 @@ public class Settings {
    private boolean showHellKey;
 
    @ColumnDefault("true")
-   private boolean showTrialSand;
+   private boolean showHalHourglass;
 
    public Settings() {
       this.showCharacter = true;
@@ -88,7 +88,7 @@ public class Settings {
       this.showMoreButton = true;
       this.showElysian = true;
       this.showHellKey = true;
-      this.showTrialSand = true;
+      this.showHalHourglass = true;
    }
 
    public void update(String name, Object value) {
