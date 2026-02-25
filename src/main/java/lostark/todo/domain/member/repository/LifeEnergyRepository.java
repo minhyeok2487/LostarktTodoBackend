@@ -13,6 +13,7 @@ public interface LifeEnergyRepository extends JpaRepository<LifeEnergy, Long> {
 
     @Modifying
     @Query("UPDATE LifeEnergy le SET le.energy = " +
-            "LEAST(le.maxEnergy, le.energy + (CASE WHEN le.beatrice = true THEN 99 ELSE 90 END))")
+            "LEAST(le.maxEnergy, le.energy + (CASE WHEN le.beatrice = true THEN 99 ELSE 90 END)) " +
+            "WHERE le.energy < le.maxEnergy")
     int addEnergyToAllLifeEnergies();
 }

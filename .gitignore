@@ -37,6 +37,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### Local Gradle properties ###
+gradle.properties
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

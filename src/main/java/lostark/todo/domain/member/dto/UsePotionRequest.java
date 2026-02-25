@@ -7,17 +7,13 @@ import lostark.todo.domain.member.enums.PotionType;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UpdateLifePotionRequest {
+public class UsePotionRequest {
 
     @ApiModelProperty(notes = "생활의 기운 ID")
     @NotNull
     private Long lifeEnergyId;
 
-    @ApiModelProperty(notes = "물약 타입: LEAP, SMALL, MEDIUM, LARGE")
+    @ApiModelProperty(notes = "물약 타입: SMALL, MEDIUM, LARGE (LEAP 제외)")
     @NotNull
     private PotionType type;
-
-    @ApiModelProperty(notes = "더하기 = 양수, 빼기 = 음수")
-    @NotNull
-    private int num;
 }

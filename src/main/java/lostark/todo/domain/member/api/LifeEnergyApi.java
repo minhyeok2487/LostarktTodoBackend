@@ -63,12 +63,30 @@ public class LifeEnergyApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "생기 물약 업데이트")
+    @ApiOperation(value = "물약 재고 업데이트")
     @PostMapping("/potion")
     public ResponseEntity<?> updateLifePotion(@AuthenticationPrincipal String username,
                                                @RequestBody @Valid UpdateLifePotionRequest request) {
+        service.updateLifePotion(username, request);
         Member member = memberService.get(username);
-        service.updateLifePotion(member, request);
+        return new ResponseEntity<>(MemberResponse.toDto(member), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "물약 재고 일괄 저장")
+    @PutMapping("/potions")
+    public ResponseEntity<?> updatePotions(@AuthenticationPrincipal String username,
+                                            @RequestBody @Valid UpdateLifePotionsRequest request) {
+        service.updatePotions(username, request);
+        Member member = memberService.get(username);
+        return new ResponseEntity<>(MemberResponse.toDto(member), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "물약 사용 (기운 회복)")
+    @PostMapping("/potion/use")
+    public ResponseEntity<?> usePotion(@AuthenticationPrincipal String username,
+                                        @RequestBody @Valid UsePotionRequest request) {
+        service.usePotion(username, request);
+        Member member = memberService.get(username);
         return new ResponseEntity<>(MemberResponse.toDto(member), HttpStatus.OK);
     }
 
