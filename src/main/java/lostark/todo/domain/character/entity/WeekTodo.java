@@ -4,6 +4,7 @@ import lombok.*;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 
 import javax.persistence.Embeddable;
+import java.util.Set;
 
 import static lostark.todo.domain.character.constants.ElysianConstants.*;
 
@@ -14,6 +15,14 @@ import static lostark.todo.domain.character.constants.ElysianConstants.*;
 @NoArgsConstructor
 @Builder
 public class WeekTodo {
+
+    /**
+     * 수요일 오전 6시 주간 초기화 대상 필드 목록.
+     * 새 필드 추가 시 여기에도 추가해야 함 (누락 시 WeekTodoResetSyncTest 실패).
+     */
+    public static final Set<String> WEEKLY_RESET_FIELDS = Set.of(
+            "weekEpona", "silmaelChange", "elysianCount", "halHourglass"
+    );
 
     private int weekEpona;
 

@@ -1,5 +1,6 @@
 package lostark.todo.domain.schedule.service;
 
+import lostark.todo.domain.character.entity.WeekTodo;
 import lostark.todo.domain.character.enums.CustomTodoFrequencyEnum;
 import lostark.todo.domain.character.repository.CharacterRepository;
 import lostark.todo.domain.character.repository.CustomTodoRepository;
@@ -13,6 +14,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.repository.Query;
+
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -209,6 +217,31 @@ class WeekTodoResetServiceTest {
 
             // then
             verify(raidBusGoldRepository).deleteAllRaidBusGold();
+        }
+    }
+
+    @Nested
+    @DisplayName("주간 초기화 JPQL 동기화 검증")
+    class WeeklyResetSyncTest {
+
+        @Test
+        @DisplayName("JPQL 쿼리가 WEEKLY_RESET_FIELDS의 모든 필드를 초기화해야 한다")
+        void jpqlCoversAllWeeklyResetFields() throws NoSuchMethodException {
+            // given: JPQL 쿼리에서 weekTodo 필드명 추출
+            Method method = CharacterRepository.class.getMethod("updateWeekContent");
+            Query query = method.getAnnotation(Query.class);
+            String jpql = query.value();
+
+            Set<String> jpqlFields = new HashSet<>();
+            Matcher matcher = Pattern.compile("c\\.weekTodo\\.(\\w+)").matcher(jpql);
+            while (matcher.find()) {
+                jpqlFields.add(matcher.group(1));
+            }
+
+            // then: WEEKLY_RESET_FIELDS와 JPQL 필드가 일치하는지 검증
+            assertThat(jpqlFields)
+                    .as("JPQL 쿼리에 누락된 필드가 있습니다. WeekTodo.WEEKLY_RESET_FIELDS를 확인하세요.")
+                    .containsExactlyInAnyOrderElementsOf(WeekTodo.WEEKLY_RESET_FIELDS);
         }
     }
 }
