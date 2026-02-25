@@ -224,6 +224,8 @@ class WeekTodoResetServiceTest {
     @DisplayName("주간 초기화 JPQL 동기화 검증")
     class WeeklyResetSyncTest {
 
+        private static final Pattern WEEK_TODO_FIELD_PATTERN = Pattern.compile("c\\.weekTodo\\.(\\w+)");
+
         @Test
         @DisplayName("JPQL 쿼리가 WEEKLY_RESET_FIELDS의 모든 필드를 초기화해야 한다")
         void jpqlCoversAllWeeklyResetFields() throws NoSuchMethodException {
@@ -233,7 +235,7 @@ class WeekTodoResetServiceTest {
             String jpql = query.value();
 
             Set<String> jpqlFields = new HashSet<>();
-            Matcher matcher = Pattern.compile("c\\.weekTodo\\.(\\w+)").matcher(jpql);
+            Matcher matcher = WEEK_TODO_FIELD_PATTERN.matcher(jpql);
             while (matcher.find()) {
                 jpqlFields.add(matcher.group(1));
             }
