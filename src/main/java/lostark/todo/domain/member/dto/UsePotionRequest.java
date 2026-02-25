@@ -13,7 +13,7 @@ public class UsePotionRequest {
     @NotNull
     private Long lifeEnergyId;
 
-    @ApiModelProperty(notes = "물약 타입: SMALL, MEDIUM, LARGE (LEAP 제외)")
+    @ApiModelProperty(notes = "물약 타입: LEAP, SMALL, MEDIUM, LARGE")
     @NotNull
     private PotionType type;
 }
