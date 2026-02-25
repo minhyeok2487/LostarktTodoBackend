@@ -2,14 +2,12 @@ package lostark.todo.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lostark.todo.domain.member.dto.LifeEnergySaveRequest;
-import lostark.todo.domain.member.dto.LifeEnergySpendRequest;
-import lostark.todo.domain.member.dto.LifeEnergyUpdateRequest;
-import lostark.todo.domain.member.dto.UpdateLifePotionRequest;
+import lostark.todo.domain.member.dto.*;
 import lostark.todo.domain.member.entity.LifeEnergy;
 import lostark.todo.domain.member.entity.Member;
 import lostark.todo.domain.member.repository.LifeEnergyRepository;
 import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
+import lostark.todo.domain.member.dto.UpdateLifePotionsRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,11 +57,26 @@ public class LifeEnergyService {
     }
 
     @Transactional
-    public void updateLifePotion(Member member, UpdateLifePotionRequest request) {
-        switch (request.getType()) {
-            case SMALL -> member.updateLifePotionSmall(request.getNum());
-            case MEDIUM -> member.updateLifePotionMedium(request.getNum());
-            case LARGE -> member.updateLifePotionLarge(request.getNum());
-        }
+    public void updateLifePotion(String username, UpdateLifePotionRequest request) {
+        LifeEnergy lifeEnergy = get(request.getLifeEnergyId(), username);
+        lifeEnergy.updatePotionCount(request.getType(), request.getNum());
+    }
+
+    @Transactional
+    public void updatePotions(String username, UpdateLifePotionsRequest request) {
+        LifeEnergy lifeEnergy = get(request.getLifeEnergyId(), username);
+        lifeEnergy.updatePotions(
+                request.getPotionLeap(),
+                request.getPotionSmall(),
+                request.getPotionMedium(),
+                request.getPotionLarge()
+        );
+    }
+
+    @Transactional
+    public LifeEnergy usePotion(String username, UsePotionRequest request) {
+        LifeEnergy lifeEnergy = get(request.getLifeEnergyId(), username);
+        lifeEnergy.usePotion(request.getType());
+        return lifeEnergy;
     }
 }
