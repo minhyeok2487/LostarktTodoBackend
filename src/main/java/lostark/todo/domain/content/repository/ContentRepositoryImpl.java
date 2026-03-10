@@ -45,17 +45,30 @@ public class ContentRepositoryImpl implements ContentCustomRepository {
     public List<WeekContent> findAllWeekContent(double itemLevel) {
         QWeekContent weekContent = QWeekContent.weekContent;
 
-        NumberExpression<Integer> categoryOrder = new CaseBuilder()
-                .when(weekContent.weekContentCategory.eq(WeekContentCategory.싱글)).then(1)
-                .when(weekContent.weekContentCategory.eq(WeekContentCategory.노말)).then(2)
-                .when(weekContent.weekContentCategory.eq(WeekContentCategory.하드)).then(3)
-                .otherwise(4);
+        NumberExpression<Integer> categoryOrder = buildCategoryOrder(weekContent);
 
         return factory.selectFrom(weekContent)
                 .where(weekContent.level.loe(itemLevel)
                         .and(weekContent.coolTime.loe(2)))
                 .orderBy(weekContent.level.desc(), categoryOrder.asc(), weekContent.gate.asc())
                 .fetch();
+    }
+
+    private NumberExpression<Integer> buildCategoryOrder(QWeekContent weekContent) {
+        CaseBuilder caseBuilder = new CaseBuilder();
+        CaseBuilder.Cases<Integer, NumberExpression<Integer>> cases = null;
+        for (WeekContentCategory cat : WeekContentCategory.values()) {
+            if (cases == null) {
+                cases = caseBuilder
+                        .when(weekContent.weekContentCategory.eq(cat))
+                        .then(cat.getSortOrder());
+            } else {
+                cases = cases
+                        .when(weekContent.weekContentCategory.eq(cat))
+                        .then(cat.getSortOrder());
+            }
+        }
+        return cases.otherwise(99);
     }
 
     @Override
