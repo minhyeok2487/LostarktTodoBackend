@@ -58,6 +58,7 @@ public class WebSecurityConfig {
 
     public static final String[] PERMIT_GET_LINK = {
         "/v3/comments", "/api/v1/recruting-board/**", "/api/v1/community/**",
+        "/api/v1/content/week/categories",
     };
 
 
