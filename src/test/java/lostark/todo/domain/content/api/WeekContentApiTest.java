@@ -63,6 +63,14 @@ class WeekContentApiTest {
     }
 
     @Test
+    @DisplayName("주간 콘텐츠 카테고리 API 인증 없이 접근 가능")
+    void getWeekContentCategoriesWithoutAuth() throws Exception {
+        mockMvc.perform(get("/api/v1/content/week/categories"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(WeekContentCategory.values().length)));
+    }
+
+    @Test
     @DisplayName("WeekContentCategory enum에 sortOrder, displayName, color가 있는지 확인")
     void weekContentCategoryHasMetadata() {
         for (WeekContentCategory category : WeekContentCategory.values()) {
