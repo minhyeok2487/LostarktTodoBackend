@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -22,7 +21,6 @@ import static lostark.todo.global.security.RedirectUrlCookieFilter.REDIRECT_URI_
 @Slf4j
 @Component
 @AllArgsConstructor
-@Transactional
 public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
   private static final String LOCAL_REDIRECT_URL = "http://localhost:3000";
