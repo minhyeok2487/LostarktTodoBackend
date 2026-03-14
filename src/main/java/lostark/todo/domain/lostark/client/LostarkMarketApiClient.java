@@ -11,7 +11,6 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +62,9 @@ public class LostarkMarketApiClient {
                     + "  \"PageNo\": "+ pageNo +",\n"
                     + "  \"SortCondition\": \"DESC\"\n"
                     + "}";
-            InputStreamReader inputStreamReader = lostarkApiClient.lostarkPostApi(link, parameter, apiKey);
+            String responseBody = lostarkApiClient.lostarkPostApi(link, parameter, apiKey);
             JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(inputStreamReader);
+            return (JSONObject) parser.parse(responseBody);
         } catch (Exception e) {
             throw new ConditionNotMetException("올바르지 않은 categoryCode");
         }
@@ -87,9 +86,9 @@ public class LostarkMarketApiClient {
                     + ",PageNo : 1"
                     + ",SortCondition : \"ASC\""
                     + "}";
-            InputStreamReader inputStreamReader = lostarkApiClient.lostarkPostApi(link, parameter, apiKey);
+            String responseBody = lostarkApiClient.lostarkPostApi(link, parameter, apiKey);
             JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(inputStreamReader);
+            JSONObject jsonObject = (JSONObject) parser.parse(responseBody);
 
             JSONArray jsonArray = (JSONArray) jsonObject.get("Items");
             return (JSONObject) jsonArray.get(0);

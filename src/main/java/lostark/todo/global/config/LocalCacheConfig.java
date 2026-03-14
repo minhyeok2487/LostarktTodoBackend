@@ -22,7 +22,7 @@ public class LocalCacheConfig {
                 new CaffeineCache("rateLimitCache",
                         Caffeine.newBuilder()
                                 .maximumSize(1_000)
-                                .expireAfterWrite(5, TimeUnit.MINUTES)
+                                .expireAfterWrite(10, TimeUnit.SECONDS)
                                 .build()),
                 new CaffeineCache("content",
                         Caffeine.newBuilder()
