@@ -1,5 +1,7 @@
 package lostark.todo.global.service.webHook;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +15,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class WebHookService {
 
-    private static final long COOLDOWN_MILLIS = 5 * 60 * 1000; // 5분
     private static final List<String> WEBHOOK_EXCLUDE_KEYWORDS = List.of(
             "점검중",
             "올바르지 않은 apiKey"
@@ -29,7 +30,10 @@ public class WebHookService {
     private String url;
 
     private final RestTemplate restTemplate;
-    private final ConcurrentHashMap<String, Long> lastSentTime = new ConcurrentHashMap<>();
+    private final Cache<String, Boolean> cooldownCache = Caffeine.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .maximumSize(100)
+            .build();
 
     public WebHookService() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -52,22 +56,11 @@ public class WebHookService {
     @Async("taskExecutor")
     public void callEvent(Exception ex, String requestInfo) {
         try {
-            String errorMessage = ex.getMessage();
-            if (errorMessage != null && WEBHOOK_EXCLUDE_KEYWORDS.stream().anyMatch(errorMessage::contains)) {
-                log.warn("Webhook 제외 대상: {}", errorMessage);
+            if (!shouldSendNotification(ex)) {
                 return;
             }
 
             String exceptionKey = ex.getClass().getSimpleName();
-            long now = System.currentTimeMillis();
-            Long lastSent = lastSentTime.get(exceptionKey);
-
-            if (lastSent != null && (now - lastSent) < COOLDOWN_MILLIS) {
-                log.debug("Webhook 쿨다운 중 ({}), 전송 생략", exceptionKey);
-                return;
-            }
-            lastSentTime.put(exceptionKey, now);
-
             JSONObject data = new JSONObject();
             String message = "```" + exceptionKey + "발생";
             message += "\n";
@@ -80,6 +73,22 @@ public class WebHookService {
         } catch (Exception e) {
             log.warn("Discord webhook 전송 실패: {}", e.getMessage());
         }
+    }
+
+    boolean shouldSendNotification(Exception ex) {
+        String errorMessage = ex.getMessage();
+        if (errorMessage != null && WEBHOOK_EXCLUDE_KEYWORDS.stream().anyMatch(errorMessage::contains)) {
+            log.warn("Webhook 제외 대상: {}", errorMessage);
+            return false;
+        }
+
+        String exceptionKey = ex.getClass().getSimpleName();
+        if (cooldownCache.getIfPresent(exceptionKey) != null) {
+            log.debug("Webhook 쿨다운 중 ({}), 전송 생략", exceptionKey);
+            return false;
+        }
+        cooldownCache.put(exceptionKey, Boolean.TRUE);
+        return true;
     }
 
     private void send(JSONObject object, String webhookUrl) {
