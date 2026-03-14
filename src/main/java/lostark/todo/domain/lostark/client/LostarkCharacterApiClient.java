@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -106,9 +105,9 @@ public class LostarkCharacterApiClient {
     public JsonNode findCharacters(String characterName, String apiKey) {
         String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = apiClient.getBaseUrl() + "/characters/" + encodeCharacterName + "/siblings";
-        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
+        String responseBody = apiClient.lostarkGetApi(link, apiKey);
         try {
-            JsonNode jsonArray = MAPPER.readTree(inputStreamReader);
+            JsonNode jsonArray = MAPPER.readTree(responseBody);
             return filterLevel(jsonArray);
         } catch (ConditionNotMetException e) {
             throw e;
@@ -137,8 +136,8 @@ public class LostarkCharacterApiClient {
         try {
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = apiClient.getBaseUrl() + "/armories/characters/" + encodeCharacterName + "/profiles";
-            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-            JsonNode profile = MAPPER.readTree(inputStreamReader);
+            String responseBody = apiClient.lostarkGetApi(link, apiKey);
+            JsonNode profile = MAPPER.readTree(responseBody);
             if (profile != null && profile.has("CharacterImage") && !profile.get("CharacterImage").isNull()) {
                 return profile.get("CharacterImage").asText();
             }
@@ -155,8 +154,8 @@ public class LostarkCharacterApiClient {
             String characterName = character.getCharacterName();
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = apiClient.getBaseUrl() + "/armories/characters/" + encodeCharacterName + "/profiles";
-            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
-            JsonNode profile = MAPPER.readTree(inputStreamReader);
+            String responseBody = apiClient.lostarkGetApi(link, apiKey);
+            JsonNode profile = MAPPER.readTree(responseBody);
             if (profile != null && profile.has("CharacterImage") && !profile.get("CharacterImage").isNull()) {
                 character.setCharacterImage(profile.get("CharacterImage").asText());
             }
@@ -182,8 +181,8 @@ public class LostarkCharacterApiClient {
             String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/profiles";
 
-            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            CharacterJsonDto character = MAPPER.readValue(reader, CharacterJsonDto.class);
+            String responseBody = apiClient.lostarkGetApi(url, apiKey);
+            CharacterJsonDto character = MAPPER.readValue(responseBody, CharacterJsonDto.class);
 
             if (character == null) {
                 throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다.");
@@ -358,8 +357,8 @@ public class LostarkCharacterApiClient {
         try {
             String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String url = baseUrl + encodedName + suffix;
-            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            JsonNode result = MAPPER.readTree(reader);
+            String responseBody = apiClient.lostarkGetApi(url, apiKey);
+            JsonNode result = MAPPER.readTree(responseBody);
             if (result == null || result.isNull()) {
                 throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다.");
             }
@@ -564,8 +563,8 @@ public class LostarkCharacterApiClient {
             String encodedName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String url = apiClient.getBaseUrl() + "/armories/characters/" + encodedName + "/profiles";
 
-            InputStreamReader reader = apiClient.lostarkGetApi(url, apiKey);
-            CharacterJsonDto character = MAPPER.readValue(reader, CharacterJsonDto.class);
+            String responseBody = apiClient.lostarkGetApi(url, apiKey);
+            CharacterJsonDto character = MAPPER.readValue(responseBody, CharacterJsonDto.class);
 
             if (character == null) {
                 throw new ConditionNotMetException("캐릭터를 찾을 수 없습니다. (인게임에서 한번 접속해주세요.)");
