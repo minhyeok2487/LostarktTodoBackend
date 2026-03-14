@@ -74,7 +74,6 @@ public class FriendsRepositoryImpl implements FriendsCustomRepository {
                 .setParameter("idList", idOrderingMap.keySet())
                 .executeUpdate();
         em.flush();
-        em.close();
     }
 
     @Override
