@@ -5,14 +5,12 @@ import lostark.todo.global.exhandler.exceptions.ConditionNotMetException;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Getter
@@ -21,12 +19,21 @@ public class LostarkApiClient {
     @Value("${lostark.api.base-url:https://developer-lostark.game.onstove.com}")
     private String baseUrl;
 
+    private final RestTemplate restTemplate;
+
+    public LostarkApiClient() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(10000);
+        this.restTemplate = new RestTemplate(factory);
+    }
+
     public JSONArray findEvents(String apiKey) {
         try {
             String link = baseUrl + "/news/events";
-            InputStreamReader inputStreamReader = lostarkGetApi(link, apiKey);
+            String responseBody = lostarkGetApi(link, apiKey);
             JSONParser parser = new JSONParser();
-            return (JSONArray) parser.parse(inputStreamReader);
+            return (JSONArray) parser.parse(responseBody);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -35,67 +42,52 @@ public class LostarkApiClient {
     /**
      * 로스트아크 api 틀(Get, Post)
      */
-    public InputStreamReader lostarkGetApi(String link, String apiKey) {
+    public String lostarkGetApi(String link, String apiKey) {
         try {
-            HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET", apiKey);
-            return getInputStreamReader(httpURLConnection);
+            HttpHeaders headers = createHeaders(apiKey);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(link, HttpMethod.GET, entity, String.class);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw handleHttpError(e.getStatusCode(), e.getMessage());
+        } catch (ConditionNotMetException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    public InputStreamReader lostarkPostApi(String link, String parameter, String apiKey) {
+    public String lostarkPostApi(String link, String parameter, String apiKey) {
         try {
-            HttpURLConnection httpURLConnection = getHttpURLConnection(link, "POST", apiKey);
-
-            byte[] out = parameter.getBytes(StandardCharsets.UTF_8);
-            OutputStream stream = httpURLConnection.getOutputStream();
-            stream.write(out);
-
-            return getInputStreamReader(httpURLConnection);
+            HttpHeaders headers = createHeaders(apiKey);
+            HttpEntity<String> entity = new HttpEntity<>(parameter, headers);
+            ResponseEntity<String> response = restTemplate.exchange(link, HttpMethod.POST, entity, String.class);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw handleHttpError(e.getStatusCode(), e.getMessage());
+        } catch (ConditionNotMetException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    private HttpURLConnection getHttpURLConnection(String link, String method, String apiKey) {
-        try {
-            URL url = new URL(link);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod(method);
-            httpURLConnection.setRequestProperty("authorization", "Bearer " + apiKey);
-            httpURLConnection.setRequestProperty("accept", "application/json");
-            httpURLConnection.setRequestProperty("content-Type", "application/json");
-            httpURLConnection.setDoOutput(true);
-            return httpURLConnection;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    private HttpHeaders createHeaders(String apiKey) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("accept", "application/json");
+        return headers;
     }
 
-    private InputStreamReader getInputStreamReader(HttpURLConnection httpURLConnection) {
-        try {
-            int result = httpURLConnection.getResponseCode();
-            InputStream inputStream;
-            if(result == 200) {
-                inputStream = httpURLConnection.getInputStream();
-                return new InputStreamReader(inputStream);
-            }
-            else if(result == 401) {
-                throw new ConditionNotMetException("올바르지 않은 apiKey 입니다. (크롬 자동 번역을 확인해주세요.)");
-            }
-            else if(result == 429) {
-                throw new ConditionNotMetException("사용한도 (1분에 100개)를 초과했습니다.");
-            }
-            else if (result == 503) {
-                throw new ConditionNotMetException("로스트아크 서버가 점검중 입니다.");
-            }
-            else {
-                throw new ConditionNotMetException(httpURLConnection.getResponseMessage());
-            }
-        } catch (Exception e) {
-            throw new ConditionNotMetException(e.getMessage());
+    private ConditionNotMetException handleHttpError(HttpStatus status, String message) {
+        if (status == HttpStatus.UNAUTHORIZED) {
+            return new ConditionNotMetException("올바르지 않은 apiKey 입니다. (크롬 자동 번역을 확인해주세요.)");
+        } else if (status == HttpStatus.TOO_MANY_REQUESTS) {
+            return new ConditionNotMetException("사용한도 (1분에 100개)를 초과했습니다.");
+        } else if (status == HttpStatus.SERVICE_UNAVAILABLE) {
+            return new ConditionNotMetException("로스트아크 서버가 점검중 입니다.");
         }
+        return new ConditionNotMetException(message);
     }
-
 }

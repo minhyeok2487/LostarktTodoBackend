@@ -11,9 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -34,19 +31,9 @@ public class RateLimitAspect {
                 throw new ConditionNotMetException(rateLimit.value() + "초 후 재요청이 가능합니다.");
             }
 
-            // 캐시에 저장
+            // 캐시에 저장 (rateLimitCache TTL=10초로 자동 만료)
             cache.put(key, "1");
-
-            try {
-                return joinPoint.proceed();
-            } finally {
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        cache.evict(key);
-                    }
-                }, rateLimit.value() * 1000L);
-            }
+            return joinPoint.proceed();
         }
 
         return joinPoint.proceed();
