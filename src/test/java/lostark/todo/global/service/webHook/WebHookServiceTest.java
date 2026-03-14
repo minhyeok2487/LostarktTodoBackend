@@ -12,28 +12,45 @@ class WebHookServiceTest {
     @DisplayName("ConcurrentHashMap 대신 Caffeine cache를 사용한다")
     void shouldUseCaffeineCache() {
         WebHookService service = new WebHookService();
-        // cooldownCache 필드가 Caffeine Cache 타입인지 확인
         Object cache = ReflectionTestUtils.getField(service, "cooldownCache");
         assertThat(cache).isNotNull();
         assertThat(cache.getClass().getName()).contains("caffeine");
     }
 
     @Test
-    @DisplayName("쿨다운 동작: 동일 예외 재발송 차단")
-    void cooldown_shouldBlockDuplicate() {
+    @DisplayName("첫 번째 호출은 전송을 허용한다")
+    void shouldSendNotification_firstCall() {
         WebHookService service = new WebHookService();
-        ReflectionTestUtils.setField(service, "url", "https://example.com/webhook");
+        Exception ex = new RuntimeException("test error");
 
-        // 첫 번째 호출 - 쿨다운 캐시에 등록됨
-        // callEvent는 @Async이므로 직접 쿨다운 캐시를 검증
-        com.github.benmanes.caffeine.cache.Cache<String, Boolean> cache =
-                (com.github.benmanes.caffeine.cache.Cache<String, Boolean>)
-                        ReflectionTestUtils.getField(service, "cooldownCache");
+        assertThat(service.shouldSendNotification(ex)).isTrue();
+    }
 
-        assertThat(cache).isNotNull();
-        assertThat(cache.getIfPresent("RuntimeException")).isNull();
+    @Test
+    @DisplayName("동일 예외 타입의 두 번째 호출은 쿨다운으로 차단한다")
+    void shouldBlockDuplicate_sameExceptionType() {
+        WebHookService service = new WebHookService();
+        Exception ex = new RuntimeException("test error");
 
-        cache.put("RuntimeException", Boolean.TRUE);
-        assertThat(cache.getIfPresent("RuntimeException")).isTrue();
+        assertThat(service.shouldSendNotification(ex)).isTrue();
+        assertThat(service.shouldSendNotification(ex)).isFalse();
+    }
+
+    @Test
+    @DisplayName("다른 예외 타입은 별도로 허용한다")
+    void shouldAllow_differentExceptionType() {
+        WebHookService service = new WebHookService();
+
+        assertThat(service.shouldSendNotification(new RuntimeException("error1"))).isTrue();
+        assertThat(service.shouldSendNotification(new IllegalArgumentException("error2"))).isTrue();
+    }
+
+    @Test
+    @DisplayName("제외 키워드가 포함된 예외는 전송하지 않는다")
+    void shouldExclude_keywordMatch() {
+        WebHookService service = new WebHookService();
+
+        assertThat(service.shouldSendNotification(new RuntimeException("로스트아크 서버가 점검중 입니다."))).isFalse();
+        assertThat(service.shouldSendNotification(new RuntimeException("올바르지 않은 apiKey 입니다."))).isFalse();
     }
 }

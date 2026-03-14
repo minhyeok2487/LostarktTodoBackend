@@ -56,20 +56,11 @@ public class WebHookService {
     @Async("taskExecutor")
     public void callEvent(Exception ex, String requestInfo) {
         try {
-            String errorMessage = ex.getMessage();
-            if (errorMessage != null && WEBHOOK_EXCLUDE_KEYWORDS.stream().anyMatch(errorMessage::contains)) {
-                log.warn("Webhook 제외 대상: {}", errorMessage);
+            if (!shouldSendNotification(ex)) {
                 return;
             }
 
             String exceptionKey = ex.getClass().getSimpleName();
-
-            if (cooldownCache.getIfPresent(exceptionKey) != null) {
-                log.debug("Webhook 쿨다운 중 ({}), 전송 생략", exceptionKey);
-                return;
-            }
-            cooldownCache.put(exceptionKey, Boolean.TRUE);
-
             JSONObject data = new JSONObject();
             String message = "```" + exceptionKey + "발생";
             message += "\n";
@@ -82,6 +73,22 @@ public class WebHookService {
         } catch (Exception e) {
             log.warn("Discord webhook 전송 실패: {}", e.getMessage());
         }
+    }
+
+    boolean shouldSendNotification(Exception ex) {
+        String errorMessage = ex.getMessage();
+        if (errorMessage != null && WEBHOOK_EXCLUDE_KEYWORDS.stream().anyMatch(errorMessage::contains)) {
+            log.warn("Webhook 제외 대상: {}", errorMessage);
+            return false;
+        }
+
+        String exceptionKey = ex.getClass().getSimpleName();
+        if (cooldownCache.getIfPresent(exceptionKey) != null) {
+            log.debug("Webhook 쿨다운 중 ({}), 전송 생략", exceptionKey);
+            return false;
+        }
+        cooldownCache.put(exceptionKey, Boolean.TRUE);
+        return true;
     }
 
     private void send(JSONObject object, String webhookUrl) {

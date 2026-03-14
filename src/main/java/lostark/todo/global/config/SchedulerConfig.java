@@ -22,7 +22,6 @@ public class SchedulerConfig implements SchedulingConfigurer {
         scheduler.setThreadNamePrefix("scheduled-");
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(30);
-        scheduler.initialize();
         return scheduler;
     }
 }
